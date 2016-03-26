@@ -1,0 +1,222 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package jais.messages;
+
+import jais.AISPacket;
+import jais.exceptions.AISException;
+import jais.messages.enums.AISMessageType;
+import jais.messages.enums.FieldMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+/**
+ *
+ * @author Jonathan Machen
+ */
+public class Interrogation extends AISMessageBase {
+
+    private final static Logger LOG = LogManager.getLogger(
+            Interrogation.class );
+
+    private int _mmsi1;     // interrogated mmsi
+    private int _type1_1;    // first message type
+    private int _offset1_1;
+    private int _type1_2;
+    private int _offset1_2;
+    private int _mmsi2;
+    private int _type2_1;
+    private int _offset2_1;
+
+    /**
+     *
+     * @param packets
+     */
+    public Interrogation( AISPacket... packets ) {
+        super( packets );
+    }
+
+    /**
+     *
+     * @param type
+     * @param packets
+     */
+    public Interrogation( AISMessageType type, AISPacket... packets ) {
+        super( type, packets );
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getSourceMmsi() {
+        return super.getMmsi();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getMmsi1() {
+        return _mmsi1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getType1_1() {
+        return _type1_1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getOffset1_1() {
+        return _offset1_1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getType1_2() {
+        return _type1_2;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getOffset1_2() {
+        return _offset1_2;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getMmsi2() {
+        return _mmsi2;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getType2_1() {
+        return _type2_1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getOffset2_1() {
+        return _offset2_1;
+    }
+
+    /**
+     *
+     * @throws AISException
+     */
+    @Override
+    public final void decode() throws AISException {
+        super.decode();
+
+        for( InterrogationFieldMap field : InterrogationFieldMap.values() ) {
+            try {
+                switch( field ) {
+                    case MMSI1:
+                        _mmsi1 = AISMessageDecoder.decodeUnsignedInt( _bits,
+                                field.getStartBit(), field.getEndBit() );
+                        break;
+                    case TYPE1_1:
+                        _type1_1 = AISMessageDecoder.decodeUnsignedInt( _bits,
+                                field.getStartBit(), field.getEndBit() );
+                        break;
+                    case OFFSET1_1:
+                        _offset1_1 = AISMessageDecoder.decodeUnsignedInt( _bits,
+                                field.getStartBit(), field.getEndBit() );
+                        break;
+                    case TYPE1_2:
+                        _type1_2 = AISMessageDecoder.decodeUnsignedInt( _bits,
+                                field.getStartBit(), field.getEndBit() );
+                        break;
+                    case OFFSET1_2:
+                        _offset1_2 = AISMessageDecoder.decodeUnsignedInt( _bits,
+                                field.getStartBit(), field.getEndBit() );
+                        break;
+                    case MMSI2:
+                        _mmsi2 = AISMessageDecoder.decodeUnsignedInt( _bits,
+                                field.getStartBit(), field.getEndBit() );
+                        break;
+                    case TYPE2_1:
+                        _type2_1 = AISMessageDecoder.decodeUnsignedInt( _bits,
+                                field.getStartBit(), field.getEndBit() );
+                        break;
+                    case OFFSET2_1:
+                        _offset2_1 = AISMessageDecoder.decodeUnsignedInt( _bits,
+                                field.getStartBit(), field.getEndBit() );
+                        break;
+                    default:
+                        LOG.debug( "Ignoring field: {}", field.name() );
+                }
+            } catch( Throwable t ) {
+                LOG.trace( "Unable to decode field: {}: {}.", field.name(), t.getMessage(), t );
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private enum InterrogationFieldMap implements FieldMap {
+
+        SPARE1( 38, 39 ),
+        MMSI1( 40, 69 ),
+        TYPE1_1( 70, 75 ),
+        OFFSET1_1( 76, 87 ),
+        SPARE2( 88, 89 ),
+        TYPE1_2( 90, 95 ),
+        OFFSET1_2( 96, 107 ),
+        SPARE3( 108, 109 ),
+        MMSI2( 110, 139 ),
+        TYPE2_1( 140, 145 ),
+        OFFSET2_1( 146, 157 ),
+        SPARE4( 158, 159 );
+
+        private final int _startBit;
+        private final int _endBit;
+
+        /**
+         *
+         * @param startBit
+         * @param endBit
+         */
+        private InterrogationFieldMap( int startBit, int endBit ) {
+            _startBit = startBit;
+            _endBit = endBit;
+        }
+
+        /**
+         *
+         * @return
+         */
+        @Override
+        public int getStartBit() {
+            return _startBit;
+        }
+
+        /**
+         *
+         * @return
+         */
+        @Override
+        public int getEndBit() {
+            return _endBit;
+        }
+    }
+}

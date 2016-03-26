@@ -1,0 +1,294 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package jais.messages;
+
+import jais.AISPacket;
+import jais.exceptions.AISException;
+import jais.messages.enums.AISMessageType;
+import jais.messages.enums.FieldMap;
+import jais.messages.enums.ManeuverType;
+import jais.messages.enums.NavigationStatus;
+import com.spatial4j.core.shape.Point;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+/**
+ *
+ * @author Jonathan Machenathan Machen
+ */
+public abstract class PositionReportBase extends AISMessageBase {
+
+    private final static Logger LOG = LogManager
+            .getLogger( PositionReportBase.class );
+
+    private NavigationStatus _status = NavigationStatus.NOT_DEFINED; // bits 38-41
+    private float _turn; // bits 42-49
+    private float _speed; // bits 50-59, represented in knots
+    private boolean _accurate; // bit 60
+    private float _lon; // bits 61-88 
+    private float _lat; // 89-115
+    private float _course; // bits 116-127, 0.1 degree precision, relative to true north
+    private int _heading = 511; // bits 128-136, 0-359 degrees, 511 means not available
+    private int _second; // bits 137-142, timestamp in seconds since epoch
+    private ManeuverType _maneuver = ManeuverType.NOT_AVAILABLE; // bits 143-144, maneuver indicator
+    // spare bits 145-147
+    private boolean _raim; // bit 148
+    private int _radio; // bits 149-167, Radio Status
+
+    /**
+     *
+     * @param packets
+     * @throws jais.exceptions.AISException
+     */
+    public PositionReportBase( AISPacket... packets ) throws AISException {
+        super( packets );
+    }
+
+    /**
+     *
+     * @param messageType
+     * @param packets
+     */
+    public PositionReportBase( AISMessageType messageType, AISPacket... packets ) {
+        super( messageType, packets );
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public boolean hasPosition() {
+        return true;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public Point getPosition() {
+        if( _position == null ) {
+            _position = CTX.makePoint( _lon, _lat );
+        }
+
+        return _position;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public NavigationStatus getStatus() {
+        return _status;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public float getTurn() {
+        return _turn;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public float getSpeed() {
+        return _speed;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isAccurate() {
+        return _accurate;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public float getLon() {
+        return _lon;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public float getLat() {
+        return _lat;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public float getCourse() {
+        return _course;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getHeading() {
+        return _heading;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getSecond() {
+        return _second;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public ManeuverType getManeuver() {
+        return _maneuver;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isRaim() {
+        return _raim;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getRadio() {
+        return _radio;
+    }
+
+    /**
+     *
+     * @throws jais.exceptions.AISException
+     */
+    @Override
+    public final void decode() throws AISException {
+        super.decode();
+
+        for( PositionFieldMap field : PositionFieldMap.values() ) {
+            switch( field ) {
+                case STATUS:
+                    int nsId = AISMessageDecoder.decodeUnsignedInt( super._bits,
+                            field.getStartBit(), field.getEndBit() );
+                    _status = NavigationStatus.getForCode( nsId );
+                    break;
+                case TURN:
+                    _turn = AISMessageDecoder.decodeTurn( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    break;
+                case SPEED:
+                    _speed = AISMessageDecoder.decodeSpeed( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    break;
+                case ACCURACY:
+                    _accurate = _bits.get( 60 );
+                    break;
+                case LON:
+                    _lon = AISMessageDecoder.decodeLongitude( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    break;
+                case LAT:
+                    _lat = AISMessageDecoder.decodeLatitude( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    break;
+                case COURSE:
+                    _course = AISMessageDecoder.decodeCourse( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    break;
+                case HEADING:
+                    _heading = AISMessageDecoder.decodeUnsignedInt( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    break;
+                case SECOND:
+                    _second = AISMessageDecoder.decodeUnsignedInt( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    break;
+                case MANEUVER:
+                    int mId = AISMessageDecoder.decodeUnsignedInt( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    _maneuver = ManeuverType.getForCode( mId );
+                    if( _maneuver == null ) {
+                        _maneuver = ManeuverType.NOT_AVAILABLE;
+                    }
+                    break;
+                case RAIM:
+                    _raim = _bits.get( 148 );
+                    break;
+                case RADIO:
+                    _radio = AISMessageDecoder.decodeUnsignedInt( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    break;
+                default:
+                    LOG.debug( "Encountered unhandled field type of : {}", field );
+                    break;
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private enum PositionFieldMap implements FieldMap {
+        STATUS( 38, 41 ),
+        TURN( 42, 49 ),
+        SPEED( 50, 59 ),
+        ACCURACY( 60, 60 ),
+        LON( 61, 88 ),
+        LAT( 89, 115 ),
+        COURSE( 116, 127 ),
+        HEADING( 128, 136 ),
+        SECOND( 137, 142 ),
+        MANEUVER( 143, 144 ),
+        SPARE( 145, 147 ), // NOT used
+        RAIM( 148, 148 ),
+        RADIO( 149, 167 );
+
+        private final int _startBit;
+        private final int _endBit;
+
+        /**
+         * s
+         *
+         * @param startBit
+         * @param endBit
+         */
+        private PositionFieldMap( int startBit, int endBit ) {
+            _startBit = startBit;
+            _endBit = endBit;
+        }
+
+        /**
+         *
+         * @return
+         */
+        @Override
+        public int getStartBit() {
+            return _startBit;
+        }
+
+        /**
+         *
+         * @return
+         */
+        @Override
+        public int getEndBit() {
+            return _endBit;
+        }
+    }
+}

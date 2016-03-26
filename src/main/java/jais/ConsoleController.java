@@ -1,0 +1,212 @@
+/*
+ * This software is the sole property of ShipTracks, LLC and is not 
+ * licensed for redistribution, modification, or resale by any other party.
+ */
+package jais;
+
+import jais.messages.AISMessageFactory;
+import jais.messages.AISMessage;
+import jais.messages.BaseStationReport;
+import jais.messages.ExtendedClassBCSPositionReport;
+import jais.messages.PositionReportBase;
+import jais.messages.StandardClassBCSPositionReport;
+import jais.messages.StaticAndVoyageRelatedData;
+import jais.messages.enums.MMSIType;
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+/**
+ *
+ * @author Jonathan Machen
+ */
+public class ConsoleController implements Initializable {
+    
+    static final Logger LOG = LogManager.getLogger( "ConsoleController" );
+
+    @FXML // ResourceBundle that was given to the FXMLLoader
+    private ResourceBundle resources;
+
+    @FXML // URL location of the FXML file that was given to the FXMLLoader
+    private URL location;
+
+    @FXML
+    private TextArea outputArea;
+    
+    @FXML
+    private TextField inputField;
+    
+    @FXML
+    private Button decodeButton;
+    
+    @FXML
+    private Button clearButton;
+    
+    /**
+     * 
+     * @param event 
+     */
+    @FXML
+    private void handleDecodeAction( ActionEvent event ) {
+        String inText = inputField.getText();  // retrieve input
+        inputField.clear();  // clear the field
+        
+        try {
+            appendLineToOutput( "****************************************************" );
+            appendLineToOutput( "Processing: " + inText );
+            
+            if( inText == null || inText.isEmpty() ) throw new Exception();
+            
+            AISPacket packet = ( inText.contains( "!AIVD" ) ) ? 
+                    new AISPacket( inText ) : 
+                    AISPacket.createFromBinaryString( inText );
+            
+            appendLineToOutput( "Decoding: " + packet.getRawPacket() );
+            appendLineToOutput( "---------------------------------------------" );
+            packet.process();
+            AISMessage msg = AISMessageFactory.create( packet );
+            if( msg != null ) {
+                // from AISMessageBase
+                appendLineToOutput( "Checksum: " + ( ( packet.isValid() ) ? 
+                        "VALID" : "INVALID (should be " + AISPacket.getChecksum( packet.getRawPacket() ) + ")" ) );
+                appendLineToOutput( "Type   : " + msg.getType() );
+                appendLineToOutput( "Repeat : " + msg.getRepeat() );
+                appendLineToOutput( "MMSI   : " + msg.getMmsi() + ( ( msg.hasValidMmsi() ) ? " (VALID)" : " (INVALID)" ) );
+                appendLineToOutput( "---------------------------------------------" );
+                
+                MMSIType type = MMSIType.forMMSI( msg.getMmsi() );
+                appendLineToOutput( "MMSI Src: " + ( type != null ? type.name() : "INVALID" ) );
+
+                switch( msg.getType() ) {
+                    case BASE_STATION_REPORT:
+                        BaseStationReport bsr = ( BaseStationReport ) msg;
+
+                        appendLineToOutput( "Year     : " + bsr.getYear() );
+                        appendLineToOutput( "Month    : " + bsr.getMonth() );
+                        appendLineToOutput( "Day      : " + bsr.getDay() );
+                        appendLineToOutput( "Hour     : " + bsr.getHour() );
+                        appendLineToOutput( "Minute   : " + bsr.getMinute() );
+                        appendLineToOutput( "Second   : " + bsr.getSecond() );
+                        appendLineToOutput( "EPFD     : " + bsr.getEpfd() );
+                        appendLineToOutput( "Lat      : " + bsr.getLat() );
+                        appendLineToOutput( "Lon      : " + bsr.getLon() );
+                        appendLineToOutput( "Position : " + bsr.getPosition() );
+                        appendLineToOutput( "Radio    : " + bsr.getRadio() );
+                        break;
+                    case POSITION_REPORT_CLASS_A:
+                    case POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE:
+                    case POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION:
+                        PositionReportBase prb = ( PositionReportBase ) msg;
+
+                        // from PositionReportBase
+                        appendLineToOutput( "Accuracy : " + prb.isAccurate() );
+                        appendLineToOutput( "Course   : " + prb.getCourse() );
+                        appendLineToOutput( "Heading  : " + prb.getHeading() );
+                        appendLineToOutput( "Latitude : " + prb.getLat() );
+                        appendLineToOutput( "Longitude: " + prb.getLon() );
+                        appendLineToOutput( "Maneuver : " + prb.getManeuver() );
+                        appendLineToOutput( "Position : " + prb.getPosition() );
+                        appendLineToOutput( "Radio    : " + prb.getRadio() );
+                        appendLineToOutput( "RAIM     : " + prb.isRaim() );
+                        appendLineToOutput( "Second   : " + prb.getSecond() );
+                        appendLineToOutput( "Speed    : " + prb.getSpeed() );
+                        appendLineToOutput( "Status   : " + prb.getStatus() );
+                        appendLineToOutput( "Turn     : " + prb.getTurn() );
+                        break;
+                    case STATIC_AND_VOYAGE_RELATED_DATA:
+                        StaticAndVoyageRelatedData savrd =
+                                ( StaticAndVoyageRelatedData ) msg;
+
+                        appendLineToOutput( "AIS Version  : " + savrd.getVersion() );
+                        appendLineToOutput( "IMO Number   : " + savrd.getImo() );
+                        appendLineToOutput( "Call Sign    : " + savrd.getCallsign() );
+                        appendLineToOutput( "Ship Name    : " + savrd.getShipname() );
+                        appendLineToOutput( "Ship Type    : " + savrd.getShiptype() );
+                        appendLineToOutput( "To Bow       : " + savrd.getToBow() );
+                        appendLineToOutput( "To Stern     : " + savrd.getToStern() );
+                        appendLineToOutput( "To Port      : " + savrd.getToPort() );
+                        appendLineToOutput( "To Starboard : " + savrd.getToStarboard() );
+                        appendLineToOutput( "EPFD Fix Type: " + savrd.getEpfd() );
+                        appendLineToOutput( "ETA Month    : " + savrd.getMonth() );
+                        appendLineToOutput( "ETA Day      : " + savrd.getDay() );
+                        appendLineToOutput( "ETA Hour     : " + savrd.getHour() );
+                        appendLineToOutput( "ETA Minute   : " + savrd.getMinute() );
+                        appendLineToOutput( "Draught      : " + savrd.getDraught() );
+                        appendLineToOutput( "Destination  : " + savrd.getDestination() );
+                        appendLineToOutput( "DTE Ready    : " + savrd.dteReady() );
+                        break;
+                    case STANDARD_CLASS_B_CS_POSITION_REPORT:
+                        StandardClassBCSPositionReport scbpr = 
+                                ( StandardClassBCSPositionReport )msg;
+                        
+                        appendLineToOutput( "Course   : " + scbpr.getCourse() );
+                        appendLineToOutput( "Heading  : " + scbpr.getHeading() );
+                        appendLineToOutput( "Latitude : " + scbpr.getLat() );
+                        appendLineToOutput( "Longitude: " + scbpr.getLon() );
+                        appendLineToOutput( "Radio    : " + scbpr.getRadio() );
+                        appendLineToOutput( "Second   : " + scbpr.getSecond() );
+                        appendLineToOutput( "Speed    : " + scbpr.getSpeed() );
+                        break;
+                    case EXTENDED_CLASS_B_CS_POSITION_REPORT:
+                        ExtendedClassBCSPositionReport ecbpr = 
+                                ( ExtendedClassBCSPositionReport )msg;
+                        
+                        appendLineToOutput( "Assigned    : " + ecbpr.getAssigned() );
+                        appendLineToOutput( "Course      : " + ecbpr.getCourse() );
+                        appendLineToOutput( "Heading     : " + ecbpr.getHeading() );
+                        appendLineToOutput( "Latitude    : " + ecbpr.getLat() );
+                        appendLineToOutput( "Longitude   : " + ecbpr.getLon() );
+                        appendLineToOutput( "Second      : " + ecbpr.getSecond() );
+                        appendLineToOutput( "Speed       : " + ecbpr.getSpeed() );
+                        appendLineToOutput( "EPFD        : " + ecbpr.getEpfd().name() );
+                        appendLineToOutput( "Ship Type   : " + ecbpr.getShipType().name() );
+                        appendLineToOutput( "To Bow      : " + ecbpr.getToBow() );
+                        appendLineToOutput( "To Stern    : " + ecbpr.getToStern() );
+                        appendLineToOutput( "To Port     : " + ecbpr.getToPort() );
+                        appendLineToOutput( "To Starboard: " + ecbpr.getToStarboard() );
+                        break;
+                    default:
+                        appendLineToOutput( "Ignoring new " + msg.getType().getDescription() );
+                }
+            }
+        } catch( Throwable t ) {
+            appendLineToOutput( "Unable to decode packet: \"" + inText + "\": " + t.getMessage() );
+            appendLineToOutput( "StackTrace:\n" + t );
+        } finally {
+            appendLineToOutput( "****************************************************" );
+        }
+    }
+    
+    /**
+     * 
+     * @param s 
+     */
+    private void appendLineToOutput( String s ) {
+        outputArea.appendText( s + "\n" );
+    }
+    
+    /**
+     * 
+     * @param event 
+     */
+    @FXML
+    private void handleClearAction( ActionEvent event ) {
+        outputArea.clear();
+    }
+    
+    /**
+     * 
+     * @param url
+     * @param rb 
+     */
+    @Override
+    public void initialize( URL url, ResourceBundle rb ) {
+    }    
+}

@@ -1,0 +1,250 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package jais.messages.binaryaddressed;
+
+import jais.AISPacket;
+import jais.exceptions.AISException;
+import jais.messages.BinaryAddressedMessageBase;
+import jais.messages.enums.BinaryAddressedMessageType;
+import jais.messages.enums.FieldMap;
+import com.spatial4j.core.shape.Point;
+import jais.messages.AISMessageDecoder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+/**
+ *
+ * @author Jonathan Machen
+ */
+public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
+
+    private final static Logger LOG = LogManager
+            .getLogger( IMO289ClearanceTimeToEnterPort.class );
+
+    private int _linkageId;
+    private int _month;
+    private int _day;
+    private int _hour;
+    private int _minute;
+    private String _portName;
+    private String _destination;
+    private float _lon;
+    private float _lat;
+
+    /**
+     *
+     * @param packets
+     * @throws jais.exceptions.AISException
+     */
+    public IMO289ClearanceTimeToEnterPort( AISPacket... packets )
+            throws AISException {
+        super( BinaryAddressedMessageType.CLEARANCE_TIME_TO_ENTER_PORT, packets );
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getLinkageId() {
+        return _linkageId;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getMonth() {
+        return _month;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getDay() {
+        return _day;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getHour() {
+        return _hour;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getMinute() {
+        return _minute;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getPortName() {
+        return _portName;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getDestination() {
+        return _destination;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public float getLon() {
+        return _lon;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public float getLat() {
+        return _lat;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public boolean hasPosition() {
+        return true;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public Point getPosition() {
+        if( _position == null ) {
+            _position = CTX.makePoint( _lat, _lon );
+        }
+
+        return _position;
+    }
+
+    /**
+     * @throws AISException
+     */
+    @Override
+    public final void decode() throws AISException {
+        super.decode();
+
+        for( IMO289ClearanceTimeToEnterPortFieldMap field
+                : IMO289ClearanceTimeToEnterPortFieldMap.values() ) {
+            Object value = null;
+
+            switch( field ) {
+                case MESSAGE_LINKAGE_ID:
+                    _linkageId = AISMessageDecoder.decodeUnsignedInt( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    value = _linkageId;
+                    break;
+                case MONTH:
+                    _month = AISMessageDecoder.decodeUnsignedInt( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    value = _month;
+                    break;
+                case DAY:
+                    _day = AISMessageDecoder.decodeUnsignedInt( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    value = _day;
+                    break;
+                case HOUR:
+                    _hour = AISMessageDecoder.decodeUnsignedInt( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    value = _hour;
+                    break;
+                case MINUTE:
+                    _minute = AISMessageDecoder.decodeUnsignedInt( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    value = _minute;
+                    break;
+                case PORT_NAME_AND_BERTH:
+                    _portName = AISMessageDecoder.decodeString( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    value = _portName;
+                    break;
+                case DESTINATION:
+                    _destination = AISMessageDecoder.decodeString( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    value = _destination;
+                    break;
+                case LON:
+                    _lon = AISMessageDecoder.decodeLongitude( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    value = _lon;
+                    break;
+                case LAT:
+                    _lat = AISMessageDecoder.decodeLatitude( _bits,
+                            field.getStartBit(), field.getEndBit() );
+                    value = _lat;
+                    break;
+                default:
+                    LOG.warn( "Ignoring field: {}", field.name() );
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private enum IMO289ClearanceTimeToEnterPortFieldMap implements FieldMap {
+
+        MESSAGE_LINKAGE_ID( 88, 97 ),
+        MONTH( 98, 101 ),
+        DAY( 102, 106 ),
+        HOUR( 107, 111 ),
+        MINUTE( 112, 117 ),
+        PORT_NAME_AND_BERTH( 118, 237 ),
+        DESTINATION( 238, 267 ),
+        LON( 268, 292 ),
+        LAT( 293, 316 ),
+        SPARE( 317, 359 );
+
+        private final int _startBit;
+        private final int _endBit;
+
+        /**
+         *
+         * @param startBit
+         * @param endBit
+         */
+        private IMO289ClearanceTimeToEnterPortFieldMap( int startBit, int endBit ) {
+            _startBit = startBit;
+            _endBit = endBit;
+        }
+
+        /**
+         *
+         * @return
+         */
+        @Override
+        public int getStartBit() {
+            return _startBit;
+        }
+
+        /**
+         *
+         * @return
+         */
+        @Override
+        public int getEndBit() {
+            return _endBit;
+        }
+    }
+}

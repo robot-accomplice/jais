@@ -1,0 +1,77 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package jais.messages.enums;
+
+/**
+ *
+ * @author Jonathan Machenathan Machen
+ */
+public enum NavigationStatus {
+    
+    UNDER_WAY_USING_ENGINE( 0, "Under way using engine" ),
+    AT_ANCHOR( 1, "At anchor" ),
+    NOT_UNDER_COMMAND( 2, "Not under command" ),
+    RESTRICTED_MANEUVERABILITY( 3, "Restricted maneuverability" ),
+    CONSTRAINED_BY_HER_DRAUGHT( 4, "Constrained by her draught" ),
+    MOORED( 5, "Moored" ),
+    AGROUND( 6, "Aground" ),
+    ENGAGED_IN_FISHING( 7, "Engaged in fishing" ),
+    UNDER_WAY_SAILING( 8, "Under way sailing" ),
+    RESERVED_FOR_WIG( 9, "Reserved for future amendment of Navigational Status for WIG" ),
+    RESERVED_FOR_FUTURE_10( 10, "Reserved for future use - Type 10" ),
+    RESERVED_FOR_FUTURE_11( 11, "Reserved for future use - Type 11" ),
+    RESERVED_FOR_FUTURE_12( 12, "Reserved for future use - Type 12" ),
+    RESERVED_FOR_FUTURE_13( 13, "Reserved for future use - Type 13" ),
+    RESERVED_FOR_FUTURE_14( 14, "Reserved for future use - Type 14" ),
+    NOT_DEFINED( 15, "Not defined (default)" );
+    
+    private final int _code;
+    private final String _description;
+    
+    /**
+     * 
+     * @param id
+     * @param description 
+     */
+    private NavigationStatus( int code, String description ) {
+        _code = code;
+        _description = description;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public int getCode() {
+        return _code;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public String getdescription() {
+        return _description;
+    }
+  
+    
+    /**
+     * 
+     * @param code
+     * @return 
+     */
+    public static NavigationStatus getForCode( int code ) {
+        NavigationStatus navStatus = null;
+
+        for( NavigationStatus ns : NavigationStatus.values() ) {
+            if( ns.getCode() == code ) {
+                navStatus = ns;
+                break;
+            }
+        }
+            
+        return navStatus;
+    }
+}

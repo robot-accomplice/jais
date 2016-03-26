@@ -1,0 +1,208 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package jais.messages;
+
+import jais.AISPacket;
+import jais.exceptions.AISException;
+import jais.messages.enums.FieldMap;
+import jais.messages.enums.AISMessageType;
+import java.util.BitSet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+/**
+ *
+ * @author Jonathan Machen
+ */
+public class MultipleSlotBinaryMessage extends AISMessageBase {
+
+    private final static Logger LOG = LogManager
+            .getLogger( MultipleSlotBinaryMessage.class );
+
+    private boolean _addressed;
+    private boolean _structured;
+    private int _destMmsi;
+    private int _dac;
+    private int _fid;
+    private BitSet _data;
+    private int _radio;
+
+    /**
+     *
+     * @param packets
+     */
+    public MultipleSlotBinaryMessage( AISPacket... packets ) {
+        super( packets );
+    }
+
+    /**
+     *
+     * @param type
+     * @param packets
+     */
+    public MultipleSlotBinaryMessage( AISMessageType type, AISPacket... packets ) {
+        super( type, packets );
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isAddressed() {
+        return _addressed;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isStructured() {
+        return _structured;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getDestMmsi() {
+        return _destMmsi;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getDac() {
+        return _dac;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getFid() {
+        return _fid;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public BitSet getData() {
+        return _data;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getRadio() {
+        return _radio;
+    }
+
+    /**
+     *
+     * @throws jais.exceptions.AISException
+     */
+    @Override
+    public final void decode() throws AISException {
+        super.decode();
+
+        for( MultipleSlotBinaryMessageFieldMap field : MultipleSlotBinaryMessageFieldMap.values() ) {
+            switch( field ) {
+                case ADDRESSED:
+                    _addressed = _bits.get( field.getStartBit() );
+                    break;
+                case STRUCTURED:
+                    _structured = _bits.get( field.getStartBit() );
+                    break;
+                case DESTINATION_MMSI:
+                    if( _addressed ) {
+                        _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits,
+                                field.getStartBit(), field.getEndBit() );
+                    }
+                    break;
+                case DAC:
+                    if( _structured ) {
+                        _dac = AISMessageDecoder.decodeUnsignedInt( _bits,
+                                field.getStartBit(), field.getEndBit() );
+                    }
+                    break;
+                case FID:
+                    if( _structured ) {
+                        _fid = AISMessageDecoder.decodeUnsignedInt( _bits,
+                                field.getStartBit(), field.getEndBit() );
+                    }
+                    break;
+                case DATA:
+                    if( _addressed ) {
+                        _data = new BitSet( _bits.size() - 90 );
+                        System.arraycopy( _bits, 70, _data, 70,
+                                _bits.size() - 90 );
+                    } else if( _structured ) {
+                        _data = new BitSet( _bits.size() - 76 );
+                        System.arraycopy( _bits, 56, _data, 56,
+                                _bits.size() - 76 );
+                    } else {
+                        _data = new BitSet( _bits.size() - 60 );
+                        System.arraycopy( _bits, 40, _data, 40,
+                                _bits.size() - 61 ); // 61 to insure that we don't overrun the length of the copy target
+                    }
+                    break;
+                case RADIO:
+                    _radio = AISMessageDecoder.decodeUnsignedInt( _bits,
+                            _bits.size() - 21, _bits.size() + 1 );
+                    break;
+                default:
+                    LOG.debug( "Ignoring field: {}", field.name() );
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private enum MultipleSlotBinaryMessageFieldMap implements FieldMap {
+
+        ADDRESSED( 38, 38 ),
+        STRUCTURED( 39, 39 ),
+        DESTINATION_MMSI( 40, 70 ),
+        DAC( 40, 50 ), // depends on the value of structured
+        FID( 50, 56 ), // depends on the value of structured
+        DATA( -1, -1 ), // could be anywhere from 0-1004 bits
+        RADIO( -1, 20 );
+
+        private final int _startBit;
+        private final int _endBit;
+
+        /**
+         *
+         * @param startBit
+         * @param endBit
+         */
+        private MultipleSlotBinaryMessageFieldMap( int startBit, int endBit ) {
+            _startBit = startBit;
+            _endBit = endBit;
+        }
+
+        /**
+         *
+         * @return
+         */
+        @Override
+        public int getStartBit() {
+            return _startBit;
+        }
+
+        /**
+         *
+         * @return
+         */
+        @Override
+        public int getEndBit() {
+            return _endBit;
+        }
+    }
+}
