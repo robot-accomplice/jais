@@ -1,7 +1,19 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2016 Jonathan Machen <jon.machen@gmail.com>.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package jais.messages.enums;
 
 import jais.messages.binaryaddressed.IMO236TidalWindow;
@@ -52,12 +64,12 @@ public enum BinaryAddressedMessageType {
             IMO289TidalWindow.class, IMOType.IMO289, 
             "Tidal Window" );
     
-    private int _dac;
-    private int _fid;
-    private int _length;
-    private Class _msgClass;
-    private IMOType _source;
-    private String _description;
+    private final int _dac;
+    private final int _fid;
+    private final int _length;
+    private final Class _msgClass;
+    private final IMOType _source;
+    private final String _description;
     
     /**
      * 
@@ -101,6 +113,7 @@ public enum BinaryAddressedMessageType {
     
     /**
      * 
+     * @return 
      */
     public Class getMsgClass() {
         return _msgClass;
@@ -126,7 +139,7 @@ public enum BinaryAddressedMessageType {
      * 
      * @param dac
      * @param fid
-     * @param imoType
+     * @param length
      * @return 
      */
     public static BinaryAddressedMessageType fetch( int dac, int fid, int length ) {
