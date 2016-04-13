@@ -25,13 +25,14 @@ import jais.messages.StandardClassBCSPositionReport;
 import jais.messages.StaticAndVoyageRelatedData;
 import jais.messages.enums.MMSIType;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -53,7 +54,7 @@ public class ConsoleController implements Initializable {
     private TextArea outputArea;
     
     @FXML
-    private TextField inputField;
+    private TextArea inputArea;
     
     @FXML
     private Button decodeButton;
@@ -67,27 +68,30 @@ public class ConsoleController implements Initializable {
      */
     @FXML
     private void handleDecodeAction( ActionEvent event ) {
-        String inText = inputField.getText();  // retrieve input
-        inputField.clear();  // clear the field
+        String inText = inputArea.getText();  // retrieve input
+        inputArea.clear();  // clear the field
         
         try {
             appendLineToOutput( "****************************************************" );
-            appendLineToOutput( "Processing: " + inText );
+            appendLineToOutput( "Processing:\n" + inText );
             
             if( inText == null || inText.isEmpty() ) throw new Exception();
             
-            AISPacket packet = ( inText.contains( "!AIVD" ) ) ? 
-                    new AISPacket( inText ) : 
-                    AISPacket.createFromBinaryString( inText );
-            
-            appendLineToOutput( "Decoding: " + packet.getRawPacket() );
-            appendLineToOutput( "---------------------------------------------" );
-            packet.process();
-            AISMessage msg = AISMessageFactory.create( packet );
-            if( msg != null ) {
-                // from AISMessageBase
+            List<AISPacket> packets = new ArrayList<>();
+            for( String packetStr : inText.split( "\n" ) ) {
+                AISPacket packet = ( packetStr.contains( "!AIVD" ) ) ? 
+                        new AISPacket( packetStr ) : 
+                        AISPacket.createFromBinaryString( packetStr );
+                packet.process();
                 appendLineToOutput( "Checksum: " + ( ( packet.isValid() ) ? 
                         "VALID" : "INVALID (should be " + AISPacket.getChecksum( packet.getRawPacket() ) + ")" ) );
+                packets.add( packet );
+            }
+            appendLineToOutput( "---------------------------------------------" );
+            
+            AISMessage msg = AISMessageFactory.create( packets );
+            if( msg != null ) {
+                // from AISMessageBase
                 appendLineToOutput( "Type   : " + msg.getType() );
                 appendLineToOutput( "Repeat : " + msg.getRepeat() );
                 appendLineToOutput( "MMSI   : " + msg.getMmsi() + ( ( msg.hasValidMmsi() ) ? " (VALID)" : " (INVALID)" ) );

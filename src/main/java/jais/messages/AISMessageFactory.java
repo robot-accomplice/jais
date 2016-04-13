@@ -22,6 +22,7 @@ import jais.messages.enums.AISMessageType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.BitSet;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -134,5 +135,17 @@ public class AISMessageFactory {
         }
 
         return create( strict, packets );
+    }
+
+    /**
+     * 
+     * @param packets
+     * @return 
+     * @throws jais.exceptions.AISException 
+     */
+    public static AISMessage create( List<AISPacket> packets ) throws AISException {
+        AISPacket [] packetArray = new AISPacket[ packets.size() ];
+        packets.toArray( packetArray );
+        return create( packetArray );
     }
 }
