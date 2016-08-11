@@ -37,7 +37,7 @@ public class AISPacket {
 
     private static final double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
     private static final double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
-    private static final String PREAMBLE = "!AIVD[O|M]{1}";
+    public static final String PREAMBLE = "!A[I|B]VD[O|M]{1}";
 
     private String _rawPacket;
     private String _source;
@@ -72,6 +72,15 @@ public class AISPacket {
         LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", new Object[]{rawPacket, source} );
         _rawPacket = rawPacket;
         _source = source;
+    }
+
+    /**
+     * 
+     * @param preambleStr
+     * @return 
+     */
+    public static boolean validatePreamble( String preambleStr ) {
+        return preambleStr.matches( PREAMBLE );
     }
 
     /**
@@ -168,7 +177,7 @@ public class AISPacket {
             } else if( _packetParts.length != 7 ) {   // validate csv length
                 LOG.warn( "Packet does not have the valid number (7) of comma separated values." );
                 return false;
-            } else if( !_packetParts[0].matches( PREAMBLE ) ) {
+            } else if( !validatePreamble( _packetParts[0] ) ) {
                 LOG.warn( "Packet has an invalid preamble." );
                 return false;
             } else {
