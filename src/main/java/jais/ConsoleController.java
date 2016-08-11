@@ -79,7 +79,7 @@ public class ConsoleController implements Initializable {
             
             List<AISPacket> packets = new ArrayList<>();
             for( String packetStr : inText.split( "\n" ) ) {
-                AISPacket packet = ( packetStr.contains( "!AIVD" ) ) ? 
+                AISPacket packet = ( AISPacket.validatePreamble( packetStr.split( "," )[0] ) ) ? 
                         new AISPacket( packetStr ) : 
                         AISPacket.createFromBinaryString( packetStr );
                 packet.process();
