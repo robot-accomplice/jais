@@ -31,6 +31,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorCompletionService;
+import java.util.regex.Matcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,7 +61,6 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
     private String _source = "UNNAMED";
     private boolean _running = true;
     private final static boolean RECONNECT = true;
-    private final static String PREAMBLE = "!AIVD[O|M]{}";
 
     /**
      *
@@ -253,9 +253,9 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
                     }
 
                     try {
+                        Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( _sb );
                         // new line or carriage return means end of packet
-                        if( c == '\n' || c == '\r' || _sb.lastIndexOf( PREAMBLE ) > 0 ) {
-
+                        if( c == '\n' || c == '\r' || m.find() ) {
                             if( _sb.length() > 0 ) {
                                 String packetString = AISPacketQueueBuilder.getSubstring( _sb );
 
@@ -304,7 +304,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
      */
     public static String getSubstring( StringBuilder sb ) {
         String substring = sb.substring( 0, AISPacketQueueBuilder.getTruncIndex( sb ) ).trim();
-        substring = substring.replace( "!AISVD,", "!AISVDM," );
+        substring = substring.replace( "!A[B|I]SVD,", "!AISVDM," );
         return substring;
     }
 
@@ -318,12 +318,19 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
 
         LOG.debug( "Evaluating \"{}\" for truncation point.", sb );
 
-        if( sb.indexOf( PREAMBLE, 1 ) > -1 ) {
-            LOG.debug( "More than one occurence of preamble \"" + PREAMBLE + "\" in string." );
-            truncIndex = sb.indexOf( PREAMBLE, 1 );
-        } else if( sb.indexOf( "[\n|\r]+" ) > -1 ) {
-            LOG.debug( "String is terminated by a newline or carriage return" );
-            truncIndex = sb.indexOf( "[\n|\r]+" );
+        Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( sb.toString() );
+        m.find();
+        
+        if( m.groupCount() > 0 ) {
+            LOG.debug( "More than one occurence of preamble \"" + 
+                    AISPacket.PREAMBLE_PATTERN + "\" in string." );
+            truncIndex = sb.indexOf( m.group(2) );
+        } else if( sb.indexOf( "\n" ) > -1 ) {
+            LOG.debug( "String is terminated by a newline" );
+            truncIndex = sb.indexOf( "\n" );
+        } else if( sb.indexOf( "\r" ) > -1 ) {
+            LOG.debug( "String is terminated by a carriage return" );
+            truncIndex = sb.indexOf( "\r" );
         } else {
             LOG.debug( "Line should not be truncated." );
             truncIndex = sb.length();
