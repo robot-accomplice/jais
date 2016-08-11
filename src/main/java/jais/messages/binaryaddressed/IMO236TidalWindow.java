@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.messages.binaryaddressed;
 
 import jais.AISPacket;
@@ -32,25 +31,188 @@ import org.apache.logging.log4j.Logger;
 public class IMO236TidalWindow extends BinaryAddressedMessageBase {
 
     private final static Logger LOG = LogManager
-            .getLogger( IMO236TidalWindow.class );
+            .getLogger(IMO236TidalWindow.class);
 
     private int _month;
     private int _day;
-    private float _lat1;
-    private float _lon1;
-    private int _fromHour1;
-    private int _fromMinute1;
-    private int _currentDir1;
-    private float _currentSpeed1;
+    private String[] _tidals;
+    private float _lat;
+    private float _lon;
+    private int _fromHour;
+    private int _fromMinute;
+    private int _toHour;
+    private int _toMinute;
+    private int _currentDir;
+    private float _currentSpeed;
 
     /**
      *
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO236TidalWindow( AISPacket... packets )
+    public IMO236TidalWindow(AISPacket... packets)
             throws AISException {
-        super( BinaryAddressedMessageType.TIDAL_WINDOW_DEPRECATED, packets );
+        super(BinaryAddressedMessageType.TIDAL_WINDOW_DEPRECATED, packets);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getMonth() {
+        return _month;
+    }
+
+    /**
+     *
+     * @param month
+     */
+    public void setMonth(int month) {
+        this._month = month;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getDay() {
+        return _day;
+    }
+
+    /**
+     *
+     * @param day
+     */
+    public void setDay(int day) {
+        this._day = day;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public float getLat() {
+        return _lat;
+    }
+
+    /**
+     * 
+     * @param lat 
+     */
+    public void setLat(float lat) {
+        this._lat = lat;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public float getLon() {
+        return _lon;
+    }
+
+    /**
+     * 
+     * @param lon 
+     */
+    public void setLon(float lon) {
+        this._lon = lon;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public int getFromHour() {
+        return _fromHour;
+    }
+
+    /**
+     * 
+     * @param fromHour 
+     */
+    public void setFromHour(int fromHour) {
+        this._fromHour = fromHour;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public int getFromMinute() {
+        return _fromMinute;
+    }
+
+    /**
+     * 
+     * @param fromMinute 
+     */
+    public void setFromMinute(int fromMinute) {
+        this._fromMinute = fromMinute;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public int getToHour() {
+        return _toHour;
+    }
+
+    /**
+     * 
+     * @param toHour 
+     */
+    public void setToHour(int toHour) {
+        this._toHour = toHour;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public int getToMinute() {
+        return _toMinute;
+    }
+
+    /**
+     * 
+     * @param toMinute 
+     */
+    public void setToMinute(int toMinute) {
+        this._toMinute = toMinute;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public int getCurrentDir() {
+        return _currentDir;
+    }
+
+    /**
+     * 
+     * @param currentDir 
+     */
+    public void setCurrentDir(int currentDir) {
+        this._currentDir = currentDir;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public float getCurrentSpeed() {
+        return _currentSpeed;
+    }
+
+    /**
+     * 
+     * @param currentSpeed 
+     */
+    public void setCurrentSpeed(float currentSpeed) {
+        this._currentSpeed = currentSpeed;
     }
 
     /**
@@ -66,11 +228,11 @@ public class IMO236TidalWindow extends BinaryAddressedMessageBase {
         // remaining data after we decode the month and day -- may use a public
         // static inner class to represent the tidal information and just store
         // the array
-        for( IMO236TidalWindowFieldMap field
-                : IMO236TidalWindowFieldMap.values() ) {
-            switch( field ) {
+        for (IMO236TidalWindowFieldMap field
+                : IMO236TidalWindowFieldMap.values()) {
+            switch (field) {
                 default:
-                    LOG.warn( "Ignoring field: {}", field.name() );
+                    LOG.warn("Ignoring field: {}", field.name());
             }
         }
     }
@@ -80,7 +242,10 @@ public class IMO236TidalWindow extends BinaryAddressedMessageBase {
      */
     private enum IMO236TidalWindowFieldMap implements FieldMap {
 
-        DEFAULT( -1, -1 );
+        DEFAULT(-1, -1),
+        LATITUDE(0, 26),
+        LONGITUDE(27, 54)
+        ;
 
         private final int _startBit;
         private final int _endBit;
@@ -90,7 +255,7 @@ public class IMO236TidalWindow extends BinaryAddressedMessageBase {
          * @param startBit
          * @param endBit
          */
-        private IMO236TidalWindowFieldMap( int startBit, int endBit ) {
+        private IMO236TidalWindowFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }
