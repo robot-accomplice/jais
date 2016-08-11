@@ -18,6 +18,7 @@ package jais;
 
 import jais.exceptions.AISPacketException;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -37,7 +38,8 @@ public class AISPacket {
 
     private static final double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
     private static final double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
-    public static final String PREAMBLE = "!A[I|B]VD[O|M]{1}";
+    private static final String PREAMBLE = "!A[I|B]VD[O|M]{1}";
+    public static final Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
 
     private String _rawPacket;
     private String _source;
