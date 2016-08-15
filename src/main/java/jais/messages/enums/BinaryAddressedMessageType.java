@@ -115,7 +115,7 @@ public enum BinaryAddressedMessageType {
      * 
      * @return 
      */
-    public Class getMsgClass() {
+    public Class<?> getMsgClass() {
         return _msgClass;
     }
     

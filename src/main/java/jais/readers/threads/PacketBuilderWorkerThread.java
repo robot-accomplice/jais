@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen
  */
-public class PacketBuilderWorkerThread implements Callable {
+public class PacketBuilderWorkerThread implements Callable<AISPacket []> {
 
     private final static Logger LOG = LogManager.getLogger(
             PacketBuilderWorkerThread.class );

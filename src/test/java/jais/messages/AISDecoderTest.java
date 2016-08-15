@@ -88,7 +88,8 @@ public class AISDecoderTest {
         "!AIVDM,1,1,,A,15MublPP00ISa:DA6wdUfOvD0L41,0*42",
         "!AIVDM,1,1,,A,15MTbUgP00ISbCjA7e6P0?vB085K,0*52",
         "!AIVDM,1,1,,A,15MuH>PP00ISRgfA7K97`gvD0@6W,0*32",
-        "!AIVDM,1,1,,A,15NHl8500pqSdR8A7jnq9oRF0<<P,0*38"
+        "!AIVDM,1,1,,A,15NHl8500pqSdR8A7jnq9oRF0<<P,0*38",
+        "!ABVDM,1,1,,A,34Ses01Oh8Jm?Ll;ERH<b1Gd0000,0*61"
     };
 
     private final static String[] TEST_COMPOUND_MESSAGE = {

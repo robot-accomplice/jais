@@ -184,7 +184,7 @@ public enum AISMessageType {
      * 
      * @return 
      */
-    public Class getMessageClass() {
+    public Class<?> getMessageClass() {
         return _messageClass;
     }
     
