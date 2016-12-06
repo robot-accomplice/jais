@@ -232,6 +232,7 @@ public class AISDecoderTest {
             try {
                 AISPacket packet = new AISPacket( packetStr );
                 assertTrue( packet.isValid() );
+                packet.analyzePreamble();
             } catch( Throwable t ) {
                 LOG.fatal( t.getMessage(), t );
             }
