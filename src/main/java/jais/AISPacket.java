@@ -18,6 +18,7 @@ package jais;
 
 import jais.exceptions.AISPacketException;
 import java.util.HashMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,7 +28,7 @@ import org.joda.time.DateTime;
  *
  * @author Jonathan Machen
  */
-public class AISPacket {
+public final class AISPacket {
 
     private final static Logger LOG = LogManager.getLogger( AISPacket.class );
 
@@ -36,10 +37,10 @@ public class AISPacket {
     private final static int CHAR_RANGE_B_MIN = 96;
     private final static int CHAR_RANGE_B_MAX = 119;
 
-    private static final double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
-    private static final double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
-    private static final String PREAMBLE = "!A[I|B]VD[O|M]{1}";
-    public static final Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
+    private final static double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
+    private final static double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
+    private final static String PREAMBLE = "([!|$])(([A|P])[I|B])([A-Z]{2}([A-Z]?))";
+    public final static Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
 
     private String _rawPacket;
     private String _source;
@@ -71,27 +72,63 @@ public class AISPacket {
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( String rawPacket, String source ) throws AISPacketException {
-        LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", new Object[]{rawPacket, source} );
+        LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", new Object[]{ rawPacket, source } );
         _rawPacket = rawPacket;
         _source = source;
     }
 
     /**
-     * 
-     * @param preambleStr
-     * @return 
+     *
      */
-    public static boolean validatePreamble( String preambleStr ) {
+    public final void analyzePreamble() {
+        analyzePreamble( _packetParts[0] );
+    }
+
+    /**
+     *
+     * @param preambleStr
+     */
+    public final static void analyzePreamble( String preambleStr ) {
+        Matcher m = PREAMBLE_PATTERN.matcher( preambleStr );
+        if( m.find() ) {
+            LOG.fatal( "Found {} matcher groups: {}=({})({})({})", m.groupCount(), m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ) );
+            LOG.fatal( "First character is {}", m.group( 1 ) );
+            if( m.group( 1 ).equals( "!" ) ) {
+                LOG.fatal( "This is an encapsulation packet" );
+            }
+            if( m.group(3).equals( "P" ) ) {
+                LOG.fatal( "This is a proprietary message" );
+                LOG.fatal( "Manufacturer code is: {}", m.group(3) + m.group(4) );
+            } else {
+                LOG.fatal( "Talker type is: {}", Talker.getForShortName( m.group( 2 ) ).name() );
+            }
+            LOG.fatal( "Sentencing format is: {}", m.group( 4 ) );
+            if( m.group( 5 ).equals( "Q" ) ) {
+                LOG.fatal( "This IS a query." );
+            } else {
+                LOG.fatal( "This is NOT a query." );
+            }
+        } else {
+            LOG.fatal( "Preamble {} appears to be invalid and does not match the format: {}", preambleStr, PREAMBLE );
+        }
+    }
+
+    /**
+     *
+     * @param preambleStr
+     * @return
+     */
+    public final static boolean validatePreamble( String preambleStr ) {
         return preambleStr.matches( PREAMBLE );
     }
 
     /**
-     * validate the contents of the packet and break it into its constituent
-     * parts
+     * validate the contents of the packet and break it into its constituent parts
      *
      * @throws jais.exceptions.AISPacketException
      */
     public final void process() throws AISPacketException {
+        _rawPacket = _rawPacket.trim();
         LOG.debug( "Processing new raw packet: {}", _rawPacket );
 
         if( _rawPacket == null ) {
@@ -118,8 +155,12 @@ public class AISPacket {
                     LOG.debug( "Unrecognized field at position  8: {}", _packetParts[7] );
                 case 7:
                     try {
-                        _fillBits = Integer.parseInt( _packetParts[6].substring( 0, _packetParts[6].indexOf( "*" ) ) );
-                        _checksum = _packetParts[6].substring( _packetParts[6].indexOf( "*" ) + 1 );
+                        if( _packetParts[6].contains( "*" ) ) {
+                            _fillBits = Integer.parseInt( _packetParts[6].substring( 0, _packetParts[6].indexOf( "*" ) ) );
+                            _checksum = _packetParts[6].substring( _packetParts[6].indexOf( "*" ) + 1 );
+                        } else {
+                            LOG.debug( "Packet is missing checksum!" );
+                        }
                     } catch( NumberFormatException nfe ) {
                         LOG.debug( "Failed to set fill bits and/or checksum due to NumberFormatException: {}", nfe.getMessage() );
                     }
@@ -150,7 +191,11 @@ public class AISPacket {
                         LOG.debug( "Failed to set fragment count due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 1:
-                    _type = _packetParts[0].substring( _packetParts[0].indexOf( "!" ) );
+                    if( _packetParts[0].contains( "!" ) ) {
+                        _type = _packetParts[0].substring( _packetParts[0].indexOf( "!" ) );
+                    } else {
+                        throw new AISPacketException( "Packet has an unrecognizable preamble" );
+                    }
                     break;
                 default:
                     throw new AISPacketException( "Packet is corrupt and has no message body." );
@@ -173,7 +218,10 @@ public class AISPacket {
             }
 
             // validate preamble
-            if( _packetParts.length == 0 ) {
+            if( _rawPacket.length() > 82 ) {
+                LOG.warn( "Packet exceeds maximum allowable size (82 characters)!" );
+                return false;
+            } else if( _packetParts.length == 0 ) {
                 LOG.warn( "Packet is empty!" );
                 return false;
             } else if( _packetParts.length != 7 ) {   // validate csv length
@@ -206,7 +254,7 @@ public class AISPacket {
                     return false;
                 }
             }
-        } catch( AISPacketException ipe ) {
+        } catch( AISPacketException ape ) {
             // do nothing
             return false;
         }
@@ -219,7 +267,7 @@ public class AISPacket {
      * @param genString
      * @return
      */
-    public static String generateChecksum( String genString ) {
+    public final static String generateChecksum( String genString ) {
         char[] buf = genString.toCharArray();
 
         int crc = 0;
@@ -289,7 +337,7 @@ public class AISPacket {
      * @param delimiter
      * @return
      */
-    public static String[] fastSplit( String s, char delimiter ) {
+    public final static String[] fastSplit( String s, char delimiter ) {
         int count = 1;
 
         for( int i = 0; i < s.length(); i++ ) {
@@ -338,7 +386,7 @@ public class AISPacket {
         if( calcChecksum.length() == 1 ) {
             calcChecksum = "0" + calcChecksum;
         }
-        LOG.debug( "Comparing: \"{}\" to \"{}\"", new Object[]{packetChecksum.toUpperCase(), calcChecksum.toUpperCase()} );
+        LOG.debug( "Comparing: \"{}\" to \"{}\"", new Object[]{ packetChecksum.toUpperCase(), calcChecksum.toUpperCase() } );
         return packetChecksum.equalsIgnoreCase( calcChecksum );
     }
 
@@ -346,7 +394,7 @@ public class AISPacket {
      *
      * @return
      */
-    public String getRawPacket() {
+    public final String getRawPacket() {
         return _rawPacket;
     }
 
@@ -354,7 +402,7 @@ public class AISPacket {
      *
      * @return
      */
-    public String getEnhancedPacketString() {
+    public final String getEnhancedPacketString() {
         return getEnhancedPacketString( _rawPacket, _source, _timeReceived );
     }
 
@@ -363,7 +411,7 @@ public class AISPacket {
      * @param data
      * @return
      */
-    public String getEnhancedPacketString( String... data ) {
+    public final String getEnhancedPacketString( String... data ) {
         return getEnhancedPacketString( _rawPacket, _source, _timeReceived, data );
     }
 
@@ -375,7 +423,7 @@ public class AISPacket {
      * @param data
      * @return
      */
-    public final static String getEnhancedPacketString( String rawPacket, 
+    public final static String getEnhancedPacketString( String rawPacket,
             String source, DateTime timeReceived, String... data ) {
 
         StringBuilder pktString = new StringBuilder();
@@ -396,7 +444,7 @@ public class AISPacket {
      *
      * @return
      */
-    public String getType() {
+    public final String getType() {
         return _type;
     }
 
@@ -404,7 +452,7 @@ public class AISPacket {
      *
      * @return
      */
-    public int getFragmentCount() {
+    public final int getFragmentCount() {
         return _fragmentCount;
     }
 
@@ -412,7 +460,7 @@ public class AISPacket {
      *
      * @return
      */
-    public int getFragmentNumber() {
+    public final int getFragmentNumber() {
         return _fragmentNumber;
     }
 
@@ -420,7 +468,7 @@ public class AISPacket {
      *
      * @return
      */
-    public int getSequentialMessageId() {
+    public final int getSequentialMessageId() {
         return _sequentialMessageId;
     }
 
@@ -428,7 +476,7 @@ public class AISPacket {
      *
      * @return
      */
-    public char getRadioChannelCode() {
+    public final char getRadioChannelCode() {
         return _radioChannelCode;
     }
 
@@ -436,7 +484,7 @@ public class AISPacket {
      *
      * @return
      */
-    public double getRadioChannelFrequencyInMhz() {
+    public final double getRadioChannelFrequencyInMhz() {
         double frequency = 0;
 
         switch( _radioChannelCode ) {
@@ -455,7 +503,7 @@ public class AISPacket {
      *
      * @return
      */
-    public String getRawMessage() {
+    public final String getRawMessage() {
         return _rawMessage;
     }
 
@@ -463,7 +511,7 @@ public class AISPacket {
      *
      * @return
      */
-    public int getFillBits() {
+    public final int getFillBits() {
         return _fillBits;
     }
 
@@ -471,7 +519,7 @@ public class AISPacket {
      *
      * @return
      */
-    public String getChecksum() {
+    public final String getChecksum() {
         return _checksum;
     }
 
@@ -479,7 +527,7 @@ public class AISPacket {
      *
      * @return
      */
-    public DateTime getTimeReceived() {
+    public final DateTime getTimeReceived() {
         return _timeReceived;
     }
 
@@ -487,7 +535,7 @@ public class AISPacket {
      *
      * @param timeReceived
      */
-    public void setTimeReceived( DateTime timeReceived ) {
+    public final void setTimeReceived( DateTime timeReceived ) {
         _timeReceived = timeReceived;
     }
 
@@ -495,7 +543,7 @@ public class AISPacket {
      *
      * @return
      */
-    public String getSource() {
+    public final String getSource() {
         return _source;
     }
 
@@ -503,7 +551,7 @@ public class AISPacket {
      *
      * @param source
      */
-    public void setSource( String source ) {
+    public final void setSource( String source ) {
         _source = source;
     }
 
@@ -511,7 +559,7 @@ public class AISPacket {
      *
      * @return
      */
-    public static double getCHANNEL_A_FREQUENCY_IN_MHZ() {
+    public final static double getCHANNEL_A_FREQUENCY_IN_MHZ() {
         return CHANNEL_A_FREQUENCY_IN_MHZ;
     }
 
@@ -519,7 +567,7 @@ public class AISPacket {
      *
      * @return
      */
-    public static double getCHANNEL_B_FREQUENCY_IN_MHZ() {
+    public final static double getCHANNEL_B_FREQUENCY_IN_MHZ() {
         return CHANNEL_B_FREQUENCY_IN_MHZ;
     }
 
@@ -529,7 +577,7 @@ public class AISPacket {
      * @return
      */
     @Override
-    public boolean equals( Object o ) {
+    public final boolean equals( Object o ) {
         boolean isEqual = false;
 
         if( o instanceof AISPacket ) {
@@ -546,7 +594,7 @@ public class AISPacket {
      * @return
      */
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         int hash = 7;
         hash = 79 * hash + ( _rawPacket != null ? _rawPacket.hashCode() : 0 );
         return hash;
@@ -556,7 +604,7 @@ public class AISPacket {
      *
      * @return
      */
-    public HashMap<String, Object> toMap() {
+    public final HashMap<String, Object> toMap() {
         if( _packetMap.isEmpty() ) {
             _packetMap.put( "raw_message", _rawMessage );
             _packetMap.put( "raw_packet", _rawPacket );
