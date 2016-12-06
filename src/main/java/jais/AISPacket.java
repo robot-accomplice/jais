@@ -32,6 +32,14 @@ public final class AISPacket {
 
     private final static Logger LOG = LogManager.getLogger( AISPacket.class );
 
+    // reserved characters
+    private final static char ENCAP_START = '$';
+    private final static char CHECKSUM_DELIMITER = '*';
+    private final static char FIELD_DELIMITER = ',';
+    private final static char TAG_DELIMITER = '\\';
+    private final static char HEX_DELIMITER = '^';
+    private final static char RESERVED_DELIMETER = '~';
+    
     private final static int CHAR_RANGE_A_MIN = 48;
     private final static int CHAR_RANGE_A_MAX = 87;
     private final static int CHAR_RANGE_B_MIN = 96;
@@ -39,9 +47,11 @@ public final class AISPacket {
 
     private final static double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
     private final static double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
-    private final static String PREAMBLE = "([!|$])(([A|P])[I|B])([A-Z]{2}([A-Z]?))";
+    
+    private final static String PREAMBLE = "([!|$])([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
     public final static Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
 
+    private Preamble _preamble;
     private String _rawPacket;
     private String _source;
     private String _type;
@@ -80,46 +90,46 @@ public final class AISPacket {
     /**
      *
      */
-    public final void analyzePreamble() {
-        analyzePreamble( _packetParts[0] );
-    }
-
-    /**
-     *
-     * @param preambleStr
-     */
-    public final static void analyzePreamble( String preambleStr ) {
-        Matcher m = PREAMBLE_PATTERN.matcher( preambleStr );
-        if( m.find() ) {
-            LOG.fatal( "Found {} matcher groups: {}=({})({})({})", m.groupCount(), m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ) );
-            LOG.fatal( "First character is {}", m.group( 1 ) );
-            if( m.group( 1 ).equals( "!" ) ) {
-                LOG.fatal( "This is an encapsulation packet" );
-            }
-            if( m.group(3).equals( "P" ) ) {
-                LOG.fatal( "This is a proprietary message" );
-                LOG.fatal( "Manufacturer code is: {}", m.group(3) + m.group(4) );
-            } else {
-                LOG.fatal( "Talker type is: {}", Talker.getForShortName( m.group( 2 ) ).name() );
-            }
-            LOG.fatal( "Sentencing format is: {}", m.group( 4 ) );
-            if( m.group( 5 ).equals( "Q" ) ) {
-                LOG.fatal( "This IS a query." );
-            } else {
-                LOG.fatal( "This is NOT a query." );
-            }
+    public final boolean validatePreamble() {
+        if( _packetParts == null ) {
+            LOG.warn( "_packetParts is null" );
+            return false;
+        } else if( _packetParts.length == 0 ) {
+            LOG.warn( "_packetParts has zero members" );
+            return false;
+        } else if( _packetParts[0] == null ) {
+            LOG.warn( "_packetParts[0] is null" );
+            return false;
         } else {
-            LOG.fatal( "Preamble {} appears to be invalid and does not match the format: {}", preambleStr, PREAMBLE );
+            LOG.trace( "Creating preamble object from {}", _packetParts[0] );
+            return validatePreamble( Preamble.parse( _packetParts[0] ) );
         }
     }
-
+    
+    /**
+     * 
+     * @param p
+     * @return 
+     */
+    public final static boolean validatePreamble( Preamble p ) {
+        return ( ( p.talker != null ) && ( p.format != null ) );
+    }
+    
     /**
      *
      * @param preambleStr
      * @return
      */
     public final static boolean validatePreamble( String preambleStr ) {
-        return preambleStr.matches( PREAMBLE );
+        return validatePreamble( Preamble.parse( preambleStr ) );
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public final Preamble getPreamble() {
+        return _preamble;
     }
 
     /**
@@ -213,6 +223,7 @@ public final class AISPacket {
      */
     public final boolean isValid() {
         try {
+            // so we don't throw NPEs over the failure to split the raw String
             if( _packetParts == null ) {
                 process();
             }
@@ -227,8 +238,8 @@ public final class AISPacket {
             } else if( _packetParts.length != 7 ) {   // validate csv length
                 LOG.warn( "Packet does not have the valid number (7) of comma separated values." );
                 return false;
-            } else if( !validatePreamble( _packetParts[0] ) ) {
-                LOG.warn( "Packet has an invalid preamble." );
+            } else if( !validatePreamble() ) {
+                LOG.fatal( "Packet has an invalid preamble: {}", _packetParts[0] );
                 return false;
             } else {
                 // check for bad characters in binary string
@@ -619,5 +630,68 @@ public final class AISPacket {
         }
 
         return _packetMap;
+    }
+    
+    /**
+     * 
+     */
+    public static class Preamble {
+        
+        public final String rawPreamble;
+        public char firstChar;
+        public boolean isEncapsulated;
+        public Talkers talker;
+        public boolean isProprietary;
+        public Manufacturers manufacturer;
+        public String format;
+        public boolean isQuery;
+        
+        /**
+         * 
+         * @param rawPreamble 
+         */
+        public Preamble( String rawPreamble ) {
+            this.rawPreamble = rawPreamble;
+        }
+        
+        /**
+         * 
+         */
+        public static Preamble parse( String rawPreamble ) {
+            Preamble p = new Preamble( rawPreamble );
+            
+            LOG.fatal( "Parsing {}" + rawPreamble );
+            Matcher m = PREAMBLE_PATTERN.matcher( rawPreamble );
+            if( m.find() ) {
+                LOG.fatal( "Found {} matcher groups: {}=({})({})({})({})", m.groupCount(), m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ), m.group( 5 ) );
+                p.firstChar = m.group(1).charAt( 0 );
+                
+                if( p.firstChar == '!' ) {
+                    p.isEncapsulated = true;
+                } else if( m.group( 1 ).equals(  "$" ) ) {
+                    p.isEncapsulated = false;
+                } else {
+                    LOG.fatal( "Unrecognized starting character in address field: {}", m.group(1) );
+                    p.isEncapsulated = false;
+                }
+                
+                if( m.group(3).startsWith( "P" ) ) {
+                    p.talker = Talkers.P;
+                    p.manufacturer = Manufacturers.valueOf( ( m.group(3) + m.group(4) ).toUpperCase() );
+                } else if( Talkers.isValid( m.group( 2 ).toUpperCase() ) ) {
+                    p.talker = Talkers.valueOf( m.group( 2 ).toUpperCase() );
+                } else {
+                    p.talker = null;
+                    LOG.fatal( "Unrecognized/invalid talker type: {}", m.group( 2 ) );
+                }
+                
+                p.format = m.group(4);
+                p.isQuery = m.group( 5 ).equals( "Q" );
+            } else {
+                LOG.fatal( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE );
+            }
+            
+            return p;
+        }
     }
 }
