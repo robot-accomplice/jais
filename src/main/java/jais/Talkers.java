@@ -112,14 +112,6 @@ public enum Talkers {
     
     /**
      * 
-     * @return 
-     */
-    public String getDescription() {
-        return description;
-    }
-    
-    /**
-     * 
      * @param code
      * @return 
      */
