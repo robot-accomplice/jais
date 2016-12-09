@@ -417,8 +417,8 @@ public final class AISPacket {
      *
      * @return
      */
-    public final String getEnhancedPacketString() {
-        return getEnhancedPacketString( _rawPacket, _source, _timeReceived );
+    public final String generateTAGBlockPacketString() {
+        return generateTAGBlockPacketString( _rawPacket, _source, _timeReceived );
     }
 
     /**
@@ -426,8 +426,8 @@ public final class AISPacket {
      * @param data
      * @return
      */
-    public final String getEnhancedPacketString( String... data ) {
-        return getEnhancedPacketString( _rawPacket, _source, _timeReceived, data );
+    public final String generateTAGBlockPacketString( String... data ) {
+        return generateTAGBlockPacketString( _rawPacket, _source, _timeReceived, data );
     }
 
     /**
@@ -438,7 +438,7 @@ public final class AISPacket {
      * @param data
      * @return
      */
-    public final static String getEnhancedPacketString( String rawPacket,
+    public final static String generateTAGBlockPacketString( String rawPacket,
             String source, DateTime timeReceived, String... data ) {
         
         // c unix time, positive int
