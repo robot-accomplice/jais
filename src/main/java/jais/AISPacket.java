@@ -16,7 +16,10 @@
 
 package jais;
 
+import jais.messages.enums.Manufacturers;
+import jais.messages.enums.Talkers;
 import jais.exceptions.AISPacketException;
+import jais.messages.AISMessageDecoder;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,13 +43,13 @@ public final class AISPacket {
     private final static char HEX_DELIMITER = '^';
     private final static char RESERVED_DELIMETER = '~';
     
-    private final static int CHAR_RANGE_A_MIN = 48;
-    private final static int CHAR_RANGE_A_MAX = 87;
-    private final static int CHAR_RANGE_B_MIN = 96;
-    private final static int CHAR_RANGE_B_MAX = 119;
+//    private final static int CHAR_RANGE_A_MIN = 48;
+//    private final static int CHAR_RANGE_A_MAX = 87;
+//    private final static int CHAR_RANGE_B_MIN = 96;
+//    private final static int CHAR_RANGE_B_MAX = 119;
 
-    private final static double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
-    private final static double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
+    public final static double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
+    public  final static double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
     
     private final static String PREAMBLE = "([!|$])([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
     public final static Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
@@ -89,6 +92,7 @@ public final class AISPacket {
 
     /**
      *
+     * @return 
      */
     public final boolean validatePreamble() {
         if( _packetParts == null ) {
@@ -245,8 +249,8 @@ public final class AISPacket {
                 // check for bad characters in binary string
                 for( char c : _packetParts[5].toCharArray() ) {
                     // is this character within an accepted range?
-                    if( !( ( c <= CHAR_RANGE_A_MAX && c >= CHAR_RANGE_A_MIN )
-                            || ( c <= CHAR_RANGE_B_MAX && c >= CHAR_RANGE_B_MIN ) ) ) {
+                    if( !( ( c <= AISMessageDecoder.CHAR_RANGE_A_MAX && c >= AISMessageDecoder.CHAR_RANGE_A_MIN )
+                            || ( c <= AISMessageDecoder.CHAR_RANGE_B_MAX && c >= AISMessageDecoder.CHAR_RANGE_B_MIN ) ) ) {
                         LOG.warn( "Packet contains an invalid character: {}", c );
                         return false;
                     }
@@ -436,17 +440,31 @@ public final class AISPacket {
      */
     public final static String getEnhancedPacketString( String rawPacket,
             String source, DateTime timeReceived, String... data ) {
+        
+        // c unix time, positive int
+        // d destination, alphanumeric (<= 15 chars)
+        // g sentence grouping, numeric string (e.g. \g:1-1-1234 or \g:1-2-1234
+        // n line count, positive int
+        // r relative time, positive int
+        // s source id, alphanumeric (<= 15 chars)
+        // t text string
 
         StringBuilder pktString = new StringBuilder();
-        pktString.append( rawPacket ).append( "{" ).append( source ).append( "|" ).append( timeReceived );
+        pktString.append( "\\s:" ).append( source ).append( ",c:" ).append( timeReceived );
 
-        for( String value : data ) {
-            if( !value.isEmpty() ) {
-                pktString.append( "|" ).append( value );
+        if( data.length > 0 ) {
+            for( String value : data ) {
+                if( value.length() > 80 ) {
+                    LOG.warn( "Data value is too long, skipping" );
+                } else if( value.contains( "!" ) || value.contains( "$" ) || value.contains( "~" ) ) {
+                    LOG.warn( "Data value contains unusable reserved characters" );
+                } else if( !value.isEmpty() ) {
+                    pktString.append( ",t:" ).append( value );
+                }
             }
         }
 
-        pktString.append( "}" ).append( AISPacket.generateChecksum( pktString.toString() ) );
+        pktString.append( "*" ).append( generateChecksum( pktString.toString() ) ).append( "\\" ).append( rawPacket );
 
         return pktString.toString();
     }
@@ -568,22 +586,6 @@ public final class AISPacket {
 
     /**
      *
-     * @return
-     */
-    public final static double getCHANNEL_A_FREQUENCY_IN_MHZ() {
-        return CHANNEL_A_FREQUENCY_IN_MHZ;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public final static double getCHANNEL_B_FREQUENCY_IN_MHZ() {
-        return CHANNEL_B_FREQUENCY_IN_MHZ;
-    }
-
-    /**
-     *
      * @param o
      * @return
      */
@@ -656,6 +658,16 @@ public final class AISPacket {
         
         /**
          * 
+         * @return 
+         */
+        public Preamble parse() {
+            return parse( this.rawPreamble );
+        }
+        
+        /**
+         * 
+         * @param rawPreamble
+         * @return 
          */
         public static Preamble parse( String rawPreamble ) {
             Preamble p = new Preamble( rawPreamble );
