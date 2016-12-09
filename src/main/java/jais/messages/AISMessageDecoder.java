@@ -31,13 +31,12 @@ import org.apache.logging.log4j.LogManager;
  */
 public class AISMessageDecoder {
 
-    private final static Logger LOG = LogManager
-            .getLogger( AISMessageDecoder.class );
+    private final static Logger LOG = LogManager.getLogger( AISMessageDecoder.class );
 
-    private final static int CHAR_RANGE_A_MIN = 48;
-    private final static int CHAR_RANGE_A_MAX = 87;
-    private final static int CHAR_RANGE_B_MIN = 96;
-    private final static int CHAR_RANGE_B_MAX = 119;
+    public final static int CHAR_RANGE_A_MIN = 48;
+    public final static int CHAR_RANGE_A_MAX = 87;
+    public final static int CHAR_RANGE_B_MIN = 96;
+    public final static int CHAR_RANGE_B_MAX = 119;
 
     /**
      *
@@ -56,7 +55,7 @@ public class AISMessageDecoder {
         int bIndex = 0;
         for( char c : msgChars ) {
             try {
-                int oc = armoredToSixBit( c ); // pull the current raw message char
+                int oc = encodedToSixBitInt( c ); // pull the current raw message char
                 if( oc == -1 ) {
                     LOG.fatal( "Invalid String!  oc == -1" );
                     bits.clear();
@@ -80,7 +79,7 @@ public class AISMessageDecoder {
      * @return
      * @throws jais.exceptions.InvalidAISCharacterException
      */
-    public static int armoredToSixBit( char c ) throws InvalidAISCharacterException {
+    public static int encodedToSixBitInt( char c ) throws InvalidAISCharacterException {
         int sixBitInt = -1;
 
         if( c <= CHAR_RANGE_A_MAX && c >= CHAR_RANGE_A_MIN ) {  // is this character within the first range?
