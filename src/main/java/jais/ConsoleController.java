@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class ConsoleController implements Initializable {
     
-    static final Logger LOG = LogManager.getLogger( "ConsoleController" );
+    static final Logger LOG = LogManager.getLogger( ConsoleController.class );
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
