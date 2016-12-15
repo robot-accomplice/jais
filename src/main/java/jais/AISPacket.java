@@ -36,22 +36,18 @@ public final class AISPacket {
     private final static Logger LOG = LogManager.getLogger( AISPacket.class );
 
     // reserved characters
-    private final static char ENCAP_START = '$';
+    private final static char ENCAP_START = '!';
+    private final static char PARAM_START = '$';
     private final static char CHECKSUM_DELIMITER = '*';
     private final static char FIELD_DELIMITER = ',';
     private final static char TAG_DELIMITER = '\\';
     private final static char HEX_DELIMITER = '^';
-    private final static char RESERVED_DELIMETER = '~';
+    private final static char RESERVED_DELIMITER = '~';
     
-//    private final static int CHAR_RANGE_A_MIN = 48;
-//    private final static int CHAR_RANGE_A_MAX = 87;
-//    private final static int CHAR_RANGE_B_MIN = 96;
-//    private final static int CHAR_RANGE_B_MAX = 119;
-
     public final static double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
     public  final static double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
     
-    private final static String PREAMBLE = "([!|$])([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
+    private final static String PREAMBLE = "([" + ENCAP_START + "|" + PARAM_START + "])([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
     public final static Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
 
     private Preamble _preamble;
@@ -141,18 +137,19 @@ public final class AISPacket {
      *
      * @throws jais.exceptions.AISPacketException
      */
-    public final void process() throws AISPacketException {
-        _rawPacket = _rawPacket.trim();
-        LOG.debug( "Processing new raw packet: {}", _rawPacket );
+    public final AISPacket process() throws AISPacketException {
 
         if( _rawPacket == null ) {
             throw new AISPacketException( "Raw packet is null" );
         } else if( _rawPacket.isEmpty() ) {
             throw new AISPacketException( "Raw packet is empty" );
+        } else {
+            _rawPacket = _rawPacket.trim();
+            LOG.debug( "Processing new raw packet: {}", _rawPacket );
         }
 
         if( _packetParts == null ) {
-            _packetParts = AISPacket.fastSplit( _rawPacket, ',' );
+            _packetParts = AISPacket.fastSplit( _rawPacket, FIELD_DELIMITER );
         }
 
         if( _packetParts == null || _packetParts.length < 6 ) {
@@ -169,9 +166,9 @@ public final class AISPacket {
                     LOG.debug( "Unrecognized field at position  8: {}", _packetParts[7] );
                 case 7:
                     try {
-                        if( _packetParts[6].contains( "*" ) ) {
+                        if( _packetParts[6].contains( String.valueOf( CHECKSUM_DELIMITER ) ) ) {
                             _fillBits = Integer.parseInt( _packetParts[6].substring( 0, _packetParts[6].indexOf( "*" ) ) );
-                            _checksum = _packetParts[6].substring( _packetParts[6].indexOf( "*" ) + 1 );
+                            _checksum = _packetParts[6].substring( _packetParts[6].indexOf( String.valueOf( CHECKSUM_DELIMITER ) ) + 1 );
                         } else {
                             LOG.debug( "Packet is missing checksum!" );
                         }
@@ -218,6 +215,8 @@ public final class AISPacket {
             throw new AISPacketException( "Encountered a malformed AISPacket: \""
                     + _rawPacket + "\" - " + t.getMessage(), t );
         }
+        
+        return this;
     }
 
     /**
@@ -257,7 +256,7 @@ public final class AISPacket {
                 }
 
                 // if we don't have any bad characters validate the checksum
-                int csIndex = _packetParts[6].indexOf( "*" ) + 1;
+                int csIndex = _packetParts[6].indexOf( String.valueOf( CHECKSUM_DELIMITER ) ) + 1;
 
                 if( csIndex > 0 ) {
                     // validate checksum
@@ -308,11 +307,11 @@ public final class AISPacket {
      * @return
      */
     public final static String getChecksum( String rawPacket ) {
-        return getChecksum( rawPacket, 1, rawPacket.indexOf( "*" ) );
+        return getChecksum( rawPacket, 1, rawPacket.indexOf( String.valueOf( CHECKSUM_DELIMITER ) ) );
     }
 
     /**
-     *
+     * This is a utility message that enables binary decoding even when the binary string is all we have
      * @param rawData
      * @return
      */
@@ -347,7 +346,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * an alternative to String.split() which is a memory hog and performance donkey at scale
+     * 
      * @param s
      * @param delimiter
      * @return
@@ -401,7 +401,7 @@ public final class AISPacket {
         if( calcChecksum.length() == 1 ) {
             calcChecksum = "0" + calcChecksum;
         }
-        LOG.debug( "Comparing: \"{}\" to \"{}\"", new Object[]{ packetChecksum.toUpperCase(), calcChecksum.toUpperCase() } );
+        LOG.debug( "Comparing: \"{}\" to \"{}\"", packetChecksum.toUpperCase(), calcChecksum.toUpperCase() );
         return packetChecksum.equalsIgnoreCase( calcChecksum );
     }
 
