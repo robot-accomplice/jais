@@ -57,18 +57,15 @@ public class PacketBuilderWorkerThread implements Callable<AISPacket []> {
     public AISPacket[] call() {
         Thread.currentThread().setName( "PBT" );
 
-        AISPacket[] packets = null;
-
         try {
             LOG.trace( "Processing packet: {}", _packetString );
             AISPacket packet = new AISPacket( _packetString, _source );
 
-            packet.process();
-            packets = _pBuffer.add( packet, true ); // true = remove from buffer if complete
+            return _pBuffer.add( packet.process(), true ); // true = remove from buffer if complete
         } catch( AISPacketException ape ) {
             LOG.info( "Discarding invalid packet: \"" + _packetString + "\": " + ape.getMessage(), ape );
         }
-
-        return packets;
+        
+        return null;
     }
 }
