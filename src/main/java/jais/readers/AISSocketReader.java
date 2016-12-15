@@ -20,9 +20,14 @@ import jais.exceptions.AISPacketException;
 import jais.handlers.AISHandler;
 import jais.handlers.AISMessageHandler;
 import jais.handlers.AISPacketHandler;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.Socket;
-import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.joda.time.DateTime;
 
 /**
@@ -136,9 +141,9 @@ public class AISSocketReader extends AISReaderBase {
                         lastRead = DateTime.now();
                     }
                 } catch( AISPacketException ae ) {
-                    LOG.debug( "Encountered an AISException: " + ae.getMessage(), ae );
+                    LOG.debug( "Encountered an AISException: {}", ae.getMessage(), ae );
                 } catch( IOException ioe ) {
-                    LOG.error( "Encountered an IOException: " + ioe.getMessage(), ioe );
+                    LOG.error( "Encountered an IOException: {}", ioe.getMessage(), ioe );
                     throw new AISReaderException( "Encountered an IOException: " + ioe.getMessage(), ioe );
                 }
             }
