@@ -57,7 +57,7 @@ public class AISMessageDecoder {
             try {
                 int oc = encodedToSixBitInt( c ); // pull the current raw message char
                 if( oc == -1 ) {
-                    LOG.fatal( "Invalid String!  oc == -1" );
+                    LOG.fatal( "Invalid character:  '{}'", c );
                     bits.clear();
                     break;
                 } else {
@@ -159,8 +159,9 @@ public class AISMessageDecoder {
                     intValue += binPosValue;
                 }
 
-                binPosValue += binPosValue; // double binPosValue to produce valid 
+                // double binPosValue to produce valid 
                 // binary position value as per binary math
+                binPosValue += binPosValue; 
             }
             intValue = -( intValue + 1 );   // correct for dropped bit and add negative
         } else {
@@ -214,10 +215,7 @@ public class AISMessageDecoder {
      */
     public static AISMessageType decodeMessageType( String rawMessage )
             throws AISException {
-
-        BitSet bits = stringToBitSet( rawMessage );
-
-        return decodeMessageType( bits );
+        return decodeMessageType( stringToBitSet( rawMessage ) );
     }
 
     /**
@@ -301,7 +299,6 @@ public class AISMessageDecoder {
 
         turn = ( ( float ) i ) / 4.733f;
         turn = turn * turn;
-//        int val = ( int )( .5f + x );
 
         return turn;
     }
