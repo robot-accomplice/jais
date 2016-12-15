@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class Console extends Application {
 
-    private final static Logger LOG = LogManager.getLogger( "Console" );
+    private final static Logger LOG = LogManager.getLogger( Console.class );
     private final static String FXML_PATH = "/fxml/console.fxml";
 
     /**
