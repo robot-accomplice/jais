@@ -99,13 +99,7 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
      */
     public AISSerialPortReader( String portName, int baud, int dataBits,
             int stopBits, int parity ) {
-        _portName = portName;
-        _baud = baud;
-        _dataBits = dataBits;
-        _stopBits = stopBits;
-        _parity = parity;
-        LOG.debug( "AISSerialPortReader invoked with: " + portName + ", " + baud + ", " + dataBits
-                + ", " + stopBits + ", " + parity );
+        this( portName, baud, dataBits, stopBits, parity, portName );
     }
 
     /**
@@ -125,8 +119,8 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
         _stopBits = stopBits;
         _parity = parity;
         _source = source;
-        LOG.debug( "AISSerialPortReader invoked with: " + portName + ", " + baud + ", " + dataBits
-                + ", " + stopBits + ", " + parity );
+        LOG.debug( "{} - AISSerialPortReader invoked with: {}, {}, {}, {}, {}",
+                source, portName, baud, dataBits, stopBits, parity );
     }
 
     /**
@@ -246,8 +240,8 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
             _port = new SerialPort( _portName );
 
             LOG.debug( "*** Port Initialization ***************************************** " );
-            LOG.debug( " Port opened: " + _port.openPort() );
-            LOG.debug( " Params set : " + _port.setParams( _baud, _dataBits, _stopBits, _parity ) );
+            LOG.debug( " Port opened: {}", _port.openPort() );
+            LOG.debug( " Params set : {}", _port.setParams( _baud, _dataBits, _stopBits, _parity ) );
             LOG.debug( "***************************************************************** " );
 
             _port.addEventListener( this );
