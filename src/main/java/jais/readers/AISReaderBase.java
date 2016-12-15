@@ -111,16 +111,15 @@ public abstract class AISReaderBase extends Observable implements AISReader {
 
                 try {
                     // assemble the message fragments, THEN decode
-                    LOG.debug( "Adding message part " + packet.getFragmentNumber()
-                            + " of " + packet.getFragmentCount() + " : "
-                            + packet.getRawPacket() + " to buffer." );
+                    LOG.debug( "Adding message part {} of {} : '{}' to buffer.", 
+                            packet.getFragmentNumber(), packet.getFragmentCount(), packet.getRawPacket() );
 
                     AISPacket [] packets = _buffer.add( packet );
 
                     if( packets != null ) {
                         // last fragment, we can now build the full message
-                        LOG.debug( "Processing a message with "
-                                + packets.length + " fragments." );
+                        LOG.debug( "Processing a message with {} fragments.",
+                                packets.length );
 
                         AISMessage message = AISMessageFactory.create( packets );
 
@@ -134,16 +133,15 @@ public abstract class AISReaderBase extends Observable implements AISReader {
                         LOG.trace( "Message is not complete." );
                     }
                 } catch( AISException ae ) {
-                    LOG.debug( "Encountered an error while processing packet \""
-                            + packetString + "\": "
-                            + ae.getMessage() );
+                    LOG.debug( "Encountered an error while processing packet \"{}\": {}",
+                            packetString, ae.getMessage() );
                     LOG.trace( ae.getMessage(), ae );
                 }
             }
         } catch( AISPacketException ipe ) {
             LOG.debug( "Encountered a serious error while trying to process a packet string: "
                     + ipe.getMessage() );
-            LOG.trace( "StackTrace for AISPacketException: " + ipe.getMessage(), ipe );
+            LOG.trace( "StackTrace for AISPacketException: {}", ipe.getMessage(), ipe );
         }
     }
 
@@ -166,8 +164,8 @@ public abstract class AISReaderBase extends Observable implements AISReader {
         try {
             read();
         } catch( AISReaderException are ) {
-            LOG.fatal( "Encountered a fatal error while reading the datasource: "
-                    + are.getMessage(), are );
+            LOG.fatal( "Encountered a fatal error while reading the datasource: {}",
+                    are.getMessage(), are );
         } finally {
             close();
         }
