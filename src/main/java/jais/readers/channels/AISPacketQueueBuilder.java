@@ -77,7 +77,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
         _readBuffer = ByteBuffer.allocate( readBufferSize );
         LOG.fatal( "########################################################################" );
         LOG.fatal( "Instantiated new AISStream \"{}\"", _source );
-        LOG.fatal( "{} Binding:{}...", new Object[]{_source, _targetISA} );
+        LOG.fatal( "{} Binding:{}...", _source, _targetISA );
     }
 
     /**
@@ -129,7 +129,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
      */
     private void init() {
         LOG.fatal( "########################################################################" );
-        LOG.fatal( "# {} Initializing {} AISPacketQueueBuilder...", new Object[]{_source, _source} );
+        LOG.fatal( "# {} Initializing AISPacketQueueBuilder...", _source );
         LOG.fatal( "# {} Initialization complete!", _source );
         LOG.fatal( "########################################################################" );
     }
@@ -168,7 +168,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
 
                         while( selectedKeys.hasNext() ) {
                             SelectionKey key = ( SelectionKey ) selectedKeys.next();
-                            LOG.debug( "{} new Key: {} ({2})", new Object[]{_source, key, key.getClass()} );
+                            LOG.debug( "{} new Key: {} ({2})", _source, key, key.getClass() );
                             selectedKeys.remove();
 
                             if( !key.isValid() ) {
@@ -186,7 +186,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
                         }
                     }
                 } catch( IOException ioe ) {
-                    LOG.fatal( _source + " !! Connection error: " + ioe.getMessage(), ioe );
+                    LOG.fatal( "{} - !! Connection error: {}", _source, ioe.getMessage(), ioe );
                     try {
                         _socketChannel.close();
                     } catch( IOException ex ) {
@@ -194,15 +194,15 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
                     _socketChannel = null;
 
                     try {
-                        LOG.fatal( "{} Sleeping for 5 seconds before reconnecting...", _source );
+                        LOG.fatal( "{} - Sleeping for 5 seconds before reconnecting...", _source );
                         Thread.sleep( 5000 );
                     } catch( InterruptedException ie ) {
                     }
                 }
             }
 
-            LOG.fatal( "{} shutting down AISStream on {}", new Object[]{_source, _targetISA} );
-            LOG.fatal( "{} AISStream shutdown complete.", _source );
+            LOG.fatal( "{} - Shutting down AISStream on {}", _source, _targetISA );
+            LOG.fatal( "{} - AISStream shutdown complete.", _source );
         } finally {
             close();
         }
@@ -221,7 +221,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
         _socketChannel.register( _socketSelector, SelectionKey.OP_READ );
 
         if( _socketChannel.isConnected() ) {
-            LOG.fatal( "{} connection to {} completed successfully.", new Object[]{_source, _targetISA} );
+            LOG.fatal( "{} connection to {} completed successfully.", _source, _targetISA );
         } else {
             throw new IOException( _source + " connection to " + _targetISA
                     + " closed by server!" );
@@ -237,6 +237,8 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
         _socketChannel = ( SocketChannel ) key.channel();
 
         try {
+            // clear the buffer
+            _readBuffer.clear();
             // fill the buffer
             int numRead = _socketChannel.read( _readBuffer );
 
@@ -254,13 +256,13 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
 
                     try {
                         Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( _sb );
-                        // new line or carriage return means end of packet
+                        // new line + carriage return means end of packet
                         if( c == '\n' || c == '\r' || m.find() ) {
                             if( _sb.length() > 0 ) {
                                 String packetString = AISPacketQueueBuilder.getSubstring( _sb );
 
                                 if( packetString != null && !packetString.isEmpty() ) {
-                                    LOG.debug( "{} - Truncated String is: {}", new Object[]{_source, packetString} );
+                                    LOG.debug( "{} - Truncated String is: {}", _source, packetString );
                                     _pktQueue.submit( new PacketBuilderWorkerThread( _pBuffer, packetString, _source ) );
                                     _sb.delete( 0, packetString.length() );
                                 }
@@ -282,17 +284,18 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
                     _sb.replace( 0, _sb.length(), _sb.toString().trim() );
                 }
 
-                LOG.debug( "{} leftovers: {}", new Object[]{_source, _sb} );
+                LOG.debug( "{} leftovers: {}", _source, _sb );
             }
         } catch( IOException ioe ) {
             LOG.fatal( "{} !! IOException thrown.", _source );
-            LOG.debug( _source + " failed to read from buffer: " + ioe.getMessage(), ioe );
+            LOG.debug( "{} - failed to read from buffer: {}", _source, ioe.getMessage(), ioe );
             LOG.info( "{} cancelling key.", _source );
             key.cancel();
             LOG.info( "{} closing socket.", _source );
             _socketChannel.close();
             throw new IOException( ioe );
         } finally {
+            // a bit paranoid, but no harm done
             _readBuffer.clear();
         }
     }
@@ -304,7 +307,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
      */
     public static String getSubstring( StringBuilder sb ) {
         String substring = sb.substring( 0, AISPacketQueueBuilder.getTruncIndex( sb ) ).trim();
-        substring = substring.replace( "!A[B|I]SVD,", "!AISVDM," );
+
         return substring;
     }
 
@@ -325,6 +328,9 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
             LOG.debug( "More than one occurence of preamble \"" + 
                     AISPacket.PREAMBLE_PATTERN + "\" in string." );
             truncIndex = sb.indexOf( m.group(2) );
+        } else if( sb.indexOf( "\n\r" ) > -1 ) {
+            LOG.debug( "String is terminated by a newline and carriage return" );
+            truncIndex = sb.indexOf( "\n\r" );
         } else if( sb.indexOf( "\n" ) > -1 ) {
             LOG.debug( "String is terminated by a newline" );
             truncIndex = sb.indexOf( "\n" );
