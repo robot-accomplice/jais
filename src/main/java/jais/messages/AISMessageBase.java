@@ -82,9 +82,7 @@ public abstract class AISMessageBase implements AISMessage {
         for( AISPacket packet : _packets ) {
             sb.append( packet.toString() );
         }
-        sb.append( "]," );
-
-        sb.append( "}" );
+        sb.append( "]," ).append( "}" );
 
         return sb.toString();
     }
@@ -165,7 +163,7 @@ public abstract class AISMessageBase implements AISMessage {
      * @return
      */
     public static boolean isValidImo( String imo ) {
-        if( imo.startsWith( "IMO" ) || imo.startsWith( "imo" ) || imo.startsWith( "Imo" ) ) {
+        if( imo.toLowerCase().startsWith( "imo" ) ) {
             imo = imo.substring( 3 );
         }
 
@@ -200,7 +198,7 @@ public abstract class AISMessageBase implements AISMessage {
             for( char c : Long.toString( imo ).toCharArray() ) {
                 digits[d] = Integer.valueOf( "" + c );
                 LOG.debug( "Digit at position: {} is {}",
-                        new Object[]{d, digits[d]} );
+                        d, digits[d] );
                 d++;
             }
 
@@ -222,7 +220,7 @@ public abstract class AISMessageBase implements AISMessage {
             valid = ( sum % 10 == digits[6] );
 
             LOG.info( "Modulus of sum divided by 10 is: {} vs {}",
-                    new Object[]{sum % 10, digits[6]} );
+                    sum % 10, digits[6] );
         }
 
         return valid;
