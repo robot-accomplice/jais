@@ -42,7 +42,7 @@ public class AISPacketBuffer {
      * @param maxPacketAge
      */
     public AISPacketBuffer( int maxPacketAge ) {
-        LOG.debug( "AISPacketBuffer instantiated.  Max packet age is {}ms", maxPacketAge);
+        LOG.debug( "AISPacketBuffer instantiated.  Max packet age is {} ms", maxPacketAge );
         _maxPacketAge = maxPacketAge;
     }
 
@@ -124,7 +124,7 @@ public class AISPacketBuffer {
             LOG.debug( "Ignoring null packet." );
         } else {
             try {
-                _buffer.keySet().stream().forEach((k) -> {
+                _buffer.keySet().stream().forEach( ( k ) -> {
                     try {
                         MutableDateTime timestamp = _buffer.get( k ).getTimestamp();
                         timestamp.addMillis( _maxPacketAge );
@@ -134,7 +134,8 @@ public class AISPacketBuffer {
                             _buffer.remove( k );
                         }
                     } catch( NullPointerException npe ) {
-                        LOG.debug( "NPE encountered while cleaning old records from buffer." );
+                        LOG.debug( "NPE encountered while cleaning old records from buffer: {}", 
+                                npe.getMessage(), npe );
                         _buffer.remove( k );
                     }
                 });
@@ -193,7 +194,7 @@ public class AISPacketBuffer {
      */
     private synchronized AISPacket[] remove( String packetKey ) {
         AISPacket[] packets = getPackets( packetKey );
-        AISPacketSet removed = _buffer.remove( packetKey );
+        _buffer.remove( packetKey );
         return packets;
     }
 
@@ -338,7 +339,9 @@ public class AISPacketBuffer {
                 // it to early packets in the same set (without having adequate source info)
 //                complete = false;
             } else {
-                complete = _packets.stream().map((_packet) -> ( _packet != null )).reduce(complete, (accumulator, _item) -> accumulator & _item);
+                complete = _packets.stream().map( 
+                        (_packet ) -> ( _packet != null ) )
+                        .reduce( complete, ( accumulator, _item ) -> accumulator & _item );
             }
 
             return complete;
@@ -351,13 +354,11 @@ public class AISPacketBuffer {
          */
         @Override
         public boolean equals( Object o ) {
-            boolean isEqual = false;
-
             if( o instanceof AISPacketSet ) {
-                isEqual = ( ( AISPacketSet ) o ).getSequenceNumber() == _sequenceNumber;
+                return ( ( AISPacketSet ) o ).getSequenceNumber() == _sequenceNumber;
+            } else {
+                return false;
             }
-
-            return isEqual;
         }
 
         /**
