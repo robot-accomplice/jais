@@ -93,7 +93,7 @@ public class AISMessageFactory {
                         + t.getMessage(), t );
             } else {
                 LOG.warn( "Unable to create a new AISMessage: {}", t.getMessage() );
-                LOG.debug( "Decode Failure: {}", t.getMessage(), t );
+                LOG.trace( "Decode Failure: {}", t.getMessage(), t );
             }
         }
 
