@@ -26,6 +26,7 @@ import com.spatial4j.core.shape.Point;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -43,6 +44,8 @@ public abstract class AISMessageBase implements AISMessage {
     private int _repeat; // bits 6-7
 
     public final static SpatialContext CTX = SpatialContext.GEO;
+    
+    protected String _source = "UNKNOWN";
     protected AISPacket[] _packets;
     protected String _compositeMsg;
     protected AISMessageType _messageType;
@@ -85,6 +88,24 @@ public abstract class AISMessageBase implements AISMessage {
         sb.append( "]," ).append( "}" );
 
         return sb.toString();
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public String getSource() {
+        return _source;
+    }
+    
+    /**
+     * 
+     * @param source 
+     */
+    @Override
+    public void setSource( String source ) {
+        _source = source;
     }
 
     /**
@@ -176,18 +197,6 @@ public abstract class AISMessageBase implements AISMessage {
      * @return
      */
     public static boolean isValidImo( long imo ) {
-//      per http://catb.org/gpsd/AIVDM.html
-//      IMO Numbers are made up of letters “IMO” and seven decimal digits.
-//      The digits to be checked are multiplied from left to right by 7, 6, 5, 4, 3, and 2.
-//      Products are added up.
-//      The sum is divided by 10.
-//      The remaining digit is the check digit.
-//      Example: IMO 9074729 (Pacific Frontier, Hong Kong)
-//      9 - 0 - 7 - 4 - 7 - 2 - 9
-//      7 - 6 - 5 - 4 - 3 - 2   ^ check digit
-//      63+0+35+16+21+4=139
-//      MOD(139,10) = 9 => This IMO is valid.
-
         LOG.info( "Validating IMO: {}", imo );
 
         boolean valid = ( Long.toString( imo ).length() == 7 );
@@ -339,6 +348,43 @@ public abstract class AISMessageBase implements AISMessage {
                     break;
             }
         }
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 19 * hash + Objects.hashCode( this._source );
+        return hash;
+    }
+
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
+    public boolean equals( Object obj ) {
+        if( obj == null ) {
+            return false;
+        }
+        if( this == obj ) {
+            return true;
+        }
+        if( getClass() != obj.getClass() ) {
+            return false;
+        }
+        final AISMessageBase other = ( AISMessageBase ) obj;
+        if( !Objects.equals( this._source, other._source ) ) {
+            return false;
+        }
+        if( !Objects.equals( this._compositeMsg, other._compositeMsg ) ) {
+            return false;
+        }
+        return true;
     }
 
     /**

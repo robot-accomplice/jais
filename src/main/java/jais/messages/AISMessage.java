@@ -29,6 +29,18 @@ import org.joda.time.DateTime;
  * @author Jonathan Machen
  */
 public interface AISMessage {
+    
+    /**
+     * 
+     * @return 
+     */
+    public String getSource();
+    
+    /**
+     * 
+     * @param source 
+     */
+    public void setSource( String source );
 
     /**
      * 
