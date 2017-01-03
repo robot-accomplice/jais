@@ -23,7 +23,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -168,7 +167,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
 
                         while( selectedKeys.hasNext() ) {
                             SelectionKey key = ( SelectionKey ) selectedKeys.next();
-                            LOG.debug( "{} new Key: {} ({2})", _source, key, key.getClass() );
+                            LOG.trace( "{} new Key: {} ({2})", _source, key, key.getClass() );
                             selectedKeys.remove();
 
                             if( !key.isValid() ) {
@@ -242,41 +241,35 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
             // fill the buffer
             int numRead = _socketChannel.read( _readBuffer );
 
-            if( numRead == -1 ) {
-                key.channel().close();
-                key.cancel();
+            if( numRead < 0 ) {
+                LOG.warn( "{} - Channel has reached end of stream!", _source );
+                closeSocketChannel( _socketChannel );
             } else {
-                LOG.debug( "Read {} bytes...", numRead );
+                if( LOG.isTraceEnabled() ) {
+                    LOG.trace( "{} - Read {} bytes...", _source, numRead );
+                }
 
                 // process the contents of the buffer
                 for( int c : _readBuffer.array() ) {
-                    if( !_running ) {
-                        break;
+                    _sb.append( (char)c );
+                    String line = null;
+                    
+                    if( ( c == '\n' || c == '\r' ) && _sb.length() > 0 ) {
+                        line = _sb.toString();
+                    } else if( AISPacket.PREAMBLE_PATTERN.matcher( _sb ).find() ) {
+                        line = AISPacketQueueBuilder.truncate( _sb );
                     }
 
-                    try {
-                        Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( _sb );
-                        // new line + carriage return means end of packet
-                        if( c == '\n' || c == '\r' || m.find() ) {
-                            if( _sb.length() > 0 ) {
-                                String packetString = AISPacketQueueBuilder.getSubstring( _sb );
-
-                                if( packetString != null && !packetString.isEmpty() ) {
-                                    LOG.debug( "{} - Truncated String is: {}", _source, packetString );
-                                    _pktQueue.submit( new PacketBuilderWorkerThread( _pBuffer, packetString, _source ) );
-                                    _sb.delete( 0, packetString.length() );
-                                }
-                            }
-                        } else {
-                            _sb.append( ( char ) c );
+                    if( line == null ) {
+                        LOG.trace( "{} - Line was null!", _source );
+                    } else {
+                        line.trim();
+                        if( !line.isEmpty() ) {
+                            LOG.info( "{} - Received: {}", _source, line );
+                            _pktQueue.submit( new PacketBuilderWorkerThread( _pBuffer, line, _source ) );
+                            // +1 for index 0, + 1 for the character just added
+                            _sb.delete( 0, line.length() + 1 );
                         }
-                    } catch( BufferUnderflowException bue ) {
-                        // this should never happen
-                        LOG.fatal( bue.getMessage(), bue );
-                    } catch( NullPointerException npe ) {
-                        LOG.fatal( "NullPointerException: ", npe );
-                    } catch( Exception e ) {
-                        LOG.fatal( "Unanticipated fault: " + e.getMessage(), e );
                     }
                 }
 
@@ -284,19 +277,16 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
                     _sb.replace( 0, _sb.length(), _sb.toString().trim() );
                 }
 
-                LOG.debug( "{} leftovers: {}", _source, _sb );
+                LOG.debug( "{} - leftovers: {}", _source, _sb );
             }
+
         } catch( IOException ioe ) {
-            LOG.fatal( "{} !! IOException thrown.", _source );
-            LOG.debug( "{} - failed to read from buffer: {}", _source, ioe.getMessage(), ioe );
-            LOG.info( "{} cancelling key.", _source );
-            key.cancel();
-            LOG.info( "{} closing socket.", _source );
-            _socketChannel.close();
-            throw new IOException( ioe );
-        } finally {
-            // a bit paranoid, but no harm done
-            _readBuffer.clear();
+            LOG.warn( "{} - {}", _source, ioe.getMessage() );
+            closeSocketChannel( _socketChannel );
+            try {
+                Thread.sleep( 5000 );
+            } catch( InterruptedException ie ) {
+            }
         }
     }
 
@@ -305,9 +295,15 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
      * @param sb
      * @return
      */
-    public static String getSubstring( StringBuilder sb ) {
-        String substring = sb.substring( 0, AISPacketQueueBuilder.getTruncIndex( sb ) ).trim();
-
+    public static String truncate( StringBuilder sb ) {
+        int truncIndex = AISPacketQueueBuilder.getTruncIndex( sb );
+        String substring = null;
+        
+        if( truncIndex != -1 ) {
+            LOG.info( "Truncating: {}", sb );
+            substring = sb.substring( 0, truncIndex ).trim();
+        }
+        
         return substring;
     }
 
@@ -317,29 +313,26 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
      * @return
      */
     public static int getTruncIndex( StringBuilder sb ) {
-        int truncIndex;
+        int truncIndex = 0;
 
         LOG.debug( "Evaluating \"{}\" for truncation point.", sb );
 
         Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( sb.toString() );
-        m.find();
-        
-        if( m.groupCount() > 0 ) {
-            LOG.debug( "More than one occurence of preamble \"" + 
-                    AISPacket.PREAMBLE_PATTERN + "\" in string." );
-            truncIndex = sb.indexOf( m.group(2) );
-        } else if( sb.indexOf( "\n\r" ) > -1 ) {
-            LOG.debug( "String is terminated by a newline and carriage return" );
-            truncIndex = sb.indexOf( "\n\r" );
-        } else if( sb.indexOf( "\n" ) > -1 ) {
-            LOG.debug( "String is terminated by a newline" );
-            truncIndex = sb.indexOf( "\n" );
-        } else if( sb.indexOf( "\r" ) > -1 ) {
-            LOG.debug( "String is terminated by a carriage return" );
-            truncIndex = sb.indexOf( "\r" );
-        } else {
-            LOG.debug( "Line should not be truncated." );
-            truncIndex = sb.length();
+        if( m.find() ) {
+            if( m.groupCount() > AISPacket.PREAMBLE_GROUPS ) {
+                truncIndex = sb.indexOf( m.group(2) );
+                LOG.debug( "Truncating based on preamble" );
+                LOG.debug( "Matched string for index is: \"{}\"", m.group(2) );
+            } else if( sb.indexOf( "\n" ) > -1 ) {
+                LOG.debug( "String is terminated by a newline" );
+                truncIndex = sb.indexOf( "\n" );
+            } else if( sb.indexOf( "\r" ) > -1 ) {
+                LOG.debug( "String is terminated by a carriage return" );
+                truncIndex = sb.indexOf( "\r" );
+            } else {
+                LOG.debug( "Line should not be truncated." );
+                truncIndex = -1;
+            }
         }
 
         LOG.debug( "Truncation index set to {}", truncIndex );
@@ -349,19 +342,29 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
 
     /**
      *
+     * @param channel
+     */
+    protected void closeSocketChannel( SocketChannel channel ) {
+        try {
+            if( channel != null ) {
+                LOG.fatal( "{} - Closing connection to : {}", 
+                        _source, channel.getRemoteAddress() );
+                channel.close();
+            }
+        } catch( IOException ioe ) {
+            LOG.trace( ioe.getMessage(), ioe );
+        }
+    }
+    
+    /**
+     *
      */
     @Override
     public void close() {
         LOG.fatal( "{} - Closing AISPacketQueueBuilder...", _source );
         _running = false;
 
-        try {
-            LOG.fatal( "{} - Closing SocketChannel...", _source );
-            if( _socketChannel != null ) {
-                _socketChannel.close();
-            }
-        } catch( IOException ioe ) {
-        }
+        closeSocketChannel( _socketChannel );
 
         try {
             LOG.fatal( "{} - Closing SocketSelector...", _source );
