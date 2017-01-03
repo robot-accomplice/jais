@@ -47,8 +47,9 @@ public final class AISPacket {
     public final static double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
     public  final static double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
     
-    private final static String PREAMBLE = "([" + ENCAP_START + "|" + PARAM_START + "])([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
+    private final static String PREAMBLE = "([" + ENCAP_START + "|" + PARAM_START + "]{1})([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
     public final static Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
+    public static int PREAMBLE_GROUPS = 5;
 
     private Preamble _preamble;
     private String _rawPacket;
@@ -672,7 +673,7 @@ public final class AISPacket {
         public static Preamble parse( String rawPreamble ) {
             Preamble p = new Preamble( rawPreamble );
             
-            LOG.fatal( "Parsing {}" + rawPreamble );
+            LOG.fatal( "Parsing {}", rawPreamble );
             Matcher m = PREAMBLE_PATTERN.matcher( rawPreamble );
             if( m.find() ) {
                 LOG.fatal( "Found {} matcher groups: {}=({})({})({})({})", m.groupCount(), m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ), m.group( 5 ) );
