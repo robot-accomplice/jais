@@ -110,7 +110,7 @@ public class AISDecoderTest {
      */
     private void processPackets( AISPacket... packets ) throws AISException {
 
-        AISMessageBase amb = ( AISMessageBase ) AISMessageFactory.create( packets );
+        AISMessageBase amb = ( AISMessageBase ) AISMessageFactory.create( "UnitTest", packets );
 
         if( amb == null ) {
             LOG.warn( "Factory returned a null message!  May be an unsupported message type." );

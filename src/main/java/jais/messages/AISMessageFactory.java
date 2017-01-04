@@ -36,12 +36,13 @@ public class AISMessageFactory {
 
     /**
      *
+     * @param source
      * @param strict
      * @param packets
      * @return
      * @throws jais.exceptions.AISException
      */
-    public static AISMessage create( boolean strict, AISPacket... packets ) throws AISException {
+    public static AISMessage create( String source, boolean strict, AISPacket... packets ) throws AISException {
         AISMessage message = null;
 
         String compositeMsg = new String();
@@ -54,7 +55,7 @@ public class AISMessageFactory {
                 }
             }
 
-            LOG.fatal( "Composite String is: {}", compositeMsg );
+            LOG.debug( "Composite String is: {}", compositeMsg );
             BitSet bits = AISMessageDecoder.stringToBitSet( compositeMsg );
 
             // we need the message type in order to invoke the reflective constructor
@@ -74,6 +75,7 @@ public class AISMessageFactory {
                 }
 
                 message.setType( mType );
+                message.setSource( source );
                 while( message.hasSubType() ) {
                     message = message.getSubTypeInstance();
                 }
@@ -102,50 +104,54 @@ public class AISMessageFactory {
 
     /**
      *
+     * @param source
      * @param packets
      * @return
      * @throws jais.exceptions.AISException
      */
-    public static AISMessage create( AISPacket... packets ) throws AISException {
-        return create( true, packets );
+    public static AISMessage create( String source, AISPacket... packets ) throws AISException {
+        return create( source, true, packets );
     }
 
     /**
      *
+     * @param source
      * @param packetStrings
      * @return
      * @throws AISException
      */
-    public static AISMessage create( String... packetStrings ) throws AISException {
-        return create( true, packetStrings );
+    public static AISMessage create( String source, String... packetStrings ) throws AISException {
+        return create( source, true, packetStrings );
     }
 
     /**
      *
+     * @param source
      * @param strict
      * @param packetStrings
      * @return
      * @throws AISException
      */
-    public static AISMessage create( boolean strict, String... packetStrings ) throws AISException {
+    public static AISMessage create( String source, boolean strict, String... packetStrings ) throws AISException {
         AISPacket[] packets = new AISPacket[packetStrings.length];
 
         for( int i = 0; i < packetStrings.length; i++ ) {
             packets[i] = new AISPacket( packetStrings[i] );
         }
 
-        return create( strict, packets );
+        return create( source, strict, packets );
     }
 
     /**
      * 
+     * @param source
      * @param packets
      * @return 
      * @throws jais.exceptions.AISException 
      */
-    public static AISMessage create( List<AISPacket> packets ) throws AISException {
+    public static AISMessage create( String source, List<AISPacket> packets ) throws AISException {
         AISPacket [] packetArray = new AISPacket[ packets.size() ];
         packets.toArray( packetArray );
-        return create( packetArray );
+        return create( source, packetArray );
     }
 }

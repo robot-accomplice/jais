@@ -89,7 +89,7 @@ public class ConsoleController implements Initializable {
             }
             appendLineToOutput( "---------------------------------------------" );
             
-            AISMessage msg = AISMessageFactory.create( packets );
+            AISMessage msg = AISMessageFactory.create( "Console", packets );
             if( msg != null ) {
                 // from AISMessageBase
                 appendLineToOutput( "Type   : " + msg.getType() );

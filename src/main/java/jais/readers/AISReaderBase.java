@@ -121,7 +121,7 @@ public abstract class AISReaderBase extends Observable implements AISReader {
                         LOG.debug( "Processing a message with {} fragments.",
                                 packets.length );
 
-                        AISMessage message = AISMessageFactory.create( packets );
+                        AISMessage message = AISMessageFactory.create( _source, packets );
 
                         // send message to observers
                         super.setChanged();
