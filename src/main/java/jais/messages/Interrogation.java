@@ -43,19 +43,21 @@ public class Interrogation extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      */
-    public Interrogation( AISPacket... packets ) {
-        super( packets );
+    public Interrogation( String source, AISPacket... packets ) {
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param type
      * @param packets
      */
-    public Interrogation( AISMessageType type, AISPacket... packets ) {
-        super( type, packets );
+    public Interrogation( String source, AISMessageType type, AISPacket... packets ) {
+        super( source, type, packets );
     }
 
     /**

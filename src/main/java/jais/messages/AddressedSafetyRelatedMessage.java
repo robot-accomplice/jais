@@ -33,20 +33,22 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
     
     /**
      * 
+     * @param source
      * @param packets 
      * @throws jais.exceptions.AISException 
      */
-    public AddressedSafetyRelatedMessage( AISPacket... packets ) throws AISException {
-        super( packets );
+    public AddressedSafetyRelatedMessage( String source, AISPacket... packets ) throws AISException {
+        super( source, packets );
     }
     
     /**
      * 
+     * @param source
      * @param messageType
      * @param packets 
      */
-    public AddressedSafetyRelatedMessage( AISMessageType messageType, AISPacket... packets ) {
-        super( messageType, packets );
+    public AddressedSafetyRelatedMessage( String source, AISMessageType messageType, AISPacket... packets ) {
+        super( source, messageType, packets );
     }
 
     /**

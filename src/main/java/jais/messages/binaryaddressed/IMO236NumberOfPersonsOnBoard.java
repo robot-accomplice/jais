@@ -38,12 +38,13 @@ public class IMO236NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO236NumberOfPersonsOnBoard( AISPacket... packets )
+    public IMO236NumberOfPersonsOnBoard( String source, AISPacket... packets )
             throws AISException {
-        super( BinaryAddressedMessageType.NUMBER_OF_PERSONS_ON_BOARD_DEPRECATED,
+        super( source, BinaryAddressedMessageType.NUMBER_OF_PERSONS_ON_BOARD_DEPRECATED,
                 packets );
     }
 

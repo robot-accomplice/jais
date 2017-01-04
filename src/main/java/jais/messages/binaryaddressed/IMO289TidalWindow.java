@@ -35,12 +35,13 @@ public class IMO289TidalWindow extends BinaryAddressedMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO289TidalWindow( AISPacket... packets )
+    public IMO289TidalWindow( String source, AISPacket... packets )
             throws AISException {
-        super( BinaryAddressedMessageType.TIDAL_WINDOW, packets );
+        super( source, BinaryAddressedMessageType.TIDAL_WINDOW, packets );
     }
 
     /**

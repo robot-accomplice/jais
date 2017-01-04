@@ -39,20 +39,22 @@ public class BinaryAcknowledge extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public BinaryAcknowledge( AISPacket... packets ) throws AISException {
-        super( packets );
+    public BinaryAcknowledge( String source, AISPacket... packets ) throws AISException {
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param messageType
      * @param packets
      */
-    public BinaryAcknowledge( AISMessageType messageType, AISPacket... packets ) {
-        super( messageType, packets );
+    public BinaryAcknowledge( String source, AISMessageType messageType, AISPacket... packets ) {
+        super( source, messageType, packets );
     }
 
     /**

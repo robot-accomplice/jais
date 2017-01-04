@@ -16,6 +16,7 @@
 
 package jais.messages.binarybroadcast;
 
+import jais.AISPacket;
 import jais.messages.BinaryBroadcastMessageBase;
 import jais.messages.enums.BinaryBroadcastMessageType;
 
@@ -24,6 +25,15 @@ import jais.messages.enums.BinaryBroadcastMessageType;
  * @author Jonathan Machen
  */
 public class FairwayClosed extends BinaryBroadcastMessageBase {
+
+    /**
+     * 
+     * @param source
+     * @param packets 
+     */
+    public FairwayClosed( String source, AISPacket... packets ) {
+        super( source, packets );
+    }
 
     /**
      * 

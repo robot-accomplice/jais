@@ -29,8 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class AssignmentModeCommand extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger(
-            AssignmentModeCommand.class );
+    private final static Logger LOG = LogManager.getLogger( AssignmentModeCommand.class );
 
     private int _mmsi1;
     private int _offset1;
@@ -41,19 +40,21 @@ public class AssignmentModeCommand extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      */
-    public AssignmentModeCommand( AISPacket... packets ) {
-        super( packets );
+    public AssignmentModeCommand( String source, AISPacket... packets ) {
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param type
      * @param packets
      */
-    public AssignmentModeCommand( AISMessageType type, AISPacket... packets ) {
-        super( type, packets );
+    public AssignmentModeCommand( String source, AISMessageType type, AISPacket... packets ) {
+        super( source, type, packets );
     }
 
     /**

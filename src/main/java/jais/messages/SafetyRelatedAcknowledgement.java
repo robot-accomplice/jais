@@ -39,20 +39,22 @@ public class SafetyRelatedAcknowledgement extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public SafetyRelatedAcknowledgement( AISPacket... packets ) throws AISException {
-        super( packets );
+    public SafetyRelatedAcknowledgement( String source, AISPacket... packets ) throws AISException {
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param messageType
      * @param packets
      */
-    public SafetyRelatedAcknowledgement( AISMessageType messageType, AISPacket... packets ) {
-        super( messageType, packets );
+    public SafetyRelatedAcknowledgement( String source, AISMessageType messageType, AISPacket... packets ) {
+        super( source, messageType, packets );
     }
 
     /**

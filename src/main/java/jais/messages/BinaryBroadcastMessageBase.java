@@ -40,19 +40,21 @@ public abstract class BinaryBroadcastMessageBase extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      */
-    public BinaryBroadcastMessageBase( AISPacket... packets ) {
-        super( packets );
+    public BinaryBroadcastMessageBase( String source, AISPacket... packets ) {
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param messageType
      * @param packets
      */
-    public BinaryBroadcastMessageBase( AISMessageType messageType, AISPacket... packets ) {
-        super( messageType, packets );
+    public BinaryBroadcastMessageBase( String source, AISMessageType messageType, AISPacket... packets ) {
+        super( source, messageType, packets );
     }
 
     /**

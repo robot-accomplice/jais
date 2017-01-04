@@ -49,19 +49,21 @@ public class ChannelManagement extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      */
-    public ChannelManagement( AISPacket... packets ) {
-        super( packets );
+    public ChannelManagement( String source, AISPacket... packets ) {
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param type
      * @param packets
      */
-    public ChannelManagement( AISMessageType type, AISPacket... packets ) {
-        super( type, packets );
+    public ChannelManagement( String source, AISMessageType type, AISPacket... packets ) {
+        super( source, type, packets );
     }
 
     /**

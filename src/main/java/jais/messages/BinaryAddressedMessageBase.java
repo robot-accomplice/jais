@@ -32,8 +32,7 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class BinaryAddressedMessageBase extends AISMessageBase {
 
-    private final static Logger LOG = LogManager
-            .getLogger( BinaryAddressedMessageBase.class );
+    private final static Logger LOG = LogManager.getLogger( BinaryAddressedMessageBase.class );
 
     private int _seqno;
     private int _destMmsi;
@@ -45,22 +44,24 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public BinaryAddressedMessageBase( AISPacket... packets ) throws AISException {
-        super( AISMessageType.BINARY_ADDRESSED_MESSAGE, packets );
+    public BinaryAddressedMessageBase( String source, AISPacket... packets ) throws AISException {
+        super( source, AISMessageType.BINARY_ADDRESSED_MESSAGE, packets );
     }
 
     /**
      *
+     * @param source
      * @param subType
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public BinaryAddressedMessageBase( BinaryAddressedMessageType subType, AISPacket... packets )
+    public BinaryAddressedMessageBase( String source, BinaryAddressedMessageType subType, AISPacket... packets )
             throws AISException {
-        this( packets );
+        this( source, packets );
         _subType = subType;
     }
 

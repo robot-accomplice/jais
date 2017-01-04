@@ -39,12 +39,13 @@ public class IMO289TextDescription extends BinaryAddressedMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO289TextDescription( AISPacket... packets )
+    public IMO289TextDescription( String source, AISPacket... packets )
             throws AISException {
-        super( BinaryAddressedMessageType.TEXT_DESCRIPTION, packets );
+        super( source, BinaryAddressedMessageType.TEXT_DESCRIPTION, packets );
     }
 
     /**

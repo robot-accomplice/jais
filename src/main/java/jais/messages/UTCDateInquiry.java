@@ -31,20 +31,22 @@ public class UTCDateInquiry extends AISMessageBase {
     
     /**
      * 
+     * @param source
      * @param packets 
      * @throws jais.exceptions.AISException 
      */
-    public UTCDateInquiry( AISPacket... packets ) throws AISException {
-        super( packets );
+    public UTCDateInquiry( String source, AISPacket... packets ) throws AISException {
+        super( source, packets );
     }
     
     /**
      * 
+     * @param source
      * @param messageType
      * @param packets 
      */
-    public UTCDateInquiry( AISMessageType messageType, AISPacket... packets ) {
-        super( messageType, packets );
+    public UTCDateInquiry( String source, AISMessageType messageType, AISPacket... packets ) {
+        super( source, messageType, packets );
     }
 
     /**

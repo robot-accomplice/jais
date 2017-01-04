@@ -36,7 +36,7 @@ public class Vessel {
     private final static Logger LOG = LogManager.getLogger( Vessel.class );
 
     private int _mmsi;
-    private String _site;
+    private String _source;
     private int _version;
     private int _imo;
     private String _callsign;
@@ -135,6 +135,7 @@ public class Vessel {
         _turn = prb.getTurn();
         _accurate = prb.isAccurate();
         _raim = prb.isRaim();
+        _source = prb.getSource();
     }
 
     /**
@@ -162,6 +163,7 @@ public class Vessel {
         _toStarboard = savrd.getToStarboard();
         _toStern = savrd.getToStern();
         _version = savrd.getVersion();
+        _source = savrd.getSource();
     }
 
     /**
@@ -183,6 +185,7 @@ public class Vessel {
         _turn = prb.getTurn();
         _accurate = prb.isAccurate();
         _raim = prb.isRaim();
+        _source = prb.getSource();
     }
 
     /**
@@ -208,6 +211,7 @@ public class Vessel {
         _toStarboard = savrd.getToStarboard();
         _toStern = savrd.getToStern();
         _version = savrd.getVersion();
+        _source = savrd.getSource();
     }
 
     /**
@@ -244,7 +248,7 @@ public class Vessel {
         clone._second = _second;
         clone._shipname = _shipname;
         clone._shiptype = _shiptype;
-        clone._site = _site;
+        clone._source = _source;
         clone._speed = _speed;
         clone._status = _status;
         clone._timeReceived = _timeReceived;
@@ -268,18 +272,18 @@ public class Vessel {
 
     /**
      *
-     * @param site
+     * @param source
      */
-    public void setSite( String site ) {
-        _site = site;
+    public void setSource( String source ) {
+        _source = source;
     }
 
     /**
      *
      * @return
      */
-    public String getSite() {
-        return _site;
+    public String getSource() {
+        return _source;
     }
 
     /**
@@ -683,7 +687,7 @@ public class Vessel {
         if( _radio != other.getRadio() ) {
             return false;
         }
-        if( !Objects.equals( _site, other.getSite() ) ) {
+        if( !Objects.equals( _source, other.getSource() ) ) {
             return false;
         }
         if( !Objects.equals( _callsign, other.getCallsign() ) ) {
@@ -699,5 +703,64 @@ public class Vessel {
             return false;
         }
         return Objects.equals( _timeReceived, other.getTimeReceived() );
+    }
+    
+    /**
+     * 
+     */
+    public static class Identifier {
+        
+        private final int _mmsi;
+        private final String _source;
+        
+        /**
+         * 
+         * @param mmsi
+         * @param source 
+         */
+        public Identifier( int mmsi, String source ) {
+            _mmsi = mmsi;
+            _source = source;
+        }
+
+        /**
+         *
+         * @return
+         */
+        public int getMmsi() {
+            return _mmsi;
+        }
+
+        /**
+         *
+         * @return
+         */
+        public String getSource() {
+            return _source;
+        }
+
+        /**
+         *
+         * @param o
+         * @return
+         */
+        @Override
+        public boolean equals( Object o ) {
+            if( o == null ) return false;
+            if( !( o instanceof Identifier ) ) return false;
+            Identifier id = ( Identifier )o;
+            return ( id.getMmsi() == _mmsi && id.getSource().equals( _source ) );
+        }
+
+        /**
+         * 
+         * @return 
+         */
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            hash = 67 * hash + this._mmsi;
+            return hash;
+        }        
     }
 }

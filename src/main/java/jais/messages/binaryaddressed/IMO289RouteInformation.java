@@ -35,12 +35,13 @@ public class IMO289RouteInformation extends BinaryAddressedMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO289RouteInformation( AISPacket... packets )
+    public IMO289RouteInformation( String source, AISPacket... packets )
             throws AISException {
-        super( BinaryAddressedMessageType.ROUTE_INFORMATION, packets );
+        super( source, BinaryAddressedMessageType.ROUTE_INFORMATION, packets );
     }
 
     /**

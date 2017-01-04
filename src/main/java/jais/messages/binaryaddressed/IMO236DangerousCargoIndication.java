@@ -53,12 +53,13 @@ public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO236DangerousCargoIndication( AISPacket... packets )
+    public IMO236DangerousCargoIndication( String source, AISPacket... packets )
             throws AISException {
-        super( BinaryAddressedMessageType.DANGEROUS_CARGO_INDICATION_DEPRECATED,
+        super( source, BinaryAddressedMessageType.DANGEROUS_CARGO_INDICATION_DEPRECATED,
                 packets );
     }
 

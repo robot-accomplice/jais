@@ -28,10 +28,11 @@ public class PositionReportClassA extends PositionReportBase {
 
     /**
      * 
+     * @param source
      * @param aisPackets 
      * @throws jais.exceptions.AISException 
      */
-    public PositionReportClassA( AISPacket... aisPackets ) throws AISException {
-        super( AISMessageType.POSITION_REPORT_CLASS_A, aisPackets );
+    public PositionReportClassA( String source, AISPacket... aisPackets ) throws AISException {
+        super( source, AISMessageType.POSITION_REPORT_CLASS_A, aisPackets );
     }
 }

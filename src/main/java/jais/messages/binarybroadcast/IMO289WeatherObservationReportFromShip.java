@@ -16,6 +16,7 @@
 
 package jais.messages.binarybroadcast;
 
+import jais.AISPacket;
 import jais.messages.BinaryBroadcastMessageBase;
 import jais.messages.enums.BinaryBroadcastMessageType;
 
@@ -25,6 +26,15 @@ import jais.messages.enums.BinaryBroadcastMessageType;
  */
 public class IMO289WeatherObservationReportFromShip 
         extends BinaryBroadcastMessageBase {
+
+    /**
+     * 
+     * @param source
+     * @param packets 
+     */
+    public IMO289WeatherObservationReportFromShip( String source, AISPacket... packets ) {
+        super( source, packets );
+    }
 
     /**
      * 

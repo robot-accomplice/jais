@@ -55,19 +55,21 @@ public class AidToNavigationReport extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      */
-    public AidToNavigationReport( AISPacket... packets ) {
-        super( packets );
+    public AidToNavigationReport( String source, AISPacket... packets ) {
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param type
      * @param packets
      */
-    public AidToNavigationReport( AISMessageType type, AISPacket... packets ) {
-        super( type, packets );
+    public AidToNavigationReport( String source, AISMessageType type, AISPacket... packets ) {
+        super( source, type, packets );
     }
 
     /**

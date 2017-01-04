@@ -45,19 +45,21 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
     
     /**
      *
+     * @param source
      * @param packets
      */
-    public LongRangeAISBroadcastMessage( AISPacket... packets ) {
-        super( packets );
+    public LongRangeAISBroadcastMessage( String source, AISPacket... packets ) {
+        super( source, packets );
     }
     
     /**
      * 
+     * @param source
      * @param type
      * @param packets 
      */
-    public LongRangeAISBroadcastMessage( AISMessageType type, AISPacket... packets ) {
-        super( type, packets );
+    public LongRangeAISBroadcastMessage( String source, AISMessageType type, AISPacket... packets ) {
+        super( source, type, packets );
     }
 
     /**

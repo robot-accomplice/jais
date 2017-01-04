@@ -54,19 +54,23 @@ public abstract class AISMessageBase implements AISMessage {
     protected Map<String, Object> _decodedFieldMap = new HashMap<>();
 
     /**
-     *
-     * @param packets
+     * 
+     * @param source
+     * @param packets 
      */
-    public AISMessageBase( AISPacket... packets ) {
+    public AISMessageBase( String source, AISPacket... packets ) {
+        _source = source;
         _packets = packets;
     }
-
+    
     /**
-     *
+     * 
+     * @param source
      * @param messageType
-     * @param packets
+     * @param packets 
      */
-    public AISMessageBase( AISMessageType messageType, AISPacket... packets ) {
+    public AISMessageBase( String source, AISMessageType messageType, AISPacket... packets ) {
+        _source = source;
         _messageType = messageType;
         _packets = packets;
     }

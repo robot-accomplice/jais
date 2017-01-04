@@ -49,19 +49,21 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      */
-    public BaseStationReport( AISPacket... packets ) {
-        super( packets );
+    public BaseStationReport( String source, AISPacket... packets ) {
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param type
      * @param packets
      */
-    public BaseStationReport( AISMessageType type, AISPacket... packets ) {
-        super( type, packets );
+    public BaseStationReport( String source, AISMessageType type, AISPacket... packets ) {
+        super( source, type, packets );
     }
 
     /**

@@ -28,11 +28,12 @@ public class PositionReportClassAAssignedSchedule extends PositionReportBase {
 
     /**
      * 
+     * @param source
      * @param aisPackets 
      * @throws jais.exceptions.AISException 
      */
-    public PositionReportClassAAssignedSchedule( AISPacket... aisPackets ) 
+    public PositionReportClassAAssignedSchedule( String source, AISPacket... aisPackets ) 
             throws AISException {
-        super( AISMessageType.POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE, aisPackets );
+        super( source, AISMessageType.POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE, aisPackets );
     }
 }

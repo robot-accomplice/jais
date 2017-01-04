@@ -60,19 +60,21 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      */
-    public StaticAndVoyageRelatedData( AISPacket... packets ) {
-        super( packets );
+    public StaticAndVoyageRelatedData( String source, AISPacket... packets ) {
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param type
      * @param packets
      */
-    public StaticAndVoyageRelatedData( AISMessageType type, AISPacket... packets ) {
-        super( type, packets );
+    public StaticAndVoyageRelatedData( String source, AISMessageType type, AISPacket... packets ) {
+        super( source, type, packets );
     }
 
     /**

@@ -55,19 +55,21 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
     
     /**
      *
+     * @param source
      * @param packets
      */
-    public ExtendedClassBCSPositionReport( AISPacket... packets ) {
-        super( packets );
+    public ExtendedClassBCSPositionReport( String source, AISPacket... packets ) {
+        super( source, packets );
     }
     
     /**
      * 
+     * @param source
      * @param type
      * @param packets 
      */
-    public ExtendedClassBCSPositionReport( AISMessageType type, AISPacket... packets ) {
-        super( type, packets );
+    public ExtendedClassBCSPositionReport( String source, AISMessageType type, AISPacket... packets ) {
+        super( source, type, packets );
     }
 
     /**

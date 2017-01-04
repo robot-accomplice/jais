@@ -43,19 +43,21 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      */
-    public MultipleSlotBinaryMessage( AISPacket... packets ) {
-        super( packets );
+    public MultipleSlotBinaryMessage( String source, AISPacket... packets ) {
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param type
      * @param packets
      */
-    public MultipleSlotBinaryMessage( AISMessageType type, AISPacket... packets ) {
-        super( type, packets );
+    public MultipleSlotBinaryMessage( String source, AISMessageType type, AISPacket... packets ) {
+        super( source, type, packets );
     }
 
     /**

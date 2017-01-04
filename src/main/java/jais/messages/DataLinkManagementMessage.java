@@ -51,19 +51,21 @@ public class DataLinkManagementMessage extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      */
-    public DataLinkManagementMessage( AISPacket... packets ) {
-        super( packets );
+    public DataLinkManagementMessage( String source, AISPacket... packets ) {
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param type
      * @param packets
      */
-    public DataLinkManagementMessage( AISMessageType type, AISPacket... packets ) {
-        super( type, packets );
+    public DataLinkManagementMessage( String source, AISMessageType type, AISPacket... packets ) {
+        super( source, type, packets );
     }
 
     /**

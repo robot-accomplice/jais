@@ -47,22 +47,24 @@ public class StandardSARAircraftPositionReport extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public StandardSARAircraftPositionReport( AISPacket... packets )
+    public StandardSARAircraftPositionReport( String source, AISPacket... packets )
             throws AISException {
-        super( packets );
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param messageType
      * @param packets
      */
-    public StandardSARAircraftPositionReport( AISMessageType messageType,
+    public StandardSARAircraftPositionReport( String source, AISMessageType messageType,
             AISPacket... packets ) {
-        super( messageType, packets );
+        super( source, messageType, packets );
     }
 
     /**

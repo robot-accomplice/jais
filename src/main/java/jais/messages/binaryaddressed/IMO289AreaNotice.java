@@ -35,12 +35,13 @@ public class IMO289AreaNotice extends BinaryAddressedMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO289AreaNotice( AISPacket... packets )
+    public IMO289AreaNotice( String source, AISPacket... packets )
             throws AISException {
-        super( BinaryAddressedMessageType.AREA_NOTICE, packets );
+        super( source, BinaryAddressedMessageType.AREA_NOTICE, packets );
     }
 
     /**

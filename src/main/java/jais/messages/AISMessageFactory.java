@@ -63,14 +63,14 @@ public class AISMessageFactory {
             if( mType != null ) {
                 LOG.debug( "Creating a new {} instance.", mType.getDescription() );
 
-                Constructor con = mType.getMessageClass().getDeclaredConstructor( AISPacket[].class );
+                Constructor con = mType.getMessageClass().getDeclaredConstructor( String.class, AISPacket[].class );
                 con.setAccessible( true );
 
                 // reflection won't work properly for singletons if we don't do this
                 if( packets.length == 1 ) {
-                    message = ( AISMessage ) con.newInstance( ( Object ) packets );
+                    message = ( AISMessage ) con.newInstance( ( Object )source, ( Object ) packets );
                 } else {
-                    message = ( AISMessage ) con.newInstance( new Object[]{ packets } );
+                    message = ( AISMessage ) con.newInstance( source, packets );
                 }
 
                 message.setType( mType );

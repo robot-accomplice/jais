@@ -48,19 +48,21 @@ public class GroupAssignmentCommand extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      */
-    public GroupAssignmentCommand( AISPacket... packets ) {
-        super( packets );
+    public GroupAssignmentCommand( String source, AISPacket... packets ) {
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param type
      * @param packets
      */
-    public GroupAssignmentCommand( AISMessageType type, AISPacket... packets ) {
-        super( type, packets );
+    public GroupAssignmentCommand( String source, AISMessageType type, AISPacket... packets ) {
+        super( source, type, packets );
     }
 
     /**

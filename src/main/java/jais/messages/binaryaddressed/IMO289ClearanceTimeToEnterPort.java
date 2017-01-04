@@ -47,12 +47,13 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO289ClearanceTimeToEnterPort( AISPacket... packets )
+    public IMO289ClearanceTimeToEnterPort( String source, AISPacket... packets )
             throws AISException {
-        super( BinaryAddressedMessageType.CLEARANCE_TIME_TO_ENTER_PORT, packets );
+        super( source, BinaryAddressedMessageType.CLEARANCE_TIME_TO_ENTER_PORT, packets );
     }
 
     /**

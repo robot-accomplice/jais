@@ -40,19 +40,21 @@ public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
 
     /**
      *
+     * @param source
      * @param packets
      */
-    public DGNSSBroadcastBinaryMessage( AISPacket... packets ) {
-        super( packets );
+    public DGNSSBroadcastBinaryMessage( String source, AISPacket... packets ) {
+        super( source, packets );
     }
 
     /**
      *
+     * @param source
      * @param type
      * @param packets
      */
-    public DGNSSBroadcastBinaryMessage( AISMessageType type, AISPacket... packets ) {
-        super( type, packets );
+    public DGNSSBroadcastBinaryMessage( String source, AISMessageType type, AISPacket... packets ) {
+        super( source, type, packets );
     }
 
     /**
