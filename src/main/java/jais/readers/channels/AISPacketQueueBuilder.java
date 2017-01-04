@@ -263,12 +263,12 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
                     if( line == null ) {
                         LOG.trace( "{} - Line was null!", _source );
                     } else {
-                        line.trim();
+                        line = line.trim();
                         if( !line.isEmpty() ) {
                             LOG.info( "{} - Received: {}", _source, line );
                             _pktQueue.submit( new PacketBuilderWorkerThread( _pBuffer, line, _source ) );
                             // +1 for index 0, + 1 for the character just added
-                            _sb.delete( 0, line.length() + 1 );
+                            _sb.delete( 0, line.length() + 2 );
                         }
                     }
                 }
@@ -300,7 +300,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
         String substring = null;
         
         if( truncIndex != -1 ) {
-            LOG.info( "Truncating: {}", sb );
+            LOG.debug( "Truncating: {}", sb );
             substring = sb.substring( 0, truncIndex ).trim();
         }
         
