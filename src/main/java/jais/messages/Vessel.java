@@ -185,7 +185,6 @@ public class Vessel {
         _turn = prb.getTurn();
         _accurate = prb.isAccurate();
         _raim = prb.isRaim();
-        _source = prb.getSource();
     }
 
     /**
@@ -211,7 +210,6 @@ public class Vessel {
         _toStarboard = savrd.getToStarboard();
         _toStern = savrd.getToStern();
         _version = savrd.getVersion();
-        _source = savrd.getSource();
     }
 
     /**
