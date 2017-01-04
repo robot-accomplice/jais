@@ -46,18 +46,18 @@ public class AISMessageDecoder {
     public static BitSet stringToBitSet( String rawMessage ) {
 
         char[] msgChars = rawMessage.toCharArray();
-        LOG.fatal( "8 bit char array is {} bytes long.", msgChars.length );
+        LOG.debug( "8 bit char array is {} bytes long.", msgChars.length );
 
         BitSet bits = new BitSet( 6 * msgChars.length );
         //boolean out[] = new boolean[6 * in.length];
-        LOG.fatal( "6 bit boolean array is {} bits long.", bits.size() );
+        LOG.debug( "6 bit boolean array is {} bits long.", bits.size() );
 
         int bIndex = 0;
         for( char c : msgChars ) {
             try {
                 int oc = encodedToSixBitInt( c ); // pull the current raw message char
                 if( oc == -1 ) {
-                    LOG.fatal( "Invalid character:  '{}'", c );
+                    LOG.info( "Invalid character:  '{}'", c );
                     bits.clear();
                     break;
                 } else {
@@ -66,7 +66,7 @@ public class AISMessageDecoder {
                     }
                 }
             } catch( InvalidAISCharacterException iace ) {
-                LOG.fatal( "Encountered an invalid character (possible message padding?) : {}", iace.getMessage() );
+                LOG.info( "Encountered an invalid character (possible message padding?) : {}", iace.getMessage() );
             }
         }
 
@@ -227,7 +227,7 @@ public class AISMessageDecoder {
     public static AISMessageType decodeMessageType( BitSet bits )
             throws AISException {
 
-        LOG.fatal( "BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(), 
+        LOG.debug( "BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(), 
                 AISFieldMap.TYPE.getStartBit(), AISFieldMap.TYPE.getEndBit() );
         int typeId = decodeUnsignedInt( bits, AISFieldMap.TYPE.getStartBit(),
                 AISFieldMap.TYPE.getEndBit() );
