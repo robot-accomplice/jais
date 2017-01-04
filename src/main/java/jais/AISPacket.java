@@ -673,10 +673,10 @@ public final class AISPacket {
         public static Preamble parse( String rawPreamble ) {
             Preamble p = new Preamble( rawPreamble );
             
-            LOG.fatal( "Parsing {}", rawPreamble );
+            LOG.debug( "Parsing {}", rawPreamble );
             Matcher m = PREAMBLE_PATTERN.matcher( rawPreamble );
             if( m.find() ) {
-                LOG.fatal( "Found {} matcher groups: {}=({})({})({})({})", m.groupCount(), m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ), m.group( 5 ) );
+                LOG.debug( "Found {} matcher groups: {}=({})({})({})({})", m.groupCount(), m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ), m.group( 5 ) );
                 p.firstChar = m.group(1).charAt( 0 );
                 
                 if( p.firstChar == '!' ) {
@@ -684,7 +684,7 @@ public final class AISPacket {
                 } else if( m.group( 1 ).equals(  "$" ) ) {
                     p.isEncapsulated = false;
                 } else {
-                    LOG.fatal( "Unrecognized starting character in address field: {}", m.group(1) );
+                    LOG.info( "Unrecognized starting character in address field: {}", m.group(1) );
                     p.isEncapsulated = false;
                 }
                 
@@ -695,13 +695,13 @@ public final class AISPacket {
                     p.talker = Talkers.valueOf( m.group( 2 ).toUpperCase() );
                 } else {
                     p.talker = null;
-                    LOG.fatal( "Unrecognized/invalid talker type: {}", m.group( 2 ) );
+                    LOG.info( "Unrecognized/invalid talker type: {}", m.group( 2 ) );
                 }
                 
                 p.format = m.group(4);
                 p.isQuery = m.group( 5 ).equals( "Q" );
             } else {
-                LOG.fatal( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE );
+                LOG.warn( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE );
             }
             
             return p;
