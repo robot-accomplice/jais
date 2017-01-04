@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.messages;
 
 import jais.AISPacket;
@@ -71,7 +70,7 @@ public class AISMessageFactory {
                 if( packets.length == 1 ) {
                     message = ( AISMessage ) con.newInstance( ( Object ) packets );
                 } else {
-                    message = ( AISMessage ) con.newInstance( new Object[]{packets} );
+                    message = ( AISMessage ) con.newInstance( new Object[]{ packets } );
                 }
 
                 message.setType( mType );
@@ -115,13 +114,33 @@ public class AISMessageFactory {
 
     /**
      *
+     * @param packets
+     * @return
+     * @throws jais.exceptions.AISException
+     */
+    public static AISMessage create( AISPacket... packets ) throws AISException {
+        return create( "UNKNOWN", packets );
+    }
+
+    /**
+     *
      * @param source
      * @param packetStrings
      * @return
      * @throws AISException
      */
     public static AISMessage create( String source, String... packetStrings ) throws AISException {
-        return create( source, true, packetStrings );
+        return create( source, packetStrings );
+    }
+
+    /**
+     *
+     * @param packetStrings
+     * @return
+     * @throws AISException
+     */
+    public static AISMessage create( String... packetStrings ) throws AISException {
+        return create( "UNKNOWN", packetStrings );
     }
 
     /**
@@ -136,22 +155,43 @@ public class AISMessageFactory {
         AISPacket[] packets = new AISPacket[packetStrings.length];
 
         for( int i = 0; i < packetStrings.length; i++ ) {
-            packets[i] = new AISPacket( packetStrings[i] );
+            packets[i] = new AISPacket( packetStrings[i], source );
         }
 
         return create( source, strict, packets );
     }
 
     /**
-     * 
+     *
+     * @param strict
+     * @param packetStrings
+     * @return
+     * @throws AISException
+     */
+    public static AISMessage create( boolean strict, String... packetStrings ) throws AISException {
+        return create( "UNKNOWN", strict, packetStrings );
+    }
+
+    /**
+     *
      * @param source
      * @param packets
-     * @return 
-     * @throws jais.exceptions.AISException 
+     * @return
+     * @throws jais.exceptions.AISException
      */
     public static AISMessage create( String source, List<AISPacket> packets ) throws AISException {
-        AISPacket [] packetArray = new AISPacket[ packets.size() ];
+        AISPacket[] packetArray = new AISPacket[packets.size()];
         packets.toArray( packetArray );
         return create( source, packetArray );
+    }
+
+    /**
+     *
+     * @param packets
+     * @return
+     * @throws jais.exceptions.AISException
+     */
+    public static AISMessage create( List<AISPacket> packets ) throws AISException {
+        return create( "UNKNOWN", packets );
     }
 }
