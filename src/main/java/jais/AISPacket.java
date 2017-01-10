@@ -126,6 +126,7 @@ public final class AISPacket {
     }
     
     /**
+     * Fetch the preamble (e.g.  !AISVDM)
      * 
      * @return 
      */
@@ -136,6 +137,7 @@ public final class AISPacket {
     /**
      * validate the contents of the packet and break it into its constituent parts
      *
+     * @return 
      * @throws jais.exceptions.AISPacketException
      */
     public final AISPacket process() throws AISPacketException {
