@@ -5,6 +5,9 @@
  */
 package jais.messages.enums;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  *
  * @author vermi
@@ -101,6 +104,7 @@ public enum Talkers {
     ;
     
     public  final String description;
+    public final static Logger LOG = LogManager.getLogger( Talkers.class );
     
     /**
      * 
@@ -116,6 +120,13 @@ public enum Talkers {
      * @return 
      */
     public static boolean isValid( String code ) {
-        return ( Talkers.valueOf( code.toUpperCase() ) != null );
+        LOG.debug( "Checking validity of talker with code: \"{}\"", code );
+        if( code == null ) return false;
+ 
+        try {
+            return ( Talkers.valueOf( code ) != null );
+        } catch( IllegalArgumentException iae ) {
+            return false;
+        }
     }
 }
