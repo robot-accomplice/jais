@@ -268,7 +268,7 @@ public class AISDecoderTest {
         String packetString = TEST_PACKETS[0] + TEST_PACKETS[1];
         for( String ps : packetString.split( "!AIVD" ) ) {
             if( ps != null && !ps.isEmpty() ) {
-                ps = "!AIVD{}" + ps.trim();
+                ps = "!AIVDM" + ps.trim();
                 LOG.fatal( "Found packet to test: {}", ps );
                 try {
                     processPackets( new AISPacket( ps ) );
