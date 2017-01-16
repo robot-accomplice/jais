@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.messages;
 
 import jais.AISPacket;
@@ -161,7 +160,7 @@ public class AISMessageDecoder {
 
                 // double binPosValue to produce valid 
                 // binary position value as per binary math
-                binPosValue += binPosValue; 
+                binPosValue += binPosValue;
             }
             intValue = -( intValue + 1 );   // correct for dropped bit and add negative
         } else {
@@ -227,7 +226,10 @@ public class AISMessageDecoder {
     public static AISMessageType decodeMessageType( BitSet bits )
             throws AISException {
 
-        LOG.debug( "BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(), 
+        if( bits.size() < AISFieldMap.TYPE.getEndBit() ) {
+            throw new AISException( "BitSet is too short: " + bits.size() );
+        }
+        LOG.debug( "BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(),
                 AISFieldMap.TYPE.getStartBit(), AISFieldMap.TYPE.getEndBit() );
         int typeId = decodeUnsignedInt( bits, AISFieldMap.TYPE.getStartBit(),
                 AISFieldMap.TYPE.getEndBit() );
