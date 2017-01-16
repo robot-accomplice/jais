@@ -40,17 +40,19 @@ public final class AISPacket {
     private final static char PARAM_START = '$';
     private final static char CHECKSUM_DELIMITER = '*';
     private final static char FIELD_DELIMITER = ',';
-    private final static char TAG_DELIMITER = '\\';
     private final static char HEX_DELIMITER = '^';
     private final static char RESERVED_DELIMITER = '~';
     
     public final static double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
     public  final static double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
-    
-    private final static String PREAMBLE = "([" + ENCAP_START + "|" + PARAM_START + "]{1})([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
+
+    private final static String PREAMBLE = "([" + ENCAP_START + "|" + PARAM_START + 
+            "]{1})([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
     public final static Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
+    public final static Pattern PACKET_PATTERN = Pattern.compile( TagBlock.TAGBLOCK_STRING + PREAMBLE );
     public static int PREAMBLE_GROUPS = 5;
 
+    private TagBlock _tagblock;
     private Preamble _preamble;
     private String _rawPacket;
     private String _source;
@@ -133,6 +135,14 @@ public final class AISPacket {
     public final Preamble getPreamble() {
         return _preamble;
     }
+    
+    /**
+     * 
+     * @return 
+     */
+    public final TagBlock getTagblock() {
+        return _tagblock;
+    }
 
     /**
      * validate the contents of the packet and break it into its constituent parts
@@ -151,6 +161,21 @@ public final class AISPacket {
             LOG.debug( "Processing new raw packet: {}", _rawPacket );
         }
 
+        Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( _rawPacket );
+        if( m.find() ) {
+            String [] tb = AISPacket.fastSplit( _rawPacket, '!' );
+            try {
+                if( _source == null || _source.isEmpty() ) {
+                    _tagblock = TagBlock.parse( tb[0], _source );
+                } else {
+                    _tagblock = TagBlock.parse( tb[0] );
+                }
+            } catch( Throwable t ) {
+                LOG.debug( "Unable to parse TagBlock from {}", tb[0] );
+            }
+            _rawPacket = "!" + tb[1];
+        }
+        
         if( _packetParts == null ) {
             _packetParts = AISPacket.fastSplit( _rawPacket, FIELD_DELIMITER );
         }
@@ -281,11 +306,11 @@ public final class AISPacket {
 
     /**
      *
-     * @param genString
+     * @param sourceString
      * @return
      */
-    public final static String generateChecksum( String genString ) {
-        char[] buf = genString.toCharArray();
+    public final static String generateChecksum( String sourceString ) {
+        char[] buf = sourceString.toCharArray();
 
         int crc = 0;
 
@@ -299,7 +324,7 @@ public final class AISPacket {
             hexString = "0" + hexString;
         }
 
-        LOG.trace( "Generated CRC = {}", hexString );
+        LOG.trace( "Generated CRC = {}", hexString.toUpperCase() );
 
         return hexString;
     }
@@ -348,6 +373,15 @@ public final class AISPacket {
         return packet;
     }
 
+    /**
+     * 
+     * @param s
+     * @return 
+     */
+    public final static String [] fastSplit( String s ) {
+        return fastSplit( s, ',' );
+    }
+    
     /**
      * an alternative to String.split() which is a memory hog and performance donkey at scale
      * 
@@ -420,58 +454,36 @@ public final class AISPacket {
      *
      * @return
      */
-    public final String generateTAGBlockPacketString() {
-        return generateTAGBlockPacketString( _rawPacket, _source, _timeReceived );
+    public final String generateTagBlockPacketString() {
+        TagBlock tb = new TagBlock();
+        tb.setSource( _source );
+        tb.setTimestamp( _timeReceived.getMillis() );
+        return generateTagBlockPacketString( _rawPacket, tb );
     }
 
     /**
      *
-     * @param data
+     * @param text
      * @return
      */
-    public final String generateTAGBlockPacketString( String... data ) {
-        return generateTAGBlockPacketString( _rawPacket, _source, _timeReceived, data );
+    public final String generateTagBlockPacketString( String text ) {
+        TagBlock tb = new TagBlock();
+        tb.setSource( _source );
+        tb.setTimestamp( _timeReceived.getMillis() );
+        tb.setTextStr( text );
+        return generateTagBlockPacketString( _rawPacket, tb );
     }
 
     /**
-     *
+     * 
      * @param rawPacket
-     * @param source
-     * @param timeReceived
-     * @param data
-     * @return
+     * @param tb
+     * @return 
      */
-    public final static String generateTAGBlockPacketString( String rawPacket,
-            String source, DateTime timeReceived, String... data ) {
-        
-        // c unix time, positive int
-        // d destination, alphanumeric (<= 15 chars)
-        // g sentence grouping, numeric string (e.g. \g:1-1-1234 or \g:1-2-1234
-        // n line count, positive int
-        // r relative time, positive int
-        // s source id, alphanumeric (<= 15 chars)
-        // t text string
-
-        StringBuilder pktString = new StringBuilder();
-        pktString.append( "\\s:" ).append( source ).append( ",c:" ).append( timeReceived );
-
-        if( data.length > 0 ) {
-            for( String value : data ) {
-                if( value.length() > 80 ) {
-                    LOG.warn( "Data value is too long, skipping" );
-                } else if( value.contains( "!" ) || value.contains( "$" ) || value.contains( "~" ) ) {
-                    LOG.warn( "Data value contains unusable reserved characters" );
-                } else if( !value.isEmpty() ) {
-                    pktString.append( ",t:" ).append( value );
-                }
-            }
-        }
-
-        pktString.append( "*" ).append( generateChecksum( pktString.toString() ) ).append( "\\" ).append( rawPacket );
-
-        return pktString.toString();
+    public final static String generateTagBlockPacketString( String rawPacket, TagBlock tb ) {
+        return new StringBuilder( tb.toString() ).append( rawPacket ).toString();
     }
-
+    
     /**
      *
      * @return
@@ -622,6 +634,8 @@ public final class AISPacket {
      */
     public final HashMap<String, Object> toMap() {
         if( _packetMap.isEmpty() ) {
+            _packetMap.put( "tagblock", _tagblock );
+            _packetMap.put( "preamble", _preamble );
             _packetMap.put( "raw_message", _rawMessage );
             _packetMap.put( "raw_packet", _rawPacket );
             _packetMap.put( "time_received", _timeReceived );
