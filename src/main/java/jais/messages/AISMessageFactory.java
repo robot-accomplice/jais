@@ -55,10 +55,8 @@ public class AISMessageFactory {
             }
 
             LOG.debug( "Composite String is: {}", compositeMsg );
-            BitSet bits = AISMessageDecoder.stringToBitSet( compositeMsg );
-
             // we need the message type in order to invoke the reflective constructor
-            AISMessageType mType = AISMessageDecoder.decodeMessageType( bits );
+            AISMessageType mType = AISMessageDecoder.decodeMessageType( compositeMsg );
 
             if( mType != null ) {
                 LOG.debug( "Creating a new {} instance.", mType.getDescription() );
@@ -120,27 +118,6 @@ public class AISMessageFactory {
      */
     public static AISMessage create( AISPacket... packets ) throws AISException {
         return create( "UNKNOWN", packets );
-    }
-
-    /**
-     *
-     * @param source
-     * @param packetStrings
-     * @return
-     * @throws AISException
-     */
-    public static AISMessage create( String source, String... packetStrings ) throws AISException {
-        return create( source, packetStrings );
-    }
-
-    /**
-     *
-     * @param packetStrings
-     * @return
-     * @throws AISException
-     */
-    public static AISMessage create( String... packetStrings ) throws AISException {
-        return create( "UNKNOWN", packetStrings );
     }
 
     /**
