@@ -88,7 +88,8 @@ public class AISDecoderTest {
         "!AIVDM,1,1,,A,15MTbUgP00ISbCjA7e6P0?vB085K,0*52",
         "!AIVDM,1,1,,A,15MuH>PP00ISRgfA7K97`gvD0@6W,0*32",
         "!AIVDM,1,1,,A,15NHl8500pqSdR8A7jnq9oRF0<<P,0*38",
-        "!ABVDM,1,1,,A,34Ses01Oh8Jm?Ll;ERH<b1Gd0000,0*61"
+        "!ABVDM,1,1,,A,34Ses01Oh8Jm?Ll;ERH<b1Gd0000,0*61",
+        "\\g:1-2-73874,n:157036,s:r003669945,c:1241544035*4A\\!AIVDM,1,1,,B,15N4cJ`005Jrek0H@9n`DW5608EP,0*13"
     };
 
     private final static String[] TEST_COMPOUND_MESSAGE = {
@@ -251,6 +252,13 @@ public class AISDecoderTest {
         for( String newMessage : TEST_PACKETS ) {
             AISPacket packet = new AISPacket( newMessage.trim() );
             packet.process();
+            if( packet.getTagblock() != null ) {
+                LOG.fatal( "\n\n{}", newMessage );
+                LOG.fatal( "TagBlock: {}\n\n", packet.getTagblock().toString() );
+                // assert( false );
+            } else {
+                LOG.fatal( "TAGBLOCK is null" );
+            }
             processPackets( packet );
         }
 
