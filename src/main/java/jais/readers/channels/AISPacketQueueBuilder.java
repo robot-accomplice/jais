@@ -257,7 +257,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
                     if( ( c == '\n' || c == '\r' ) && _sb.length() > 0 ) {
                         line = _sb.toString();
                     } else if( AISPacket.PREAMBLE_PATTERN.matcher( _sb ).find() ) {
-                        line = AISPacketQueueBuilder.truncate( _sb );
+                        line = AISPacket.truncatePacket( _sb );
                     }
 
                     if( line == null ) {
@@ -288,56 +288,6 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
             } catch( InterruptedException ie ) {
             }
         }
-    }
-
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    public static String truncate( StringBuilder sb ) {
-        int truncIndex = AISPacketQueueBuilder.getTruncIndex( sb );
-        String substring = null;
-        
-        if( truncIndex != -1 ) {
-            LOG.debug( "Truncating: {}", sb );
-            substring = sb.substring( 0, truncIndex ).trim();
-        }
-        
-        return substring;
-    }
-
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    public static int getTruncIndex( StringBuilder sb ) {
-        int truncIndex = 0;
-
-        LOG.debug( "Evaluating \"{}\" for truncation point.", sb );
-
-        Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( sb.toString() );
-        if( m.find() ) {
-            if( m.groupCount() > AISPacket.PREAMBLE_GROUPS ) {
-                truncIndex = sb.indexOf( m.group(2) );
-                LOG.debug( "Truncating based on preamble" );
-                LOG.debug( "Matched string for index is: \"{}\"", m.group(2) );
-            } else if( sb.indexOf( "\n" ) > -1 ) {
-                LOG.debug( "String is terminated by a newline" );
-                truncIndex = sb.indexOf( "\n" );
-            } else if( sb.indexOf( "\r" ) > -1 ) {
-                LOG.debug( "String is terminated by a carriage return" );
-                truncIndex = sb.indexOf( "\r" );
-            } else {
-                LOG.debug( "Line should not be truncated." );
-                truncIndex = -1;
-            }
-        }
-
-        LOG.debug( "Truncation index set to {}", truncIndex );
-
-        return truncIndex;
     }
 
     /**
