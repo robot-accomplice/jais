@@ -601,6 +601,56 @@ public final class AISPacket {
 
     /**
      *
+     * @param sb
+     * @return
+     */
+    public static String truncatePacket( StringBuilder sb ) {
+        int truncIndex = AISPacket.getPacketTruncIndex( sb );
+        String substring = null;
+        
+        if( truncIndex != -1 ) {
+            LOG.debug( "Truncating: {}", sb );
+            substring = sb.substring( 0, truncIndex ).trim();
+        }
+        
+        return substring;
+    }
+
+    /**
+     *
+     * @param sb
+     * @return
+     */
+    public static int getPacketTruncIndex( StringBuilder sb ) {
+        int truncIndex = 0;
+
+        LOG.debug( "Evaluating \"{}\" for truncation point.", sb );
+
+        Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( sb.toString() );
+        if( m.find() ) {
+            if( m.groupCount() > AISPacket.PREAMBLE_GROUPS ) {
+                truncIndex = sb.indexOf( m.group(2) );
+                LOG.debug( "Truncating based on preamble" );
+                LOG.debug( "Matched string for index is: \"{}\"", m.group(2) );
+            } else if( sb.indexOf( "\n" ) > -1 ) {
+                LOG.debug( "String is terminated by a newline" );
+                truncIndex = sb.indexOf( "\n" );
+            } else if( sb.indexOf( "\r" ) > -1 ) {
+                LOG.debug( "String is terminated by a carriage return" );
+                truncIndex = sb.indexOf( "\r" );
+            } else {
+                LOG.debug( "Line should not be truncated." );
+                truncIndex = -1;
+            }
+        }
+
+        LOG.debug( "Truncation index set to {}", truncIndex );
+
+        return truncIndex;
+    }
+
+    /**
+     *
      * @param o
      * @return
      */
