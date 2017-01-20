@@ -624,27 +624,27 @@ public final class AISPacket {
     public static int getPacketTruncIndex( StringBuilder sb ) {
         int truncIndex = 0;
 
-        LOG.fatal( "Evaluating \"{}\" for truncation point.", sb );
+        LOG.debug( "Evaluating \"{}\" for truncation point.", sb );
 
         Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( sb.toString() );
         if( m.find() ) {
             if( sb.indexOf( "\n" ) > -1 ) {
-                LOG.fatal( "String is terminated by a newline" );
+                LOG.debug( "String is terminated by a newline" );
                 truncIndex = sb.indexOf( "\n" );
             } else if( sb.indexOf( "\r" ) > -1 ) {
-                LOG.fatal( "String is terminated by a carriage return" );
+                LOG.debug( "String is terminated by a carriage return" );
                 truncIndex = sb.indexOf( "\r" );
             } else if( m.find() ) {
                 truncIndex = sb.indexOf( m.group(0), 1 );
-                LOG.fatal( "Truncating based on preamble" );
+                LOG.debug( "Truncating based on preamble" );
                 LOG.debug( "Matched string for index is: \"{}\"", m.group(0) );
             } else {
-                LOG.fatal( "Line should not be truncated." );
+                LOG.debug( "Line should not be truncated." );
                 truncIndex = -1;
             }
         }
 
-        LOG.fatal( "Truncation index set to {}", truncIndex );
+        LOG.debug( "Truncation index set to {}", truncIndex );
 
         return truncIndex;
     }
