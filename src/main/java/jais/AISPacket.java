@@ -635,7 +635,7 @@ public final class AISPacket {
                 LOG.fatal( "String is terminated by a carriage return" );
                 truncIndex = sb.indexOf( "\r" );
             } else if( m.find() ) {
-                truncIndex = sb.indexOf( m.group(0) );
+                truncIndex = sb.indexOf( m.group(0), 1 );
                 LOG.fatal( "Truncating based on preamble" );
                 LOG.debug( "Matched string for index is: \"{}\"", m.group(0) );
             } else {
