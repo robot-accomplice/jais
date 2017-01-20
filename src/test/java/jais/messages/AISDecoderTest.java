@@ -89,6 +89,7 @@ public class AISDecoderTest {
         "!AIVDM,1,1,,A,15MuH>PP00ISRgfA7K97`gvD0@6W,0*32",
         "!AIVDM,1,1,,A,15NHl8500pqSdR8A7jnq9oRF0<<P,0*38",
         "!ABVDM,1,1,,A,34Ses01Oh8Jm?Ll;ERH<b1Gd0000,0*61",
+        "!AIVDM,1,1,,A,15NHl8500pqSdR8A7jnq9oRF0<<P,0*38!ABVDM,1,1,,A,34Ses01Oh8Jm?Ll;ERH<b1Gd0000,0*61",
         "\\g:1-2-73874,n:157036,s:r003669945,c:1241544035*4A\\!AIVDM,1,1,,B,15N4cJ`005Jrek0H@9n`DW5608EP,0*13"
     };
 
@@ -230,8 +231,10 @@ public class AISDecoderTest {
         for( String packetStr : TEST_PACKETS ) {
             LOG.fatal( "Validating packet: {}", packetStr );
             try {
-                LOG.fatal( "AISPacket.truncatePacket() produced: \"{}\"", AISPacket.truncatePacket( new StringBuilder( packetStr ) ) );
-                assertTrue( new AISPacket( packetStr ).isValid() );
+                String truncStr = AISPacket.truncatePacket( new StringBuilder( packetStr ) );
+                LOG.fatal( "AISPacket.truncatePacket() produced: \"{}\" from \"{}\"", truncStr, packetStr );
+                if( truncStr != null && !truncStr.isEmpty() ) assertTrue( new AISPacket( truncStr ).isValid() );
+                else assertTrue( new AISPacket( packetStr ).isValid() );
             } catch( Throwable t ) {
                 LOG.fatal( t.getMessage(), t );
             }
@@ -251,6 +254,8 @@ public class AISDecoderTest {
 
         LOG.fatal( "Testing with {} packets.", TEST_PACKETS.length );
         for( String newMessage : TEST_PACKETS ) {
+            String truncStr = AISPacket.truncatePacket( new StringBuilder( newMessage ) );
+            if( truncStr != null && !truncStr.isEmpty() ) newMessage = truncStr;
             AISPacket packet = new AISPacket( newMessage.trim() );
             packet.process();
             if( packet.getTagblock() != null ) {
@@ -310,9 +315,9 @@ public class AISDecoderTest {
     @Test
     public void testImoValidation() {
         LOG.fatal( "*** testImoValidation()" );
-        LOG.fatal( "Number:" );
+        LOG.fatal( "\tNumber:" );
         assertTrue( AISMessageBase.isValidImo( 9074729 ) );
-        LOG.fatal( "String:" );
+        LOG.fatal( "\tString:" );
         assertTrue( AISMessageBase.isValidImo( "IMO 9074729" ) );
     }
 }
