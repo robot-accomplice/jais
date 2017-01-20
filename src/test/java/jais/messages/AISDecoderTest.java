@@ -230,6 +230,7 @@ public class AISDecoderTest {
         for( String packetStr : TEST_PACKETS ) {
             LOG.fatal( "Validating packet: {}", packetStr );
             try {
+                LOG.fatal( "AISPacket.truncatePacket() produced: \"{}\"", AISPacket.truncatePacket( new StringBuilder( packetStr ) ) );
                 assertTrue( new AISPacket( packetStr ).isValid() );
             } catch( Throwable t ) {
                 LOG.fatal( t.getMessage(), t );
