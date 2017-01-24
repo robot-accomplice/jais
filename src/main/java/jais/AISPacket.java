@@ -74,7 +74,7 @@ public final class AISPacket {
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( String rawPacket ) throws AISPacketException {
-        this( rawPacket, "UNKNOWN" );
+        this( rawPacket, null );
     }
 
     /**
@@ -175,16 +175,21 @@ public final class AISPacket {
             String [] tb = AISPacket.fastSplit( _rawPacket, '!' );
             try {
                 if( _source == null || _source.isEmpty() ) {
-                    _tagBlock = TagBlock.parse( tb[0], _source );
-                } else {
                     _tagBlock = TagBlock.parse( tb[0] );
+                    _source = _tagBlock.getSource();
+                } else {
+                    _tagBlock = TagBlock.parse( tb[0], _source );
                 }
             } catch( Throwable t ) {
                 LOG.debug( "Unable to parse TagBlock from {}", tb[0] );
             }
             _rawPacket = "!" + tb[1];
         } else if( addTagBlock ) {
-            _tagBlock = TagBlock.build( _source );
+            if( _source == null || _source.isEmpty() ) {
+                _tagBlock = TagBlock.build( null );
+            } else {
+                _tagBlock = TagBlock.build( _source );
+            }
         }
         
         if( _packetParts == null ) {
@@ -359,16 +364,6 @@ public final class AISPacket {
         rawData += AISPacket.getChecksum( rawData );
 
         return rawData;
-    }
-
-    /**
-     *
-     * @param rawData
-     * @return
-     * @throws jais.exceptions.AISPacketException
-     */
-    public final static AISPacket createFromBinaryString( String rawData ) throws AISPacketException {
-        return createFromBinaryString( rawData, "UNKNOWN" );
     }
 
     /**
