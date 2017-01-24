@@ -17,11 +17,13 @@
 package jais.messages;
 
 import jais.AISPacket;
+import jais.TagBlock;
 import jais.exceptions.AISException;
 import jais.exceptions.AISPacketException;
 import static jais.messages.enums.AISMessageType.POSITION_REPORT_CLASS_A;
 import static jais.messages.enums.AISMessageType.POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE;
 import static jais.messages.enums.AISMessageType.POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION;
+import java.util.regex.Matcher;
 import org.junit.Test;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -256,9 +258,16 @@ public class AISDecoderTest {
         for( String newMessage : TEST_PACKETS ) {
             String truncStr = AISPacket.truncatePacket( new StringBuilder( newMessage ) );
             if( truncStr != null && !truncStr.isEmpty() ) newMessage = truncStr;
+            
             AISPacket packet = new AISPacket( newMessage.trim() );
             packet.process();
             if( packet.getTagBlock() != null ) {
+                Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( newMessage );
+                if( m.find() ) {
+                    for( int i = 0; i <= m.groupCount(); i++ ) {
+                        LOG.fatal( "Found: {}", m.group(i) );
+                    }
+                }
                 LOG.fatal( "\n\n{}", newMessage );
                 LOG.fatal( "TagBlock: {}\n\n", packet.getTagBlock().toString() );
                 // assert( false );
