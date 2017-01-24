@@ -258,9 +258,9 @@ public class AISDecoderTest {
             if( truncStr != null && !truncStr.isEmpty() ) newMessage = truncStr;
             AISPacket packet = new AISPacket( newMessage.trim() );
             packet.process();
-            if( packet.getTagblock() != null ) {
+            if( packet.getTagBlock() != null ) {
                 LOG.fatal( "\n\n{}", newMessage );
-                LOG.fatal( "TagBlock: {}\n\n", packet.getTagblock().toString() );
+                LOG.fatal( "TagBlock: {}\n\n", packet.getTagBlock().toString() );
                 // assert( false );
             } else {
                 LOG.fatal( "TAGBLOCK is null" );
