@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
 public final class TagBlock {
     
     public final static Logger LOG = LogManager.getLogger( TagBlock.class );
-    public final static String TAGBLOCK_STRING = "\\\\(([cdgnrst]{1}\\:[\\-A-Za-z0-9]+)\\,?)+\\*([A-Za-z0-9]{2})[\\\\]{1}";
+    public final static String TAGBLOCK_STRING = "\\\\(([cdgnrst]{1}\\:[A-Za-z0-9\\\\-]+\\,?)+)\\*([A-Za-z0-9]{2})\\\\";
     public final static Pattern TAGBLOCK_PATTERN = Pattern.compile( TAGBLOCK_STRING );
 
     String rawTagBlock;
@@ -223,16 +223,12 @@ public final class TagBlock {
      * @return 
      */
     public final static TagBlock parse( String rawTagBlock, String source ) {
-        if( source.length() > 15 ) {
-            source = source.substring( 0, 15 );
-            LOG.warn( "Truncating oversized source from {} to {}" );
-        }
-        
+        LOG.fatal( "Parsing {}", rawTagBlock );
         TagBlock tb = new TagBlock();
 
         // substring starts at 1 to remove leading \
         for( String part : AISPacket.fastSplit( rawTagBlock.substring( 1, rawTagBlock.indexOf( "*" ) ) ) ) {
-            LOG.fatal( "Processing: {}", part );
+            LOG.info( "Processing: {}", part );
             String[] tag = AISPacket.fastSplit( part, ':' );
 
             switch( tag[0] ) {
@@ -241,15 +237,13 @@ public final class TagBlock {
                     break;
                 case "d":
                     if( tag[1].length() > 15 ) {
-                        LOG.warn( "Length of destination String \"{}\" exceeds 15 character limit",
-                                tag[1] );
+                        LOG.warn( "Length of destination String \"{}\" exceeds 15 character limit",tag[1] );
                     }
                     tb.setDestination( tag[1] );
                     break;
                 case "g":
                     if( tag[1].length() > 15 ) {
-                        LOG.warn( "Length of sentence grouping String \"{}\" exceeds 15 character limit",
-                                tag[1] );
+                        LOG.warn( "Length of sentence grouping String \"{}\" exceeds 15 character limit",tag[1] );
                     }
                     tb.setSentenceGrouping( tag[1] );
                     break;
@@ -259,10 +253,26 @@ public final class TagBlock {
                 case "r":
                     tb.setRelativeTime( Long.parseLong( tag[1] ) );
                     break;
+                case "s":
+                    if( source == null ) {
+                        if( tag[1].length() > 15 ) {
+                            LOG.warn( "Length of source String \"{}\" exceeds 15 character limit", tag[1] );
+                        }
+                        source = tag[1];
+                    }
+                    break;
                 case "t":
                     tb.setTextStr( tag[1] );
+                        if( tag[1].length() > 15 ) {
+                            LOG.warn( "Length of text String \"{}\" exceeds 15 character limit", tag[1] );
+                        }
                     break;
             }
+        }
+        
+        if( source != null && source.length() > 15 ) {
+            source = source.substring( 0, 15 );
+            LOG.warn( "Truncating oversized source from {} to {}" );
         }
         
         tb.setSource( source );
@@ -277,51 +287,7 @@ public final class TagBlock {
      * @return
      */
     public final static TagBlock parse( String rawTagBlock ) {
-        TagBlock tb = new TagBlock();
-
-        // substring starts at 1 to remove leading \
-        for( String part : AISPacket.fastSplit( rawTagBlock.substring( 1, rawTagBlock.indexOf( "*" ) ) ) ) {
-            LOG.fatal( "Processing: {}", part );
-            String[] tag = AISPacket.fastSplit( part, ':' );
-
-            switch( tag[0] ) {
-                case "c":
-                    tb.setTimestamp( Long.parseLong( tag[1] ) );
-                    break;
-                case "d":
-                    if( tag[1].length() > 15 ) {
-                        LOG.warn( "Length of destination String \"{}\" exceeds 15 character limit",
-                                tag[1] );
-                    }
-                    tb.setDestination( tag[1] );
-                    break;
-                case "g":
-                    if( tag[1].length() > 15 ) {
-                        LOG.warn( "Length of sentence grouping String \"{}\" exceeds 15 character limit",
-                                tag[1] );
-                    }
-                    tb.setSentenceGrouping( tag[1] );
-                    break;
-                case "n":
-                    tb.setLineCount( Integer.parseInt( tag[1] ) );
-                    break;
-                case "r":
-                    tb.setRelativeTime( Long.parseLong( tag[1] ) );
-                    break;
-                case "s":
-                    if( tag[1].length() > 15 ) {
-                        LOG.warn( "Length of source String \"{}\" exceeds 15 character limit",
-                                tag[1] );
-                    }
-                    tb.setSource( tag[1] );
-                    break;
-                case "t":
-                    tb.setTextStr( tag[1] );
-                    break;
-            }
-        }
-
-        return tb;
+        return parse( rawTagBlock, null );
     }
 
     /**
