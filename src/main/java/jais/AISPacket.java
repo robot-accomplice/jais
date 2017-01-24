@@ -52,7 +52,7 @@ public final class AISPacket {
     public final static Pattern PACKET_PATTERN = Pattern.compile( TagBlock.TAGBLOCK_STRING + PREAMBLE );
     public static int PREAMBLE_GROUPS = 5;
 
-    private TagBlock _tagblock;
+    private TagBlock _tagBlock;
     private Preamble _preamble;
     private String _rawPacket;
     private String _source;
@@ -140,17 +140,27 @@ public final class AISPacket {
      * 
      * @return 
      */
-    public final TagBlock getTagblock() {
-        return _tagblock;
+    public final TagBlock getTagBlock() {
+        return _tagBlock;
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws AISPacketException 
+     */
+    public final AISPacket process() throws AISPacketException {
+        return process( false );
     }
 
     /**
      * validate the contents of the packet and break it into its constituent parts
      *
+     * @param addTagBlock
      * @return 
      * @throws jais.exceptions.AISPacketException
      */
-    public final AISPacket process() throws AISPacketException {
+    public final AISPacket process( boolean addTagBlock ) throws AISPacketException {
 
         if( _rawPacket == null ) {
             throw new AISPacketException( "Raw packet is null" );
@@ -161,19 +171,20 @@ public final class AISPacket {
             LOG.debug( "Processing new raw packet: {}", _rawPacket );
         }
 
-        Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( _rawPacket );
-        if( m.find() ) {
+        if( TagBlock.TAGBLOCK_PATTERN.matcher( _rawPacket ).find() ) {
             String [] tb = AISPacket.fastSplit( _rawPacket, '!' );
             try {
                 if( _source == null || _source.isEmpty() ) {
-                    _tagblock = TagBlock.parse( tb[0], _source );
+                    _tagBlock = TagBlock.parse( tb[0], _source );
                 } else {
-                    _tagblock = TagBlock.parse( tb[0] );
+                    _tagBlock = TagBlock.parse( tb[0] );
                 }
             } catch( Throwable t ) {
                 LOG.debug( "Unable to parse TagBlock from {}", tb[0] );
             }
             _rawPacket = "!" + tb[1];
+        } else if( addTagBlock ) {
+            _tagBlock = TagBlock.build( _source );
         }
         
         if( _packetParts == null ) {
@@ -684,7 +695,7 @@ public final class AISPacket {
      */
     public final HashMap<String, Object> toMap() {
         if( _packetMap.isEmpty() ) {
-            _packetMap.put( "tagblock", _tagblock );
+            _packetMap.put( "tagblock", _tagBlock );
             _packetMap.put( "preamble", _preamble );
             _packetMap.put( "raw_message", _rawMessage );
             _packetMap.put( "raw_packet", _rawPacket );
