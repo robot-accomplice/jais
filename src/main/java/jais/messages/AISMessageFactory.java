@@ -20,7 +20,6 @@ import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.BitSet;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +31,8 @@ import org.apache.logging.log4j.Logger;
 public class AISMessageFactory {
 
     private final static Logger LOG = LogManager.getLogger( AISMessageFactory.class );
-
+    private final static String DEFAULT_SOURCE = "UNKNOWN";
+    
     /**
      *
      * @param source
@@ -72,7 +72,13 @@ public class AISMessageFactory {
                 }
 
                 message.setType( mType );
-                message.setSource( source );
+                if( source != null ) {
+                    message.setSource( source );
+                } else if( source == null && packets[0].getSource() != null ) {
+                    message.setSource( packets[0].getSource() );
+                } else if( source == null && packets[0].getSource() == null ) {
+                    message.setSource( DEFAULT_SOURCE );
+                }
                 while( message.hasSubType() ) {
                     message = message.getSubTypeInstance();
                 }
@@ -112,16 +118,6 @@ public class AISMessageFactory {
 
     /**
      *
-     * @param packets
-     * @return
-     * @throws jais.exceptions.AISException
-     */
-    public static AISMessage create( AISPacket... packets ) throws AISException {
-        return create( "UNKNOWN", packets );
-    }
-
-    /**
-     *
      * @param source
      * @param strict
      * @param packetStrings
@@ -140,17 +136,6 @@ public class AISMessageFactory {
 
     /**
      *
-     * @param strict
-     * @param packetStrings
-     * @return
-     * @throws AISException
-     */
-    public static AISMessage create( boolean strict, String... packetStrings ) throws AISException {
-        return create( "UNKNOWN", strict, packetStrings );
-    }
-
-    /**
-     *
      * @param source
      * @param packets
      * @return
@@ -160,15 +145,5 @@ public class AISMessageFactory {
         AISPacket[] packetArray = new AISPacket[packets.size()];
         packets.toArray( packetArray );
         return create( source, packetArray );
-    }
-
-    /**
-     *
-     * @param packets
-     * @return
-     * @throws jais.exceptions.AISException
-     */
-    public static AISMessage create( List<AISPacket> packets ) throws AISException {
-        return create( "UNKNOWN", packets );
     }
 }
