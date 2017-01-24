@@ -49,7 +49,7 @@ public final class AISPacket {
     private final static String PREAMBLE = "([" + ENCAP_START + "|" + PARAM_START + 
             "]{1})([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
     public final static Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
-    public final static Pattern PACKET_PATTERN = Pattern.compile( TagBlock.TAGBLOCK_STRING + PREAMBLE );
+    public final static Pattern PACKET_PATTERN = Pattern.compile( TagBlock.TAGBLOCK_STRING + "(" + PREAMBLE + "(.*))" );
     public static int PREAMBLE_GROUPS = 5;
 
     private TagBlock _tagBlock;
@@ -62,6 +62,7 @@ public final class AISPacket {
     private int _sequentialMessageId = -1;
     private char _radioChannelCode;
     private String _rawMessage;
+    private String _packetBody;
     private int _fillBits;
     private String _checksum;
     private DateTime _timeReceived = DateTime.now();
@@ -168,32 +169,38 @@ public final class AISPacket {
             throw new AISPacketException( "Raw packet is empty" );
         } else {
             _rawPacket = _rawPacket.trim();
-            LOG.debug( "Processing new raw packet: {}", _rawPacket );
+            LOG.fatal( "Processing new raw packet: {}", _rawPacket );
         }
 
-        if( TagBlock.TAGBLOCK_PATTERN.matcher( _rawPacket ).find() ) {
-            String [] tb = AISPacket.fastSplit( _rawPacket, '!' );
+        Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( _rawPacket );
+        if( m.find() ) {
+            String tb = m.group(0);
             try {
                 if( _source == null || _source.isEmpty() ) {
-                    _tagBlock = TagBlock.parse( tb[0] );
+                    _tagBlock = TagBlock.parse( tb );
                     _source = _tagBlock.getSource();
                 } else {
-                    _tagBlock = TagBlock.parse( tb[0], _source );
+                    _tagBlock = TagBlock.parse( tb, _source );
                 }
             } catch( Throwable t ) {
-                LOG.debug( "Unable to parse TagBlock from {}", tb[0] );
+                LOG.debug( "Unable to parse TagBlock from {}", tb );
             }
-            _rawPacket = "!" + tb[1];
+            _packetBody = _rawPacket.substring( m.end() );
         } else if( addTagBlock ) {
             if( _source == null || _source.isEmpty() ) {
                 _tagBlock = TagBlock.build( null );
             } else {
                 _tagBlock = TagBlock.build( _source );
             }
+            _packetBody = _rawPacket;
+        } else {
+            LOG.debug( "No TagBlock found and addTagBlock is false" );
+            _packetBody = _rawPacket;
         }
         
+        LOG.debug( "_packetBody = {}", _packetBody );
         if( _packetParts == null ) {
-            _packetParts = AISPacket.fastSplit( _rawPacket, FIELD_DELIMITER );
+            _packetParts = AISPacket.fastSplit( _packetBody, FIELD_DELIMITER );
         }
 
         if( _packetParts == null || _packetParts.length < 6 ) {
@@ -276,17 +283,17 @@ public final class AISPacket {
             }
 
             // validate preamble
-            if( _rawPacket.length() > 82 ) {
-                LOG.warn( "Packet exceeds maximum allowable size (82 characters)!" );
+            if( _packetBody.length() > 82 ) {
+                LOG.debug( "Packet body exceeds maximum allowable size (82 characters)! {}", _packetBody );
                 return false;
             } else if( _packetParts.length == 0 ) {
-                LOG.warn( "Packet is empty!" );
+                LOG.debug( "Packet is empty!" );
                 return false;
             } else if( _packetParts.length != 7 ) {   // validate csv length
-                LOG.warn( "Packet does not have the valid number (7) of comma separated values." );
+                LOG.debug( "Packet does not have the valid number (7) of comma separated values. {}", _packetBody );
                 return false;
             } else if( !validatePreamble() ) {
-                LOG.fatal( "Packet has an invalid preamble: {}", _packetParts[0] );
+                LOG.debug( "Packet has an invalid preamble: {}", _packetParts[0] );
                 return false;
             } else {
                 // check for bad characters in binary string
@@ -294,7 +301,7 @@ public final class AISPacket {
                     // is this character within an accepted range?
                     if( !( ( c <= AISMessageDecoder.CHAR_RANGE_A_MAX && c >= AISMessageDecoder.CHAR_RANGE_A_MIN )
                             || ( c <= AISMessageDecoder.CHAR_RANGE_B_MAX && c >= AISMessageDecoder.CHAR_RANGE_B_MIN ) ) ) {
-                        LOG.warn( "Packet contains an invalid character: {}", c );
+                        LOG.debug( "Packet contains an invalid character: {}", c );
                         return false;
                     }
                 }
@@ -304,16 +311,17 @@ public final class AISPacket {
 
                 if( csIndex > 0 ) {
                     // validate checksum
-                    if( !validateChecksum( _rawPacket, _packetParts[6].substring( csIndex ) ) ) {
-                        LOG.warn( "Packet failed checksum validation." );
+                    if( !validateChecksum( _packetBody, _packetParts[6].substring( csIndex ) ) ) {
+                        LOG.debug( "Packet failed checksum validation." );
                     }
                 } else {
-                    LOG.warn( "Packet is missing fillbits and/or checksum." );
+                    LOG.debug( "Packet is missing fillbits and/or checksum." );
                     return false;
                 }
             }
         } catch( AISPacketException ape ) {
             // do nothing
+            LOG.debug( "Packet validation faied: {}", ape.getMessage(), ape );
             return false;
         }
 
@@ -396,6 +404,8 @@ public final class AISPacket {
      * @return
      */
     public final static String[] fastSplit( String s, char delimiter ) {
+        if( s == null ) return null;
+        
         int count = 1;
 
         for( int i = 0; i < s.length(); i++ ) {
@@ -720,6 +730,7 @@ public final class AISPacket {
         public Manufacturers manufacturer;
         public String format;
         public boolean isQuery;
+        public String parsed;
         
         /**
          * 
@@ -748,6 +759,7 @@ public final class AISPacket {
             LOG.debug( "Parsing {}", rawPreamble );
             Matcher m = PREAMBLE_PATTERN.matcher( rawPreamble );
             if( m.find() ) {
+                p.parsed = m.group(0);
                 LOG.debug( "Found {} matcher groups: {}=({})({})({})({})", m.groupCount(), m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ), m.group( 5 ) );
                 p.firstChar = m.group(1).charAt( 0 );
                 
