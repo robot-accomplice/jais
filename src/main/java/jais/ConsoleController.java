@@ -16,6 +16,7 @@
 
 package jais;
 
+import jais.AISPacket.Preamble;
 import jais.messages.AISMessageFactory;
 import jais.messages.AISMessage;
 import jais.messages.BaseStationReport;
@@ -75,21 +76,51 @@ public class ConsoleController implements Initializable {
             appendLineToOutput( "****************************************************" );
             appendLineToOutput( "Processing:\n" + inText );
             
-            if( inText == null || inText.isEmpty() ) throw new Exception();
+            if( inText == null || inText.isEmpty() ) throw new Exception( "Null Input" );
             
             List<AISPacket> packets = new ArrayList<>();
             for( String packetStr : inText.split( "\n" ) ) {
-                AISPacket packet = ( AISPacket.validatePreamble( packetStr.split( "," )[0] ) ) ? 
+                AISPacket packet = ( AISPacket.validatePreamble( packetStr ) ) ? 
                         new AISPacket( packetStr ) : 
-                        AISPacket.createFromBinaryString( packetStr );
+                        AISPacket.createFromBinaryString( packetStr, null );
                 packet.process();
-                appendLineToOutput( "Checksum: " + ( ( packet.isValid() ) ? 
-                        "VALID" : "INVALID (should be " + AISPacket.getChecksum( packet.getRawPacket() ) + ")" ) );
+                    appendLineToOutput( "---------------------------------------------" );
+                TagBlock tb = packet.getTagBlock();
+                if( tb != null ) {
+                    appendLineToOutput( "TagBlock: " + tb.rawTagBlock );
+                    appendLineToOutput( "---------------------------------------------" );
+                    appendLineToOutput( "\tsource           : " + tb.getSource() );
+                    appendLineToOutput( "\tdestination      : " + tb.getDestination() );
+                    appendLineToOutput( "\ttimestamp        : " + tb.getTimestamp() );
+                    appendLineToOutput( "\trelative time    : " + tb.getRelativeTime() );
+                    appendLineToOutput( "\tsentence grouping: " + tb.getSentenceGrouping() );
+                    appendLineToOutput( "\tline count       : " + tb.getLineCount() );
+                    appendLineToOutput( "\ttext string      : " + tb.getTextStr() );
+                } else {
+                    appendLineToOutput( "TagBlock: " );
+                    appendLineToOutput( "---------------------------------------------" );
+                    appendLineToOutput( "\t- none -" );
+                }
+                Preamble pre = Preamble.parse( packetStr );
+                appendLineToOutput( "---------------------------------------------" );
+                appendLineToOutput( "Preamble: " + pre.parsed );
+                appendLineToOutput( "---------------------------------------------" );
+                appendLineToOutput( "\tformat       : " + pre.format );
+                appendLineToOutput( "\tencapsulated : " + pre.isEncapsulated );
+                appendLineToOutput( "\tproprietary  : " + pre.isProprietary );
+                appendLineToOutput( "\tquery        : " + pre.isQuery );
+                appendLineToOutput( "\ttalker       : " + pre.talker.description );
+                if( pre.manufacturer == null ) {
+                    appendLineToOutput( "\tmanufacturer : null" );
+                } else {
+                    appendLineToOutput( "\tmanufacturer : " + pre.manufacturer.fullName );
+                }
+                appendLineToOutput( "\tvalid packet: " + packet.isValid() );
                 packets.add( packet );
             }
             appendLineToOutput( "---------------------------------------------" );
             
-            AISMessage msg = AISMessageFactory.create( "Console", packets );
+            AISMessage msg = AISMessageFactory.create( null, false, packets );
             if( msg != null ) {
                 // from AISMessageBase
                 appendLineToOutput( "Type   : " + msg.getType() );
@@ -191,10 +222,15 @@ public class ConsoleController implements Initializable {
                     default:
                         appendLineToOutput( "Ignoring new " + msg.getType().getDescription() );
                 }
+            } else {
+                appendLineToOutput( "AISMessageFactory returned a null message!" );
+                LOG.fatal( "AISMessageFactory returned a null message!" );
             }
         } catch( Throwable t ) {
             appendLineToOutput( "Unable to decode packet: \"" + inText + "\": " + t.getMessage() );
             appendLineToOutput( "StackTrace:\n" + t );
+            LOG.fatal( "Unable to decode packet: \"{}\": {}", inText, t.getMessage() );
+            LOG.fatal( "StackTrace:", t );
         } finally {
             appendLineToOutput( "****************************************************" );
         }
