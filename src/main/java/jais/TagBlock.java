@@ -18,6 +18,7 @@ package jais;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 
 /**
  *
@@ -197,7 +198,25 @@ public final class TagBlock {
     }
     
     /**
-     * Ignore source (or lack there of) in original tagblock in favor of the provided source value
+     * 
+     * @param source
+     * @return 
+     */
+    public final static TagBlock build( String source ) {
+        if( source.length() > 15 ) {
+            source = source.substring( 0, 15 );
+            LOG.warn( "Truncating oversized source from {} to {}" );
+        }
+        
+        TagBlock tb = new TagBlock();
+        tb.setSource( source );
+        tb.setTimestamp( DateTime.now().getMillis() );
+        
+        return tb;
+    }
+    
+    /**
+     * Ignore source (or lack there of) in original TagBlock in favor of the provided source value
      * 
      * @param rawTagBlock
      * @param source
@@ -205,8 +224,8 @@ public final class TagBlock {
      */
     public final static TagBlock parse( String rawTagBlock, String source ) {
         if( source.length() > 15 ) {
-            LOG.warn( "Length of source String \"{}\" exceeds 15 character limit",
-                    source );
+            source = source.substring( 0, 15 );
+            LOG.warn( "Truncating oversized source from {} to {}" );
         }
         
         TagBlock tb = new TagBlock();
