@@ -34,6 +34,20 @@ public class AISMessageFactory {
     private final static String DEFAULT_SOURCE = "UNKNOWN";
     
     /**
+     * 
+     * @param source
+     * @param strict
+     * @param packets
+     * @return
+     * @throws AISException 
+     */
+    public static AISMessage create( String source, boolean strict, List<AISPacket> packets ) throws AISException {
+        AISPacket [] packetA = new AISPacket[packets.size()];
+        packets.toArray( packetA );
+        return create( source, strict, packetA );
+    }
+    
+    /**
      *
      * @param source
      * @param strict
@@ -47,10 +61,13 @@ public class AISMessageFactory {
         String compositeMsg = new String();
 
         try {
+            if( packets.length < 1 ) throw new AISException( "Packets array is empty!" ); 
             LOG.debug( "Decoding message from {} packet(s).", packets.length );
             for( AISPacket packet : packets ) {
-                if( packet.isValid() ) {
+                if( packet.isValid() || !strict ) {
                     compositeMsg += packet.getRawMessage();
+                } else {
+                    throw new AISException( "Packet : \"" + packet.getRawPacket() + "\" failed validation!" );
                 }
             }
 
