@@ -169,7 +169,7 @@ public final class AISPacket {
             throw new AISPacketException( "Raw packet is empty" );
         } else {
             _rawPacket = _rawPacket.trim();
-            LOG.fatal( "Processing new raw packet: {}", _rawPacket );
+            LOG.debug( "Processing new raw packet: {}", _rawPacket );
         }
 
         Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( _rawPacket );
