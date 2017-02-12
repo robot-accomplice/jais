@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais;
 
 import jais.messages.enums.Manufacturers;
 import jais.messages.enums.Talkers;
 import jais.exceptions.AISPacketException;
 import jais.messages.AISMessageDecoder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,32 +42,41 @@ public final class AISPacket {
     private final static char FIELD_DELIMITER = ',';
     private final static char HEX_DELIMITER = '^';
     private final static char RESERVED_DELIMITER = '~';
-    
-    public final static double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
-    public  final static double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
 
-    private final static String PREAMBLE = "([" + ENCAP_START + "|" + PARAM_START + 
-            "]{1})([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
+    public final static double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
+    public final static double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
+
+    private final static String PREAMBLE = "([" + ENCAP_START + "|" + PARAM_START
+            + "]{1})([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
     public final static Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
     public final static Pattern PACKET_PATTERN = Pattern.compile( TagBlock.TAGBLOCK_STRING + "(" + PREAMBLE + "(.*))" );
     public static int PREAMBLE_GROUPS = 5;
 
     private TagBlock _tagBlock;
     private Preamble _preamble;
-    private String _rawPacket;
-    private String _source;
-    private String _type;
+    private byte[] _rawPacket;
+    private byte[] _source;
+    private byte[] _type;
     private int _fragmentCount = 1;
     private int _fragmentNumber = 1;
     private int _sequentialMessageId = -1;
     private char _radioChannelCode;
-    private String _rawMessage;
-    private String _packetBody;
+    private byte[] _rawMessage;
+    private byte[] _packetBody;
     private int _fillBits;
-    private String _checksum;
+    private byte[] _checksum;
     private DateTime _timeReceived = DateTime.now();
-    private String[] _packetParts;
+    private byte[][] _packetParts;
     private final HashMap<String, Object> _packetMap = new HashMap<>();
+
+    /**
+     * 
+     * @param rawPacket
+     * @throws AISPacketException 
+     */
+    public AISPacket( byte [] rawPacket ) throws AISPacketException {
+        _rawPacket = rawPacket;
+    }
 
     /**
      *
@@ -75,7 +84,7 @@ public final class AISPacket {
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( String rawPacket ) throws AISPacketException {
-        this( rawPacket, null );
+        this( rawPacket.getBytes() );
     }
 
     /**
@@ -85,14 +94,26 @@ public final class AISPacket {
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( String rawPacket, String source ) throws AISPacketException {
-        LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", new Object[]{ rawPacket, source } );
+        this( rawPacket.getBytes(), source.getBytes() );
+    }
+
+    /**
+     *
+     * @param rawPacket
+     * @param source
+     * @throws AISPacketException
+     */
+    public AISPacket( byte[] rawPacket, byte[] source ) throws AISPacketException {
+        if( LOG.isTraceEnabled() ) {
+            LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", new Object[]{ rawPacket, source } );
+        }
         _rawPacket = rawPacket;
         _source = source;
     }
 
     /**
      *
-     * @return 
+     * @return
      */
     public final boolean validatePreamble() {
         if( _packetParts == null ) {
@@ -109,16 +130,16 @@ public final class AISPacket {
             return validatePreamble( Preamble.parse( _packetParts[0] ) );
         }
     }
-    
+
     /**
-     * 
+     *
      * @param p
-     * @return 
+     * @return
      */
     public final static boolean validatePreamble( Preamble p ) {
         return ( ( p.talker != null ) && ( p.format != null ) );
     }
-    
+
     /**
      *
      * @param preambleStr
@@ -127,28 +148,27 @@ public final class AISPacket {
     public final static boolean validatePreamble( String preambleStr ) {
         return validatePreamble( Preamble.parse( preambleStr ) );
     }
-    
+
     /**
-     * Fetch the preamble (e.g.  !AISVDM)
-     * 
-     * @return 
+     * Fetch the preamble (e.g. !AISVDM)
+     *
+     * @return
      */
     public final Preamble getPreamble() {
         return _preamble;
     }
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public final TagBlock getTagBlock() {
         return _tagBlock;
     }
-    
+
     /**
-     * 
-     * @return
-     * @throws AISPacketException 
+     *
+     * @return @throws AISPacketException
      */
     public final AISPacket process() throws AISPacketException {
         return process( false );
@@ -158,47 +178,48 @@ public final class AISPacket {
      * validate the contents of the packet and break it into its constituent parts
      *
      * @param addTagBlock
-     * @return 
+     * @return
      * @throws jais.exceptions.AISPacketException
      */
     public final AISPacket process( boolean addTagBlock ) throws AISPacketException {
+        String rawPacket = null;
 
         if( _rawPacket == null ) {
             throw new AISPacketException( "Raw packet is null" );
-        } else if( _rawPacket.isEmpty() ) {
+        } else if( _rawPacket.length == 0 ) {
             throw new AISPacketException( "Raw packet is empty" );
         } else {
-            _rawPacket = _rawPacket.trim();
-            LOG.debug( "Processing new raw packet: {}", _rawPacket );
+            rawPacket = new String( _rawPacket ).trim();
+            LOG.debug( "Processing new raw packet: {}", rawPacket );
         }
 
-        Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( _rawPacket );
+        Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( rawPacket );
+        String source = ( _source == null ) ? new String() : new String( _source );
         if( m.find() ) {
-            String tb = m.group(0);
             try {
-                if( _source == null || _source.isEmpty() ) {
-                    _tagBlock = TagBlock.parse( tb );
+                if( _source == null || _source.length == 0 ) {
+                    _tagBlock = TagBlock.parse( m.group( 0 ) );
                     _source = _tagBlock.getSource();
                 } else {
-                    _tagBlock = TagBlock.parse( tb, _source );
+                    _tagBlock = TagBlock.parse( m.group( 0 ), source );
                 }
             } catch( Throwable t ) {
-                LOG.debug( "Unable to parse TagBlock from {}", tb );
+                LOG.debug( "Unable to parse TagBlock from {}", m.group( 0 ) );
             }
-            _packetBody = _rawPacket.substring( m.end() );
+            _packetBody = rawPacket.substring( m.end() ).getBytes();
         } else if( addTagBlock ) {
-            if( _source == null || _source.isEmpty() ) {
+            if( source.isEmpty() ) {
                 _tagBlock = TagBlock.build( null );
             } else {
-                _tagBlock = TagBlock.build( _source );
+                _tagBlock = TagBlock.build( source );
             }
             _packetBody = _rawPacket;
         } else {
             LOG.debug( "No TagBlock found and addTagBlock is false" );
             _packetBody = _rawPacket;
         }
-        
-        LOG.debug( "_packetBody = {}", _packetBody );
+
+        LOG.debug( "_packetBody = {}", new String( _packetBody ) );
         if( _packetParts == null ) {
             _packetParts = AISPacket.fastSplit( _packetBody, FIELD_DELIMITER );
         }
@@ -217,9 +238,10 @@ public final class AISPacket {
                     LOG.debug( "Unrecognized field at position  8: {}", _packetParts[7] );
                 case 7:
                     try {
-                        if( _packetParts[6].contains( String.valueOf( CHECKSUM_DELIMITER ) ) ) {
-                            _fillBits = Integer.parseInt( _packetParts[6].substring( 0, _packetParts[6].indexOf( "*" ) ) );
-                            _checksum = _packetParts[6].substring( _packetParts[6].indexOf( String.valueOf( CHECKSUM_DELIMITER ) ) + 1 );
+                        String checksum = new String( _packetParts[6] );
+                        if( checksum.contains( String.valueOf( CHECKSUM_DELIMITER ) ) ) {
+                            _fillBits = Integer.parseInt( checksum.substring( 0, checksum.indexOf( "*" ) ) );
+                            _checksum = checksum.substring( checksum.indexOf( String.valueOf( CHECKSUM_DELIMITER ) ) + 1 ).getBytes();
                         } else {
                             LOG.debug( "Packet is missing checksum!" );
                         }
@@ -227,34 +249,37 @@ public final class AISPacket {
                         LOG.debug( "Failed to set fill bits and/or checksum due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 6:
-                    if( _packetParts[5].isEmpty() ) {
+                    if( _packetParts[5] == null || _packetParts[5].length == 0 ) {
                         throw new AISPacketException( "Raw message is empty." );
                     }
                     _rawMessage = _packetParts[5];
                 case 5:
-                    _radioChannelCode = ( _packetParts[4].length() > 0 ) ? _packetParts[4].charAt( 0 ) : 'Z';
+                    _radioChannelCode = ( _packetParts[4].length > 0 ) ? ( char ) _packetParts[4][0] : 'Z';
                 case 4:
                     try {
-                        _sequentialMessageId = ( _packetParts[3].isEmpty() ) ? -1
-                                : Integer.parseInt( _packetParts[3] ); // default to -1 if no message ID is present
+                        _sequentialMessageId = ( _packetParts[3].length > 0 ) ? -1
+                                : Integer.parseInt( Arrays.toString( _packetParts[3] ) ); // default to -1 if no message ID is present
                     } catch( NumberFormatException nfe ) {
                         LOG.debug( "Failed to set sequential message ID due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 3:
                     try {
-                        _fragmentNumber = Integer.parseInt( _packetParts[2] );
+                        _fragmentNumber = Integer.parseInt( new String( _packetParts[2] ) );
                     } catch( NumberFormatException nfe ) {
                         LOG.debug( "Failed to set fragment number due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 2:
                     try {
-                        _fragmentCount = Integer.parseInt( _packetParts[1] );
+                        _fragmentCount = Integer.parseInt( new String( _packetParts[1] ) );
                     } catch( NumberFormatException nfe ) {
                         LOG.debug( "Failed to set fragment count due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 1:
-                    if( _packetParts[0].contains( "!" ) ) {
-                        _type = _packetParts[0].substring( _packetParts[0].indexOf( "!" ) );
+                    int index = indexOf( _packetParts[0], AISPacket.ENCAP_START );
+                    if( index == -1 ) indexOf( _packetParts[0], AISPacket.PARAM_START );
+                    
+                    if( index != -1 ) {
+                        _type = Arrays.copyOfRange( _packetParts[0], index, _packetParts[0].length );
                     } else {
                         throw new AISPacketException( "Packet has an unrecognizable preamble" );
                     }
@@ -266,8 +291,24 @@ public final class AISPacket {
             throw new AISPacketException( "Encountered a malformed AISPacket: \""
                     + _rawPacket + "\" - " + t.getMessage(), t );
         }
-        
+
         return this;
+    }
+    
+    /**
+     * 
+     * @param ba
+     * @param c
+     * @return 
+     */
+    private static int indexOf( byte[] ba, char c ) {
+        for( int i = 0; i < ba.length; i++ ) {
+            if( ba[i] == c ) {
+                return i;
+            }
+        }
+        
+        return -1;
     }
 
     /**
@@ -283,7 +324,7 @@ public final class AISPacket {
             }
 
             // validate preamble
-            if( _packetBody.length() > 82 ) {
+            if( _packetBody.length > 82 ) {
                 LOG.debug( "Packet body exceeds maximum allowable size (82 characters)! {}", _packetBody );
                 return false;
             } else if( _packetParts.length == 0 ) {
@@ -297,7 +338,7 @@ public final class AISPacket {
                 return false;
             } else {
                 // check for bad characters in binary string
-                for( char c : _packetParts[5].toCharArray() ) {
+                for( byte c : _packetParts[5] ) {
                     // is this character within an accepted range?
                     if( !( ( c <= AISMessageDecoder.CHAR_RANGE_A_MAX && c >= AISMessageDecoder.CHAR_RANGE_A_MIN )
                             || ( c <= AISMessageDecoder.CHAR_RANGE_B_MAX && c >= AISMessageDecoder.CHAR_RANGE_B_MIN ) ) ) {
@@ -307,11 +348,11 @@ public final class AISPacket {
                 }
 
                 // if we don't have any bad characters validate the checksum
-                int csIndex = _packetParts[6].indexOf( String.valueOf( CHECKSUM_DELIMITER ) ) + 1;
+                int csIndex = indexOf( _packetParts[6], CHECKSUM_DELIMITER ) + 1;
 
                 if( csIndex > 0 ) {
                     // validate checksum
-                    if( !validateChecksum( _packetBody, _packetParts[6].substring( csIndex ) ) ) {
+                    if( !validateChecksum( new String( _packetBody ), new String( Arrays.copyOfRange( _packetParts[6], 0, csIndex ) ) ) ) {
                         LOG.debug( "Packet failed checksum validation." );
                     }
                 } else {
@@ -364,6 +405,7 @@ public final class AISPacket {
 
     /**
      * This is a utility message that enables binary decoding even when the binary string is all we have
+     *
      * @param rawData
      * @return
      */
@@ -388,24 +430,64 @@ public final class AISPacket {
     }
 
     /**
-     * 
+     *
      * @param s
-     * @return 
+     * @return
      */
-    public final static String [] fastSplit( String s ) {
+    public final static String[] fastSplit( String s ) {
         return fastSplit( s, ',' );
     }
-    
+
     /**
      * an alternative to String.split() which is a memory hog and performance donkey at scale
-     * 
+     *
+     * @param s
+     * @param delimiter
+     * @return
+     */
+    public final static byte[][] fastSplit( byte[] s, char delimiter ) {
+        if( s == null ) {
+            return null;
+        }
+
+        int count = 1;
+
+        for( int i = 0; i < s.length; i++ ) {
+            if( s[i] == delimiter ) {
+                count++;
+            }
+        }
+
+        byte[][] array = new byte[count][];
+
+        int a = -1;
+        int b = 0;
+
+        for( int i = 0; i < count; i++ ) {
+            while( b < s.length && s[b] != delimiter ) {
+                b++;
+            }
+
+            array[i] = Arrays.copyOfRange( s, a + 1, b );
+            a = b;
+            b++;
+        }
+
+        return array;
+    }
+
+    /**
+     * an alternative to String.split() which is a memory hog and performance donkey at scale
+     *
      * @param s
      * @param delimiter
      * @return
      */
     public final static String[] fastSplit( String s, char delimiter ) {
-        if( s == null ) return null;
-        
+        if( s == null ) {
+            return null;
+        }
+
         int count = 1;
 
         for( int i = 0; i < s.length(); i++ ) {
@@ -462,7 +544,7 @@ public final class AISPacket {
      *
      * @return
      */
-    public final String getRawPacket() {
+    public final byte[] getRawPacket() {
         return _rawPacket;
     }
 
@@ -486,25 +568,25 @@ public final class AISPacket {
         TagBlock tb = new TagBlock();
         tb.setSource( _source );
         tb.setTimestamp( _timeReceived.getMillis() );
-        tb.setTextStr( text );
+        tb.setTextStr( text.getBytes() );
         return generateTagBlockPacketString( _rawPacket, tb );
     }
 
     /**
-     * 
+     *
      * @param rawPacket
      * @param tb
-     * @return 
+     * @return
      */
-    public final static String generateTagBlockPacketString( String rawPacket, TagBlock tb ) {
+    public final static String generateTagBlockPacketString( byte[] rawPacket, TagBlock tb ) {
         return new StringBuilder( tb.toString() ).append( rawPacket ).toString();
     }
-    
+
     /**
      *
      * @return
      */
-    public final String getType() {
+    public final byte[] getType() {
         return _type;
     }
 
@@ -563,7 +645,7 @@ public final class AISPacket {
      *
      * @return
      */
-    public final String getRawMessage() {
+    public final byte[] getRawMessage() {
         return _rawMessage;
     }
 
@@ -579,7 +661,7 @@ public final class AISPacket {
      *
      * @return
      */
-    public final String getChecksum() {
+    public final byte[] getChecksum() {
         return _checksum;
     }
 
@@ -603,7 +685,7 @@ public final class AISPacket {
      *
      * @return
      */
-    public final String getSource() {
+    public final byte[] getSource() {
         return _source;
     }
 
@@ -611,7 +693,7 @@ public final class AISPacket {
      *
      * @param source
      */
-    public final void setSource( String source ) {
+    public final void setSource( byte[] source ) {
         _source = source;
     }
 
@@ -623,12 +705,12 @@ public final class AISPacket {
     public static String truncatePacket( StringBuilder sb ) {
         int truncIndex = AISPacket.getPacketTruncIndex( sb );
         String substring = null;
-        
+
         if( truncIndex != -1 ) {
             LOG.debug( "Truncating: {}", sb );
             substring = sb.substring( 0, truncIndex ).trim();
         }
-        
+
         return substring;
     }
 
@@ -651,9 +733,9 @@ public final class AISPacket {
                 LOG.debug( "String is terminated by a carriage return" );
                 truncIndex = sb.indexOf( "\r" );
             } else if( m.find() ) {
-                truncIndex = sb.indexOf( m.group(0), 1 );
+                truncIndex = sb.indexOf( m.group( 0 ), 1 );
                 LOG.debug( "Truncating based on preamble" );
-                LOG.debug( "Matched string for index is: \"{}\"", m.group(0) );
+                LOG.debug( "Matched string for index is: \"{}\"", m.group( 0 ) );
             } else {
                 LOG.debug( "Line should not be truncated." );
                 truncIndex = -1;
@@ -676,7 +758,7 @@ public final class AISPacket {
 
         if( o instanceof AISPacket ) {
             AISPacket p = ( AISPacket ) o;
-            isEqual = p.getRawPacket().equals( _rawPacket );
+            isEqual = Arrays.equals( p.getRawPacket(), _rawPacket );
             isEqual = isEqual && _timeReceived.equals( p.getTimeReceived() );
         }
 
@@ -690,7 +772,7 @@ public final class AISPacket {
     @Override
     public final int hashCode() {
         int hash = 7;
-        hash = 79 * hash + ( _rawPacket != null ? _rawPacket.hashCode() : 0 );
+        hash = 79 * hash + ( _rawPacket != null ? Arrays.hashCode( _rawPacket ) : 0 );
         return hash;
     }
 
@@ -716,78 +798,88 @@ public final class AISPacket {
 
         return _packetMap;
     }
-    
+
     /**
-     * 
+     *
      */
     public static class Preamble {
-        
-        public final String rawPreamble;
+
+        public final byte[] rawPreamble;
         public char firstChar;
         public boolean isEncapsulated;
         public Talkers talker;
         public boolean isProprietary;
         public Manufacturers manufacturer;
-        public String format;
+        public byte[] format;
         public boolean isQuery;
-        public String parsed;
-        
+        public byte[] parsed;
+
         /**
-         * 
-         * @param rawPreamble 
+         *
+         * @param rawPreamble
          */
-        public Preamble( String rawPreamble ) {
+        public Preamble( byte[] rawPreamble ) {
             this.rawPreamble = rawPreamble;
         }
-        
+
         /**
-         * 
-         * @return 
+         *
+         * @return
          */
         public Preamble parse() {
             return parse( this.rawPreamble );
         }
-        
+
         /**
-         * 
+         *
          * @param rawPreamble
-         * @return 
+         * @return
+         */
+        public static Preamble parse( byte[] rawPreamble ) {
+            return parse( new String( rawPreamble ) );
+        }
+
+        /**
+         *
+         * @param rawPreamble
+         * @return
          */
         public static Preamble parse( String rawPreamble ) {
-            Preamble p = new Preamble( rawPreamble );
-            
+            Preamble p = new Preamble( rawPreamble.getBytes() );
+
             LOG.debug( "Parsing {}", rawPreamble );
             Matcher m = PREAMBLE_PATTERN.matcher( rawPreamble );
             if( m.find() ) {
-                p.parsed = m.group(0);
+                String parsed = m.group( 0 );
+                p.parsed = parsed.getBytes();
                 LOG.debug( "Found {} matcher groups: {}=({})({})({})({})", m.groupCount(), m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ), m.group( 5 ) );
-                p.firstChar = m.group(1).charAt( 0 );
-                
+                p.firstChar = m.group( 1 ).charAt( 0 );
+
                 if( p.firstChar == '!' ) {
                     p.isEncapsulated = true;
-                } else if( m.group( 1 ).equals(  "$" ) ) {
+                } else if( m.group( 1 ).equals( "$" ) ) {
                     p.isEncapsulated = false;
                 } else {
-                    LOG.info( "Unrecognized starting character in address field: {}", m.group(1) );
+                    LOG.info( "Unrecognized starting character in address field: {}", m.group( 1 ) );
                     p.isEncapsulated = false;
                 }
-                
-                if( m.group(3).startsWith( "P" ) ) {
+
+                if( m.group( 3 ).startsWith( "P" ) ) {
                     p.talker = Talkers.P;
-                    p.manufacturer = Manufacturers.valueOf( ( m.group(3) + m.group(4) ).toUpperCase() );
+                    p.manufacturer = Manufacturers.valueOf( ( m.group( 3 ) + m.group( 4 ) ).toUpperCase() );
                 } else if( Talkers.isValid( m.group( 2 ).toUpperCase() ) ) {
                     p.talker = Talkers.valueOf( m.group( 2 ).toUpperCase() );
                 } else {
                     p.talker = null;
                     LOG.info( "Unrecognized/invalid talker type: {}", m.group( 2 ) );
                 }
-                
-                p.format = m.group(4);
+
+                p.format = m.group( 4 ).getBytes();
                 p.isQuery = m.group( 5 ).equals( "Q" );
             } else {
                 LOG.warn( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE );
             }
-            
+
             return p;
         }
     }

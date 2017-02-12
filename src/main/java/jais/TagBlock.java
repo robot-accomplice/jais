@@ -29,23 +29,23 @@ public final class TagBlock {
     public final static String TAGBLOCK_STRING = "\\\\(([cdgnrst]{1}\\:[A-Za-z0-9\\\\-]+\\,?)+)\\*([A-Za-z0-9]{2})\\\\";
     public final static Pattern TAGBLOCK_PATTERN = Pattern.compile( TAGBLOCK_STRING );
 
-    String rawTagBlock;
-    String checksum;
+    byte [] rawTagBlock;
+    byte [] checksum;
 
     // c unix time, positive int
     long timestamp;
     // d destination, alphanumeric (<= 15 chars)
-    String destination;
+    byte [] destination;
     // g sentence grouping, numeric string (e.g. \g:1-1-1234 or \g:1-2-1234
-    String sentenceGrouping;
+    byte [] sentenceGrouping;
     // n line count, positive int
     int lineCount;
     // r relative time, positive int
     long relativeTime;
     // s source id, alphanumeric (<= 15 chars)
-    String source = "UKNOWN";
+    byte [] source = "UKNOWN".getBytes();
     // t text string
-    String textStr;
+    byte [] textStr;
 
     /**
      *
@@ -57,7 +57,7 @@ public final class TagBlock {
      *
      * @return
      */
-    public final String getRawTagBlock() {
+    public final byte [] getRawTagBlock() {
         return rawTagBlock;
     }
 
@@ -65,7 +65,7 @@ public final class TagBlock {
      *
      * @param rawTagBlock
      */
-    public final void setRawTagBlock( String rawTagBlock ) {
+    public final void setRawTagBlock( byte [] rawTagBlock ) {
         this.rawTagBlock = rawTagBlock;
     }
 
@@ -73,7 +73,7 @@ public final class TagBlock {
      *
      * @return
      */
-    public final String getChecksum() {
+    public final byte [] getChecksum() {
         return checksum;
     }
 
@@ -81,7 +81,7 @@ public final class TagBlock {
      *
      * @param checksum
      */
-    public final void setChecksum( String checksum ) {
+    public final void setChecksum( byte [] checksum ) {
         this.checksum = checksum;
     }
 
@@ -105,7 +105,7 @@ public final class TagBlock {
      *
      * @return
      */
-    public final String getDestination() {
+    public final byte [] getDestination() {
         return destination;
     }
 
@@ -113,7 +113,7 @@ public final class TagBlock {
      *
      * @param destination
      */
-    public final void setDestination( String destination ) {
+    public final void setDestination( byte [] destination ) {
         this.destination = destination;
     }
 
@@ -121,7 +121,7 @@ public final class TagBlock {
      *
      * @return
      */
-    public final String getSentenceGrouping() {
+    public final byte [] getSentenceGrouping() {
         return sentenceGrouping;
     }
 
@@ -129,7 +129,7 @@ public final class TagBlock {
      *
      * @param sentenceGrouping
      */
-    public final void setSentenceGrouping( String sentenceGrouping ) {
+    public final void setSentenceGrouping( byte [] sentenceGrouping ) {
         this.sentenceGrouping = sentenceGrouping;
     }
 
@@ -169,7 +169,7 @@ public final class TagBlock {
      *
      * @return
      */
-    public final String getSource() {
+    public final byte [] getSource() {
         return source;
     }
 
@@ -177,7 +177,7 @@ public final class TagBlock {
      *
      * @param source
      */
-    public void setSource( String source ) {
+    public void setSource( byte [] source ) {
         this.source = source;
     }
 
@@ -185,7 +185,7 @@ public final class TagBlock {
      *
      * @return
      */
-    public final String getTextStr() {
+    public final byte [] getTextStr() {
         return textStr;
     }
 
@@ -193,7 +193,7 @@ public final class TagBlock {
      *
      * @param textStr
      */
-    public final void setTextStr( String textStr ) {
+    public final void setTextStr( byte [] textStr ) {
         this.textStr = textStr;
     }
     
@@ -209,7 +209,7 @@ public final class TagBlock {
         }
         
         TagBlock tb = new TagBlock();
-        tb.setSource( source );
+        tb.setSource( source.getBytes() );
         tb.setTimestamp( DateTime.now().getMillis() );
         
         return tb;
@@ -239,13 +239,13 @@ public final class TagBlock {
                     if( tag[1].length() > 15 ) {
                         LOG.warn( "Length of destination String \"{}\" exceeds 15 character limit",tag[1] );
                     }
-                    tb.setDestination( tag[1] );
+                    tb.setDestination( tag[1].getBytes() );
                     break;
                 case "g":
                     if( tag[1].length() > 15 ) {
                         LOG.warn( "Length of sentence grouping String \"{}\" exceeds 15 character limit",tag[1] );
                     }
-                    tb.setSentenceGrouping( tag[1] );
+                    tb.setSentenceGrouping( tag[1].getBytes() );
                     break;
                 case "n":
                     tb.setLineCount( Integer.parseInt( tag[1] ) );
@@ -262,7 +262,7 @@ public final class TagBlock {
                     }
                     break;
                 case "t":
-                    tb.setTextStr( tag[1] );
+                    tb.setTextStr( tag[1].getBytes() );
                         if( tag[1].length() > 15 ) {
                             LOG.warn( "Length of text String \"{}\" exceeds 15 character limit", tag[1] );
                         }
@@ -270,13 +270,15 @@ public final class TagBlock {
             }
         }
         
-        if( source != null && source.length() > 15 ) {
-            source = source.substring( 0, 15 );
-            LOG.warn( "Truncating oversized source from {} to {}" );
+        if( source != null ) {
+            if( source.length() > 15 ) {
+                source = source.substring( 0, 15 );
+                LOG.warn( "Truncating oversized source from {} to {}" );
+            }
+            tb.setSource( source.getBytes() );
         }
         
-        tb.setSource( source );
-        tb.setRawTagBlock( tb.toString() );
+        tb.setRawTagBlock( tb.toString().getBytes() );
         
         return tb;
     }
@@ -306,7 +308,7 @@ public final class TagBlock {
 
         StringBuilder tbs = new StringBuilder();
 
-        if( this.sentenceGrouping != null && !this.sentenceGrouping.isEmpty() ) {
+        if( this.sentenceGrouping != null && this.sentenceGrouping.length > 0 ) {
             if( tbs.length() > 1 ) {
                 tbs.append( "," );
             }
@@ -318,7 +320,7 @@ public final class TagBlock {
             }
             tbs.append( "n:" ).append( this.lineCount );
         }
-        if( this.source != null && !this.source.isEmpty() ) {
+        if( this.source != null && this.source.length > 0 ) {
             if( tbs.length() > 1 ) {
                 tbs.append( "," );
             }
@@ -330,7 +332,7 @@ public final class TagBlock {
             }
             tbs.append( "c:" ).append( this.timestamp );
         }
-        if( this.destination != null && !this.destination.isEmpty() ) {
+        if( this.destination != null && this.destination.length > 0 ) {
             if( tbs.length() > 1 ) {
                 tbs.append( "," );
             }
@@ -342,7 +344,7 @@ public final class TagBlock {
             }
             tbs.append( "r:" ).append( this.relativeTime );
         }
-        if( this.textStr != null && !this.textStr.isEmpty() ) {
+        if( this.textStr != null && this.textStr.length > 0 ) {
             if( tbs.length() > 1 ) {
                 tbs.append( "," );
             }
@@ -353,8 +355,8 @@ public final class TagBlock {
         this.rawTagBlock = new StringBuilder( "\\" )
                 .append( tbs ).append( "*" )
                 .append( AISPacket.generateChecksum( tbs.toString() ) ).append( "\\" )
-                .toString();
+                .toString().getBytes();
 
-        return this.rawTagBlock;
+        return new String( this.rawTagBlock );
     }
 }

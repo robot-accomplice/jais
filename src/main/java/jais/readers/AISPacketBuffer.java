@@ -59,8 +59,10 @@ public class AISPacketBuffer {
      * @return
      */
     private String getKey( AISPacket packet ) {
-        return packet.getSource() + packet.getSequentialMessageId()
-                + "_" + packet.getFragmentCount();
+        return new StringBuilder( new String( packet.getSource() ) )
+                .append( packet.getSequentialMessageId() )
+                .append( "_" )
+                .append( packet.getFragmentCount() ).toString();
     }
 
     /**

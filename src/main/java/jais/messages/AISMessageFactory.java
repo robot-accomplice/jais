@@ -92,7 +92,7 @@ public class AISMessageFactory {
                 if( source != null ) {
                     message.setSource( source );
                 } else if( source == null && packets[0].getSource() != null ) {
-                    message.setSource( packets[0].getSource() );
+                    message.setSource( new String( packets[0].getSource() ) );
                 } else if( source == null && packets[0].getSource() == null ) {
                     message.setSource( DEFAULT_SOURCE );
                 }
