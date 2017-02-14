@@ -58,7 +58,7 @@ public class PacketBuilderWorkerThread implements Callable<AISPacket []> {
         Thread.currentThread().setName( "PBT" );
 
         try {
-            LOG.trace( "Processing packet: {}", _packetString );
+            if( LOG.isTraceEnabled() ) LOG.trace( "Processing packet: {}", _packetString );
             AISPacket packet = new AISPacket( _packetString, _source );
 
             return _pBuffer.add( packet.process(), true ); // true = remove from buffer if complete

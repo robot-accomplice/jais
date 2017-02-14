@@ -195,7 +195,7 @@ public class StaticDataReport extends AISMessageBase {
                             field.getStartBit(), field.getEndBit() );
                     break;
                 default:
-                    LOG.debug( "Ignoring field: {}", field.name() );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
             }
         }
     }

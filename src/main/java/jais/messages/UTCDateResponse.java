@@ -210,7 +210,7 @@ public class UTCDateResponse extends AISMessageBase {
                 case EPFD:
                     int epfdCode = AISMessageDecoder.decodeUnsignedInt( _bits,
                             field.getStartBit(), field.getEndBit() );
-                    LOG.debug( "Retrieving EPFDFixType for code: {}", epfdCode );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Retrieving EPFDFixType for code: {}", epfdCode );
                     _epfd = EPFDFixType.getForCode( epfdCode );
                     break;
                 case RAIM:
@@ -221,7 +221,7 @@ public class UTCDateResponse extends AISMessageBase {
                             field.getStartBit(), field.getEndBit() );
                     break;
                 default:
-                    LOG.debug( "Encountered unhandled field type of : {}", field );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Encountered unhandled field type of : {}", field );
             }
         }
     }

@@ -303,10 +303,10 @@ public class AidToNavigationReport extends AISMessageBase {
                                 field.getStartBit(), _bits.size() - 1 );
                         break;
                     default:
-                        LOG.trace( "Ignoring field: {}", field.name() );
+                        if( LOG.isTraceEnabled() ) LOG.trace( "Ignoring field: {}", field.name() );
                 }
             } catch( Exception e ) {
-                LOG.debug( "Failed to decode field: {} due to {}", field.name(),
+                if( LOG.isDebugEnabled() ) LOG.debug( "Failed to decode field: {} due to {}", field.name(),
                         e.getMessage(), e );
             }
         }

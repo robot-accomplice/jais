@@ -189,7 +189,7 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
                     _gnss = !_bits.get( field.getStartBit() );
                     break;
                 default:
-                    LOG.debug( "Ignoring field: {}", field.name());
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name());
             }
         }
     }

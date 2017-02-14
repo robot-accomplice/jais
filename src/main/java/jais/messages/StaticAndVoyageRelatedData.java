@@ -380,11 +380,11 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
                     if( field.getStartBit() < _bits.size() ) {
                         _dte = _bits.get( field.getStartBit() );
                     } else {
-                        LOG.debug( "Reached end of message before we could retrieve DTE value!" );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Reached end of message before we could retrieve DTE value!" );
                     }
                     break;
                 default:
-                    LOG.debug( "Encountered unhandled field type of : {}", field );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Encountered unhandled field type of : {}", field );
             }
         }
     }

@@ -45,11 +45,11 @@ public class AISMessageDecoder {
     public static BitSet stringToBitSet( String rawMessage ) {
 
         char[] msgChars = rawMessage.toCharArray();
-        LOG.debug( "8 bit char array is {} bytes long.", msgChars.length );
+        if( LOG.isDebugEnabled() ) LOG.debug( "8 bit char array is {} bytes long.", msgChars.length );
 
         BitSet bits = new BitSet( 6 * msgChars.length );
         //boolean out[] = new boolean[6 * in.length];
-        LOG.debug( "6 bit boolean array is {} bits long.", bits.size() );
+        if( LOG.isDebugEnabled() ) LOG.debug( "6 bit boolean array is {} bits long.", bits.size() );
 
         int bIndex = 0;
         for( char c : msgChars ) {
@@ -229,7 +229,7 @@ public class AISMessageDecoder {
         if( bits.size() < AISFieldMap.TYPE.getEndBit() ) {
             throw new AISException( "BitSet is too short: " + bits.size() );
         }
-        LOG.debug( "BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(),
+        if( LOG.isDebugEnabled() ) LOG.debug( "BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(),
                 AISFieldMap.TYPE.getStartBit(), AISFieldMap.TYPE.getEndBit() );
         int typeId = decodeUnsignedInt( bits, AISFieldMap.TYPE.getStartBit(),
                 AISFieldMap.TYPE.getEndBit() );
@@ -400,7 +400,7 @@ public class AISMessageDecoder {
                 }
             }
 
-            LOG.debug( "Decoded to String: \"{}\"", decodedString );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Decoded to String: \"{}\"", decodedString );
         } catch( AISException e ) {
             LOG.warn( "Could not decode String due to : {}", e.getMessage(), e );
         }

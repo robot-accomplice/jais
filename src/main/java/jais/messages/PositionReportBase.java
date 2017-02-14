@@ -249,7 +249,7 @@ public abstract class PositionReportBase extends AISMessageBase {
                             field.getStartBit(), field.getEndBit() );
                     break;
                 default:
-                    LOG.debug( "Encountered unhandled field type of : {}", field );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Encountered unhandled field type of : {}", field );
                     break;
             }
         }

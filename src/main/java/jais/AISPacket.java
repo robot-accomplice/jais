@@ -104,9 +104,9 @@ public final class AISPacket {
      * @throws AISPacketException
      */
     public AISPacket( byte[] rawPacket, byte[] source ) throws AISPacketException {
-        if( LOG.isTraceEnabled() ) {
-            LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", new Object[]{ rawPacket, source } );
-        }
+        if( LOG.isTraceEnabled() ) LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", 
+                new Object[]{ rawPacket, source } );
+
         _rawPacket = rawPacket;
         _source = source;
     }
@@ -190,7 +190,7 @@ public final class AISPacket {
             throw new AISPacketException( "Raw packet is empty" );
         } else {
             rawPacket = new String( _rawPacket ).trim();
-            LOG.debug( "Processing new raw packet: {}", rawPacket );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Processing new raw packet: {}", rawPacket );
         }
 
         Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( rawPacket );
@@ -204,7 +204,7 @@ public final class AISPacket {
                     _tagBlock = TagBlock.parse( m.group( 0 ), source );
                 }
             } catch( Throwable t ) {
-                LOG.debug( "Unable to parse TagBlock from {}", m.group( 0 ) );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Unable to parse TagBlock from {}", m.group( 0 ) );
             }
             _packetBody = rawPacket.substring( m.end() ).getBytes();
         } else if( addTagBlock ) {
@@ -215,11 +215,11 @@ public final class AISPacket {
             }
             _packetBody = _rawPacket;
         } else {
-            LOG.debug( "No TagBlock found and addTagBlock is false" );
+            if( LOG.isDebugEnabled() ) LOG.debug( "No TagBlock found and addTagBlock is false" );
             _packetBody = _rawPacket;
         }
 
-        LOG.debug( "_packetBody = {}", new String( _packetBody ) );
+        if( LOG.isDebugEnabled() ) LOG.debug( "_packetBody = {}", new String( _packetBody ) );
         if( _packetParts == null ) {
             _packetParts = AISPacket.fastSplit( _packetBody, FIELD_DELIMITER );
         }
@@ -231,11 +231,11 @@ public final class AISPacket {
         try {
             switch( _packetParts.length ) {
                 case 10:
-                    LOG.debug( "Unrecognized field at position 10: {}", _packetParts[9] );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Unrecognized field at position 10: {}", _packetParts[9] );
                 case 9:
-                    LOG.debug( "Unrecognized field at position  9: {}", _packetParts[8] );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Unrecognized field at position  9: {}", _packetParts[8] );
                 case 8:
-                    LOG.debug( "Unrecognized field at position  8: {}", _packetParts[7] );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Unrecognized field at position  8: {}", _packetParts[7] );
                 case 7:
                     try {
                         String checksum = new String( _packetParts[6] );
@@ -243,10 +243,10 @@ public final class AISPacket {
                             _fillBits = Integer.parseInt( checksum.substring( 0, checksum.indexOf( "*" ) ) );
                             _checksum = checksum.substring( checksum.indexOf( String.valueOf( CHECKSUM_DELIMITER ) ) + 1 ).getBytes();
                         } else {
-                            LOG.debug( "Packet is missing checksum!" );
+                            if( LOG.isDebugEnabled() ) LOG.debug( "Packet is missing checksum!" );
                         }
                     } catch( NumberFormatException nfe ) {
-                        LOG.debug( "Failed to set fill bits and/or checksum due to NumberFormatException: {}", nfe.getMessage() );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Failed to set fill bits and/or checksum due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 6:
                     if( _packetParts[5] == null || _packetParts[5].length == 0 ) {
@@ -260,19 +260,19 @@ public final class AISPacket {
                         _sequentialMessageId = ( _packetParts[3].length > 0 ) ? -1
                                 : Integer.parseInt( Arrays.toString( _packetParts[3] ) ); // default to -1 if no message ID is present
                     } catch( NumberFormatException nfe ) {
-                        LOG.debug( "Failed to set sequential message ID due to NumberFormatException: {}", nfe.getMessage() );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Failed to set sequential message ID due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 3:
                     try {
                         _fragmentNumber = Integer.parseInt( new String( _packetParts[2] ) );
                     } catch( NumberFormatException nfe ) {
-                        LOG.debug( "Failed to set fragment number due to NumberFormatException: {}", nfe.getMessage() );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Failed to set fragment number due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 2:
                     try {
                         _fragmentCount = Integer.parseInt( new String( _packetParts[1] ) );
                     } catch( NumberFormatException nfe ) {
-                        LOG.debug( "Failed to set fragment count due to NumberFormatException: {}", nfe.getMessage() );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Failed to set fragment count due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 1:
                     int index = indexOf( _packetParts[0], AISPacket.ENCAP_START );
@@ -325,16 +325,16 @@ public final class AISPacket {
 
             // validate preamble
             if( _packetBody.length > 82 ) {
-                LOG.debug( "Packet body exceeds maximum allowable size (82 characters)! {}", _packetBody );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Packet body exceeds maximum allowable size (82 characters)! {}", _packetBody );
                 return false;
             } else if( _packetParts.length == 0 ) {
-                LOG.debug( "Packet is empty!" );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Packet is empty!" );
                 return false;
             } else if( _packetParts.length != 7 ) {   // validate csv length
-                LOG.debug( "Packet does not have the valid number (7) of comma separated values. {}", _packetBody );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Packet does not have the valid number (7) of comma separated values. {}", _packetBody );
                 return false;
             } else if( !validatePreamble() ) {
-                LOG.debug( "Packet has an invalid preamble: {}", _packetParts[0] );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Packet has an invalid preamble: {}", _packetParts[0] );
                 return false;
             } else {
                 // check for bad characters in binary string
@@ -342,7 +342,7 @@ public final class AISPacket {
                     // is this character within an accepted range?
                     if( !( ( c <= AISMessageDecoder.CHAR_RANGE_A_MAX && c >= AISMessageDecoder.CHAR_RANGE_A_MIN )
                             || ( c <= AISMessageDecoder.CHAR_RANGE_B_MAX && c >= AISMessageDecoder.CHAR_RANGE_B_MIN ) ) ) {
-                        LOG.debug( "Packet contains an invalid character: {}", c );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Packet contains an invalid character: {}", c );
                         return false;
                     }
                 }
@@ -353,16 +353,16 @@ public final class AISPacket {
                 if( csIndex > 0 ) {
                     // validate checksum
                     if( !validateChecksum( new String( _packetBody ), new String( Arrays.copyOfRange( _packetParts[6], 0, csIndex ) ) ) ) {
-                        LOG.debug( "Packet failed checksum validation." );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Packet failed checksum validation." );
                     }
                 } else {
-                    LOG.debug( "Packet is missing fillbits and/or checksum." );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Packet is missing fillbits and/or checksum." );
                     return false;
                 }
             }
         } catch( AISPacketException ape ) {
             // do nothing
-            LOG.debug( "Packet validation faied: {}", ape.getMessage(), ape );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Packet validation faied: {}", ape.getMessage(), ape );
             return false;
         }
 
@@ -389,7 +389,7 @@ public final class AISPacket {
             hexString = "0" + hexString;
         }
 
-        LOG.trace( "Generated CRC = {}", hexString.toUpperCase() );
+        if( LOG.isTraceEnabled() ) LOG.trace( "Generated CRC = {}", hexString.toUpperCase() );
 
         return hexString;
     }
@@ -536,7 +536,7 @@ public final class AISPacket {
         if( calcChecksum.length() == 1 ) {
             calcChecksum = "0" + calcChecksum;
         }
-        LOG.debug( "Comparing: \"{}\" to \"{}\"", packetChecksum.toUpperCase(), calcChecksum.toUpperCase() );
+        if( LOG.isDebugEnabled() ) LOG.debug( "Comparing: \"{}\" to \"{}\"", packetChecksum.toUpperCase(), calcChecksum.toUpperCase() );
         return packetChecksum.equalsIgnoreCase( calcChecksum );
     }
 
@@ -707,7 +707,7 @@ public final class AISPacket {
         String substring = null;
 
         if( truncIndex != -1 ) {
-            LOG.debug( "Truncating: {}", sb );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Truncating: {}", sb );
             substring = sb.substring( 0, truncIndex ).trim();
         }
 
@@ -722,27 +722,27 @@ public final class AISPacket {
     public static int getPacketTruncIndex( StringBuilder sb ) {
         int truncIndex = 0;
 
-        LOG.debug( "Evaluating \"{}\" for truncation point.", sb );
+        if( LOG.isDebugEnabled() ) LOG.debug( "Evaluating \"{}\" for truncation point.", sb );
 
         Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( sb.toString() );
         if( m.find() ) {
             if( sb.indexOf( "\n" ) > -1 ) {
-                LOG.debug( "String is terminated by a newline" );
+                if( LOG.isDebugEnabled() ) LOG.debug( "String is terminated by a newline" );
                 truncIndex = sb.indexOf( "\n" );
             } else if( sb.indexOf( "\r" ) > -1 ) {
-                LOG.debug( "String is terminated by a carriage return" );
+                if( LOG.isDebugEnabled() ) LOG.debug( "String is terminated by a carriage return" );
                 truncIndex = sb.indexOf( "\r" );
             } else if( m.find() ) {
                 truncIndex = sb.indexOf( m.group( 0 ), 1 );
-                LOG.debug( "Truncating based on preamble" );
-                LOG.debug( "Matched string for index is: \"{}\"", m.group( 0 ) );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Truncating based on preamble" );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Matched string for index is: \"{}\"", m.group( 0 ) );
             } else {
-                LOG.debug( "Line should not be truncated." );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Line should not be truncated." );
                 truncIndex = -1;
             }
         }
 
-        LOG.debug( "Truncation index set to {}", truncIndex );
+        if( LOG.isDebugEnabled() ) LOG.debug( "Truncation index set to {}", truncIndex );
 
         return truncIndex;
     }
@@ -847,12 +847,12 @@ public final class AISPacket {
         public static Preamble parse( String rawPreamble ) {
             Preamble p = new Preamble( rawPreamble.getBytes() );
 
-            LOG.debug( "Parsing {}", rawPreamble );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Parsing {}", rawPreamble );
             Matcher m = PREAMBLE_PATTERN.matcher( rawPreamble );
             if( m.find() ) {
                 String parsed = m.group( 0 );
                 p.parsed = parsed.getBytes();
-                LOG.debug( "Found {} matcher groups: {}=({})({})({})({})", m.groupCount(), m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ), m.group( 5 ) );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Found {} matcher groups: {}=({})({})({})({})", m.groupCount(), m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ), m.group( 5 ) );
                 p.firstChar = m.group( 1 ).charAt( 0 );
 
                 if( p.firstChar == '!' ) {
@@ -860,7 +860,7 @@ public final class AISPacket {
                 } else if( m.group( 1 ).equals( "$" ) ) {
                     p.isEncapsulated = false;
                 } else {
-                    LOG.info( "Unrecognized starting character in address field: {}", m.group( 1 ) );
+                    if( LOG.isDebugEnabled() ) LOG.info( "Unrecognized starting character in address field: {}", m.group( 1 ) );
                     p.isEncapsulated = false;
                 }
 
@@ -871,13 +871,13 @@ public final class AISPacket {
                     p.talker = Talkers.valueOf( m.group( 2 ).toUpperCase() );
                 } else {
                     p.talker = null;
-                    LOG.info( "Unrecognized/invalid talker type: {}", m.group( 2 ) );
+                    if( LOG.isDebugEnabled() ) LOG.info( "Unrecognized/invalid talker type: {}", m.group( 2 ) );
                 }
 
                 p.format = m.group( 4 ).getBytes();
                 p.isQuery = m.group( 5 ).equals( "Q" );
             } else {
-                LOG.warn( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE );
+                if( LOG.isDebugEnabled() ) LOG.warn( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE );
             }
 
             return p;

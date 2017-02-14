@@ -119,7 +119,7 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
         _stopBits = stopBits;
         _parity = parity;
         _source = source;
-        LOG.debug( "{} - AISSerialPortReader invoked with: {}, {}, {}, {}, {}",
+        if( LOG.isDebugEnabled() ) LOG.debug( "{} - AISSerialPortReader invoked with: {}, {}, {}, {}, {}",
                 source, portName, baud, dataBits, stopBits, parity );
     }
 
@@ -140,7 +140,7 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
         _dataBits = dataBits;
         _stopBits = stopBits;
         _parity = parity;
-        LOG.debug( "invoked with: " + portName + ", " + baud + ", " + dataBits
+        if( LOG.isDebugEnabled() ) LOG.debug( "invoked with: " + portName + ", " + baud + ", " + dataBits
                 + ", " + stopBits + ", " + parity );
     }
 
@@ -163,7 +163,7 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
         _stopBits = stopBits;
         _parity = parity;
         _source = source;
-        LOG.debug( "invoked with: " + portName + ", " + baud + ", " + dataBits
+        if( LOG.isDebugEnabled() ) LOG.debug( "invoked with: " + portName + ", " + baud + ", " + dataBits
                 + ", " + stopBits + ", " + parity + ", " + source );
     }
 
@@ -174,28 +174,28 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
     @Override
     public synchronized void serialEvent( SerialPortEvent serialPortEvent ) {
 
-        LOG.trace( "New SerialPortEvent: " );
+        if( LOG.isTraceEnabled() ) LOG.trace( "New SerialPortEvent: " );
         switch( serialPortEvent.getEventType() ) {
             case SerialPortEvent.BREAK:
-                LOG.trace( "BREAK received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "BREAK received." );
                 break;
             case SerialPortEvent.CTS:
-                LOG.trace( "CTS received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "CTS received." );
                 break;
             case SerialPortEvent.DSR:
-                LOG.trace( "DSR received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "DSR received." );
                 break;
             case SerialPortEvent.ERR:
-                LOG.trace( "ERR received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "ERR received." );
                 break;
             case SerialPortEvent.RING:
-                LOG.trace( "RING received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "RING received." );
                 break;
             case SerialPortEvent.RLSD:
-                LOG.trace( "RSLD received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "RSLD received." );
                 break;
             case SerialPortEvent.RXCHAR:
-                LOG.trace( "RXCHAR received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "RXCHAR received." );
                 try {
                     byte[] bytes = _port.readBytes();
                     if( bytes != null ) {
@@ -206,7 +206,7 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
                                         super.processPacketString( _sb.toString() );
                                     }
                                 } catch( AISPacketException ipe ) {
-                                    LOG.debug( "Invalid Packet: " + ipe.getMessage(), ipe );
+                                    if( LOG.isDebugEnabled() ) LOG.debug( "Invalid Packet: " + ipe.getMessage(), ipe );
                                 } finally {
                                     _sb.delete( 0, _sb.length() );
                                 }
@@ -218,14 +218,14 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
                 } catch( SerialPortException spe ) {
                     LOG.error( "ERROR reading port!" + spe.getMessage(), spe );
                 } catch( NullPointerException npe ) {
-                    LOG.debug( "NullPointerException: " + npe.getMessage(), npe );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "NullPointerException: " + npe.getMessage(), npe );
                 }
                 break;
             case SerialPortEvent.RXFLAG:
-                LOG.trace( "RXFLAG received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "RXFLAG received." );
                 break;
             case SerialPortEvent.TXEMPTY:
-                LOG.trace( "TXEMPTY received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "TXEMPTY received." );
                 break;
         }
     }
@@ -239,10 +239,12 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
         try {
             _port = new SerialPort( _portName );
 
-            LOG.debug( "*** Port Initialization ***************************************** " );
-            LOG.debug( " Port opened: {}", _port.openPort() );
-            LOG.debug( " Params set : {}", _port.setParams( _baud, _dataBits, _stopBits, _parity ) );
-            LOG.debug( "***************************************************************** " );
+            if( LOG.isDebugEnabled() ) {
+                LOG.debug( "*** Port Initialization ***************************************** " );
+                LOG.debug( " Port opened: {}", _port.openPort() );
+                LOG.debug( " Params set : {}", _port.setParams( _baud, _dataBits, _stopBits, _parity ) );
+                LOG.debug( "***************************************************************** " );
+            }
 
             _port.addEventListener( this );
 
@@ -250,7 +252,7 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
                 try {
                     Thread.sleep( LOOP_INTERVAL_MS );
                 } catch( InterruptedException ie ) {
-                    LOG.debug( "Thread interrupted: " + ie.getMessage() );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Thread interrupted: " + ie.getMessage() );
                 }
             }
             try {

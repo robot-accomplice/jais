@@ -210,7 +210,7 @@ public abstract class AISMessageBase implements AISMessage {
             Integer[] digits = new Integer[7];
             for( char c : Long.toString( imo ).toCharArray() ) {
                 digits[d] = Integer.valueOf( "" + c );
-                LOG.debug( "Digit at position: {} is {}",
+                if( LOG.isDebugEnabled() ) LOG.debug( "Digit at position: {} is {}",
                         d, digits[d] );
                 d++;
             }
@@ -228,7 +228,7 @@ public abstract class AISMessageBase implements AISMessage {
                 sum += digits[i];
             }
 
-            LOG.debug( "Sum of products is : {}", sum );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Sum of products is : {}", sum );
 
             valid = ( sum % 10 == digits[6] );
 

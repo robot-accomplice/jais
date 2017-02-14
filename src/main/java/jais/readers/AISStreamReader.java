@@ -116,7 +116,7 @@ public class AISStreamReader extends AISReaderBase {
                 String line = br.readLine();
                 if( line != null && !line.isEmpty() ) super.processPacketString( line );
             } catch( AISPacketException ae ) {
-                LOG.debug( "Encountered an AISException: {}", ae.getMessage(), ae );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Encountered an AISException: {}", ae.getMessage(), ae );
             } catch( IOException ioe ) {
                 LOG.error( "Encountered an IOException: {}", ioe.getMessage(), ioe );
                 throw new AISReaderException( "Encountered an IOException: " + ioe.getMessage(), ioe );

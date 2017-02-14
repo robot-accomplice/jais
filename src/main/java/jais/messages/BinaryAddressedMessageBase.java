@@ -174,7 +174,7 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
 
         if( _subType != null ) {
             try {
-                LOG.debug( "Creating a new {} instance.", _subType.getDescription() );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Creating a new {} instance.", _subType.getDescription() );
 
                 Constructor con = _subType.getMsgClass().getDeclaredConstructor( AISPacket[].class );
                 con.setAccessible( true );

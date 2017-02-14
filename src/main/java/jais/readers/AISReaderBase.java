@@ -97,7 +97,7 @@ public abstract class AISReaderBase extends Observable implements AISReader {
     private void processSingleton( String packetString ) {
         try {
             if( packetString != null && !packetString.isEmpty() ) {
-                LOG.debug( "Found packet to test: " + packetString );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Found packet to test: " + packetString );
 
                 AISPacket packet = new AISPacket( packetString, _source );
                 packet.process();
@@ -111,14 +111,14 @@ public abstract class AISReaderBase extends Observable implements AISReader {
 
                 try {
                     // assemble the message fragments, THEN decode
-                    LOG.debug( "Adding message part {} of {} : '{}' to buffer.", 
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Adding message part {} of {} : '{}' to buffer.", 
                             packet.getFragmentNumber(), packet.getFragmentCount(), packet.getRawPacket() );
 
                     AISPacket [] packets = _buffer.add( packet );
 
                     if( packets != null ) {
                         // last fragment, we can now build the full message
-                        LOG.debug( "Processing a message with {} fragments.",
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Processing a message with {} fragments.",
                                 packets.length );
 
                         AISMessage message = AISMessageFactory.create( _source, packets );
@@ -133,15 +133,15 @@ public abstract class AISReaderBase extends Observable implements AISReader {
                         LOG.trace( "Message is not complete." );
                     }
                 } catch( AISException ae ) {
-                    LOG.debug( "Encountered an error while processing packet \"{}\": {}",
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Encountered an error while processing packet \"{}\": {}",
                             packetString, ae.getMessage() );
-                    LOG.trace( ae.getMessage(), ae );
+                    if( LOG.isTraceEnabled() ) LOG.trace( ae.getMessage(), ae );
                 }
             }
         } catch( AISPacketException ipe ) {
-            LOG.debug( "Encountered a serious error while trying to process a packet string: "
+            if( LOG.isDebugEnabled() ) LOG.debug( "Encountered a serious error while trying to process a packet string: "
                     + ipe.getMessage() );
-            LOG.trace( "StackTrace for AISPacketException: {}", ipe.getMessage(), ipe );
+            if( LOG.isTraceEnabled() ) LOG.trace( "StackTrace for AISPacketException: {}", ipe.getMessage(), ipe );
         }
     }
 

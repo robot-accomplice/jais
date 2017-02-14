@@ -42,7 +42,7 @@ public class AISPacketBuffer {
      * @param maxPacketAge
      */
     public AISPacketBuffer( int maxPacketAge ) {
-        LOG.debug( "AISPacketBuffer instantiated.  Max packet age is {} ms", maxPacketAge );
+        if( LOG.isDebugEnabled() ) LOG.debug( "AISPacketBuffer instantiated.  Max packet age is {} ms", maxPacketAge );
         _maxPacketAge = maxPacketAge;
     }
 
@@ -123,7 +123,7 @@ public class AISPacketBuffer {
         AISPacket[] packets = null;
 
         if( packet == null ) {
-            LOG.debug( "Ignoring null packet." );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring null packet." );
         } else {
             try {
                 _buffer.keySet().stream().forEach( ( k ) -> {
@@ -132,11 +132,11 @@ public class AISPacketBuffer {
                         timestamp.addMillis( _maxPacketAge );
 
                         if( timestamp.isBeforeNow() ) {
-                            LOG.debug( "Removing expired packet set." );
+                            if( LOG.isDebugEnabled() ) LOG.debug( "Removing expired packet set." );
                             _buffer.remove( k );
                         }
                     } catch( NullPointerException npe ) {
-                        LOG.debug( "NPE encountered while cleaning old records from buffer: {}", 
+                        if( LOG.isDebugEnabled() ) LOG.debug( "NPE encountered while cleaning old records from buffer: {}", 
                                 npe.getMessage(), npe );
                         _buffer.remove( k );
                     }
@@ -149,20 +149,20 @@ public class AISPacketBuffer {
 
             String pk = getKey( packet );
             if( packet.getFragmentCount() > 1 ) {
-                LOG.trace( "This is a multi-packet message." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "This is a multi-packet message." );
                 if( _buffer.containsKey( pk ) && _buffer.get( pk ) != null ) {
-                    LOG.trace( "Buffer already contains the first packet for this message." );
+                    if( LOG.isTraceEnabled() ) LOG.trace( "Buffer already contains the first packet for this message." );
                     AISPacketSet aps = _buffer.get( pk );
                     aps.add( packet );
                 } else {
-                    LOG.trace( "This is the first packet in this message sequence." );
+                    if( LOG.isTraceEnabled() ) LOG.trace( "This is the first packet in this message sequence." );
                     AISPacketSet aps = new AISPacketSet( packet );
                     _buffer.put( pk, aps );
                 }
 
                 if( isComplete( packet ) ) {
                     if( removeIfComplete ) {
-                        LOG.debug( "Removing completed packet set." );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Removing completed packet set." );
                         packets = remove( packet );
                     } else {
                         packets = getPackets( packet );
@@ -332,10 +332,10 @@ public class AISPacketBuffer {
             boolean complete = true;
             
             if( _packets.isEmpty() ) {
-                LOG.debug( "Packet set is empty." );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Packet set is empty." );
                 complete = false;
             } else if( _packets.get(0).getFragmentCount() > _packets.size() ) {
-                LOG.debug( "Fragment count " + _packets.get(0).getFragmentCount() + " > " + _packets.size() );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Fragment count " + _packets.get(0).getFragmentCount() + " > " + _packets.size() );
                 // we can't put this into place yet as the second or third packet 
                 // in a multi-packet message may not contain enough information to tie
                 // it to early packets in the same set (without having adequate source info)

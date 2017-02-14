@@ -278,12 +278,12 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
                                 field.getStartBit(), field.getEndBit() );
                         break;
                     default:
-                        LOG.debug( "Ignoring field: {}", field.name() );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
                 }
             } catch( Throwable t ) {
                 LOG.warn( "Unable to decode field: {}: {}",
                         new Object[]{field.name(), t.getMessage()} );
-                LOG.debug( t.getMessage() );
+                if( LOG.isDebugEnabled() ) LOG.debug( t.getMessage() );
             }
         }
     }

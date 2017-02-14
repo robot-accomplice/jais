@@ -62,7 +62,7 @@ public class AISMessageFactory {
 
         try {
             if( packets.length < 1 ) throw new AISException( "Packets array is empty!" ); 
-            LOG.debug( "Decoding message from {} packet(s).", packets.length );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Decoding message from {} packet(s).", packets.length );
             for( AISPacket packet : packets ) {
                 if( packet.isValid() || !strict ) {
                     compositeMsg += packet.getRawMessage();
@@ -71,12 +71,12 @@ public class AISMessageFactory {
                 }
             }
 
-            LOG.debug( "Composite String is: {}", compositeMsg );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Composite String is: {}", compositeMsg );
             // we need the message type in order to invoke the reflective constructor
             AISMessageType mType = AISMessageDecoder.decodeMessageType( compositeMsg );
 
             if( mType != null ) {
-                LOG.debug( "Creating a new {} instance.", mType.getDescription() );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Creating a new {} instance.", mType.getDescription() );
 
                 Constructor con = mType.getMessageClass().getDeclaredConstructor( String.class, AISPacket[].class );
                 con.setAccessible( true );
@@ -115,7 +115,7 @@ public class AISMessageFactory {
                         + t.getMessage(), t );
             } else {
                 LOG.warn( "Unable to create a new AISMessage: {}", t.getMessage() );
-                LOG.trace( "Decode Failure: {}", t.getMessage(), t );
+                if( LOG.isTraceEnabled() ) LOG.trace( "Decode Failure: {}", t.getMessage(), t );
             }
         }
 

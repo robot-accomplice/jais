@@ -167,11 +167,11 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
 
                         while( selectedKeys.hasNext() ) {
                             SelectionKey key = ( SelectionKey ) selectedKeys.next();
-                            LOG.trace( "{} new Key: {} ({2})", _source, key, key.getClass() );
+                            if( LOG.isTraceEnabled() ) LOG.trace( "{} new Key: {} ({2})", _source, key, key.getClass() );
                             selectedKeys.remove();
 
                             if( !key.isValid() ) {
-                                LOG.debug( "{} key is invalid.", _source );
+                                if( LOG.isDebugEnabled() ) LOG.debug( "{} key is invalid.", _source );
                                 continue;
                             }
 
@@ -180,7 +180,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
                             } else if( key.isConnectable() && RECONNECT ) {
                                 connect( key );
                             } else if( key.isAcceptable() ) {
-                                LOG.debug( "{} key is acceptable", _source );
+                                if( LOG.isDebugEnabled() ) LOG.debug( "{} key is acceptable", _source );
                             }
                         }
                     }
@@ -245,9 +245,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
                 LOG.warn( "{} - Channel has reached end of stream!", _source );
                 closeSocketChannel( _socketChannel );
             } else {
-                if( LOG.isTraceEnabled() ) {
-                    LOG.trace( "{} - Read {} bytes...", _source, numRead );
-                }
+                if( LOG.isTraceEnabled() ) LOG.trace( "{} - Read {} bytes...", _source, numRead );
 
                 // process the contents of the buffer
                 for( int c : _readBuffer.array() ) {
@@ -261,7 +259,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
                     }
 
                     if( line == null ) {
-                        LOG.trace( "{} - Line was null!", _source );
+                        if( LOG.isTraceEnabled() ) LOG.trace( "{} - Line was null!", _source );
                     } else {
                         line = line.trim();
                         if( !line.isEmpty() ) {
@@ -277,7 +275,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
                     _sb.replace( 0, _sb.length(), _sb.toString().trim() );
                 }
 
-                LOG.debug( "{} - leftovers: {}", _source, _sb );
+                if( LOG.isDebugEnabled() ) LOG.debug( "{} - leftovers: {}", _source, _sb );
             }
 
         } catch( IOException ioe ) {
@@ -302,7 +300,7 @@ public class AISPacketQueueBuilder implements Runnable, Closeable, AutoCloseable
                 channel.close();
             }
         } catch( IOException ioe ) {
-            LOG.trace( ioe.getMessage(), ioe );
+            if( LOG.isTraceEnabled() ) LOG.trace( ioe.getMessage(), ioe );
         }
     }
     

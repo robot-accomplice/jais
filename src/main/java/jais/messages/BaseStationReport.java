@@ -241,7 +241,7 @@ public class BaseStationReport extends AISMessageBase {
                             field.getStartBit(), field.getEndBit() );
                     break;
                 default:
-                    LOG.debug( "Encountered unhandled field type of : {}",
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Encountered unhandled field type of : {}",
                             field );
             }
         }

@@ -120,7 +120,7 @@ public enum Talkers {
      * @return 
      */
     public static boolean isValid( String code ) {
-        LOG.debug( "Checking validity of talker with code: \"{}\"", code );
+        if( LOG.isDebugEnabled() ) LOG.debug( "Checking validity of talker with code: \"{}\"", code );
         if( code == null ) return false;
  
         try {

@@ -170,7 +170,7 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
                             _bits.size() - 21, _bits.size() + 1 );
                     break;
                 default:
-                    LOG.debug( "Ignoring field: {}", field.name() );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
             }
         }
     }

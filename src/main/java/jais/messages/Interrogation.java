@@ -176,10 +176,10 @@ public class Interrogation extends AISMessageBase {
                                 field.getStartBit(), field.getEndBit() );
                         break;
                     default:
-                        LOG.debug( "Ignoring field: {}", field.name() );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
                 }
             } catch( Throwable t ) {
-                LOG.trace( "Unable to decode field: {}: {}.", field.name(), t.getMessage(), t );
+                if( LOG.isTraceEnabled() ) LOG.trace( "Unable to decode field: {}: {}.", field.name(), t.getMessage(), t );
             }
         }
     }

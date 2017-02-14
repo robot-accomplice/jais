@@ -128,10 +128,10 @@ public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
                         }
                         break;
                     default:
-                        LOG.debug( "Ignoring field: {}", field.name() );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
                 }
             } catch( ArrayIndexOutOfBoundsException aioobe ) {
-                LOG.debug( "Encountered an ArrayIndexOutofBoundsException: {}.", aioobe.getMessage(), aioobe );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Encountered an ArrayIndexOutofBoundsException: {}.", aioobe.getMessage(), aioobe );
             }
         }
     }
