@@ -35,7 +35,7 @@ import org.joda.time.format.DateTimeFormatter;
  *
  * @author Jon
  */
-public class Vessel {
+public class Vessel implements Cloneable {
 
     private final static Logger LOG = LogManager.getLogger( Vessel.class );
 
@@ -215,7 +215,7 @@ public class Vessel {
      */
     @Override
     public Vessel clone() throws CloneNotSupportedException {
-        Vessel clone = ( Vessel ) super.clone();
+        Vessel clone = ( Vessel )super.clone();
 
         clone._id = _id;
         clone._accurate = _accurate;
