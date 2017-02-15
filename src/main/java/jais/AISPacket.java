@@ -126,7 +126,7 @@ public final class AISPacket {
             LOG.warn( "_packetParts[0] is null" );
             return false;
         } else {
-            LOG.trace( "Creating preamble object from {}", _packetParts[0] );
+            if( LOG.isTraceEnabled() ) LOG.trace( "Creating preamble object from {}", new String( _packetParts[0] ) );
             return validatePreamble( Preamble.parse( _packetParts[0] ) );
         }
     }
