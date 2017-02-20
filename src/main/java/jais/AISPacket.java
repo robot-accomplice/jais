@@ -194,7 +194,7 @@ public final class AISPacket {
         } else if( _rawPacket.length == 0 ) {
             throw new AISPacketException( "Raw packet is empty" );
         } else {
-            rawPacket = bArray2Str( _rawPacket ).trim();
+            rawPacket = bArray2Str( trim( _rawPacket ) );
             if( LOG.isDebugEnabled() ) LOG.debug( "Processing new raw packet: {}", rawPacket );
         }
 
@@ -205,7 +205,7 @@ public final class AISPacket {
                     _tagBlock = TagBlock.parse( m.group( 0 ) );
                     _source = _tagBlock.getSource();
                 } else {
-                    _tagBlock = TagBlock.parse( m.group( 0 ), bArray2Str( _source ) );
+                    _tagBlock = TagBlock.parse( m.group( 0 ), _source );
                 }
             } catch( Throwable t ) {
                 if( LOG.isDebugEnabled() ) LOG.debug( "Unable to parse TagBlock from {}", m.group( 0 ) );
@@ -979,21 +979,21 @@ public final class AISPacket {
      */
     public static class Preamble {
 
-        public final String rawPreamble;
+        public final byte [] rawPreamble;
         public char firstChar;
         public boolean isEncapsulated;
         public Talkers talker;
         public boolean isProprietary;
         public Manufacturers manufacturer;
-        public String format;
+        public byte [] format;
         public boolean isQuery;
-        public String parsed;
+        public byte [] parsed;
 
         /**
          *
          * @param rawPreamble
          */
-        public Preamble( String rawPreamble ) {
+        public Preamble( byte [] rawPreamble ) {
             this.rawPreamble = rawPreamble;
         }
 
@@ -1002,7 +1002,7 @@ public final class AISPacket {
          * @return
          */
         public Preamble parse() {
-            return parse( this.rawPreamble );
+            return parse( AISPacket.bArray2Str( rawPreamble ) );
         }
 
         /**
@@ -1010,8 +1010,8 @@ public final class AISPacket {
          * @param rawPreamble
          * @return
          */
-        public static Preamble parse( byte[] rawPreamble ) {
-            return parse( new String( rawPreamble ) );
+        public static Preamble parse( byte [] rawPreamble ) {
+            return parse( AISPacket.bArray2Str( rawPreamble ) );
         }
 
         /**
@@ -1020,13 +1020,13 @@ public final class AISPacket {
          * @return
          */
         public static Preamble parse( String rawPreamble ) {
-            Preamble p = new Preamble( rawPreamble );
+            Preamble p = new Preamble( str2bArray( rawPreamble ) );
 
             if( LOG.isDebugEnabled() ) LOG.debug( "Parsing {}", rawPreamble );
             Matcher m = PREAMBLE_PATTERN.matcher( rawPreamble );
             if( m.find() ) {
                 String parsed = m.group( 0 );
-                p.parsed = parsed;
+                p.parsed = AISPacket.str2bArray( parsed );
                 if( LOG.isDebugEnabled() ) LOG.debug( "Found {} matcher groups: {}=({})({})({})({})", m.groupCount(), m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ), m.group( 5 ) );
                 p.firstChar = m.group( 1 ).charAt( 0 );
 
@@ -1049,7 +1049,7 @@ public final class AISPacket {
                     if( LOG.isDebugEnabled() ) LOG.info( "Unrecognized/invalid talker type: {}", m.group( 2 ) );
                 }
 
-                p.format = m.group( 4 );
+                p.format = str2bArray( m.group( 4 ) );
                 p.isQuery = m.group( 5 ).equals( "Q" );
             } else {
                 if( LOG.isDebugEnabled() ) LOG.warn( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE );
