@@ -58,20 +58,12 @@ public class AISMessageFactory {
     public static AISMessage create( String source, boolean strict, AISPacket... packets ) throws AISException {
         AISMessage message = null;
 
-        String compositeMsg = new String();
-
         try {
             if( packets.length < 1 ) throw new AISException( "Packets array is empty!" ); 
             if( LOG.isDebugEnabled() ) LOG.debug( "Decoding message from {} packet(s).", packets.length );
-            for( AISPacket packet : packets ) {
-                if( packet.isValid() || !strict ) {
-                    compositeMsg += packet.getRawMessage();
-                } else {
-                    throw new AISException( "Packet : \"" + packet.getRawPacket() + "\" failed validation!" );
-                }
-            }
-
-            if( LOG.isDebugEnabled() ) LOG.debug( "Composite String is: {}", compositeMsg );
+            String compositeMsg = AISPacket.bArray2Str( AISPacket.concatenate( strict, packets ) );
+            
+            if( LOG.isDebugEnabled() ) LOG.debug( "Composite message is: {}", compositeMsg );
             // we need the message type in order to invoke the reflective constructor
             AISMessageType mType = AISMessageDecoder.decodeMessageType( compositeMsg );
 
@@ -83,7 +75,7 @@ public class AISMessageFactory {
 
                 // reflection won't work properly for singletons if we don't do this
                 if( packets.length == 1 ) {
-                    message = ( AISMessage ) con.newInstance( ( Object )source, ( Object ) packets );
+                    message = ( AISMessage ) con.newInstance( ( Object )source, ( Object )packets );
                 } else {
                     message = ( AISMessage ) con.newInstance( source, packets );
                 }
@@ -92,7 +84,7 @@ public class AISMessageFactory {
                 if( source != null ) {
                     message.setSource( source );
                 } else if( source == null && packets[0].getSource() != null ) {
-                    message.setSource( new String( packets[0].getSource() ) );
+                    message.setSource( AISPacket.bArray2Str( packets[0].getSource() ) );
                 } else if( source == null && packets[0].getSource() == null ) {
                     message.setSource( DEFAULT_SOURCE );
                 }
@@ -103,16 +95,14 @@ public class AISMessageFactory {
                 // decode message
                 message.decode();
             } else {
-                throw new AISException( "MessageType is null for message String: "
-                        + compositeMsg );
+                throw new AISException( "MessageType is null for message String: " + new String( compositeMsg ) );
             }
         } catch( AISException | NoSuchMethodException | SecurityException |
                 InstantiationException | IllegalAccessException |
                 IllegalArgumentException | InvocationTargetException t ) {
             // repackage any and all throwables as AISExceptions
             if( strict ) {
-                throw new AISException( "Unable to create a new AISMessage: "
-                        + t.getMessage(), t );
+                throw new AISException( "Unable to create a new AISMessage: "+ t.getMessage(), t );
             } else {
                 LOG.warn( "Unable to create a new AISMessage: {}", t.getMessage() );
                 if( LOG.isTraceEnabled() ) LOG.trace( "Decode Failure: {}", t.getMessage(), t );
