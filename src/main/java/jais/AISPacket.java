@@ -15,10 +15,14 @@
  */
 package jais;
 
+import jais.exceptions.AISException;
 import jais.messages.enums.Manufacturers;
 import jais.messages.enums.Talkers;
 import jais.exceptions.AISPacketException;
 import jais.messages.AISMessageDecoder;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -49,33 +53,46 @@ public final class AISPacket {
     private final static String PREAMBLE = "([" + ENCAP_START + "|" + PARAM_START
             + "]{1})([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
     public final static Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
-    public final static Pattern PACKET_PATTERN = Pattern.compile( TagBlock.TAGBLOCK_STRING + "(" + PREAMBLE + "(.*))" );
+    public final static Pattern PACKET_PATTERN = Pattern.compile( "(" + TagBlock.TAGBLOCK_STRING + ")?(" + PREAMBLE + "(.*))" );
     public static int PREAMBLE_GROUPS = 5;
+    public final static Charset CHARSET = StandardCharsets.US_ASCII;
+    
 
     private TagBlock _tagBlock;
     private Preamble _preamble;
-    private byte[] _rawPacket;
-    private byte[] _source;
-    private byte[] _type;
+    private byte [] _rawPacket;  // the unparsed initial string
+    private byte [] _source;
+    private byte [] _type;
     private int _fragmentCount = 1;
     private int _fragmentNumber = 1;
     private int _sequentialMessageId = -1;
     private char _radioChannelCode;
-    private byte[] _rawMessage;
-    private byte[] _packetBody;
+    private byte [] _rawMessage; // the message sans tagblock
+    private byte [] _packetBody; // the binary string
     private int _fillBits;
-    private byte[] _checksum;
+    private byte [] _checksum;
     private DateTime _timeReceived = DateTime.now();
-    private byte[][] _packetParts;
-    private final HashMap<String, Object> _packetMap = new HashMap<>();
+    private byte [][] _packetParts;
 
     /**
-     * 
+     *
      * @param rawPacket
-     * @throws AISPacketException 
+     * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( byte [] rawPacket ) throws AISPacketException {
-        _rawPacket = rawPacket;
+        this( rawPacket, str2bArray( "UNKNOWN" ) );
+    }
+
+    /**
+     *
+     * @param rawPacket
+     * @param source
+     * @throws jais.exceptions.AISPacketException
+     */
+    public AISPacket( byte [] rawPacket, byte [] source ) throws AISPacketException {
+        if( LOG.isTraceEnabled() ) LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", new Object[]{ rawPacket, source } );
+        _rawPacket = trim( rawPacket );
+        _source = trim( source );
     }
 
     /**
@@ -84,7 +101,7 @@ public final class AISPacket {
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( String rawPacket ) throws AISPacketException {
-        this( rawPacket.getBytes() );
+        this( rawPacket, "UNKNOWN" );
     }
 
     /**
@@ -94,21 +111,9 @@ public final class AISPacket {
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( String rawPacket, String source ) throws AISPacketException {
-        this( rawPacket.getBytes(), source.getBytes() );
-    }
-
-    /**
-     *
-     * @param rawPacket
-     * @param source
-     * @throws AISPacketException
-     */
-    public AISPacket( byte[] rawPacket, byte[] source ) throws AISPacketException {
-        if( LOG.isTraceEnabled() ) LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", 
-                new Object[]{ rawPacket, source } );
-
-        _rawPacket = rawPacket;
-        _source = source;
+        if( LOG.isTraceEnabled() ) LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", new Object[]{ rawPacket, source } );
+        _rawPacket = str2bArray( rawPacket.trim() );
+        _source = str2bArray( source.trim() );
     }
 
     /**
@@ -126,7 +131,7 @@ public final class AISPacket {
             LOG.warn( "_packetParts[0] is null" );
             return false;
         } else {
-            if( LOG.isTraceEnabled() ) LOG.trace( "Creating preamble object from {}", new String( _packetParts[0] ) );
+            if( LOG.isTraceEnabled() ) LOG.trace( "Creating preamble object from {}", bArray2Str( _packetParts[0] ) );
             return validatePreamble( Preamble.parse( _packetParts[0] ) );
         }
     }
@@ -189,29 +194,29 @@ public final class AISPacket {
         } else if( _rawPacket.length == 0 ) {
             throw new AISPacketException( "Raw packet is empty" );
         } else {
-            rawPacket = new String( _rawPacket ).trim();
+            rawPacket = bArray2Str( _rawPacket ).trim();
             if( LOG.isDebugEnabled() ) LOG.debug( "Processing new raw packet: {}", rawPacket );
         }
 
         Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( rawPacket );
-        String source = ( _source == null ) ? new String() : new String( _source );
         if( m.find() ) {
             try {
                 if( _source == null || _source.length == 0 ) {
                     _tagBlock = TagBlock.parse( m.group( 0 ) );
                     _source = _tagBlock.getSource();
                 } else {
-                    _tagBlock = TagBlock.parse( m.group( 0 ), source );
+                    _tagBlock = TagBlock.parse( m.group( 0 ), bArray2Str( _source ) );
                 }
             } catch( Throwable t ) {
                 if( LOG.isDebugEnabled() ) LOG.debug( "Unable to parse TagBlock from {}", m.group( 0 ) );
             }
-            _packetBody = rawPacket.substring( m.end() ).getBytes();
+
+            _packetBody = str2bArray( rawPacket.substring( m.end() ) );
         } else if( addTagBlock ) {
-            if( source.isEmpty() ) {
+            if( _source == null || _source.length == 0 ) {
                 _tagBlock = TagBlock.build( null );
             } else {
-                _tagBlock = TagBlock.build( source );
+                _tagBlock = TagBlock.build( _source );
             }
             _packetBody = _rawPacket;
         } else {
@@ -219,7 +224,8 @@ public final class AISPacket {
             _packetBody = _rawPacket;
         }
 
-        if( LOG.isDebugEnabled() ) LOG.debug( "_packetBody = {}", new String( _packetBody ) );
+        if( LOG.isDebugEnabled() ) LOG.debug( "_packetBody = {}", bArray2Str( _packetBody ) );
+        
         if( _packetParts == null ) {
             _packetParts = AISPacket.fastSplit( _packetBody, FIELD_DELIMITER );
         }
@@ -231,17 +237,18 @@ public final class AISPacket {
         try {
             switch( _packetParts.length ) {
                 case 10:
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Unrecognized field at position 10: {}", _packetParts[9] );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Unrecognized field at position 10: {}", bArray2Str( _packetParts[9] ) );
                 case 9:
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Unrecognized field at position  9: {}", _packetParts[8] );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Unrecognized field at position  9: {}", bArray2Str( _packetParts[8] ) );
                 case 8:
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Unrecognized field at position  8: {}", _packetParts[7] );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Unrecognized field at position  8: {}", bArray2Str( _packetParts[7] ) );
                 case 7:
                     try {
-                        String checksum = new String( _packetParts[6] );
-                        if( checksum.contains( String.valueOf( CHECKSUM_DELIMITER ) ) ) {
-                            _fillBits = Integer.parseInt( checksum.substring( 0, checksum.indexOf( "*" ) ) );
-                            _checksum = checksum.substring( checksum.indexOf( String.valueOf( CHECKSUM_DELIMITER ) ) + 1 ).getBytes();
+                        byte[] checksum = _packetParts[6];
+                        int csIndex = indexOf( _packetParts[6], CHECKSUM_DELIMITER );
+                        if( csIndex != -1 ) {
+                            _fillBits = Integer.parseInt( substring( checksum, 0, csIndex ) );
+                            _checksum = trim( Arrays.copyOfRange( checksum, csIndex + 1, checksum.length ) );
                         } else {
                             if( LOG.isDebugEnabled() ) LOG.debug( "Packet is missing checksum!" );
                         }
@@ -249,34 +256,36 @@ public final class AISPacket {
                         if( LOG.isDebugEnabled() ) LOG.debug( "Failed to set fill bits and/or checksum due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 6:
-                    if( _packetParts[5] == null || _packetParts[5].length == 0 ) {
+                    if( _packetParts[5] == null ) {
+                        throw new AISPacketException( "Raw message is null." );
+                    } else if( _packetParts[5].length == 0 ) {
                         throw new AISPacketException( "Raw message is empty." );
                     }
-                    _rawMessage = _packetParts[5];
+                    _rawMessage = _packetParts[5]; // only the binary string
                 case 5:
-                    _radioChannelCode = ( _packetParts[4].length > 0 ) ? ( char ) _packetParts[4][0] : 'Z';
+                    _radioChannelCode = ( _packetParts[4].length != 0 ) ? ( char ) _packetParts[4][0] : 'Z';
                 case 4:
                     try {
-                        _sequentialMessageId = ( _packetParts[3].length > 0 ) ? -1
-                                : Integer.parseInt( Arrays.toString( _packetParts[3] ) ); // default to -1 if no message ID is present
+                        // default to -1 if no message ID is present
+                        _sequentialMessageId = ( _packetParts[3].length == 0 ) ? -1 : ( int )_packetParts[3][0]; 
                     } catch( NumberFormatException nfe ) {
                         if( LOG.isDebugEnabled() ) LOG.debug( "Failed to set sequential message ID due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 3:
                     try {
-                        _fragmentNumber = Integer.parseInt( new String( _packetParts[2] ) );
+                        _fragmentNumber = ( int )_packetParts[2][0];
                     } catch( NumberFormatException nfe ) {
                         if( LOG.isDebugEnabled() ) LOG.debug( "Failed to set fragment number due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 2:
                     try {
-                        _fragmentCount = Integer.parseInt( new String( _packetParts[1] ) );
+                        _fragmentCount = ( int )_packetParts[1][0];
                     } catch( NumberFormatException nfe ) {
                         if( LOG.isDebugEnabled() ) LOG.debug( "Failed to set fragment count due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 1:
                     int index = indexOf( _packetParts[0], AISPacket.ENCAP_START );
-                    if( index == -1 ) indexOf( _packetParts[0], AISPacket.PARAM_START );
+                    if( index == -1 ) index = indexOf( _packetParts[0], AISPacket.PARAM_START );
                     
                     if( index != -1 ) {
                         _type = Arrays.copyOfRange( _packetParts[0], index, _packetParts[0].length );
@@ -288,11 +297,82 @@ public final class AISPacket {
                     throw new AISPacketException( "Packet is corrupt and has no message body." );
             }
         } catch( Throwable t ) {
-            throw new AISPacketException( "Encountered a malformed AISPacket: \""
-                    + _rawPacket + "\" - " + t.getMessage(), t );
+            throw new AISPacketException( "Encountered a malformed AISPacket: \"" + bArray2Str( _rawPacket ) + "\" - " + t.getMessage(), t );
         }
 
         return this;
+    }
+    
+    /**
+     * 
+     * @param bytes
+     * @return 
+     */
+    public static String bArray2Str( byte [] bytes ) {
+        return new String( bArray2cArray( bytes ) );
+    }
+    
+    /**
+     * 
+     * @param string
+     * @return 
+     */
+    public static byte [] str2bArray( String string ) {
+        return CHARSET.encode( string ).array();
+    }
+    
+    /**
+     * 
+     * @param bytes
+     * @return 
+     */
+    private static byte [] trim( byte [] bytes ) {
+        char [] chars = CHARSET.decode( ByteBuffer.wrap( bytes ) ).array();
+        
+        for( int i = chars.length - 1; i > -1; i-- ) {
+            if( LOG.isDebugEnabled() ) LOG.debug( "Character at position {} is {}", i, chars[i] );
+            
+            switch( chars[i] ) {
+                case '\n':
+                    if( LOG.isTraceEnabled() ) LOG.trace( "Found newline" );
+                    break;
+                case '\r':
+                    if( LOG.isTraceEnabled() ) LOG.trace( "Found carriage return" );
+                    break;
+                case '\t':
+                    if( LOG.isTraceEnabled() ) LOG.trace( "Found tab" );
+                    break;
+                case ' ':
+                    if( LOG.isTraceEnabled() ) LOG.trace( "Found space" );
+                    break;
+                default:
+                    if( LOG.isTraceEnabled() ) LOG.trace( "Found non-whitespace character {} at position {}", chars[i], i );
+                    return Arrays.copyOfRange( bytes, 0, i + 1 );  // because the "to" value in Arrays.copyOfRange is EXclusive
+            }
+        }
+        
+        return bytes;
+    }
+    
+    /**
+     * 
+     * @param bytes
+     * @param start
+     * @param end
+     * @return 
+     */
+    private static String substring( byte [] bytes, int start, int end ) {
+        return bArray2Str( Arrays.copyOfRange( bytes, start, end ) );
+    }
+    
+    /**
+     * 
+     * @param bytes
+     * @return 
+     */
+    private static int getInt( byte [] bytes ) throws AISException {
+        if( bytes.length < 4 ) throw new AISException( "The byte array is too short to represent an int" );
+        return ByteBuffer.wrap( bytes ).getInt();
     }
     
     /**
@@ -302,13 +382,23 @@ public final class AISPacket {
      * @return 
      */
     private static int indexOf( byte[] ba, char c ) {
-        for( int i = 0; i < ba.length; i++ ) {
-            if( ba[i] == c ) {
+        char [] chars = CHARSET.decode( ByteBuffer.wrap( ba ) ).array();
+        for( int i = 0; i < chars.length; i++ ) {
+            if( chars[i] == c ) {
                 return i;
             }
         }
         
         return -1;
+    }
+    
+    /**
+     * 
+     * @param bytes
+     * @return 
+     */
+    private static char [] bArray2cArray( byte [] bytes ) {
+        return CHARSET.decode( ByteBuffer.wrap( bytes ) ).array();
     }
 
     /**
@@ -325,82 +415,156 @@ public final class AISPacket {
 
             // validate preamble
             if( _packetBody.length > 82 ) {
-                if( LOG.isDebugEnabled() ) LOG.debug( "Packet body exceeds maximum allowable size (82 characters)! {}", _packetBody );
+                if( LOG.isDebugEnabled() ) 
+                    LOG.debug( "Packet body exceeds maximum allowable size (82 characters)! {}", bArray2Str( _packetBody ) );
                 return false;
             } else if( _packetParts.length == 0 ) {
-                if( LOG.isDebugEnabled() ) LOG.debug( "Packet is empty!" );
+                if( LOG.isDebugEnabled() ) 
+                    LOG.debug( "Packet is empty!" );
                 return false;
             } else if( _packetParts.length != 7 ) {   // validate csv length
-                if( LOG.isDebugEnabled() ) LOG.debug( "Packet does not have the valid number (7) of comma separated values. {}", _packetBody );
+                if( LOG.isDebugEnabled() ) 
+                    LOG.debug( "Packet does not have the valid number (7) of comma separated values. {}", bArray2Str( _packetBody ) );
                 return false;
             } else if( !validatePreamble() ) {
-                if( LOG.isDebugEnabled() ) LOG.debug( "Packet has an invalid preamble: {}", _packetParts[0] );
+                if( LOG.isDebugEnabled() ) 
+                    LOG.debug( "Packet has an invalid preamble: {}", bArray2Str( _packetParts[0] ) );
                 return false;
             } else {
                 // check for bad characters in binary string
-                for( byte c : _packetParts[5] ) {
+                for( char c : bArray2cArray( _packetParts[5] ) ) {
                     // is this character within an accepted range?
                     if( !( ( c <= AISMessageDecoder.CHAR_RANGE_A_MAX && c >= AISMessageDecoder.CHAR_RANGE_A_MIN )
                             || ( c <= AISMessageDecoder.CHAR_RANGE_B_MAX && c >= AISMessageDecoder.CHAR_RANGE_B_MIN ) ) ) {
-                        if( LOG.isDebugEnabled() ) LOG.debug( "Packet contains an invalid character: {}", c );
+                        if( LOG.isDebugEnabled() ) 
+                            LOG.debug( "Packet contains an invalid character: {}", c );
                         return false;
                     }
                 }
 
                 // if we don't have any bad characters validate the checksum
-                int csIndex = indexOf( _packetParts[6], CHECKSUM_DELIMITER ) + 1;
+                int csIndex = indexOf( _packetBody, CHECKSUM_DELIMITER ) + 1;
 
                 if( csIndex > 0 ) {
                     // validate checksum
-                    if( !validateChecksum( new String( _packetBody ), new String( Arrays.copyOfRange( _packetParts[6], 0, csIndex ) ) ) ) {
-                        if( LOG.isDebugEnabled() ) LOG.debug( "Packet failed checksum validation." );
+                    if( !validateChecksum( _packetBody, _checksum ) ) {
+                        if( LOG.isDebugEnabled() ) 
+                            LOG.debug( "Packet failed checksum validation." );
+                        return false;
                     }
                 } else {
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Packet is missing fillbits and/or checksum." );
+                    if( LOG.isDebugEnabled() ) 
+                            LOG.debug( "Packet is missing fillbits and/or checksum." );
                     return false;
                 }
             }
         } catch( AISPacketException ape ) {
             // do nothing
-            if( LOG.isDebugEnabled() ) LOG.debug( "Packet validation faied: {}", ape.getMessage(), ape );
+            if( LOG.isDebugEnabled() ) 
+                LOG.debug( "Packet validation faied: {}", ape.getMessage(), ape );
             return false;
         }
 
         return true;
     }
-
+    
     /**
      *
-     * @param sourceString
+     * @param source
      * @return
      */
-    public final static String generateChecksum( String sourceString ) {
-        char[] buf = sourceString.toCharArray();
+    public final static int generateChecksum( char [] source ) {
+        if( LOG.isDebugEnabled() ) LOG.debug( "Generating checksum for String \"{}\"", new String( source ) );
 
         int crc = 0;
 
-        for( int i = 0; i < ( buf.length ); i++ ) {
-            crc ^= buf[i];
+        for( int i = 0; i < ( source.length ); i++ ) {
+            crc ^= source[i];
         }
 
-        String hexString = Integer.toHexString( crc );
+        if( LOG.isTraceEnabled() ) LOG.trace( "Generated CRC = {}", crc );
 
-        if( hexString.length() == 1 ) {
-            hexString = "0" + hexString;
-        }
-
-        if( LOG.isTraceEnabled() ) LOG.trace( "Generated CRC = {}", hexString.toUpperCase() );
-
+        return crc;
+    }
+    
+    /**
+     * 
+     * @param sourceString
+     * @return 
+     */
+    public final static String generateChecksumString( String sourceString ) {
+        String hexString = Integer.toHexString( generateChecksum( sourceString.toCharArray() ) );
+        
+        hexString = ( hexString.length() == 1 ) ? "0" + hexString : hexString;
+        
         return hexString;
     }
 
     /**
      *
-     * @param rawPacket
+     * @param data
      * @return
      */
-    public final static String getChecksum( String rawPacket ) {
-        return getChecksum( rawPacket, 1, rawPacket.indexOf( String.valueOf( CHECKSUM_DELIMITER ) ) );
+    public final static int getChecksum( String data ) {
+        if( LOG.isTraceEnabled() ) LOG.trace( "Found * at {}", data.indexOf( String.valueOf( CHECKSUM_DELIMITER ) ) );
+        return getChecksum( data, 1, data.indexOf( String.valueOf( CHECKSUM_DELIMITER ) ) );
+    }
+    
+    /**
+     * 
+     * @param bytes
+     * @return 
+     */
+    public final static int getChecksum( byte [] bytes ) {
+        return AISPacket.generateChecksum( bArray2cArray( Arrays.copyOfRange( bytes, 1, indexOf( bytes, CHECKSUM_DELIMITER ) ) ) );
+    }
+
+    /**
+     *
+     * @param genString
+     * @param startFrom
+     * @param endAt
+     * @return
+     */
+    public final static int getChecksum( String genString, int startFrom, int endAt ) {
+        if( endAt <= startFrom || endAt > genString.length() ) return -1;
+            
+        return AISPacket.generateChecksum( genString.substring( startFrom, endAt ).toCharArray() );
+    }
+    
+    /**
+     *
+     * @param data
+     * @param packetChecksum
+     * @return
+     */
+    public final static boolean validateChecksum( byte [] data, byte [] packetChecksum ) {
+        long calcChecksum = 0;
+        long pktChecksum = 0;
+        
+        byte [] trimmed = trim( data );
+        
+        try {
+            calcChecksum = getChecksum( trimmed );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Generated checksum {}", calcChecksum );
+        } catch( NumberFormatException nfe ) {
+            if( LOG.isDebugEnabled() ) LOG.debug( "Cannot produce a checksum from  \"{}\"", bArray2Str( trimmed ) );
+            return false;
+        }
+
+        try {
+                pktChecksum = Long.parseLong( bArray2Str( packetChecksum ), 16 );
+        } catch( NumberFormatException nfe ) {
+            LOG.info( "Cannot parse \"{}\" into a valid long", bArray2Str( packetChecksum ) );
+            return false;
+        }
+        
+        if( LOG.isDebugEnabled() ) {
+            LOG.debug( "Comparing: \"{}/{}\" to \"{}/{}\"", pktChecksum, bArray2Str( packetChecksum ).toUpperCase(), calcChecksum, Long.toHexString( calcChecksum ).toUpperCase() );
+            LOG.debug( "\"{}\" is {} equal to \"{}\"", calcChecksum, ( ( calcChecksum == pktChecksum ) ? "" : "not" ), pktChecksum );
+        }
+        
+        return pktChecksum == calcChecksum;
     }
 
     /**
@@ -516,32 +680,6 @@ public final class AISPacket {
 
     /**
      *
-     * @param genString
-     * @param startFrom
-     * @param endAt
-     * @return
-     */
-    public final static String getChecksum( String genString, int startFrom, int endAt ) {
-        return AISPacket.generateChecksum( genString.substring( startFrom, endAt ) );
-    }
-
-    /**
-     *
-     * @param rawPacket
-     * @param packetChecksum
-     * @return
-     */
-    public final static boolean validateChecksum( String rawPacket, String packetChecksum ) {
-        String calcChecksum = getChecksum( rawPacket );
-        if( calcChecksum.length() == 1 ) {
-            calcChecksum = "0" + calcChecksum;
-        }
-        if( LOG.isDebugEnabled() ) LOG.debug( "Comparing: \"{}\" to \"{}\"", packetChecksum.toUpperCase(), calcChecksum.toUpperCase() );
-        return packetChecksum.equalsIgnoreCase( calcChecksum );
-    }
-
-    /**
-     *
      * @return
      */
     public final byte[] getRawPacket() {
@@ -564,11 +702,11 @@ public final class AISPacket {
      * @param text
      * @return
      */
-    public final String generateTagBlockPacketString( String text ) {
+    public final String generateTagBlockPacketString( byte [] text ) {
         TagBlock tb = new TagBlock();
         tb.setSource( _source );
         tb.setTimestamp( _timeReceived.getMillis() );
-        tb.setTextStr( text.getBytes() );
+        tb.setTextStr( text );
         return generateTagBlockPacketString( _rawPacket, tb );
     }
 
@@ -578,8 +716,8 @@ public final class AISPacket {
      * @param tb
      * @return
      */
-    public final static String generateTagBlockPacketString( byte[] rawPacket, TagBlock tb ) {
-        return new StringBuilder( tb.toString() ).append( rawPacket ).toString();
+    public final static String generateTagBlockPacketString( byte [] rawPacket, TagBlock tb ) {
+        return new StringBuilder( tb.toString() ).append( bArray2Str( rawPacket ) ).toString();
     }
 
     /**
@@ -645,8 +783,16 @@ public final class AISPacket {
      *
      * @return
      */
-    public final byte[] getRawMessage() {
+    public final byte [] getRawMessage() {
         return _rawMessage;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public final byte [] getPacketBody() {
+        return _packetBody;
     }
 
     /**
@@ -661,7 +807,7 @@ public final class AISPacket {
      *
      * @return
      */
-    public final byte[] getChecksum() {
+    public final byte [] getChecksum() {
         return _checksum;
     }
 
@@ -685,7 +831,7 @@ public final class AISPacket {
      *
      * @return
      */
-    public final byte[] getSource() {
+    public final byte [] getSource() {
         return _source;
     }
 
@@ -693,7 +839,7 @@ public final class AISPacket {
      *
      * @param source
      */
-    public final void setSource( byte[] source ) {
+    public final void setSource( byte [] source ) {
         _source = source;
     }
 
@@ -746,6 +892,34 @@ public final class AISPacket {
 
         return truncIndex;
     }
+    
+    /**
+     * 
+     * @param strict
+     * @param packets
+     * @return 
+     * @throws jais.exceptions.AISException 
+     */
+    public static byte [] concatenate( boolean strict, AISPacket ... packets ) throws AISException {
+        byte [] compositeMsg = null;
+        
+        for( AISPacket packet : packets ) {
+            if( !strict || packet.isValid() ) {
+                if( compositeMsg == null ) {
+                    compositeMsg = packet.getRawMessage();
+                } else {
+                    byte [] temp = new byte[compositeMsg.length + packet.getRawMessage().length];
+                    System.arraycopy( compositeMsg, 0, temp, 0, compositeMsg.length );
+                    System.arraycopy( packet.getRawMessage(), 0, temp, compositeMsg.length, packet.getRawMessage().length );
+                    compositeMsg = temp;
+                }
+            } else {
+                throw new AISException( "Packet : \"" + bArray2Str( packet.getRawPacket() ) + "\" failed validation!" );
+            }
+        }
+        
+        return compositeMsg;
+    }
 
     /**
      *
@@ -758,7 +932,7 @@ public final class AISPacket {
 
         if( o instanceof AISPacket ) {
             AISPacket p = ( AISPacket ) o;
-            isEqual = Arrays.equals( p.getRawPacket(), _rawPacket );
+            isEqual = p.getRawPacket().equals( _rawPacket );
             isEqual = isEqual && _timeReceived.equals( p.getTimeReceived() );
         }
 
@@ -772,7 +946,7 @@ public final class AISPacket {
     @Override
     public final int hashCode() {
         int hash = 7;
-        hash = 79 * hash + ( _rawPacket != null ? Arrays.hashCode( _rawPacket ) : 0 );
+        hash = 79 * hash + ( _rawPacket != null ? _rawPacket.hashCode() : 0 );
         return hash;
     }
 
@@ -781,22 +955,23 @@ public final class AISPacket {
      * @return
      */
     public final HashMap<String, Object> toMap() {
-        if( _packetMap.isEmpty() ) {
-            _packetMap.put( "tagblock", _tagBlock );
-            _packetMap.put( "preamble", _preamble );
-            _packetMap.put( "raw_message", _rawMessage );
-            _packetMap.put( "raw_packet", _rawPacket );
-            _packetMap.put( "time_received", _timeReceived );
-            _packetMap.put( "source", _source );
-            _packetMap.put( "fragment_count", _fragmentCount );
-            _packetMap.put( "fragment_number", _fragmentNumber );
-            _packetMap.put( "sequential_message_id", _sequentialMessageId );
-            _packetMap.put( "radio_channel_code", _radioChannelCode );
-            _packetMap.put( "checksum", _checksum );
-            _packetMap.put( "fill_bits", _fillBits );
+        HashMap<String,Object> packetMap = new HashMap<>();
+        if( packetMap.isEmpty() ) {
+            packetMap.put( "tagblock", _tagBlock );
+            packetMap.put( "preamble", _preamble );
+            packetMap.put( "raw_message", _rawMessage );
+            packetMap.put( "raw_packet", _rawPacket );
+            packetMap.put( "time_received", _timeReceived );
+            packetMap.put( "source", _source );
+            packetMap.put( "fragment_count", _fragmentCount );
+            packetMap.put( "fragment_number", _fragmentNumber );
+            packetMap.put( "sequential_message_id", _sequentialMessageId );
+            packetMap.put( "radio_channel_code", _radioChannelCode );
+            packetMap.put( "checksum", _checksum );
+            packetMap.put( "fill_bits", _fillBits );
         }
 
-        return _packetMap;
+        return packetMap;
     }
 
     /**
@@ -804,21 +979,21 @@ public final class AISPacket {
      */
     public static class Preamble {
 
-        public final byte[] rawPreamble;
+        public final String rawPreamble;
         public char firstChar;
         public boolean isEncapsulated;
         public Talkers talker;
         public boolean isProprietary;
         public Manufacturers manufacturer;
-        public byte[] format;
+        public String format;
         public boolean isQuery;
-        public byte[] parsed;
+        public String parsed;
 
         /**
          *
          * @param rawPreamble
          */
-        public Preamble( byte[] rawPreamble ) {
+        public Preamble( String rawPreamble ) {
             this.rawPreamble = rawPreamble;
         }
 
@@ -845,13 +1020,13 @@ public final class AISPacket {
          * @return
          */
         public static Preamble parse( String rawPreamble ) {
-            Preamble p = new Preamble( rawPreamble.getBytes() );
+            Preamble p = new Preamble( rawPreamble );
 
             if( LOG.isDebugEnabled() ) LOG.debug( "Parsing {}", rawPreamble );
             Matcher m = PREAMBLE_PATTERN.matcher( rawPreamble );
             if( m.find() ) {
                 String parsed = m.group( 0 );
-                p.parsed = parsed.getBytes();
+                p.parsed = parsed;
                 if( LOG.isDebugEnabled() ) LOG.debug( "Found {} matcher groups: {}=({})({})({})({})", m.groupCount(), m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ), m.group( 5 ) );
                 p.firstChar = m.group( 1 ).charAt( 0 );
 
@@ -874,7 +1049,7 @@ public final class AISPacket {
                     if( LOG.isDebugEnabled() ) LOG.info( "Unrecognized/invalid talker type: {}", m.group( 2 ) );
                 }
 
-                p.format = m.group( 4 ).getBytes();
+                p.format = m.group( 4 );
                 p.isQuery = m.group( 5 ).equals( "Q" );
             } else {
                 if( LOG.isDebugEnabled() ) LOG.warn( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE );
