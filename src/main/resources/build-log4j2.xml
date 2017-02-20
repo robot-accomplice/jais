@@ -13,15 +13,8 @@
             <AppenderRef ref="STDOUT"/>
         </Logger>
 
-        <Logger name="com.shiptracks" level="debug" additivity="false">
-            <!--<AppenderRef ref="FILE"/>-->
-            <AppenderRef ref="STDOUT"/>
-            <AppenderRef ref="STDERR"/>
-        </Logger>
-
         <Root level="debug" additivity="false">
             <AppenderRef ref="STDOUT"/>
-            <AppenderRef ref="STDERR"/>
         </Root>
     </Loggers>
 </Configuration>
