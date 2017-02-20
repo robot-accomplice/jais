@@ -74,7 +74,7 @@
                 <version>2.18.1</version>
                 <configuration>
                     <systemPropertyVariables>
-                        <log4j.configurationFile>src/main/resources/log42.xml</log4j.configurationFile>
+                        <log4j.configurationFile>src/main/resources/build-log42.xml</log4j.configurationFile>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
