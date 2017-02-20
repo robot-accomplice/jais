@@ -87,15 +87,15 @@ public class ConsoleController implements Initializable {
                     appendLineToOutput( "---------------------------------------------" );
                 TagBlock tb = packet.getTagBlock();
                 if( tb != null ) {
-                    appendLineToOutput( "TagBlock: " + tb.rawTagBlock );
+                    appendLineToOutput( "TagBlock: " + AISPacket.bArray2Str( tb.rawTagBlock ) );
                     appendLineToOutput( "---------------------------------------------" );
-                    appendLineToOutput( "\tsource           : " + tb.getSource() );
-                    appendLineToOutput( "\tdestination      : " + tb.getDestination() );
+                    appendLineToOutput( "\tsource           : " + AISPacket.bArray2Str( tb.getSource() ) );
+                    appendLineToOutput( "\tdestination      : " + ( ( tb.destination == null ) ? "null" : AISPacket.bArray2Str( tb.destination ) ) );
                     appendLineToOutput( "\ttimestamp        : " + tb.getTimestamp() );
                     appendLineToOutput( "\trelative time    : " + tb.getRelativeTime() );
-                    appendLineToOutput( "\tsentence grouping: " + tb.getSentenceGrouping() );
+                    appendLineToOutput( "\tsentence grouping: " + ( ( tb.sentenceGrouping == null ) ? "null" : AISPacket.bArray2Str( tb.sentenceGrouping) ) );
                     appendLineToOutput( "\tline count       : " + tb.getLineCount() );
-                    appendLineToOutput( "\ttext string      : " + tb.getTextStr() );
+                    appendLineToOutput( "\ttext string      : " + ( ( tb.textStr == null ) ? "null" : AISPacket.bArray2Str( tb.textStr ) ) );
                 } else {
                     appendLineToOutput( "TagBlock: " );
                     appendLineToOutput( "---------------------------------------------" );
@@ -103,9 +103,9 @@ public class ConsoleController implements Initializable {
                 }
                 Preamble pre = Preamble.parse( packetStr );
                 appendLineToOutput( "---------------------------------------------" );
-                appendLineToOutput( "Preamble: " + pre.parsed );
+                appendLineToOutput( "Preamble: " + AISPacket.bArray2Str( pre.parsed ) );
                 appendLineToOutput( "---------------------------------------------" );
-                appendLineToOutput( "\tformat       : " + pre.format );
+                appendLineToOutput( "\tformat       : " + AISPacket.bArray2Str( pre.format ) );
                 appendLineToOutput( "\tencapsulated : " + pre.isEncapsulated );
                 appendLineToOutput( "\tproprietary  : " + pre.isProprietary );
                 appendLineToOutput( "\tquery        : " + pre.isQuery );
@@ -220,7 +220,7 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput( "To Starboard: " + ecbpr.getToStarboard() );
                         break;
                     default:
-                        appendLineToOutput( "Ignoring new " + msg.getType().getDescription() );
+                        appendLineToOutput( "Not breaking out fields of " + msg.getType().getDescription() );
                 }
             } else {
                 appendLineToOutput( "AISMessageFactory returned a null message!" );
