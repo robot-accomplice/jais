@@ -75,8 +75,6 @@
                 <configuration>
                     <systemPropertyVariables>
                         <log4j.configurationFile>src/main/resources/log42.xml</log4j.configurationFile>
-                        <org.slf4j.simpleLogger.defaultLogLevel>DEBUG</org.slf4j.simpleLogger.defaultLogLevel>
-                        <org.slf4j.simpleLogger.showDateTime>true</org.slf4j.simpleLogger.showDateTime>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
