@@ -15,6 +15,7 @@
  */
 package jais;
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,7 +44,7 @@ public final class TagBlock {
     // r relative time, positive int
     long relativeTime;
     // s source id, alphanumeric (<= 15 chars)
-    byte [] source = "UKNOWN".getBytes();
+    byte [] source = AISPacket.str2bArray( "UKNOWN" );
     // t text string
     byte [] textStr;
 
@@ -202,14 +203,14 @@ public final class TagBlock {
      * @param source
      * @return 
      */
-    public final static TagBlock build( String source ) {
-        if( source.length() > 15 ) {
-            source = source.substring( 0, 15 );
+    public final static TagBlock build( byte [] source ) {
+        if( source.length > 15 ) {
+            source = Arrays.copyOfRange( source, 0, 15 );
             LOG.warn( "Truncating oversized source from {} to {}" );
         }
         
         TagBlock tb = new TagBlock();
-        tb.setSource( source.getBytes() );
+        tb.setSource( source );
         tb.setTimestamp( DateTime.now().getMillis() );
         
         return tb;
@@ -222,7 +223,7 @@ public final class TagBlock {
      * @param source
      * @return 
      */
-    public final static TagBlock parse( String rawTagBlock, String source ) {
+    public final static TagBlock parse( String rawTagBlock, byte [] source ) {
         LOG.fatal( "Parsing {}", rawTagBlock );
         TagBlock tb = new TagBlock();
 
@@ -239,13 +240,13 @@ public final class TagBlock {
                     if( tag[1].length() > 15 ) {
                         LOG.warn( "Length of destination String \"{}\" exceeds 15 character limit",tag[1] );
                     }
-                    tb.setDestination( tag[1].getBytes() );
+                    tb.setDestination( AISPacket.str2bArray( tag[1] ) );
                     break;
                 case "g":
                     if( tag[1].length() > 15 ) {
                         LOG.warn( "Length of sentence grouping String \"{}\" exceeds 15 character limit",tag[1] );
                     }
-                    tb.setSentenceGrouping( tag[1].getBytes() );
+                    tb.setSentenceGrouping( AISPacket.str2bArray( tag[1] ) );
                     break;
                 case "n":
                     tb.setLineCount( Integer.parseInt( tag[1] ) );
@@ -258,11 +259,11 @@ public final class TagBlock {
                         if( tag[1].length() > 15 ) {
                             LOG.warn( "Length of source String \"{}\" exceeds 15 character limit", tag[1] );
                         }
-                        source = tag[1];
+                        source = AISPacket.str2bArray( tag[1] );
                     }
                     break;
                 case "t":
-                    tb.setTextStr( tag[1].getBytes() );
+                    tb.setTextStr( AISPacket.str2bArray( tag[1] ) );
                         if( tag[1].length() > 15 ) {
                             LOG.warn( "Length of text String \"{}\" exceeds 15 character limit", tag[1] );
                         }
@@ -271,14 +272,14 @@ public final class TagBlock {
         }
         
         if( source != null ) {
-            if( source.length() > 15 ) {
-                source = source.substring( 0, 15 );
-                LOG.warn( "Truncating oversized source from {} to {}" );
+            if( source.length > 15 ) {
+                source = Arrays.copyOfRange( source, 0, 15 );
+                LOG.warn( "Truncating oversized source 15 characters" );
             }
-            tb.setSource( source.getBytes() );
+            tb.setSource( source );
         }
         
-        tb.setRawTagBlock( tb.toString().getBytes() );
+        tb.setRawTagBlock( AISPacket.str2bArray( tb.toString() ) );
         
         return tb;
     }
@@ -308,11 +309,11 @@ public final class TagBlock {
 
         StringBuilder tbs = new StringBuilder();
 
-        if( this.sentenceGrouping != null && this.sentenceGrouping.length > 0 ) {
+        if( this.sentenceGrouping != null && this.sentenceGrouping.length != 0 ) {
             if( tbs.length() > 1 ) {
                 tbs.append( "," );
             }
-            tbs.append( "g:" ).append( this.sentenceGrouping );
+            tbs.append( "g:" ).append( AISPacket.bArray2Str( this.sentenceGrouping ) );
         }
         if( this.lineCount > 0 ) {
             if( tbs.length() > 1 ) {
@@ -320,11 +321,11 @@ public final class TagBlock {
             }
             tbs.append( "n:" ).append( this.lineCount );
         }
-        if( this.source != null && this.source.length > 0 ) {
+        if( this.source != null && this.source.length != 0 ) {
             if( tbs.length() > 1 ) {
                 tbs.append( "," );
             }
-            tbs.append( "s:" ).append( this.source );
+            tbs.append( "s:" ).append( AISPacket.bArray2Str( this.source ) );
         }
         if( this.timestamp > 0 ) {
             if( tbs.length() > 1 ) {
@@ -332,11 +333,11 @@ public final class TagBlock {
             }
             tbs.append( "c:" ).append( this.timestamp );
         }
-        if( this.destination != null && this.destination.length > 0 ) {
+        if( this.destination != null && this.destination.length != 0 ) {
             if( tbs.length() > 1 ) {
                 tbs.append( "," );
             }
-            tbs.append( "d:" ).append( this.destination );
+            tbs.append( "d:" ).append( AISPacket.bArray2Str( this.destination ) );
         }
         if( this.relativeTime > 0 ) {
             if( tbs.length() > 1 ) {
@@ -344,19 +345,20 @@ public final class TagBlock {
             }
             tbs.append( "r:" ).append( this.relativeTime );
         }
-        if( this.textStr != null && this.textStr.length > 0 ) {
+        if( this.textStr != null && this.textStr.length != 0 ) {
             if( tbs.length() > 1 ) {
                 tbs.append( "," );
             }
-            tbs.append( "t" ).append( this.textStr );
+            tbs.append( "t" ).append( AISPacket.bArray2Str( this.textStr ) );
         }
 
-        // add checksum and close
-        this.rawTagBlock = new StringBuilder( "\\" )
+        tbs = new StringBuilder( "\\" )
                 .append( tbs ).append( "*" )
-                .append( AISPacket.generateChecksum( tbs.toString() ) ).append( "\\" )
-                .toString().getBytes();
+                .append( AISPacket.getChecksum( tbs.toString(), 0, tbs.length() ) ).append( "\\" );
+        
+        // add checksum and close
+        this.rawTagBlock = AISPacket.str2bArray( tbs.toString() );
 
-        return new String( this.rawTagBlock );
+        return tbs.toString();
     }
 }
