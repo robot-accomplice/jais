@@ -322,21 +322,15 @@ public abstract class AISMessageBase implements AISMessage {
     public void decode() throws AISException {
         _decodedFieldMap.put( "time_received", getTimeReceived() );
 
-        StringBuilder compositeMsg = new StringBuilder();
+        _compositeMsg = AISPacket.bArray2Str( AISPacket.concatenate( true, getPackets() ) );
 
-        for( AISPacket ap : getPackets() ) {
-            compositeMsg.append( ap.getRawMessage() );
-        }
-
-        _compositeMsg = compositeMsg.toString();
         _bits = AISMessageDecoder.stringToBitSet( _compositeMsg );
 
         for( AISFieldMap field : AISFieldMap.values() ) {
             switch( field ) {
                 case TYPE:
                     if( _decodedFieldMap.get( "message_type" ) == null ) {
-                        AISMessageType mType
-                                = AISMessageDecoder.decodeMessageType( _bits );
+                        AISMessageType mType = AISMessageDecoder.decodeMessageType( _bits );
                         _messageType = mType;
                     } else {
                         // hopefully already set
@@ -385,10 +379,7 @@ public abstract class AISMessageBase implements AISMessage {
         if( !Objects.equals( this._source, other._source ) ) {
             return false;
         }
-        if( !Objects.equals( this._compositeMsg, other._compositeMsg ) ) {
-            return false;
-        }
-        return true;
+        return Objects.equals( this._compositeMsg, other._compositeMsg );
     }
 
     /**
