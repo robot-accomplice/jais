@@ -237,7 +237,7 @@ public class AISDecoderTest {
                 LOG.fatal( "AISPacket.truncatePacket() produced: \"{}\" from \"{}\"", truncStr, packetStr );
                 if( truncStr != null && !truncStr.isEmpty() ) assertTrue( new AISPacket( truncStr ).isValid() );
                 else assertTrue( new AISPacket( packetStr ).isValid() );
-            } catch( Throwable t ) {
+            } catch( AISPacketException t ) {
                 LOG.fatal( t.getMessage(), t );
             }
         }
@@ -256,6 +256,17 @@ public class AISDecoderTest {
 
         LOG.fatal( "Testing with {} packets.", TEST_PACKETS.length );
         for( String newMessage : TEST_PACKETS ) {
+            Matcher pm = AISPacket.PACKET_PATTERN.matcher( newMessage );
+
+            if( pm.find() ) {
+                LOG.fatal(  "Found {} groups", pm.groupCount() );
+                for( int i = 0; i < pm.groupCount(); i++ ) {
+                    LOG.fatal( "Group {} = \"{}\"", i, pm.group( i ) );
+                }
+            } else {
+                LOG.fatal( "MATCHER COMPLETELY FAILED! {}", AISPacket.PACKET_PATTERN );
+            }
+            
             String truncStr = AISPacket.truncatePacket( new StringBuilder( newMessage ) );
             if( truncStr != null && !truncStr.isEmpty() ) newMessage = truncStr;
             
