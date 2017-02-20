@@ -283,7 +283,7 @@ public class Vessel implements Cloneable {
      * @return
      */
     public String getCallsign() {
-        return new String( _callsign );
+        return AISPacket.bArray2Str( _callsign );
     }
 
     /**
@@ -291,7 +291,7 @@ public class Vessel implements Cloneable {
      * @return
      */
     public String getShipname() {
-        return new String( _shipname );
+        return AISPacket.bArray2Str( _shipname );
     }
 
     /**
@@ -387,7 +387,7 @@ public class Vessel implements Cloneable {
      * @return
      */
     public String getDestination() {
-        return new String( _destination );
+        return AISPacket.bArray2Str( _destination );
     }
 
     /**
@@ -558,8 +558,7 @@ public class Vessel implements Cloneable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 89 * hash + _imo;
-        hash = 89 * hash + Objects.hashCode( _shipname );
+        hash = 89 * hash + Objects.hashCode( _id );
         return hash;
     }
 
@@ -578,7 +577,7 @@ public class Vessel implements Cloneable {
         }
         final Vessel other = ( Vessel ) obj;
 
-        if( _id != other.getId() ) {
+        if( !_id.equals( other.getId() ) ) {
             return false;
         }
         if( _version != other.getVersion() ) {
