@@ -20,6 +20,7 @@ import jais.exceptions.InvalidAISCharacterException;
 import jais.exceptions.AISException;
 import jais.messages.AISMessage.AISFieldMap;
 import jais.messages.enums.AISMessageType;
+import java.nio.ByteBuffer;
 import java.util.BitSet;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -36,6 +37,42 @@ public class AISMessageDecoder {
     public final static int CHAR_RANGE_A_MAX = 87;
     public final static int CHAR_RANGE_B_MIN = 96;
     public final static int CHAR_RANGE_B_MAX = 119;
+
+    /**
+     *
+     * @param rawMessage
+     * @return
+     */
+    public static BitSet byteArrayToBitSet( byte [] rawMessage ) {
+        
+        char [] msgChars = AISPacket.CHARSET.decode( ByteBuffer.wrap( rawMessage ) ).array();
+
+        if( LOG.isDebugEnabled() ) LOG.debug( "8 bit char array is {} bytes long.", rawMessage.length );
+
+        BitSet bits = new BitSet( 6 * rawMessage.length );
+        //boolean out[] = new boolean[6 * in.length];
+        if( LOG.isDebugEnabled() ) LOG.debug( "6 bit boolean array is {} bits long.", bits.size() );
+
+        int bIndex = 0;
+        for( char c : msgChars ) {
+            try {
+                int oc = encodedToSixBitInt( c ); // pull the current raw message char
+                if( oc == -1 ) {
+                    LOG.info( "Invalid character:  '{}'", c );
+                    bits.clear();
+                    break;
+                } else {
+                    for( int bPos = 5; bPos >= 0; bPos-- ) {
+                        bits.set( bIndex++, 0 < ( oc & ( 1 << bPos ) ) );
+                    }
+                }
+            } catch( InvalidAISCharacterException iace ) {
+                LOG.info( "Encountered an invalid character (possible message padding?) : {}", iace.getMessage() );
+            }
+        }
+
+        return bits;
+    }
 
     /**
      *
@@ -105,7 +142,7 @@ public class AISMessageDecoder {
         int rval = 0;
 
         if( endBit > bits.size() ) {
-            throw new AISException( "DecodeInt: exceeded length of input array" );
+            throw new AISException( "DecodeInt: position " + endBit + " exceeds input array length " + bits.size() );
         }
 
         int binPosValue = 1;
@@ -215,6 +252,16 @@ public class AISMessageDecoder {
     public static AISMessageType decodeMessageType( String rawMessage )
             throws AISException {
         return decodeMessageType( stringToBitSet( rawMessage ) );
+    }
+    
+    /**
+     * 
+     * @param rawMessage
+     * @return
+     * @throws AISException 
+     */
+    public static AISMessageType decodeMessageType( byte [] rawMessage ) throws AISException {
+        return decodeMessageType( byteArrayToBitSet( rawMessage ) );
     }
 
     /**
