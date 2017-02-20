@@ -42,8 +42,8 @@ public class Vessel implements Cloneable {
     private Identifier _id;
     private int _version;
     private int _imo;
-    private String _callsign;
-    private String _shipname;
+    private byte [] _callsign;
+    private byte [] _shipname;
     private ShipType _shiptype = ShipType.OTHER_NO_INFO;
     private int _toBow;
     private int _toStern;
@@ -55,7 +55,7 @@ public class Vessel implements Cloneable {
     private int _hour;
     private int _minute;
     private float _draught;
-    private String _destination;
+    private byte [] _destination;
     private boolean _dte;
     private NavigationStatus _status = NavigationStatus.NOT_DEFINED;
     private float _turn;
@@ -108,7 +108,7 @@ public class Vessel implements Cloneable {
         _toPort = report.getToPort();
         _toStarboard = report.getToStarboard();
         _second = report.getSecond();
-        _shipname = report.getShipName();
+        _shipname = AISPacket.str2bArray( report.getShipName() );
         _shiptype = report.getShipType();
     }
 
@@ -142,10 +142,10 @@ public class Vessel implements Cloneable {
         _id = new Identifier( savrd.getMmsi(), savrd.getSource() );
         _timeReceived = savrd.getTimeReceived();
         _imo = savrd.getImo();
-        _shipname = savrd.getShipname();
+        _shipname = AISPacket.str2bArray( savrd.getShipname() );
         _shiptype = savrd.getShiptype();
-        _callsign = savrd.getCallsign();
-        _destination = savrd.getDestination();
+        _callsign = AISPacket.str2bArray( savrd.getCallsign() );
+        _destination = AISPacket.str2bArray( savrd.getDestination() );
         _draught = savrd.getDraught();
         _eta = savrd.getETA();
         _epfd = savrd.getEpfd();
@@ -188,10 +188,10 @@ public class Vessel implements Cloneable {
      */
     public void addUpdateStaticReport( StaticAndVoyageRelatedData savrd ) {
         _imo = savrd.getImo();
-        _shipname = savrd.getShipname();
+        _shipname = AISPacket.str2bArray( savrd.getShipname() );
         _shiptype = savrd.getShiptype();
-        _callsign = savrd.getCallsign();
-        _destination = savrd.getDestination();
+        _callsign = AISPacket.str2bArray( savrd.getCallsign() );
+        _destination = AISPacket.str2bArray( savrd.getDestination() );
         _draught = savrd.getDraught();
         _eta = savrd.getETA();
         _epfd = savrd.getEpfd();
@@ -283,7 +283,7 @@ public class Vessel implements Cloneable {
      * @return
      */
     public String getCallsign() {
-        return _callsign;
+        return new String( _callsign );
     }
 
     /**
@@ -291,7 +291,7 @@ public class Vessel implements Cloneable {
      * @return
      */
     public String getShipname() {
-        return _shipname;
+        return new String( _shipname );
     }
 
     /**
@@ -387,7 +387,7 @@ public class Vessel implements Cloneable {
      * @return
      */
     public String getDestination() {
-        return _destination;
+        return new String( _destination );
     }
 
     /**
