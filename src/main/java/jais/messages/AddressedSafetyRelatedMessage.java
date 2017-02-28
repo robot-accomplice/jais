@@ -102,7 +102,7 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
                     _retransmit = _bits.get( field.getStartBit() );
                     break;
                 case TEXT:
-                    _text = AISMessageDecoder.decodeString( _bits, 
+                    _text = AISMessageDecoder.decodeToString( _bits, 
                             field.getStartBit(), _bits.size() - 1 );
                     break;
             }

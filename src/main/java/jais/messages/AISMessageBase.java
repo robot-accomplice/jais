@@ -45,9 +45,9 @@ public abstract class AISMessageBase implements AISMessage {
 
     public final static SpatialContext CTX = SpatialContext.GEO;
     
-    protected String _source = "UNKNOWN";
+    protected byte [] _source = AISPacket.str2bArray( "UNKNOWN" );
     protected AISPacket[] _packets;
-    protected String _compositeMsg;
+    protected byte [] _compositeMsg;
     protected AISMessageType _messageType;
     protected BitSet _bits;
     protected Point _position;
@@ -59,7 +59,7 @@ public abstract class AISMessageBase implements AISMessage {
      * @param packets 
      */
     public AISMessageBase( String source, AISPacket... packets ) {
-        _source = source;
+        _source = AISPacket.str2bArray( source );
         _packets = packets;
     }
     
@@ -70,7 +70,7 @@ public abstract class AISMessageBase implements AISMessage {
      * @param packets 
      */
     public AISMessageBase( String source, AISMessageType messageType, AISPacket... packets ) {
-        _source = source;
+        _source = AISPacket.str2bArray( source );
         _messageType = messageType;
         _packets = packets;
     }
@@ -100,7 +100,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public String getSource() {
-        return _source;
+        return AISPacket.bArray2Str( _source );
     }
     
     /**
@@ -109,7 +109,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public void setSource( String source ) {
-        _source = source;
+        _source = AISPacket.str2bArray( source );
     }
 
     /**
@@ -322,9 +322,9 @@ public abstract class AISMessageBase implements AISMessage {
     public void decode() throws AISException {
         _decodedFieldMap.put( "time_received", getTimeReceived() );
 
-        _compositeMsg = AISPacket.bArray2Str( AISPacket.concatenate( true, getPackets() ) );
+        _compositeMsg = AISPacket.concatenate( true, getPackets() ) ;
 
-        _bits = AISMessageDecoder.stringToBitSet( _compositeMsg );
+        _bits = AISMessageDecoder.byteArrayToBitSet( _compositeMsg );
 
         for( AISFieldMap field : AISFieldMap.values() ) {
             switch( field ) {

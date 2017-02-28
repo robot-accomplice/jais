@@ -21,6 +21,7 @@ import jais.exceptions.AISException;
 import jais.messages.AISMessage.AISFieldMap;
 import jais.messages.enums.AISMessageType;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.util.BitSet;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -418,8 +419,20 @@ public class AISMessageDecoder {
      * @return
      * @throws AISException
      */
-    public static String decodeString( BitSet bits, int startBit, int endBit ) throws AISException {
-        String decodedString = new String();
+    public static String decodeToString( BitSet bits, int startBit, int endBit ) throws AISException {
+        return AISPacket.bArray2Str( decodeToByteArray( bits, startBit, endBit ) );
+    }
+
+    /**
+     *
+     * @param bits
+     * @param startBit
+     * @param endBit
+     * @return
+     * @throws AISException
+     */
+    public static byte[] decodeToByteArray( BitSet bits, int startBit, int endBit ) throws AISException {
+        CharBuffer cb = CharBuffer.allocate( ( ( endBit - startBit ) / 6 ) );
 
         if( endBit > ( bits.size() - 1 ) ) {
             endBit = bits.size() - 1;
@@ -441,17 +454,17 @@ public class AISMessageDecoder {
 
                 char c = sixBitIntToAscii( charVal );
                 if( c != '@' ) {
-                    decodedString += c;
+                    cb.append( c );
                 } else {
                     break;
                 }
             }
-
-            if( LOG.isDebugEnabled() ) LOG.debug( "Decoded to String: \"{}\"", decodedString );
+            
+            if( LOG.isDebugEnabled() ) LOG.debug( "Decoded to: \"{}\"", cb.toString() );
         } catch( AISException e ) {
             LOG.warn( "Could not decode String due to : {}", e.getMessage(), e );
         }
 
-        return decodedString.trim();  // return with trailing white space removed
+        return AISPacket.CHARSET.encode( cb ).array();
     }
 }

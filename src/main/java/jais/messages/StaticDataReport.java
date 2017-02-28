@@ -158,7 +158,7 @@ public class StaticDataReport extends AISMessageBase {
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case SHIP_NAME:
-                    _shipName = AISMessageDecoder.decodeString( _bits,
+                    _shipName = AISMessageDecoder.decodeToString( _bits,
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case SHIP_TYPE:
@@ -167,11 +167,11 @@ public class StaticDataReport extends AISMessageBase {
                     _shipType = ShipType.getForCode( stCode );
                     break;
                 case VENDOR_ID:
-                    _vendorId = AISMessageDecoder.decodeString( _bits,
+                    _vendorId = AISMessageDecoder.decodeToString( _bits,
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case CALL_SIGN:
-                    _callSign = AISMessageDecoder.decodeString( _bits,
+                    _callSign = AISMessageDecoder.decodeToString( _bits,
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_BOW:

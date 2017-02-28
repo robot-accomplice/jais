@@ -246,7 +246,7 @@ public class AidToNavigationReport extends AISMessageBase {
                         _navaidType = NavaidType.getForCode( navCode );
                         break;
                     case NAME:
-                        _name = AISMessageDecoder.decodeString( _bits,
+                        _name = AISMessageDecoder.decodeToString( _bits,
                                 field.getStartBit(), field.getEndBit() );
                         break;
                     case ACCURATE:
@@ -299,7 +299,7 @@ public class AidToNavigationReport extends AISMessageBase {
                         _virtualAid = _bits.get( field.getStartBit() );
                         break;
                     case NAME_EXTENSION:
-                        _nameExtension = AISMessageDecoder.decodeString( _bits,
+                        _nameExtension = AISMessageDecoder.decodeToString( _bits,
                                 field.getStartBit(), _bits.size() - 1 );
                         break;
                     default:

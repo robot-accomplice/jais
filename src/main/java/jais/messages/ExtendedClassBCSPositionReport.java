@@ -267,7 +267,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case SHIP_NAME:
-                    _shipName = AISMessageDecoder.decodeString( _bits, 
+                    _shipName = AISMessageDecoder.decodeToString( _bits, 
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case SHIP_TYPE:

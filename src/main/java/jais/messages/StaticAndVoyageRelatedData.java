@@ -42,8 +42,8 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
     private int _version;
     private int _imo;
-    private String _callsign;
-    private String _shipname;
+    private byte [] _callsign;
+    private byte [] _shipname;
     private ShipType _shiptype = ShipType.OTHER_NO_INFO;
     private int _toBow;
     private int _toStern;
@@ -55,7 +55,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
     private int _hour;
     private int _minute;
     private float _draught;
-    private String _destination;
+    private byte [] _destination;
     private boolean _dte;
 
     /**
@@ -98,7 +98,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      * @return
      */
     public String getCallsign() {
-        return _callsign;
+        return AISPacket.bArray2Str( _callsign );
     }
 
     /**
@@ -106,7 +106,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      * @return
      */
     public String getShipname() {
-        return _shipname;
+        return AISPacket.bArray2Str( _shipname );
     }
 
     /**
@@ -285,7 +285,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      * @return
      */
     public String getDestination() {
-        return _destination;
+        return AISPacket.bArray2Str( _destination );
     }
 
     /**
@@ -315,11 +315,11 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case CALL_SIGN:
-                    _callsign = AISMessageDecoder.decodeString( _bits,
+                    _callsign = AISMessageDecoder.decodeToByteArray( _bits,
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case SHIP_NAME:
-                    _shipname = AISMessageDecoder.decodeString( _bits,
+                    _shipname = AISMessageDecoder.decodeToByteArray( _bits,
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case SHIP_TYPE:
@@ -373,7 +373,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case DESTINATION:
-                    _destination = AISMessageDecoder.decodeString( _bits,
+                    _destination = AISMessageDecoder.decodeToByteArray( _bits,
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case DTE:
