@@ -32,8 +32,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
 
-    private final static Logger LOG = LogManager
-            .getLogger( IMO289ClearanceTimeToEnterPort.class );
+    private final static Logger LOG = LogManager.getLogger( IMO289ClearanceTimeToEnterPort.class );
 
     private int _linkageId;
     private int _month;
@@ -188,12 +187,12 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
                     value = _minute;
                     break;
                 case PORT_NAME_AND_BERTH:
-                    _portName = AISMessageDecoder.decodeString( _bits,
+                    _portName = AISMessageDecoder.decodeToString( _bits,
                             field.getStartBit(), field.getEndBit() );
                     value = _portName;
                     break;
                 case DESTINATION:
-                    _destination = AISMessageDecoder.decodeString( _bits,
+                    _destination = AISMessageDecoder.decodeToString( _bits,
                             field.getStartBit(), field.getEndBit() );
                     value = _destination;
                     break;

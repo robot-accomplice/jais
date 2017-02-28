@@ -196,7 +196,7 @@ public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
 
             switch( field ) {
                 case LAST_PORT_OF_CALL:
-                    _lastPort = AISMessageDecoder.decodeString( _bits,
+                    _lastPort = AISMessageDecoder.decodeToString( _bits,
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case LAST_ETA_MONTH:
@@ -216,7 +216,7 @@ public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case NEXT_PORT_OF_CALL:
-                    _nextPort = AISMessageDecoder.decodeString( _bits,
+                    _nextPort = AISMessageDecoder.decodeToString( _bits,
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case NEXT_ETA_MONTH:
@@ -236,11 +236,11 @@ public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case DANGEROUS_GOOD:
-                    _dangerous = AISMessageDecoder.decodeString( _bits,
+                    _dangerous = AISMessageDecoder.decodeToString( _bits,
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case IMD_CATEGORY:
-                    _imdCat = AISMessageDecoder.decodeString( _bits,
+                    _imdCat = AISMessageDecoder.decodeToString( _bits,
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case UN_NUMBER:

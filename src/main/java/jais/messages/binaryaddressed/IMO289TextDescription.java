@@ -31,8 +31,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class IMO289TextDescription extends BinaryAddressedMessageBase {
 
-    private final static Logger LOG = LogManager
-            .getLogger( IMO289TextDescription.class );
+    private final static Logger LOG = LogManager.getLogger( IMO289TextDescription.class );
 
     private int _linkageId;
     private String _description;
@@ -79,7 +78,7 @@ public class IMO289TextDescription extends BinaryAddressedMessageBase {
                             field.getStartBit(), field.getEndBit() );
                     break;
                 case DESCRIPTION:
-                    _description = AISMessageDecoder.decodeString( _bits,
+                    _description = AISMessageDecoder.decodeToString( _bits,
                             field.getStartBit(), _bits.size() - 1 );
                     break;
                 default:
