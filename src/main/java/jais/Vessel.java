@@ -283,6 +283,10 @@ public class Vessel implements Cloneable {
      * @return
      */
     public String getCallsign() {
+        if( _callsign == null ) {
+            return null;
+        }
+        
         return AISPacket.bArray2Str( _callsign );
     }
 
@@ -291,6 +295,10 @@ public class Vessel implements Cloneable {
      * @return
      */
     public String getShipname() {
+        if( _shipname == null ) {
+            return null;
+        }
+        
         return AISPacket.bArray2Str( _shipname );
     }
 
@@ -387,6 +395,9 @@ public class Vessel implements Cloneable {
      * @return
      */
     public String getDestination() {
+        if( _destination == null ) {
+            return null;
+        }
         return AISPacket.bArray2Str( _destination );
     }
 
