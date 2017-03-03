@@ -553,7 +553,7 @@ public final class AISPacket {
         }
 
         try {
-                pktChecksum = Long.parseLong( bArray2Str( packetChecksum ), 16 );
+            pktChecksum = Long.parseUnsignedLong( bArray2Str( packetChecksum ), 16 );
         } catch( NumberFormatException nfe ) {
             LOG.info( "Cannot parse \"{}\" into a valid long", bArray2Str( packetChecksum ) );
             return false;
@@ -933,7 +933,7 @@ public final class AISPacket {
 
         if( o instanceof AISPacket ) {
             AISPacket p = ( AISPacket ) o;
-            isEqual = p.getRawPacket().equals( _rawPacket );
+            isEqual = Arrays.equals( p.getRawPacket(), _rawPacket );
             isEqual = isEqual && _timeReceived.equals( p.getTimeReceived() );
         }
 
@@ -947,7 +947,7 @@ public final class AISPacket {
     @Override
     public final int hashCode() {
         int hash = 7;
-        hash = 79 * hash + ( _rawPacket != null ? _rawPacket.hashCode() : 0 );
+        hash = 79 * hash + ( _rawPacket != null ? Arrays.hashCode( _rawPacket ) : 0 );
         return hash;
     }
 
