@@ -588,6 +588,7 @@ public final class AISPacket {
      * @throws jais.exceptions.AISPacketException
      */
     public final static AISPacket createFromBinaryString( String rawData, String source ) throws AISPacketException {
+        if( source == null ) source = "UNKNOWN";
         AISPacket packet = new AISPacket( createPacketStringFromBinaryString( rawData ), source );
 
         return packet;
