@@ -79,7 +79,7 @@ public final class AISPacket {
      * @param rawPacket
      * @throws jais.exceptions.AISPacketException
      */
-    private AISPacket( byte [] rawPacket ) throws AISPacketException {
+    public AISPacket( byte [] rawPacket ) throws AISPacketException {
         this( rawPacket, str2bArray( "UNKNOWN" ) );
     }
 
@@ -89,7 +89,7 @@ public final class AISPacket {
      * @param source
      * @throws jais.exceptions.AISPacketException
      */
-    private AISPacket( byte [] rawPacket, byte [] source ) throws AISPacketException {
+    public AISPacket( byte [] rawPacket, byte [] source ) throws AISPacketException {
         if( LOG.isTraceEnabled() ) LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", rawPacket, source );
         _rawPacket = trim( rawPacket );
         _source = trim( source );
