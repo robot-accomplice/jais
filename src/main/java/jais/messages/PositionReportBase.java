@@ -282,7 +282,7 @@ public abstract class PositionReportBase extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private PositionFieldMap( int startBit, int endBit ) {
+        PositionFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

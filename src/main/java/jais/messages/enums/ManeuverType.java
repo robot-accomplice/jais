@@ -34,7 +34,7 @@ public enum ManeuverType {
      * @param code
      * @param description 
      */
-    private ManeuverType( int code, String description ) {
+    ManeuverType( int code, String description ) {
         _code = code;
         _description = description;
     }

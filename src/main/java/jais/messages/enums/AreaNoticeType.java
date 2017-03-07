@@ -57,8 +57,8 @@ public enum AreaNoticeType {
             
     ;
 
-    private int _code;
-    private String _description;
+    private final int _code;
+    private final String _description;
 
     /**
      * 

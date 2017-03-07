@@ -34,103 +34,103 @@ public interface AISMessage {
      * 
      * @return 
      */
-    public String getSource();
+    String getSource();
     
     /**
      * 
      * @param source 
      */
-    public void setSource( String source );
+    void setSource( String source );
 
     /**
      * 
      * @return 
      */
-    public AISPacket [] getPackets();
+    AISPacket [] getPackets();
     
     /**
      * 
      * @return 
      */
-    public AISMessageType getType();
+    AISMessageType getType();
     
     /**
      * 
      * @return 
      */
-    public FieldMap [] getFieldMap();
+    FieldMap [] getFieldMap();
     
     /**
      * 
      * @return 
      */
-    public DateTime getTimeReceived();
+    DateTime getTimeReceived();
 
     /**
      * 
      * @param mType 
      */
-    public void setType( AISMessageType mType );
+    void setType( AISMessageType mType );
     
     /**
      * 
      * @return 
      */
-    public int getRepeat();
+    int getRepeat();
     
     /**
      * 
      * @return 
      */
-    public int getMmsi();
+    int getMmsi();
     
     /**
      * 
      * @return 
      */
-    public MMSIType getMMSIType();
+    MMSIType getMMSIType();
     
     /**
      * 
      * @return 
      */
-    public boolean hasValidMmsi();
+    boolean hasValidMmsi();
     
     /**
      * 
      * @return 
      */
-    public boolean hasPosition();
+    boolean hasPosition();
     
     /**
      * 
      * @return 
      */
-    public Point getPosition();
+    Point getPosition();
     
     /**
      * 
      * @return 
      */
-    public boolean hasSubType();
+    boolean hasSubType();
     
     /**
      * 
      * @return 
      * @throws jais.exceptions.AISException 
      */
-    public AISMessage getSubTypeInstance() throws AISException;
+    AISMessage getSubTypeInstance() throws AISException;
     
     /**
      * 
      * @throws jais.exceptions.AISException
      */
-    public void decode() throws AISException;
+    void decode() throws AISException;
 
     /**
      * Fields common to all messages
      */
-    public static enum AISFieldMap implements FieldMap {
+    enum AISFieldMap implements FieldMap {
 
         TYPE( 0, 5 ),
         REPEAT( 6, 7 ),
@@ -144,7 +144,7 @@ public interface AISMessage {
          * @param startBit
          * @param endBit 
          */
-        private AISFieldMap( int startBit, int endBit ) {
+        AISFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

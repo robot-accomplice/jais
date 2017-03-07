@@ -226,7 +226,7 @@ public class StaticDataReport extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private StaticDataReportFieldMap( int startBit, int endBit ) {
+        StaticDataReportFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

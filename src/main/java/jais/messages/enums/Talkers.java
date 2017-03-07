@@ -122,11 +122,6 @@ public enum Talkers {
     public static boolean isValid( String code ) {
         if( LOG.isDebugEnabled() ) LOG.debug( "Checking validity of talker with code: \"{}\"", code );
         if( code == null ) return false;
- 
-        try {
-            return ( Talkers.valueOf( code ) != null );
-        } catch( IllegalArgumentException iae ) {
-            return false;
-        }
+        return true;
     }
 }

@@ -22,5 +22,5 @@ package jais.messages.enums;
  */
 public enum IMOType {
 
-    IMO236(), IMO289();
+    IMO236(), IMO289()
 }

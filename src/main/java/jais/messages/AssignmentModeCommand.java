@@ -173,7 +173,7 @@ public class AssignmentModeCommand extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private AssignmentModeCommandFieldMap( int startBit, int endBit ) {
+        AssignmentModeCommandFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

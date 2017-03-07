@@ -580,111 +580,108 @@ public class Vessel implements Cloneable {
      */
     @Override
     public boolean equals( Object obj ) {
-        if( obj == null ) {
+        if (obj == null) {
             return false;
         }
-        if( getClass() != obj.getClass() ) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-        final Vessel other = ( Vessel ) obj;
+        final Vessel other = (Vessel) obj;
 
-        if( !_id.equals( other.getId() ) ) {
+        if (!_id.equals(other.getId())) {
             return false;
         }
-        if( _version != other.getVersion() ) {
+        if (_version != other.getVersion()) {
             return false;
         }
-        if( _imo != other.getImo() ) {
+        if (_imo != other.getImo()) {
             return false;
         }
-        if( _shiptype != other.getShiptype() ) {
+        if (_shiptype != other.getShiptype()) {
             return false;
         }
-        if( _toBow != other.getToBow() ) {
+        if (_toBow != other.getToBow()) {
             return false;
         }
-        if( _toStern != other.getToStern() ) {
+        if (_toStern != other.getToStern()) {
             return false;
         }
-        if( _toPort != other.getToPort() ) {
+        if (_toPort != other.getToPort()) {
             return false;
         }
-        if( _toStarboard != other.getToStarboard() ) {
+        if (_toStarboard != other.getToStarboard()) {
             return false;
         }
-        if( _epfd != other.getEpfd() ) {
+        if (_epfd != other.getEpfd()) {
             return false;
         }
-        if( _month != other.getMonth() ) {
+        if (_month != other.getMonth()) {
             return false;
         }
-        if( _day != other.getDay() ) {
+        if (_day != other.getDay()) {
             return false;
         }
-        if( _hour != other.getHour() ) {
+        if (_hour != other.getHour()) {
             return false;
         }
-        if( _minute != other.getMinute() ) {
+        if (_minute != other.getMinute()) {
             return false;
         }
-        if( Float.floatToIntBits( _draught ) != Float.floatToIntBits( other.getDraught() ) ) {
+        if (Float.floatToIntBits(_draught) != Float.floatToIntBits(other.getDraught())) {
             return false;
         }
-        if( _dte != other.isDte() ) {
+        if (_dte != other.isDte()) {
             return false;
         }
-        if( _status != other.getStatus() ) {
+        if (_status != other.getStatus()) {
             return false;
         }
-        if( Float.floatToIntBits( _turn ) != Float.floatToIntBits( other.getTurn() ) ) {
+        if (Float.floatToIntBits(_turn) != Float.floatToIntBits(other.getTurn())) {
             return false;
         }
-        if( Float.floatToIntBits( _speed ) != Float.floatToIntBits( other.getSpeed() ) ) {
+        if (Float.floatToIntBits(_speed) != Float.floatToIntBits(other.getSpeed())) {
             return false;
         }
-        if( _accurate != other.isAccurate() ) {
+        if (_accurate != other.isAccurate()) {
             return false;
         }
-        if( Float.floatToIntBits( _lon ) != Float.floatToIntBits( other.getLon() ) ) {
+        if (Float.floatToIntBits(_lon) != Float.floatToIntBits(other.getLon())) {
             return false;
         }
-        if( Float.floatToIntBits( _lat ) != Float.floatToIntBits( other.getLat() ) ) {
+        if (Float.floatToIntBits(_lat) != Float.floatToIntBits(other.getLat())) {
             return false;
         }
-        if( Float.floatToIntBits( _course ) != Float.floatToIntBits( other.getCourse() ) ) {
+        if (Float.floatToIntBits(_course) != Float.floatToIntBits(other.getCourse())) {
             return false;
         }
-        if( _heading != other.getHeading() ) {
+        if (_heading != other.getHeading()) {
             return false;
         }
-        if( _second != other.getSecond() ) {
+        if (_second != other.getSecond()) {
             return false;
         }
-        if( _maneuver != other.getManeuver() ) {
+        if (_maneuver != other.getManeuver()) {
             return false;
         }
-        if( _raim != other.isRaim() ) {
+        if (_raim != other.isRaim()) {
             return false;
         }
-        if( _repeat != other.getRepeat() ) {
+        if (_repeat != other.getRepeat()) {
             return false;
         }
-        if( _radio != other.getRadio() ) {
+        if (_radio != other.getRadio()) {
             return false;
         }
-        if( !Objects.equals( _callsign, other.getCallsign() ) ) {
+        if (!Objects.equals(getCallsign(), other.getCallsign())) {
             return false;
         }
-        if( !Objects.equals( _shipname, other.getShipname() ) ) {
+        if (!Objects.equals(getShipname(), other.getShipname())) {
             return false;
         }
-        if( !Objects.equals( _destination, other.getDestination() ) ) {
+        if (!Objects.equals(getDestination(), other.getDestination())) {
             return false;
         }
-        if( !Objects.equals( _eta, other.getEta() ) ) {
-            return false;
-        }
-        return Objects.equals( _timeReceived, other.getTimeReceived() );
+        return Objects.equals(getEta(), other.getEta()) && Objects.equals(_timeReceived, other.getTimeReceived());
     }
     
     /**

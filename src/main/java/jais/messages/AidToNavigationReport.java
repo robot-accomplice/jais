@@ -344,7 +344,7 @@ public class AidToNavigationReport extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private AidToNavigationReportFieldMap( int startBit, int endBit ) {
+        AidToNavigationReportFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

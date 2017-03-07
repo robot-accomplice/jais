@@ -26,11 +26,11 @@ public interface FieldMap {
      * 
      * @return 
      */
-    public int getStartBit();
+    int getStartBit();
     
     /**
      * 
      * @return 
      */
-    public int getEndBit();
+    int getEndBit();
 }

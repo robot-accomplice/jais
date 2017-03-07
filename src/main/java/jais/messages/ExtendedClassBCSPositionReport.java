@@ -346,7 +346,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private ExtendedClassBCSPositionReportFieldMap( int startBit, int endBit ) {
+        ExtendedClassBCSPositionReportFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

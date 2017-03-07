@@ -213,7 +213,7 @@ public class GroupAssignmentCommand extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private GroupAssignmentCommandFieldMap( int startBit, int endBit ) {
+        GroupAssignmentCommandFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

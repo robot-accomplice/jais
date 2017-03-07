@@ -28,5 +28,5 @@ public interface AISPacketHandler extends AISHandler {
      * 
      * @param packet 
      */
-    public abstract void processPacket( AISPacket packet );
+    void processPacket( AISPacket packet );
 }

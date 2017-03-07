@@ -92,7 +92,7 @@ public class IMO236NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
          * @param startBit
          * @param endBit
          */
-        private IMO236NumberOfPersonsOnBoardFieldMap( int startBit, int endBit ) {
+        IMO236NumberOfPersonsOnBoardFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

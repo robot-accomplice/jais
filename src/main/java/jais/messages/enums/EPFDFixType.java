@@ -38,10 +38,10 @@ public enum EPFDFixType {
     
     /**
      * 
-     * @param id
+     * @param code
      * @param description 
      */
-    private EPFDFixType( int code, String description ) {
+    EPFDFixType( int code, String description ) {
         _code = code;
         _description = description;
     }

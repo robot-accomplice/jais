@@ -243,7 +243,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
             } else if( _hour < 10 ) {
                 eta.append( "0" ).append( _hour );
             } else if( _hour >= 24 ) {
-                eta.append( 00 );
+                eta.append( "00" );
             } else {
                 eta.append( _hour );
             }
@@ -421,7 +421,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private StaticAndVoyageFieldMap( int startBit, int endBit ) {
+        StaticAndVoyageFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

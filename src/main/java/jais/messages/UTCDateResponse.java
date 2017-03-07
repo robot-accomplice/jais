@@ -253,7 +253,7 @@ public class UTCDateResponse extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private UTCDateResponseFieldMap( int startBit, int endBit ) {
+        UTCDateResponseFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

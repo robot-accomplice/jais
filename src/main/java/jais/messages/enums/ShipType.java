@@ -328,7 +328,7 @@ public enum ShipType {
      * @param code
      * @param description 
      */
-    private ShipType( int code, String description ) {
+    ShipType( int code, String description ) {
         _code = code;
         _description = description;
     }

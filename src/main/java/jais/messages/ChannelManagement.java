@@ -260,7 +260,7 @@ public class ChannelManagement extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private ChannelManagementFieldMap( int startBit, int endBit ) {
+        ChannelManagementFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

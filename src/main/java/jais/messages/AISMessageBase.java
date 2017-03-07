@@ -30,6 +30,7 @@ import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import java.util.Arrays;
 
 /**
  *
@@ -43,22 +44,22 @@ public abstract class AISMessageBase implements AISMessage {
     private MMSIType _mmsiType;
     private int _repeat; // bits 6-7
 
-    public final static SpatialContext CTX = SpatialContext.GEO;
+    protected final static SpatialContext CTX = SpatialContext.GEO;
     
-    protected byte [] _source = AISPacket.str2bArray( "UNKNOWN" );
-    protected AISPacket[] _packets;
-    protected byte [] _compositeMsg;
-    protected AISMessageType _messageType;
+    private byte [] _source = AISPacket.str2bArray( "UNKNOWN" );
+    final AISPacket[] _packets;
+    private byte [] _compositeMsg;
+    private AISMessageType _messageType;
     protected BitSet _bits;
     protected Point _position;
-    protected Map<String, Object> _decodedFieldMap = new HashMap<>();
+    private final Map<String, Object> _decodedFieldMap = new HashMap<>();
 
     /**
      * 
      * @param source
      * @param packets 
      */
-    public AISMessageBase( String source, AISPacket... packets ) {
+    AISMessageBase( String source, AISPacket... packets ) {
         _source = AISPacket.str2bArray( source );
         _packets = packets;
     }
@@ -69,7 +70,7 @@ public abstract class AISMessageBase implements AISMessage {
      * @param messageType
      * @param packets 
      */
-    public AISMessageBase( String source, AISMessageType messageType, AISPacket... packets ) {
+    AISMessageBase( String source, AISMessageType messageType, AISPacket... packets ) {
         _source = AISPacket.str2bArray( source );
         _messageType = messageType;
         _packets = packets;
@@ -172,7 +173,7 @@ public abstract class AISMessageBase implements AISMessage {
      * @param mmsi
      * @return
      */
-    public static boolean isValidMmsi( long mmsi ) {
+    private static boolean isValidMmsi( long mmsi ) {
         boolean valid = ( ( mmsi < 800000000 ) && ( mmsi > 199999999 ) );
 
         if( !valid ) {
@@ -330,10 +331,7 @@ public abstract class AISMessageBase implements AISMessage {
             switch( field ) {
                 case TYPE:
                     if( _decodedFieldMap.get( "message_type" ) == null ) {
-                        AISMessageType mType = AISMessageDecoder.decodeMessageType( _bits );
-                        _messageType = mType;
-                    } else {
-                        // hopefully already set
+                        _messageType = AISMessageDecoder.decodeMessageType( _bits );
                     }
                     break;
                 case REPEAT:
@@ -376,16 +374,16 @@ public abstract class AISMessageBase implements AISMessage {
             return false;
         }
         final AISMessageBase other = ( AISMessageBase ) obj;
-        if( !Objects.equals( this._source, other._source ) ) {
+        if( !Arrays.equals( this._source, other._source ) ) {
             return false;
         }
-        return Objects.equals( this._compositeMsg, other._compositeMsg );
+        return Arrays.equals( this._compositeMsg, other._compositeMsg );
     }
 
     /**
      *
      */
-    public static enum AISFieldMap implements FieldMap {
+    public enum AISFieldMap implements FieldMap {
 
         TYPE( 0, 5 ),
         REPEAT( 6, 7 ),
@@ -399,7 +397,7 @@ public abstract class AISMessageBase implements AISMessage {
          * @param startBit
          * @param endBit
          */
-        private AISFieldMap( int startBit, int endBit ) {
+        AISFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

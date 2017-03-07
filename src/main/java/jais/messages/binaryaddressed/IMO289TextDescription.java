@@ -103,7 +103,7 @@ public class IMO289TextDescription extends BinaryAddressedMessageBase {
          * @param startBit
          * @param endBit
          */
-        private IMO289TextDescriptionFieldMap( int startBit, int endBit ) {
+        IMO289TextDescriptionFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

@@ -158,7 +158,7 @@ public enum AISMessageType {
      * 
      * @param description 
      */
-    private AISMessageType( int id, String description, Class messageClass ) {
+    AISMessageType( int id, String description, Class messageClass ) {
         _id = id;
         _description = description;
         _messageClass = messageClass;
@@ -168,7 +168,7 @@ public enum AISMessageType {
      * 
      * @return 
      */
-    public int getId() {
+    private int getId() {
         return _id;
     }
     

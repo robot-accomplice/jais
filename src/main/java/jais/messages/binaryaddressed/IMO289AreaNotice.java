@@ -80,7 +80,7 @@ public class IMO289AreaNotice extends BinaryAddressedMessageBase {
          * @param startBit
          * @param endBit
          */
-        private IMO289AreaNoticeFieldMap( int startBit, int endBit ) {
+        IMO289AreaNoticeFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

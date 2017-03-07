@@ -158,53 +158,42 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
 
         for( IMO289ClearanceTimeToEnterPortFieldMap field
                 : IMO289ClearanceTimeToEnterPortFieldMap.values() ) {
-            Object value = null;
-
             switch( field ) {
                 case MESSAGE_LINKAGE_ID:
                     _linkageId = AISMessageDecoder.decodeUnsignedInt( _bits,
                             field.getStartBit(), field.getEndBit() );
-                    value = _linkageId;
                     break;
                 case MONTH:
                     _month = AISMessageDecoder.decodeUnsignedInt( _bits,
                             field.getStartBit(), field.getEndBit() );
-                    value = _month;
                     break;
                 case DAY:
                     _day = AISMessageDecoder.decodeUnsignedInt( _bits,
                             field.getStartBit(), field.getEndBit() );
-                    value = _day;
-                    break;
+                   break;
                 case HOUR:
                     _hour = AISMessageDecoder.decodeUnsignedInt( _bits,
                             field.getStartBit(), field.getEndBit() );
-                    value = _hour;
                     break;
                 case MINUTE:
                     _minute = AISMessageDecoder.decodeUnsignedInt( _bits,
                             field.getStartBit(), field.getEndBit() );
-                    value = _minute;
                     break;
                 case PORT_NAME_AND_BERTH:
                     _portName = AISMessageDecoder.decodeToString( _bits,
                             field.getStartBit(), field.getEndBit() );
-                    value = _portName;
                     break;
                 case DESTINATION:
                     _destination = AISMessageDecoder.decodeToString( _bits,
                             field.getStartBit(), field.getEndBit() );
-                    value = _destination;
                     break;
                 case LON:
                     _lon = AISMessageDecoder.decodeLongitude( _bits,
                             field.getStartBit(), field.getEndBit() );
-                    value = _lon;
                     break;
                 case LAT:
                     _lat = AISMessageDecoder.decodeLatitude( _bits,
                             field.getStartBit(), field.getEndBit() );
-                    value = _lat;
                     break;
                 default:
                     LOG.warn( "Ignoring field: {}", field.name() );
@@ -236,7 +225,7 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
          * @param startBit
          * @param endBit
          */
-        private IMO289ClearanceTimeToEnterPortFieldMap( int startBit, int endBit ) {
+        IMO289ClearanceTimeToEnterPortFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

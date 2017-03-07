@@ -187,7 +187,7 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private SingleSlotBinaryMessageFieldMap( int startBit, int endBit ) {
+        SingleSlotBinaryMessageFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

@@ -75,7 +75,7 @@ public class IMO289RouteInformation extends BinaryAddressedMessageBase {
          * @param startBit
          * @param endBit
          */
-        private IMO289RouteInformationFieldMap( int startBit, int endBit ) {
+        IMO289RouteInformationFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

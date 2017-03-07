@@ -28,5 +28,5 @@ public interface AISMessageHandler extends AISHandler {
      * 
      * @param message 
      */
-    public abstract void processMessage( AISMessage message );
+    void processMessage( AISMessage message );
 }

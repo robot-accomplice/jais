@@ -55,7 +55,7 @@ public class AISMessageFactory {
      * @return
      * @throws jais.exceptions.AISException
      */
-    public static AISMessage create( String source, boolean strict, AISPacket... packets ) throws AISException {
+    private static AISMessage create( String source, boolean strict, AISPacket... packets ) throws AISException {
         AISMessage message = null;
 
         try {
@@ -73,8 +73,8 @@ public class AISMessageFactory {
                 Constructor con = mType.getMessageClass().getDeclaredConstructor( String.class, AISPacket[].class );
                 con.setAccessible( true );
 
-                // reflection won't work properly for singletons if we don't do this
                 if( packets.length == 1 ) {
+                    // reflection won't work properly for singletons if we don't do this
                     message = ( AISMessage ) con.newInstance( ( Object )source, ( Object )packets );
                 } else {
                     message = ( AISMessage ) con.newInstance( source, packets );
@@ -83,9 +83,9 @@ public class AISMessageFactory {
                 message.setType( mType );
                 if( source != null ) {
                     message.setSource( source );
-                } else if( source == null && packets[0].getSource() != null ) {
+                } else if( packets[0].getSource() != null ) {
                     message.setSource( AISPacket.bArray2Str( packets[0].getSource() ) );
-                } else if( source == null && packets[0].getSource() == null ) {
+                } else {
                     message.setSource( DEFAULT_SOURCE );
                 }
                 while( message.hasSubType() ) {
@@ -95,7 +95,7 @@ public class AISMessageFactory {
                 // decode message
                 message.decode();
             } else {
-                throw new AISException( "MessageType is null for message String: " + new String( compositeMsg ) );
+                throw new AISException( "MessageType is null for message String: " + compositeMsg );
             }
         } catch( AISException | NoSuchMethodException | SecurityException |
                 InstantiationException | IllegalAccessException |

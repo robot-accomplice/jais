@@ -274,7 +274,7 @@ public class BaseStationReport extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private BaseReportFieldMap( int startBit, int endBit ) {
+        BaseReportFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

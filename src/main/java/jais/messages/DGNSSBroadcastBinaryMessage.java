@@ -154,7 +154,7 @@ public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private DGNSSBroadcastBinaryMessageFieldMap( int startBit, int endBit ) {
+        DGNSSBroadcastBinaryMessageFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

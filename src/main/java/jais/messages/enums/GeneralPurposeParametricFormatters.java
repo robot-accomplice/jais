@@ -11,15 +11,15 @@ package jais.messages.enums;
  */
 public enum GeneralPurposeParametricFormatters {
     
-    AAM( "Waypoing Arrival Alarm" );
+    AAM( "Waypoint Arrival Alarm" );
     
-    public String description;
+    public final String description;
     
     /**
      * 
      * @param description 
      */
-    private GeneralPurposeParametricFormatters( String description ) {
+    GeneralPurposeParametricFormatters( String description ) {
         this.description = description;
     }
 }

@@ -255,7 +255,7 @@ public class IMO236TidalWindow extends BinaryAddressedMessageBase {
          * @param startBit
          * @param endBit
          */
-        private IMO236TidalWindowFieldMap( int startBit, int endBit ) {
+        IMO236TidalWindowFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

@@ -13,13 +13,13 @@ public enum ApprovedAISParametricFormatters {
     
     ABK( "AIS Addressed and Binary Broadcast Acknowledgement" );
     
-    public String description;
+    public final String description;
     
     /**
      * 
      * @param description 
      */
-    private ApprovedAISParametricFormatters( String description ) {
+    ApprovedAISParametricFormatters( String description ) {
         this.description = description;
     }
 }

@@ -165,7 +165,7 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
      */
     @Override
     public BinaryAddressedMessageBase getSubTypeInstance() throws AISException {
-        BinaryAddressedMessageBase message = null;
+        BinaryAddressedMessageBase message;
 
         if( _subType == null ) {
             decode(); // we need the dac and fid

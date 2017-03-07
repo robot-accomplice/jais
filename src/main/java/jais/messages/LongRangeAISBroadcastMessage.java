@@ -217,7 +217,7 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private LongRangeAISBroadcastMessageFieldMap( int startBit, int endBit ) {
+        LongRangeAISBroadcastMessageFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

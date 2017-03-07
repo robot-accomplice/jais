@@ -342,7 +342,7 @@ public class DataLinkManagementMessage extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private DataLinkManagementMessageFieldMap( int startBit, int endBit ) {
+        DataLinkManagementMessageFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

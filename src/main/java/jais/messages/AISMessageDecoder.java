@@ -80,7 +80,7 @@ public class AISMessageDecoder {
      * @param rawMessage
      * @return
      */
-    public static BitSet stringToBitSet( String rawMessage ) {
+    private static BitSet stringToBitSet( String rawMessage ) {
 
         char[] msgChars = rawMessage.toCharArray();
         if( LOG.isDebugEnabled() ) LOG.debug( "8 bit char array is {} bytes long.", msgChars.length );
@@ -116,19 +116,15 @@ public class AISMessageDecoder {
      * @return
      * @throws jais.exceptions.InvalidAISCharacterException
      */
-    public static int encodedToSixBitInt( char c ) throws InvalidAISCharacterException {
-        int sixBitInt = -1;
-
+    private static int encodedToSixBitInt( char c ) throws InvalidAISCharacterException {
         if( c <= CHAR_RANGE_A_MAX && c >= CHAR_RANGE_A_MIN ) {  // is this character within the first range?
-            sixBitInt = c - CHAR_RANGE_A_MIN;
+            return c - CHAR_RANGE_A_MIN;
         } else if( c <= CHAR_RANGE_B_MAX && c >= CHAR_RANGE_B_MIN ) {   // is this character within the second range?
-            sixBitInt = c - CHAR_RANGE_B_MIN + ( CHAR_RANGE_A_MAX - CHAR_RANGE_A_MIN + 1 );
+            return c - CHAR_RANGE_B_MIN + ( CHAR_RANGE_A_MAX - CHAR_RANGE_A_MIN + 1 );
         } else {
             throw new InvalidAISCharacterException( "Character \'" + c
                     + "\' is outside of either of the acceptable ranges." );
         }
-
-        return sixBitInt;
     }
 
     /**
@@ -170,9 +166,7 @@ public class AISMessageDecoder {
     public static float decodeDraught( BitSet b, int startBit, int endBit )
             throws AISException {
         int intVal = decodeUnsignedInt( b, startBit, endBit );
-        float draught = ( ( float ) intVal ) / 10.f;
-
-        return draught;
+        return ( ( float ) intVal ) / 10.f;
     }
 
     /**
@@ -214,7 +208,7 @@ public class AISMessageDecoder {
      * @return
      * @throws AISException
      */
-    public static char sixBitIntToAscii( int c ) throws AISException {
+    private static char sixBitIntToAscii( int c ) throws AISException {
         int rval = c;
 
         if( c < 0 || c > 63 ) {
@@ -232,16 +226,9 @@ public class AISMessageDecoder {
      * @return
      * @throws AISException
      */
-    public static AISMessageType decodeMessageType( AISPacket... packets )
-            throws AISException {
-        StringBuilder rawMessage = new StringBuilder();
-
+    public static AISMessageType decodeMessageType( AISPacket... packets ) throws AISException {
         // concatenate full raw message from all packets
-        for( AISPacket packet : packets ) {
-            rawMessage.append( packet.getRawMessage() );
-        }
-
-        return decodeMessageType( rawMessage.toString() );
+        return decodeMessageType( AISPacket.concatenate( false, packets ) );
     }
 
     /**
@@ -250,8 +237,7 @@ public class AISMessageDecoder {
      * @return
      * @throws AISException
      */
-    public static AISMessageType decodeMessageType( String rawMessage )
-            throws AISException {
+    public static AISMessageType decodeMessageType( String rawMessage ) throws AISException {
         return decodeMessageType( stringToBitSet( rawMessage ) );
     }
     

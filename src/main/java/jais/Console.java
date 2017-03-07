@@ -41,7 +41,7 @@ public class Console extends Application {
     public void start( Stage stage ) {
         try {
             stage.setTitle( "AIS Decoder Console " );
-            Scene scene = new Scene( FXMLLoader.<Parent>load( getClass().getResource( FXML_PATH ) ) );
+            Scene scene = new Scene( FXMLLoader.load( getClass().getResource( FXML_PATH ) ) );
             stage.setScene( scene );
             stage.show();
         } catch( Exception e ) {

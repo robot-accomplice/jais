@@ -261,7 +261,7 @@ public enum MMSIType {
     
     /**
      * 
-     * @param code 
+     * @param codes
      */
     MMSIType( int... codes ) {
         _codes = codes;

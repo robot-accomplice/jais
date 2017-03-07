@@ -91,7 +91,7 @@ public class IMO289NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
          * @param startBit
          * @param endBit
          */
-        private IMO289NumberOfPersonsOnBoardFieldMap( int startBit, int endBit ) {
+        IMO289NumberOfPersonsOnBoardFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

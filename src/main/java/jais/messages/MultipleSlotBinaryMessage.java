@@ -152,17 +152,11 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
                     break;
                 case DATA:
                     if( _addressed ) {
-                        _data = new BitSet( _bits.size() - 90 );
-                        System.arraycopy( _bits, 70, _data, 70,
-                                _bits.size() - 90 );
+                        _data = _bits.get( 70, ( _bits.size() - 90 ) );
                     } else if( _structured ) {
-                        _data = new BitSet( _bits.size() - 76 );
-                        System.arraycopy( _bits, 56, _data, 56,
-                                _bits.size() - 76 );
+                        _data = _bits.get( 56, ( _bits.size() - 76 ) );
                     } else {
-                        _data = new BitSet( _bits.size() - 60 );
-                        System.arraycopy( _bits, 40, _data, 40,
-                                _bits.size() - 61 ); // 61 to insure that we don't overrun the length of the copy target
+                        _data = _bits.get( 40, ( _bits.size() - 61 ) );
                     }
                     break;
                 case RADIO:
@@ -196,7 +190,7 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private MultipleSlotBinaryMessageFieldMap( int startBit, int endBit ) {
+        MultipleSlotBinaryMessageFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

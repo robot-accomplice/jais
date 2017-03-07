@@ -96,10 +96,6 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
      *
      * @return
      */
-    /**
-     *
-     * @return
-     */
     public float getLat() {
         return _lat;
     }
@@ -281,8 +277,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
                         if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
                 }
             } catch( Throwable t ) {
-                LOG.warn( "Unable to decode field: {}: {}",
-                        new Object[]{field.name(), t.getMessage()} );
+                LOG.warn( "Unable to decode field: {}: {}", field.name(), t.getMessage() );
                 if( LOG.isDebugEnabled() ) LOG.debug( t.getMessage() );
             }
         }
@@ -319,7 +314,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        private StandardClassBCSPositionReportFieldMap( int startBit, int endBit ) {
+        StandardClassBCSPositionReportFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

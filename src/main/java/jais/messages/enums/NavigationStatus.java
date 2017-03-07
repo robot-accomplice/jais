@@ -44,10 +44,10 @@ public enum NavigationStatus {
     
     /**
      * 
-     * @param id
+     * @param code
      * @param description 
      */
-    private NavigationStatus( int code, String description ) {
+    NavigationStatus( int code, String description ) {
         _code = code;
         _description = description;
     }

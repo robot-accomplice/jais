@@ -75,7 +75,7 @@ public class IMO289DangerousCargoIndication extends BinaryAddressedMessageBase {
          * @param startBit
          * @param endBit
          */
-        private IMO289DangerousCargoIndicationFieldMap( int startBit, int endBit ) {
+        IMO289DangerousCargoIndicationFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }

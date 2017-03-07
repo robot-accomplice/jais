@@ -203,7 +203,7 @@ public final class TagBlock {
      * @param source
      * @return 
      */
-    public final static TagBlock build( byte [] source ) {
+    public static TagBlock build( byte [] source ) {
         if( source.length > 15 ) {
             source = Arrays.copyOfRange( source, 0, 15 );
             LOG.warn( "Truncating oversized source from {} to {}" );
@@ -223,7 +223,7 @@ public final class TagBlock {
      * @param source
      * @return 
      */
-    public final static TagBlock parse( String rawTagBlock, byte [] source ) {
+    public static TagBlock parse( String rawTagBlock, byte [] source ) {
         LOG.fatal( "Parsing {}", rawTagBlock );
         TagBlock tb = new TagBlock();
 
@@ -289,7 +289,7 @@ public final class TagBlock {
      * @param rawTagBlock
      * @return
      */
-    public final static TagBlock parse( String rawTagBlock ) {
+    public static TagBlock parse( String rawTagBlock ) {
         return parse( rawTagBlock, null );
     }
 
