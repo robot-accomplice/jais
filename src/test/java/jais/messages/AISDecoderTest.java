@@ -248,10 +248,9 @@ public class AISDecoderTest {
      * Tests basic AIS decoding
      *
      * @throws jais.exceptions.AISException
-     * @throws jais.exceptions.AISPacketException
      */
     @Test
-    public void testPacketDecoding() throws AISException, AISPacketException {
+    public void testPacketDecoding() throws AISException {
         LOG.fatal( "*** testPacketDecoding()" );
 
         LOG.fatal( "Testing with {} packets.", TEST_PACKETS.length );
