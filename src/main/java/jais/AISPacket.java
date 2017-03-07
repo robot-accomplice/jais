@@ -186,7 +186,7 @@ public final class AISPacket {
      * @return
      * @throws jais.exceptions.AISPacketException
      */
-    private AISPacket process( boolean addTagBlock ) throws AISPacketException {
+    public final AISPacket process( boolean addTagBlock ) throws AISPacketException {
         String rawPacket;
 
         if( _rawPacket == null ) {
