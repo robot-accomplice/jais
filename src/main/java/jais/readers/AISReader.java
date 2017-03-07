@@ -26,17 +26,11 @@ public interface AISReader extends AutoCloseable, Runnable {
      * 
      * @throws AISReaderException 
      */
-    public abstract void read() throws AISReaderException;
-    
-    /**
-     * 
-     */
-    @Override
-    public abstract void close();
+    void read() throws AISReaderException;
     
     /**
      * 
      * @return 
      */
-    public abstract long getBadPacketCount();
+    long getBadPacketCount();
 }

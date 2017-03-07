@@ -43,11 +43,11 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
 
     private final StringBuffer _sb = new StringBuffer();
     private SerialPort _port;
-    private String _portName;
-    private int _baud;
-    private int _dataBits;
-    private int _stopBits;
-    private int _parity;
+    private final String _portName;
+    private final int _baud;
+    private final int _dataBits;
+    private final int _stopBits;
+    private final int _parity;
 
     /**
      *

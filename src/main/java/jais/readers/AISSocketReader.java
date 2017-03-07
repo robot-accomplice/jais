@@ -42,7 +42,7 @@ public class AISSocketReader extends AISReaderBase {
     private final int _bufferSize;
     private final Socket _s;
     
-    private final int _timeout = 30000;
+    private final static int TIMEOUT = 30000;
     
     /**
      * 
@@ -132,8 +132,8 @@ public class AISSocketReader extends AISReaderBase {
             
             while( super._shouldRun && _s.isConnected() && !_s.isInputShutdown() ) {
                 try {
-                    if( lastRead.plusMillis( _timeout ).isBeforeNow() ) 
-                        throw new AISReaderException( "Reader timed out!  No new data in " + _timeout + "ms." );
+                    if( lastRead.plusMillis( TIMEOUT ).isBeforeNow() )
+                        throw new AISReaderException( "Reader timed out!  No new data in " + TIMEOUT + "ms." );
                     
                     String line = br.readLine();
                     if( line != null && !line.isEmpty() ) {
