@@ -73,6 +73,7 @@ public final class AISPacket {
     private byte [] _checksum;
     private DateTime _timeReceived = DateTime.now();
     private byte [][] _packetParts;
+    private boolean _parsed = false;
 
     /**
      *
@@ -300,6 +301,7 @@ public final class AISPacket {
             throw new AISPacketException( "Encountered a malformed AISPacket: \"" + bArray2Str( _rawPacket ) + "\" - " + t.getMessage(), t );
         }
 
+        _parsed = true;
         return this;
     }
     
@@ -401,6 +403,14 @@ public final class AISPacket {
         return CHARSET.decode( ByteBuffer.wrap( bytes ) ).array();
     }
 
+    /**
+     * 
+     * @return 
+     */
+    public final boolean isParsed() {
+        return _parsed;
+    }
+    
     /**
      * Checks the validity of the current AIS packet
      *
@@ -899,12 +909,17 @@ public final class AISPacket {
      * @throws jais.exceptions.AISException 
      */
     public static byte [] concatenate( AISPacket ... packets ) throws AISException {
-        if( packets.length <= 1 ) return packets[0].getRawMessage();
+        if( packets.length <= 1 ) {
+            if( !packets[0].isParsed() ) packets[0].process();
+            return packets[0].getRawMessage();
+        }
+        
         byte [] compositeMsg = null;
         
         if( LOG.isDebugEnabled() ) LOG.debug( "Concatenating {} packets.", packets.length );
         for( AISPacket packet : packets ) {
             LOG.debug( "First packet binary data = {}", bArray2Str( packet.getRawMessage() ) );
+            if( !packet.isParsed() ) packet.process();
             if( compositeMsg == null ) {
                 compositeMsg = packet.getRawMessage();
             } else {
