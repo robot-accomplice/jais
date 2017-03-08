@@ -60,8 +60,9 @@ public class AISMessageFactory {
 
         try {
             if( packets.length < 1 ) throw new AISException( "Packets array is empty!" ); 
-            if( LOG.isDebugEnabled() ) LOG.debug( "Decoding message from {} packet(s).", packets.length );
-            String compositeMsg = AISPacket.bArray2Str( AISPacket.concatenate( strict, packets ) );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Decoding message from {} packet(s). Strict is set to {}", packets.length, strict );
+            byte [] compositeBytes = AISPacket.concatenate( packets );
+            String compositeMsg = AISPacket.bArray2Str( compositeBytes );
             
             if( LOG.isDebugEnabled() ) LOG.debug( "Composite message is: {}", compositeMsg );
             // we need the message type in order to invoke the reflective constructor
