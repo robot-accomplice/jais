@@ -55,7 +55,7 @@ public class AISMessageFactory {
      * @return
      * @throws jais.exceptions.AISException
      */
-    private static AISMessage create( String source, boolean strict, AISPacket... packets ) throws AISException {
+    public static AISMessage create( String source, boolean strict, AISPacket... packets ) throws AISException {
         AISMessage message = null;
 
         try {
