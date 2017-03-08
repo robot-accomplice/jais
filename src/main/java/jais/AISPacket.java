@@ -67,8 +67,8 @@ public final class AISPacket {
     private int _fragmentNumber = 1;
     private int _sequentialMessageId = -1;
     private char _radioChannelCode;
-    private byte [] _rawMessage; // the message sans tagblock
-    private byte [] _packetBody; // the binary string
+    private byte [] _rawMessage; // the binary string 
+    private byte [] _packetBody; // packet sans tagblock
     private int _fillBits;
     private byte [] _checksum;
     private DateTime _timeReceived = DateTime.now();
@@ -894,26 +894,24 @@ public final class AISPacket {
     
     /**
      * 
-     * @param strict
      * @param packets
      * @return 
      * @throws jais.exceptions.AISException 
      */
-    public static byte [] concatenate( boolean strict, AISPacket ... packets ) throws AISException {
+    public static byte [] concatenate( AISPacket ... packets ) throws AISException {
+        if( packets.length <= 1 ) return packets[0].getRawMessage();
         byte [] compositeMsg = null;
         
+        if( LOG.isDebugEnabled() ) LOG.debug( "Concatenating {} packets.", packets.length );
         for( AISPacket packet : packets ) {
-            if( !strict || packet.isValid() ) {
-                if( compositeMsg == null ) {
-                    compositeMsg = packet.getRawMessage();
-                } else {
-                    byte [] temp = new byte[compositeMsg.length + packet.getRawMessage().length];
-                    System.arraycopy( compositeMsg, 0, temp, 0, compositeMsg.length );
-                    System.arraycopy( packet.getRawMessage(), 0, temp, compositeMsg.length, packet.getRawMessage().length );
-                    compositeMsg = temp;
-                }
+            LOG.debug( "First packet binary data = {}", bArray2Str( packet.getRawMessage() ) );
+            if( compositeMsg == null ) {
+                compositeMsg = packet.getRawMessage();
             } else {
-                throw new AISException( "Packet : \"" + bArray2Str( packet.getRawPacket() ) + "\" failed validation!" );
+                byte [] temp = new byte[compositeMsg.length + packet.getRawMessage().length];
+                System.arraycopy( compositeMsg, 0, temp, 0, compositeMsg.length );
+                System.arraycopy( packet.getRawMessage(), 0, temp, compositeMsg.length, packet.getRawMessage().length );
+                compositeMsg = temp;
             }
         }
         
