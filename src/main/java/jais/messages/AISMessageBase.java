@@ -60,7 +60,7 @@ public abstract class AISMessageBase implements AISMessage {
      * @param packets 
      */
     AISMessageBase( String source, AISPacket... packets ) {
-        _source = AISPacket.str2bArray( source );
+        if( source != null ) _source = AISPacket.str2bArray( source );
         _packets = packets;
     }
     
@@ -71,7 +71,7 @@ public abstract class AISMessageBase implements AISMessage {
      * @param packets 
      */
     AISMessageBase( String source, AISMessageType messageType, AISPacket... packets ) {
-        _source = AISPacket.str2bArray( source );
+        if( source != null ) _source = AISPacket.str2bArray( source );
         _messageType = messageType;
         _packets = packets;
     }
@@ -323,7 +323,7 @@ public abstract class AISMessageBase implements AISMessage {
     public void decode() throws AISException {
         _decodedFieldMap.put( "time_received", getTimeReceived() );
 
-        _compositeMsg = AISPacket.concatenate( true, getPackets() ) ;
+        _compositeMsg = AISPacket.concatenate( getPackets() ) ;
 
         _bits = AISMessageDecoder.byteArrayToBitSet( _compositeMsg );
 
