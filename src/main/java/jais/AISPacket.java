@@ -60,15 +60,15 @@ public final class AISPacket {
 
     private TagBlock _tagBlock;
     private Preamble _preamble;
-    private final byte [] _rawPacket;  // the unparsed initial string
     private byte [] _source;
     private byte [] _type;
     private int _fragmentCount = 1;
     private int _fragmentNumber = 1;
     private int _sequentialMessageId = -1;
     private char _radioChannelCode;
-    private byte [] _rawMessage; // the binary string 
-    private byte [] _packetBody; // packet sans tagblock
+    private final byte [] _rawPacket;  // the unparsed initial string
+    private byte [] _rawMessage; // the message without the tagblock 
+    private byte [] _packetBody; // the binary string
     private int _fillBits;
     private byte [] _checksum;
     private DateTime _timeReceived = DateTime.now();
@@ -918,14 +918,13 @@ public final class AISPacket {
         
         if( LOG.isDebugEnabled() ) LOG.debug( "Concatenating {} packets.", packets.length );
         for( AISPacket packet : packets ) {
-            LOG.debug( "First packet binary data = {}", bArray2Str( packet.getRawMessage() ) );
             if( !packet.isParsed() ) packet.process();
             if( compositeMsg == null ) {
-                compositeMsg = packet.getRawMessage();
+                compositeMsg = packet.getPacketBody();
             } else {
-                byte [] temp = new byte[compositeMsg.length + packet.getRawMessage().length];
+                byte [] temp = new byte[compositeMsg.length + packet.getPacketBody().length];
                 System.arraycopy( compositeMsg, 0, temp, 0, compositeMsg.length );
-                System.arraycopy( packet.getRawMessage(), 0, temp, compositeMsg.length, packet.getRawMessage().length );
+                System.arraycopy( packet.getPacketBody(), 0, temp, compositeMsg.length, packet.getPacketBody().length );
                 compositeMsg = temp;
             }
         }
