@@ -228,7 +228,7 @@ public class AISMessageDecoder {
      */
     public static AISMessageType decodeMessageType( AISPacket... packets ) throws AISException {
         // concatenate full raw message from all packets
-        return decodeMessageType( AISPacket.concatenate( false, packets ) );
+        return decodeMessageType( AISPacket.concatenate( packets ) );
     }
 
     /**
