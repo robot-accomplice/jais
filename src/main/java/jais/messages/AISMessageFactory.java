@@ -114,7 +114,7 @@ public class AISMessageFactory {
             if( strict ) {
                 throw new AISException( "Unable to create a new AISMessage from packet \"" + compositeMsg + "\" : " + t.getMessage(), t );
             } else {
-                LOG.warn( "Unable to create a new AISMessage: {}", t.getMessage() );
+                LOG.warn( "Unable to create a new AISMessage from packet \"{}\" : {}", compositeMsg, t.getMessage() );
                 if( LOG.isTraceEnabled() ) LOG.trace( "Decode Failure: {}", t.getMessage(), t );
             }
         }
