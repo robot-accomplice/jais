@@ -57,12 +57,21 @@ public class AISMessageFactory {
      */
     public static AISMessage create( String source, boolean strict, AISPacket... packets ) throws AISException {
         AISMessage message = null;
+        String compositeMsg = null;
 
         try {
             if( packets.length < 1 ) throw new AISException( "Packets array is empty!" ); 
             if( LOG.isDebugEnabled() ) LOG.debug( "Decoding message from {} packet(s). Strict is set to {}", packets.length, strict );
-            byte [] compositeBytes = AISPacket.concatenate( packets );
-            String compositeMsg = AISPacket.bArray2Str( compositeBytes );
+            
+            byte [] compositeBytes;
+            if( packets.length == 1 ) {
+                if( ! packets[0].isParsed() ) packets[0].process();
+                compositeBytes = packets[0].getRawMessage();
+            } else {
+                compositeBytes = AISPacket.concatenate( packets );
+            }
+            
+            compositeMsg = AISPacket.bArray2Str( compositeBytes );
             
             if( LOG.isDebugEnabled() ) LOG.debug( "Composite message is: {}", compositeMsg );
             // we need the message type in order to invoke the reflective constructor
@@ -103,7 +112,7 @@ public class AISMessageFactory {
                 IllegalArgumentException | InvocationTargetException t ) {
             // repackage any and all throwables as AISExceptions
             if( strict ) {
-                throw new AISException( "Unable to create a new AISMessage: "+ t.getMessage(), t );
+                throw new AISException( "Unable to create a new AISMessage from packet \"" + compositeMsg + "\" : " + t.getMessage(), t );
             } else {
                 LOG.warn( "Unable to create a new AISMessage: {}", t.getMessage() );
                 if( LOG.isTraceEnabled() ) LOG.trace( "Decode Failure: {}", t.getMessage(), t );
