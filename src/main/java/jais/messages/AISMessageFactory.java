@@ -112,9 +112,9 @@ public class AISMessageFactory {
                 IllegalArgumentException | InvocationTargetException t ) {
             // repackage any and all throwables as AISExceptions
             if( strict ) {
-                throw new AISException( "Unable to create a new AISMessage from packet \"" + compositeMsg + "\" : " + t.getMessage(), t );
+                throw new AISException( "Failed to create a valid AISMessage from packet \"" + compositeMsg + "\" : " + t.getMessage(), t );
             } else {
-                LOG.warn( "Unable to create a new AISMessage from packet \"{}\" : {}", compositeMsg, t.getMessage() );
+                LOG.warn( "Incomplete AISMessage created from packet \"{}\" : {}", compositeMsg, t.getMessage() );
                 if( LOG.isTraceEnabled() ) LOG.trace( "Decode Failure: {}", t.getMessage(), t );
             }
         }
