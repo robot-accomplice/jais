@@ -66,7 +66,7 @@ public final class AISPacket {
     private int _fragmentNumber = 1;
     private int _sequentialMessageId = -1;
     private char _radioChannelCode;
-    private final byte [] _rawPacket;  // the unparsed initial string
+    private byte [] _rawPacket;  // the unparsed initial string
     private byte [] _rawMessage; // the message without the tagblock 
     private byte [] _packetBody; // the binary string
     private int _fillBits;
