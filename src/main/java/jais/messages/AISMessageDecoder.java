@@ -358,8 +358,9 @@ public class AISMessageDecoder {
 
         switch( i ) {
             case 1023:
-                LOG.warn( "getSpeedOverGround: invalid value: {}", i );
-                speed = -1.0f;
+                // speed unavailable
+                LOG.warn( "getSpeedOverGround: unavailable: {}", i );
+                speed = -1f;
                 break;
             case 1022:
                 speed = 102.2f;
