@@ -101,7 +101,7 @@ public class ConsoleController implements Initializable {
                     appendLineToOutput( "---------------------------------------------" );
                     appendLineToOutput( "\t- none -" );
                 }
-                Preamble pre = Preamble.parse( packetStr );
+                Preamble pre = Preamble.parse( packet.getRawPacket() );
                 appendLineToOutput( "---------------------------------------------" );
                 appendLineToOutput( "Preamble: " + AISPacket.bArray2Str( pre.parsed ) );
                 appendLineToOutput( "---------------------------------------------" );
