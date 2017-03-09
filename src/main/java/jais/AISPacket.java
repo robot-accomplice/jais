@@ -66,9 +66,9 @@ public final class AISPacket {
     private int _fragmentNumber = 1;
     private int _sequentialMessageId = -1;
     private char _radioChannelCode;
-    private byte [] _rawPacket;  // the unparsed initial string
-    private byte [] _rawMessage; // the message without the tagblock 
-    private byte [] _packetBody; // the binary string
+    private byte [] _rawPacket;  // the unparsed initial string  
+    private byte [] _rawMessage; // the binary string 
+    private byte [] _packetBody; // the message without the tagblock
     private int _fillBits;
     private byte [] _checksum;
     private DateTime _timeReceived = DateTime.now();
