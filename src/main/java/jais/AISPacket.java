@@ -328,6 +328,15 @@ public final class AISPacket {
      * @param bytes
      * @return 
      */
+    private static char [] bArray2cArray( byte [] bytes ) {
+        return CHARSET.decode( ByteBuffer.wrap( bytes ) ).array();
+    }
+
+    /**
+     * 
+     * @param bytes
+     * @return 
+     */
     private static byte [] trim( byte [] bytes ) {
         char [] chars = CHARSET.decode( ByteBuffer.wrap( bytes ) ).array();
         
@@ -394,15 +403,6 @@ public final class AISPacket {
         return -1;
     }
     
-    /**
-     * 
-     * @param bytes
-     * @return 
-     */
-    private static char [] bArray2cArray( byte [] bytes ) {
-        return CHARSET.decode( ByteBuffer.wrap( bytes ) ).array();
-    }
-
     /**
      * 
      * @return 
