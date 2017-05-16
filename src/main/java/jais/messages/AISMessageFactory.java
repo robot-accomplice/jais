@@ -66,7 +66,7 @@ public class AISMessageFactory {
             byte [] compositeBytes;
             if( packets.length == 1 ) {
                 if( ! packets[0].isParsed() ) packets[0].process();
-                compositeBytes = packets[0].getRawMessage();
+                compositeBytes = packets[0].getBinaryString();
             } else {
                 compositeBytes = AISPacket.concatenate( packets );
             }
