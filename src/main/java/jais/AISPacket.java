@@ -21,6 +21,7 @@ import jais.messages.enums.Talkers;
 import jais.exceptions.AISPacketException;
 import jais.messages.AISMessageDecoder;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -67,7 +68,7 @@ public final class AISPacket {
     private int _sequentialMessageId = -1;
     private char _radioChannelCode;
     private byte [] _rawPacket;  // the unparsed initial string  
-    private byte [] _rawMessage; // the binary string 
+    private byte [] _binaryString; // the binary string 
     private byte [] _packetBody; // the message without the tagblock
     private int _fillBits;
     private byte [] _checksum;
@@ -262,7 +263,7 @@ public final class AISPacket {
                     } else if( _packetParts[5].length == 0 ) {
                         throw new AISPacketException( "Raw message is empty." );
                     }
-                    _rawMessage = _packetParts[5]; // only the binary string
+                    _binaryString = _packetParts[5]; // only the binary string
                 case 5:
                     _radioChannelCode = ( _packetParts[4].length != 0 ) ? ( char ) _packetParts[4][0] : 'Z';
                 case 4:
@@ -320,7 +321,17 @@ public final class AISPacket {
      * @return 
      */
     public static byte [] str2bArray( String string ) {
-        return CHARSET.encode( string ).array();
+        return str2bArray( string, CHARSET );
+    }
+    
+    /**
+     * 
+     * @param s
+     * @param cs
+     * @return 
+     */
+    public static byte [] str2bArray( String s, Charset cs ) {
+        return cs.encode( s ).array();
     }
     
     /**
@@ -328,8 +339,27 @@ public final class AISPacket {
      * @param bytes
      * @return 
      */
-    private static char [] bArray2cArray( byte [] bytes ) {
-        return CHARSET.decode( ByteBuffer.wrap( bytes ) ).array();
+    public static char [] bArray2cArray( byte [] bytes ) {
+        return bArray2cArray( bytes, CHARSET );
+    }
+    
+    /**
+     * 
+     * @param ca
+     * @param cs
+     * @return 
+     */
+    public static byte [] cArray2bArray( char [] ca, Charset cs ) {
+        return cs.encode( CharBuffer.wrap( ca ) ).array();
+    }
+    /**
+     * 
+     * @param bytes
+     * @param cs
+     * @return 
+     */
+    public static char [] bArray2cArray( byte [] bytes, Charset cs ) {
+        return cs.decode( ByteBuffer.wrap( bytes ) ).array();
     }
 
     /**
@@ -337,8 +367,17 @@ public final class AISPacket {
      * @param bytes
      * @return 
      */
-    private static byte [] trim( byte [] bytes ) {
-        char [] chars = CHARSET.decode( ByteBuffer.wrap( bytes ) ).array();
+    public static byte [] trim( byte [] bytes ) {
+        return trim( bytes, CHARSET );
+    }
+    
+    /**
+     * 
+     * @param bytes
+     * @return 
+     */
+    public static byte [] trim( byte [] bytes, Charset cs ) {
+        char [] chars = bArray2cArray( bytes, cs );
         
         for( int i = chars.length - 1; i > -1; i-- ) {
             if( LOG.isDebugEnabled() ) LOG.debug( "Character at position {} is {}", i, chars[i] );
@@ -372,7 +411,7 @@ public final class AISPacket {
      * @param end
      * @return 
      */
-    private static String substring( byte [] bytes, int start, int end ) {
+    public static String substring( byte [] bytes, int start, int end ) {
         return bArray2Str( Arrays.copyOfRange( bytes, start, end ) );
     }
     
@@ -380,8 +419,9 @@ public final class AISPacket {
      * 
      * @param bytes
      * @return 
+     * @throws jais.exceptions.AISException 
      */
-    private static int getInt( byte [] bytes ) throws AISException {
+    public static int getInt( byte [] bytes ) throws AISException {
         if( bytes.length < 4 ) throw new AISException( "The byte array is too short to represent an int" );
         return ByteBuffer.wrap( bytes ).getInt();
     }
@@ -392,7 +432,7 @@ public final class AISPacket {
      * @param c
      * @return 
      */
-    private static int indexOf( byte[] ba, char c ) {
+    public static int indexOf( byte[] ba, char c ) {
         char [] chars = CHARSET.decode( ByteBuffer.wrap( ba ) ).array();
         for( int i = 0; i < chars.length; i++ ) {
             if( chars[i] == c ) {
@@ -792,8 +832,8 @@ public final class AISPacket {
      *
      * @return
      */
-    public final byte [] getRawMessage() {
-        return _rawMessage;
+    public final byte [] getBinaryString() {
+        return _binaryString;
     }
     
     /**
@@ -911,7 +951,7 @@ public final class AISPacket {
     public static byte [] concatenate( AISPacket ... packets ) throws AISException {
         if( packets.length <= 1 ) {
             if( !packets[0].isParsed() ) packets[0].process();
-            return packets[0].getRawMessage();
+            return packets[0].getBinaryString();
         }
         
         byte [] compositeMsg = null;
@@ -920,11 +960,11 @@ public final class AISPacket {
         for( AISPacket packet : packets ) {
             if( !packet.isParsed() ) packet.process();
             if( compositeMsg == null ) {
-                compositeMsg = packet.getPacketBody();
+                compositeMsg = packet.getBinaryString();
             } else {
-                byte [] temp = new byte[compositeMsg.length + packet.getPacketBody().length];
+                byte [] temp = new byte[compositeMsg.length + packet.getBinaryString().length];
                 System.arraycopy( compositeMsg, 0, temp, 0, compositeMsg.length );
-                System.arraycopy( packet.getPacketBody(), 0, temp, compositeMsg.length, packet.getPacketBody().length );
+                System.arraycopy( packet.getBinaryString(), 0, temp, compositeMsg.length, packet.getBinaryString().length );
                 compositeMsg = temp;
             }
         }
@@ -970,7 +1010,7 @@ public final class AISPacket {
         if( packetMap.isEmpty() ) {
             packetMap.put( "tagblock", _tagBlock );
             packetMap.put( "preamble", _preamble );
-            packetMap.put( "raw_message", _rawMessage );
+            packetMap.put( "raw_message", _binaryString );
             packetMap.put( "raw_packet", _rawPacket );
             packetMap.put( "time_received", _timeReceived );
             packetMap.put( "source", _source );
