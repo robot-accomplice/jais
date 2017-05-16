@@ -22,6 +22,7 @@ import jais.messages.AISMessage.AISFieldMap;
 import jais.messages.enums.AISMessageType;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -421,39 +422,36 @@ public class AISMessageDecoder {
      * @throws AISException
      */
     public static byte[] decodeToByteArray( BitSet bits, int startBit, int endBit ) throws AISException {
-        CharBuffer cb = CharBuffer.allocate( ( ( endBit - startBit ) / 6 ) );
-
-        if( endBit > ( bits.size() - 1 ) ) {
-            endBit = bits.size() - 1;
+        if( LOG.isTraceEnabled() ) LOG.trace( "Decoding bit {} through bit {} of {} BitSet", startBit, endBit, bits.length() );
+        CharBuffer cb = CharBuffer.allocate( ( ( ( endBit - startBit ) / 6 ) + 1 ) );
+        
+        if( endBit > bits.size() ) {
+            endBit = bits.size();
         }
 
         try {
             // we need to walk forward through every set of six bits without
             // travelling past the endBit
-            while( startBit < endBit ) {
+            for( int sb = startBit; sb <= endBit; sb += 6 ) {
                 int binPosVal = 1;    // binary position value
                 int charVal = 0;      // current binary position value
-                for( int s = startBit + 5; s >= startBit && s < endBit; s-- ) {
+                for( int s = ( sb + 5 ); s >= sb && s <= endBit; s-- ) {
                     if( bits.get( s ) ) {
                         charVal += binPosVal; // sum bits to arrive at int char value
                     }
                     binPosVal += binPosVal; // doubling consistent with binary math
                 }
-                startBit += 6;              // move forward six bits
 
                 char c = sixBitIntToAscii( charVal );
                 if( c != '@' ) {
-                    cb.append( c );
-                } else {
-                    break;
+                    if( LOG.isTraceEnabled() ) LOG.trace( "Appending character to CharBuffer: {}" , c );
+                    cb.put( c );
                 }
             }
-            
-            if( LOG.isDebugEnabled() ) LOG.debug( "Decoded to: \"{}\"", cb.toString() );
         } catch( AISException e ) {
-            LOG.warn( "Could not decode String due to : {}", e.getMessage(), e );
+            if( LOG.isWarnEnabled() ) LOG.warn( "Could not decode String due to : {}", e.getMessage(), e );
         }
-
-        return AISPacket.CHARSET.encode( cb ).array();
+        
+        return AISPacket.CHARSET.encode( new String( cb.array() ).trim() ).array();
     }
 }
