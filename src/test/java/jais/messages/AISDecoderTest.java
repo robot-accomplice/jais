@@ -305,7 +305,7 @@ public class AISDecoderTest {
                 LOG.fatal( "Found packet to test: {}", ps );
                 try {
                     processPackets( new AISPacket( ps ) );
-                } catch( Throwable t ) {
+                } catch( AISException t ) {
                     LOG.fatal( t.getMessage(), t );
                 }
             }
@@ -319,7 +319,7 @@ public class AISDecoderTest {
                 LOG.fatal( "Found packet to test: {}", ps );
                 try {
                     processPackets( new AISPacket( ps ) );
-                } catch( Throwable t ) {
+                } catch( AISException t ) {
                     LOG.fatal( t.getMessage(), t );
                 }
             }
