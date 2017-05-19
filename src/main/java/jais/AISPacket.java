@@ -51,7 +51,7 @@ public final class AISPacket {
     private final static double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
     private final static double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
 
-    private final static String PREAMBLE = "([" + ENCAP_START + "|" + PARAM_START
+    public final static String PREAMBLE = "([" + ENCAP_START + "|" + PARAM_START
             + "]{1})([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
     public final static Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
     public final static Pattern PACKET_PATTERN = Pattern.compile( "(" + TagBlock.TAGBLOCK_STRING + ")?(" + PREAMBLE + "(.*))" );
