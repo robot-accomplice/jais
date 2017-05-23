@@ -360,7 +360,7 @@ public class AISMessageDecoder {
         switch( i ) {
             case 1023:
                 // speed unavailable
-                LOG.warn( "getSpeedOverGround: unavailable: {}", i );
+                if( LOG.isInfoEnabled() ) LOG.info( "getSpeedOverGround: unavailable: {}", i );
                 speed = -1f;
                 break;
             case 1022:
