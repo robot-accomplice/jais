@@ -57,7 +57,6 @@ public final class AISPacket {
     public final static Pattern PACKET_PATTERN = Pattern.compile( "(" + TagBlock.TAGBLOCK_STRING + ")?(" + PREAMBLE + "(.*))" );
     public static int PREAMBLE_GROUPS = 5;
     public final static Charset CHARSET = StandardCharsets.US_ASCII;
-    
 
     private TagBlock _tagBlock;
     private Preamble _preamble;
@@ -305,14 +304,24 @@ public final class AISPacket {
         _parsed = true;
         return this;
     }
-    
+
     /**
      * 
      * @param bytes
      * @return 
      */
     public static String bArray2Str( byte [] bytes ) {
-        return new String( bArray2cArray( bytes ) );
+        return bArray2Str( bytes, CHARSET );
+    }
+    
+    /**
+     * 
+     * @param bytes
+     * @param cs
+     * @return 
+     */
+    public static String bArray2Str( byte [] bytes, Charset cs ) {
+        return new String( bArray2cArray( bytes, cs ) );
     }
     
     /**
@@ -345,6 +354,16 @@ public final class AISPacket {
     
     /**
      * 
+     * @param bytes
+     * @param cs
+     * @return 
+     */
+    public static char [] bArray2cArray( byte [] bytes, Charset cs ) {
+        return cs.decode( ByteBuffer.wrap( bytes ) ).array();
+    }
+    
+    /**
+     * 
      * @param ca
      * @param cs
      * @return 
@@ -352,14 +371,14 @@ public final class AISPacket {
     public static byte [] cArray2bArray( char [] ca, Charset cs ) {
         return cs.encode( CharBuffer.wrap( ca ) ).array();
     }
+    
     /**
      * 
-     * @param bytes
-     * @param cs
+     * @param ca
      * @return 
      */
-    public static char [] bArray2cArray( byte [] bytes, Charset cs ) {
-        return cs.decode( ByteBuffer.wrap( bytes ) ).array();
+    public static byte [] cArray2bArray( char [] ca ) {
+        return cArray2bArray( ca, CHARSET );
     }
 
     /**
@@ -374,6 +393,7 @@ public final class AISPacket {
     /**
      * 
      * @param bytes
+     * @param cs
      * @return 
      */
     public static byte [] trim( byte [] bytes, Charset cs ) {
