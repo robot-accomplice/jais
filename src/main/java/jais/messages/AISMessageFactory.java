@@ -21,8 +21,7 @@ import jais.messages.enums.AISMessageType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -30,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class AISMessageFactory {
 
-    private final static Logger LOG = LogManager.getLogger( AISMessageFactory.class );
+    private final static Logger LOG = LoggerFactory.getLogger( AISMessageFactory.class );
     private final static String DEFAULT_SOURCE = "UNKNOWN";
     
     /**

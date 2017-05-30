@@ -5,8 +5,7 @@
  */
 package jais.messages.enums;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -104,7 +103,7 @@ public enum Talkers {
     ;
     
     public  final String description;
-    public final static Logger LOG = LogManager.getLogger( Talkers.class );
+    public final static Logger LOG = LoggerFactory.getLogger( Talkers.class );
     
     /**
      * 
@@ -121,7 +120,6 @@ public enum Talkers {
      */
     public static boolean isValid( String code ) {
         if( LOG.isDebugEnabled() ) LOG.debug( "Checking validity of talker with code: \"{}\"", code );
-        if( code == null ) return false;
-        return true;
+        return code != null;
     }
 }

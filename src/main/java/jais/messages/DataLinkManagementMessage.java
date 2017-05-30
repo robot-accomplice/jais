@@ -20,8 +20,7 @@ import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.AISMessageType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -29,8 +28,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class DataLinkManagementMessage extends AISMessageBase {
 
-    private final static Logger LOG = LogManager
-            .getLogger( DataLinkManagementMessage.class );
+    private final static Logger LOG = LoggerFactory.getLogger( DataLinkManagementMessage.class );
 
     private int _offset1 = -1;
     private int _slots1 = -1;

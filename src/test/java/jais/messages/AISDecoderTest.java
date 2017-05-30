@@ -25,9 +25,8 @@ import static jais.messages.enums.AISMessageType.POSITION_REPORT_CLASS_A_ASSIGNE
 import static jais.messages.enums.AISMessageType.POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION;
 import java.util.regex.Matcher;
 import org.junit.Test;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import static junit.framework.Assert.assertTrue;
+import org.slf4j.*;
 
 /**
  * Unit test for simple decoding tasks
@@ -35,7 +34,7 @@ import static junit.framework.Assert.assertTrue;
 public class AISDecoderTest {
 
     // initialize log4j
-    private final static Logger LOG = LogManager.getLogger( AISDecoderTest.class );
+    private final static Logger LOG = LoggerFactory.getLogger( AISDecoderTest.class );
 
     private final static String[] TEST_PACKETS = {
         "!AIVDM,1,1,,B,15N9W:0P00ISR5hA7<A8:OvT0498,0*2F",
@@ -120,25 +119,25 @@ public class AISDecoderTest {
             LOG.warn( "Factory returned a null message!  May be an unsupported message type." );
         } else {
             // from AISMessageBase
-            LOG.fatal( "Type     : {}", amb.getType() );
-            LOG.fatal( "Repeat   : {}", amb.getRepeat() );
-            LOG.fatal( "MMSI     : {}", amb.getMmsi() );
+            LOG.info( "Type     : {}", amb.getType() );
+            LOG.info( "Repeat   : {}", amb.getRepeat() );
+            LOG.info( "MMSI     : {}", amb.getMmsi() );
 
             switch( amb.getType() ) {
                 case BASE_STATION_REPORT:
                     BaseStationReport bsr = ( BaseStationReport ) amb;
 
-                    LOG.fatal( "Year     : {}", bsr.getYear() );
-                    LOG.fatal( "Month    : {}", bsr.getMonth() );
-                    LOG.fatal( "Day      : {}", bsr.getDay() );
-                    LOG.fatal( "Hour     : {}", bsr.getHour() );
-                    LOG.fatal( "Minute   : {}", bsr.getMinute() );
-                    LOG.fatal( "Second   : {}", bsr.getSecond() );
-                    LOG.fatal( "EPFD     : {}", bsr.getEpfd() );
-                    LOG.fatal( "Lat      : {}", bsr.getLat() );
-                    LOG.fatal( "Lon      : {}", bsr.getLon() );
-                    LOG.fatal( "Position : {}", bsr.getPosition() );
-                    LOG.fatal( "Radio    : {}", bsr.getRadio() );
+                    LOG.info( "Year     : {}", bsr.getYear() );
+                    LOG.info( "Month    : {}", bsr.getMonth() );
+                    LOG.info( "Day      : {}", bsr.getDay() );
+                    LOG.info( "Hour     : {}", bsr.getHour() );
+                    LOG.info( "Minute   : {}", bsr.getMinute() );
+                    LOG.info( "Second   : {}", bsr.getSecond() );
+                    LOG.info( "EPFD     : {}", bsr.getEpfd() );
+                    LOG.info( "Lat      : {}", bsr.getLat() );
+                    LOG.info( "Lon      : {}", bsr.getLon() );
+                    LOG.info( "Position : {}", bsr.getPosition() );
+                    LOG.info( "Radio    : {}", bsr.getRadio() );
                     break;
                 case POSITION_REPORT_CLASS_A:
                 case POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE:
@@ -146,50 +145,50 @@ public class AISDecoderTest {
                     PositionReportBase prb = ( PositionReportBase ) amb;
 
                     // from PositionReportBase
-                    LOG.fatal( "Accuracy : {}", prb.isAccurate() );
-                    LOG.fatal( "Course   : {}", prb.getCourse() );
-                    LOG.fatal( "Heading  : {}", prb.getHeading() );
-                    LOG.fatal( "Latitude : {}", prb.getLat() );
-                    LOG.fatal( "Longitude: {}", prb.getLon() );
-                    LOG.fatal( "Maneuver : {}", prb.getManeuver() );
-                    LOG.fatal( "Position : {}", prb.getPosition() );
-                    LOG.fatal( "Radio    : {}", prb.getRadio() );
-                    LOG.fatal( "RAIM     : {}", prb.isRaim() );
-                    LOG.fatal( "Second   : {}", prb.getSecond() );
-                    LOG.fatal( "Speed    : {}", prb.getSpeed() );
-                    LOG.fatal( "Status   : {}", prb.getStatus() );
-                    LOG.fatal( "Turn     : {}", prb.getTurn() );
+                    LOG.info( "Accuracy : {}", prb.isAccurate() );
+                    LOG.info( "Course   : {}", prb.getCourse() );
+                    LOG.info( "Heading  : {}", prb.getHeading() );
+                    LOG.info( "Latitude : {}", prb.getLat() );
+                    LOG.info( "Longitude: {}", prb.getLon() );
+                    LOG.info( "Maneuver : {}", prb.getManeuver() );
+                    LOG.info( "Position : {}", prb.getPosition() );
+                    LOG.info( "Radio    : {}", prb.getRadio() );
+                    LOG.info( "RAIM     : {}", prb.isRaim() );
+                    LOG.info( "Second   : {}", prb.getSecond() );
+                    LOG.info( "Speed    : {}", prb.getSpeed() );
+                    LOG.info( "Status   : {}", prb.getStatus() );
+                    LOG.info( "Turn     : {}", prb.getTurn() );
                     break;
                 case STATIC_AND_VOYAGE_RELATED_DATA:
                     StaticAndVoyageRelatedData savrd
                             = ( StaticAndVoyageRelatedData ) amb;
 
-                    LOG.fatal( "AIS Version  : {}", savrd.getVersion() );
-                    LOG.fatal( "IMO Number   : {}", savrd.getImo() );
-                    LOG.fatal( "Call Sign    : {}", savrd.getCallsign() );
-                    LOG.fatal( "Ship Name    : {}", savrd.getShipname() );
-                    LOG.fatal( "Ship Type    : {}", savrd.getShiptype() );
-                    LOG.fatal( "To Bow       : {}", savrd.getToBow() );
-                    LOG.fatal( "To Stern     : {}", savrd.getToStern() );
-                    LOG.fatal( "To Port      : {}", savrd.getToPort() );
-                    LOG.fatal( "To Starboard : {}", savrd.getToStarboard() );
-                    LOG.fatal( "EPFD Fix Type: {}", savrd.getEpfd() );
-                    LOG.fatal( "ETA Month    : {}", savrd.getMonth() );
-                    LOG.fatal( "ETA Day      : {}", savrd.getDay() );
-                    LOG.fatal( "ETA Hour     : {}", savrd.getHour() );
-                    LOG.fatal( "ETA Minute   : {}", savrd.getMinute() );
-                    LOG.fatal( "Draught      : {}", savrd.getDraught() );
-                    LOG.fatal( "Destination  : {}", savrd.getDestination() );
-                    LOG.fatal( "DTE Ready    : {}", savrd.dteReady() );
+                    LOG.info( "AIS Version  : {}", savrd.getVersion() );
+                    LOG.info( "IMO Number   : {}", savrd.getImo() );
+                    LOG.info( "Call Sign    : {}", savrd.getCallsign() );
+                    LOG.info( "Ship Name    : {}", savrd.getShipname() );
+                    LOG.info( "Ship Type    : {}", savrd.getShiptype() );
+                    LOG.info( "To Bow       : {}", savrd.getToBow() );
+                    LOG.info( "To Stern     : {}", savrd.getToStern() );
+                    LOG.info( "To Port      : {}", savrd.getToPort() );
+                    LOG.info( "To Starboard : {}", savrd.getToStarboard() );
+                    LOG.info( "EPFD Fix Type: {}", savrd.getEpfd() );
+                    LOG.info( "ETA Month    : {}", savrd.getMonth() );
+                    LOG.info( "ETA Day      : {}", savrd.getDay() );
+                    LOG.info( "ETA Hour     : {}", savrd.getHour() );
+                    LOG.info( "ETA Minute   : {}", savrd.getMinute() );
+                    LOG.info( "Draught      : {}", savrd.getDraught() );
+                    LOG.info( "Destination  : {}", savrd.getDestination() );
+                    LOG.info( "DTE Ready    : {}", savrd.dteReady() );
                     break;
                 case BINARY_ADDRESSED_MESSAGE:
                     BinaryAddressedMessageBase bamb
                             = ( BinaryAddressedMessageBase ) amb;
-                    LOG.fatal( "Source MMSI     : {}", bamb.getSourceMmsi() );
-                    LOG.fatal( "Destination MMSI: {}", bamb.getDestMmsi() );
-                    LOG.fatal( "Sequence Number : {}", bamb.getSeqno() );
-                    LOG.fatal( "DAC             : {}", bamb.getDac() );
-                    LOG.fatal( "FID             : {}", bamb.getFid() );
+                    LOG.info( "Source MMSI     : {}", bamb.getSourceMmsi() );
+                    LOG.info( "Destination MMSI: {}", bamb.getDestMmsi() );
+                    LOG.info( "Sequence Number : {}", bamb.getSeqno() );
+                    LOG.info( "DAC             : {}", bamb.getDac() );
+                    LOG.info( "FID             : {}", bamb.getFid() );
 
                     // after we have the dac and fid we can determine the
                     // specific subtype of message we're dealing with and decode
@@ -198,11 +197,11 @@ public class AISDecoderTest {
                 case BINARY_ACKNOWLEDGE:
                     BinaryAcknowledge ba = ( BinaryAcknowledge ) amb;
 
-                    LOG.fatal( "Source MMSI: {}", ba.getSourceMmsi() );
-                    LOG.fatal( "MMSI 1     : {}", ba.getMmsi1() );
-                    LOG.fatal( "MMSI 2     : {}", ba.getMmsi2() );
-                    LOG.fatal( "MMSI 3     : {}", ba.getMmsi3() );
-                    LOG.fatal( "MMSI 4     : {}", ba.getMmsi4() );
+                    LOG.info( "Source MMSI: {}", ba.getSourceMmsi() );
+                    LOG.info( "MMSI 1     : {}", ba.getMmsi1() );
+                    LOG.info( "MMSI 2     : {}", ba.getMmsi2() );
+                    LOG.info( "MMSI 3     : {}", ba.getMmsi3() );
+                    LOG.info( "MMSI 4     : {}", ba.getMmsi4() );
                     break;
                 case BINARY_BROADCAST_MESSAGE:
                     break;
@@ -219,7 +218,7 @@ public class AISDecoderTest {
                 case SAFETY_RELATED_BROADCAST_MESSAGE:
                     break;
                 default:
-                    LOG.fatal( "Ignoring new {}", amb.getType().getDescription() );
+                    LOG.info( "Ignoring new {}", amb.getType().getDescription() );
             }
         }
     }
@@ -229,19 +228,19 @@ public class AISDecoderTest {
      */
     @Test
     public void testPacketValidation() throws AISPacketException {
-        LOG.fatal( "*** testPacketValidation()" );
+        LOG.info( "*** testPacketValidation()" );
         for( String packetStr : TEST_PACKETS ) {
-            LOG.fatal( "Validating packet: {}", packetStr );
+            LOG.info( "Validating packet: {}", packetStr );
             try {
                 String truncStr = AISPacket.truncatePacket( new StringBuilder( packetStr ) );
-                LOG.fatal( "AISPacket.truncatePacket() produced: \"{}\" from \"{}\"", truncStr, packetStr );
+                LOG.info( "AISPacket.truncatePacket() produced: \"{}\" from \"{}\"", truncStr, packetStr );
                 if( truncStr != null && !truncStr.isEmpty() ) assertTrue( new AISPacket( truncStr ).isValid() );
                 else assertTrue( new AISPacket( packetStr ).isValid() );
             } catch( AISPacketException t ) {
-                LOG.fatal( t.getMessage(), t );
+                LOG.info( t.getMessage(), t );
             }
         }
-        LOG.fatal( "Packet validation test successful!" );
+        LOG.info( "Packet validation test successful!" );
     }
 
     /**
@@ -251,19 +250,19 @@ public class AISDecoderTest {
      */
     @Test
     public void testPacketDecoding() throws AISException {
-        LOG.fatal( "*** testPacketDecoding()" );
+        LOG.info( "*** testPacketDecoding()" );
 
-        LOG.fatal( "Testing with {} packets.", TEST_PACKETS.length );
+        LOG.info( "Testing with {} packets.", TEST_PACKETS.length );
         for( String newMessage : TEST_PACKETS ) {
             Matcher pm = AISPacket.PACKET_PATTERN.matcher( newMessage );
 
             if( pm.find() ) {
-                LOG.fatal(  "Found {} groups", pm.groupCount() );
+                LOG.info(  "Found {} groups", pm.groupCount() );
                 for( int i = 0; i < pm.groupCount(); i++ ) {
-                    LOG.fatal( "Group {} = \"{}\"", i, pm.group( i ) );
+                    LOG.info( "Group {} = \"{}\"", i, pm.group( i ) );
                 }
             } else {
-                LOG.fatal( "MATCHER COMPLETELY FAILED! {}", AISPacket.PACKET_PATTERN );
+                LOG.info( "MATCHER COMPLETELY FAILED! {}", AISPacket.PACKET_PATTERN );
             }
             
             String truncStr = AISPacket.truncatePacket( new StringBuilder( newMessage ) );
@@ -275,19 +274,19 @@ public class AISDecoderTest {
                 Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( newMessage );
                 if( m.find() ) {
                     for( int i = 0; i <= m.groupCount(); i++ ) {
-                        LOG.fatal( "Found: {}", m.group(i) );
+                        LOG.info( "Found: {}", m.group(i) );
                     }
                 }
-                LOG.fatal( "\n\n{}", newMessage );
-                LOG.fatal( "TagBlock: {}\n\n", packet.getTagBlock().toString() );
+                LOG.info( "\n\n{}", newMessage );
+                LOG.info( "TagBlock: {}\n\n", packet.getTagBlock().toString() );
                 // assert( false );
             } else {
-                LOG.fatal( "TAGBLOCK is null" );
+                LOG.info( "TAGBLOCK is null" );
             }
             processPackets( packet );
         }
 
-        LOG.fatal( "Testing compound message with two parts" );
+        LOG.info( "Testing compound message with two parts" );
         AISPacket pOne = new AISPacket( TEST_COMPOUND_MESSAGE[0] );
         AISPacket pTwo = new AISPacket( TEST_COMPOUND_MESSAGE[1] );
         pOne.process();
@@ -296,36 +295,36 @@ public class AISDecoderTest {
 
         processPackets( compoundMsg );
 
-        LOG.fatal( "** Subtest of packet separation logic" );
-        LOG.fatal( "Testing packets that are not newline separated" );
+        LOG.info( "** Subtest of packet separation logic" );
+        LOG.info( "Testing packets that are not newline separated" );
         String packetString = TEST_PACKETS[0] + TEST_PACKETS[1];
         for( String ps : packetString.split( "!AIVD" ) ) {
             if( ps != null && !ps.isEmpty() ) {
                 ps = "!AIVDM" + ps.trim();
-                LOG.fatal( "Found packet to test: {}", ps );
+                LOG.info( "Found packet to test: {}", ps );
                 try {
                     processPackets( new AISPacket( ps ) );
                 } catch( AISException t ) {
-                    LOG.fatal( t.getMessage(), t );
+                    LOG.info( t.getMessage(), t );
                 }
             }
         }
 
-        LOG.fatal( "Testing packets that ARE newline separated" );
+        LOG.info( "Testing packets that ARE newline separated" );
         packetString = TEST_PACKETS[0] + "\n" + TEST_PACKETS[1];
         for( String ps : packetString.split( "!AIVD" ) ) {
             if( ps != null && !ps.trim().isEmpty() ) {
                 ps = "!AIVD" + ps;
-                LOG.fatal( "Found packet to test: {}", ps );
+                LOG.info( "Found packet to test: {}", ps );
                 try {
                     processPackets( new AISPacket( ps ) );
                 } catch( AISException t ) {
-                    LOG.fatal( t.getMessage(), t );
+                    LOG.info( t.getMessage(), t );
                 }
             }
         }
 
-        LOG.fatal( "AIS message decode test successful!" );
+        LOG.info( "AIS message decode test successful!" );
     }
 
     /**
@@ -333,10 +332,10 @@ public class AISDecoderTest {
      */
     @Test
     public void testImoValidation() {
-        LOG.fatal( "*** testImoValidation()" );
-        LOG.fatal( "\tNumber:" );
+        LOG.info( "*** testImoValidation()" );
+        LOG.info( "\tNumber:" );
         assertTrue( AISMessageBase.isValidImo( 9074729 ) );
-        LOG.fatal( "\tString:" );
+        LOG.info( "\tString:" );
         assertTrue( AISMessageBase.isValidImo( "IMO 9074729" ) );
     }
 }

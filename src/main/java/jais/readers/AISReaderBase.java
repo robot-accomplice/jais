@@ -25,7 +25,7 @@ import jais.handlers.AISMessageHandler;
 import jais.handlers.AISPacketHandler;
 import jais.messages.AISMessage;
 import java.util.Observable;
-import org.apache.logging.log4j.*;
+import org.slf4j.*;
 
 /**
  *
@@ -33,7 +33,7 @@ import org.apache.logging.log4j.*;
  */
 public abstract class AISReaderBase extends Observable implements AISReader {
 
-    private final static Logger LOG = LogManager.getLogger( AISReaderBase.class );
+    private final static Logger LOG = LoggerFactory.getLogger( AISReaderBase.class );
 
     AISMessageHandler _messageHandler;
     AISPacketHandler _packetHandler;
@@ -150,10 +150,10 @@ public abstract class AISReaderBase extends Observable implements AISReader {
      */
     @Override
     public void close() {
-        LOG.fatal( "AISReaderBase.close() invoked." );
+        LOG.info( "AISReaderBase.close() invoked." );
         _buffer.close();
         _shouldRun = false;
-        LOG.fatal( "Reader successfully closed." );
+        LOG.info( "Reader successfully closed." );
     }
 
     /**
@@ -164,7 +164,7 @@ public abstract class AISReaderBase extends Observable implements AISReader {
         try {
             read();
         } catch( AISReaderException are ) {
-            LOG.fatal( "Encountered a fatal error while reading the datasource: {}",
+            LOG.error( "Encountered a fatal error while reading the datasource: {}",
                     are.getMessage(), are );
         } finally {
             close();

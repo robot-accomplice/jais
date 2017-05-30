@@ -20,8 +20,7 @@ import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -29,8 +28,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class Interrogation extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger(
-            Interrogation.class );
+    private final static Logger LOG = LoggerFactory.getLogger( Interrogation.class );
 
     private int _mmsi1;     // interrogated mmsi
     private int _type1_1;    // first message type

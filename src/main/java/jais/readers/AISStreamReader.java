@@ -21,7 +21,7 @@ import jais.handlers.AISHandler;
 import jais.handlers.AISMessageHandler;
 import jais.handlers.AISPacketHandler;
 import java.io.*;
-import org.apache.logging.log4j.*;
+import org.slf4j.*;
 
 /**
  *
@@ -29,7 +29,7 @@ import org.apache.logging.log4j.*;
  */
 public class AISStreamReader extends AISReaderBase {
     
-    private final static Logger LOG = LogManager.getLogger( AISStreamReader.class );
+    private final static Logger LOG = LoggerFactory.getLogger( AISStreamReader.class );
     private final static int DEFAULT_BUFFER_SIZE = 16384;
 
     private final InputStream _input;

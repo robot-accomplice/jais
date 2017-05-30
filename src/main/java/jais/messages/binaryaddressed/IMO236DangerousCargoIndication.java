@@ -23,8 +23,8 @@ import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.BinaryAddressedMessageType;
 import jais.messages.enums.CargoUnitCode;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
+
 
 /**
  *
@@ -32,8 +32,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
 
-    private final static Logger LOG = LogManager
-            .getLogger( IMO236DangerousCargoIndication.class );
+    private final static Logger LOG = LoggerFactory.getLogger( IMO236DangerousCargoIndication.class );
 
     private String _lastPort;
     private int _lastMonth;

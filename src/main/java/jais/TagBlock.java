@@ -17,16 +17,15 @@ package jais;
 
 import java.util.Arrays;
 import java.util.regex.Pattern;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.slf4j.*;
 
 /**
  *
  */
 public final class TagBlock {
     
-    public final static Logger LOG = LogManager.getLogger( TagBlock.class );
+    public final static Logger LOG = LoggerFactory.getLogger( TagBlock.class );
     public final static String TAGBLOCK_STRING = "\\\\(([cdgnrst]{1}\\:[A-Za-z0-9\\\\-]+\\,?)+)\\*([A-Za-z0-9]{2})\\\\";
     public final static Pattern TAGBLOCK_PATTERN = Pattern.compile( TAGBLOCK_STRING );
 
@@ -224,7 +223,7 @@ public final class TagBlock {
      * @return 
      */
     public static TagBlock parse( String rawTagBlock, byte [] source ) {
-        LOG.fatal( "Parsing {}", rawTagBlock );
+        LOG.info( "Parsing {}", rawTagBlock );
         TagBlock tb = new TagBlock();
 
         // substring starts at 1 to remove leading \

@@ -21,8 +21,7 @@ import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.ShipType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -30,8 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class StaticDataReport extends AISMessageBase {
 
-    private final static Logger LOG = LogManager
-            .getLogger( StaticDataReport.class );
+    private final static Logger LOG = LoggerFactory.getLogger( StaticDataReport.class );
 
     private int _partNo;
     private String _shipName;

@@ -21,8 +21,7 @@ import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import com.spatial4j.core.shape.Point;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -30,8 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class StandardSARAircraftPositionReport extends AISMessageBase {
 
-    private final static Logger LOG = LogManager
-            .getLogger( StandardSARAircraftPositionReport.class );
+    private final static Logger LOG = LoggerFactory.getLogger( StandardSARAircraftPositionReport.class );
 
     private int _alt;
     private int _speed;

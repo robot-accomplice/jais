@@ -22,8 +22,7 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import com.spatial4j.core.shape.Point;
 import java.util.BitSet;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -31,8 +30,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
 
-    private final static Logger LOG = LogManager
-            .getLogger( DGNSSBroadcastBinaryMessage.class );
+    private final static Logger LOG = LoggerFactory.getLogger( DGNSSBroadcastBinaryMessage.class );
 
     private float _lon;
     private float _lat;

@@ -23,8 +23,7 @@ import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.ShipType;
 import com.spatial4j.core.shape.Point;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -32,8 +31,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class ExtendedClassBCSPositionReport extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( 
-            ExtendedClassBCSPositionReport.class );
+    private final static Logger LOG = LoggerFactory.getLogger( ExtendedClassBCSPositionReport.class );
 
     private int _speed;
     private boolean _accurate;

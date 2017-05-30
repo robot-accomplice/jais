@@ -23,8 +23,7 @@ import jais.messages.enums.FieldMap;
 import jais.messages.enums.ManeuverType;
 import jais.messages.enums.NavigationStatus;
 import com.spatial4j.core.shape.Point;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -32,8 +31,7 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class PositionReportBase extends AISMessageBase {
 
-    private final static Logger LOG = LogManager
-            .getLogger( PositionReportBase.class );
+    private final static Logger LOG = LoggerFactory.getLogger( PositionReportBase.class );
 
     private NavigationStatus _status = NavigationStatus.NOT_DEFINED; // bits 38-41
     private float _turn; // bits 42-49

@@ -21,8 +21,7 @@ import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import com.spatial4j.core.shape.Point;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -30,8 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class StandardClassBCSPositionReport extends AISMessageBase {
 
-    private final static Logger LOG = LogManager
-            .getLogger( StandardClassBCSPositionReport.class );
+    private final static Logger LOG = LoggerFactory.getLogger( StandardClassBCSPositionReport.class );
     
     private int _speed;
     private boolean _accurate;
@@ -276,9 +274,9 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
                     default:
                         if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
                 }
-            } catch( Throwable t ) {
-                LOG.warn( "Unable to decode field: {}: {}", field.name(), t.getMessage() );
-                if( LOG.isDebugEnabled() ) LOG.debug( t.getMessage() );
+            } catch( AISException ae ) {
+                LOG.warn( "Unable to decode field: {}: {}", field.name(), ae.getMessage() );
+                if( LOG.isDebugEnabled() ) LOG.debug( ae.getMessage() );
             }
         }
     }

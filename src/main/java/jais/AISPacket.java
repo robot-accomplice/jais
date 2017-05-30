@@ -28,9 +28,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.slf4j.*;
 
 /**
  *
@@ -38,7 +37,7 @@ import org.joda.time.DateTime;
  */
 public final class AISPacket {
 
-    private final static Logger LOG = LogManager.getLogger( AISPacket.class );
+    private final static Logger LOG = LoggerFactory.getLogger( AISPacket.class );
 
     // reserved characters
     private final static char ENCAP_START = '!';
@@ -297,8 +296,8 @@ public final class AISPacket {
                 default:
                     throw new AISPacketException( "Packet is corrupt and has no message body." );
             }
-        } catch( Throwable t ) {
-            throw new AISPacketException( "Encountered a malformed AISPacket: \"" + bArray2Str( _rawPacket ) + "\" - " + t.getMessage(), t );
+        } catch( AISPacketException ape ) {
+            throw new AISPacketException( "Encountered a malformed AISPacket: \"" + bArray2Str( _rawPacket ) + "\" - " + ape.getMessage(), ape );
         }
 
         _parsed = true;

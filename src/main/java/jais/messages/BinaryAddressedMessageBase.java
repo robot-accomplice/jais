@@ -23,8 +23,7 @@ import jais.messages.enums.BinaryAddressedMessageType;
 import jais.messages.enums.FieldMap;
 import java.lang.reflect.Constructor;
 import java.util.BitSet;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -32,7 +31,7 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class BinaryAddressedMessageBase extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( BinaryAddressedMessageBase.class );
+    private final static Logger LOG = LoggerFactory.getLogger( BinaryAddressedMessageBase.class );
 
     private int _seqno;
     private int _destMmsi;

@@ -16,12 +16,12 @@
 
 package jais;
 
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class Console extends Application {
 
-    private final static Logger LOG = LogManager.getLogger( Console.class );
+    private final static Logger LOG = LoggerFactory.getLogger( Console.class );
     private final static String FXML_PATH = "/fxml/console.fxml";
 
     /**
@@ -43,8 +43,8 @@ public class Console extends Application {
             Scene scene = new Scene( FXMLLoader.load( getClass().getResource( FXML_PATH ) ) );
             stage.setScene( scene );
             stage.show();
-        } catch( Exception e ) {
-            LOG.fatal( "Unanticipated fault when launching the interface: {}", e.getMessage() );
+        } catch( IOException ioe ) {
+            LOG.error( "Unanticipated fault when launching the interface: {}", ioe.getMessage() );
             // alert dialog?
             System.exit( 1 );
         }

@@ -24,12 +24,11 @@ import jais.messages.enums.ManeuverType;
 import jais.messages.enums.NavigationStatus;
 import jais.messages.enums.ShipType;
 import java.util.Objects;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.*;
 
 /**
  *
@@ -37,7 +36,7 @@ import org.joda.time.format.DateTimeFormatter;
  */
 public class Vessel implements Cloneable {
 
-    private final static Logger LOG = LogManager.getLogger( Vessel.class );
+    private final static Logger LOG = LoggerFactory.getLogger( Vessel.class );
 
     private Identifier _id;
     private int _version;

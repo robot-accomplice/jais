@@ -34,8 +34,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -43,7 +42,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class ConsoleController implements Initializable {
     
-    static final Logger LOG = LogManager.getLogger( ConsoleController.class );
+    static final Logger LOG = LoggerFactory.getLogger( ConsoleController.class );
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -224,13 +223,13 @@ public class ConsoleController implements Initializable {
                 }
             } else {
                 appendLineToOutput( "AISMessageFactory returned a null message!" );
-                LOG.fatal( "AISMessageFactory returned a null message!" );
+                LOG.warn( "AISMessageFactory returned a null message!" );
             }
-        } catch( Throwable t ) {
-            appendLineToOutput( "Unable to decode packet: \"" + inText + "\": " + t.getMessage() );
-            appendLineToOutput( "StackTrace:\n" + t );
-            LOG.fatal( "Unable to decode packet: \"{}\": {}", inText, t.getMessage() );
-            LOG.fatal( "StackTrace:", t );
+        } catch( Exception e ) {
+            appendLineToOutput( "Unable to decode packet: \"" + inText + "\": " + e.getMessage() );
+            appendLineToOutput( "StackTrace:\n" + e );
+            LOG.error( "Unable to decode packet: \"{}\": {}", inText, e.getMessage() );
+            if( LOG.isTraceEnabled() ) LOG.trace( "StackTrace:", e );
         } finally {
             appendLineToOutput( "****************************************************" );
         }

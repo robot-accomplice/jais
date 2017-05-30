@@ -22,8 +22,7 @@ import jais.messages.AISMessageDecoder;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.BinaryAddressedMessageType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -31,7 +30,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class IMO289TextDescription extends BinaryAddressedMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( IMO289TextDescription.class );
+    private final static Logger LOG = LoggerFactory.getLogger( IMO289TextDescription.class );
 
     private int _linkageId;
     private String _description;

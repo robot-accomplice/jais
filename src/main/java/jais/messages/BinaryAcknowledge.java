@@ -20,8 +20,7 @@ import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.*;
 
 /**
  *
@@ -29,8 +28,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class BinaryAcknowledge extends AISMessageBase {
 
-    private final static Logger LOG = LogManager
-            .getLogger( BinaryAddressedMessageBase.class );
+    private final static Logger LOG = LoggerFactory.getLogger( BinaryAddressedMessageBase.class );
 
     private int _mmsi1;
     private int _mmsi2;

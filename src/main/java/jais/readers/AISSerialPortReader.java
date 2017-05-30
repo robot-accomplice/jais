@@ -22,7 +22,7 @@ import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
-import org.apache.logging.log4j.*;
+import org.slf4j.*;
 
 /**
  *
@@ -30,8 +30,7 @@ import org.apache.logging.log4j.*;
  */
 public class AISSerialPortReader extends AISReaderBase implements SerialPortEventListener {
 
-    private final static Logger LOG = LogManager
-            .getLogger( AISSerialPortReader.class );
+    private final static Logger LOG = LoggerFactory.getLogger( AISSerialPortReader.class );
 
     private final static long LOOP_INTERVAL_MS = 1000;
 

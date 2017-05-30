@@ -22,10 +22,8 @@ import jais.messages.AISMessage.AISFieldMap;
 import jais.messages.enums.AISMessageType;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.*;
 
 /**
  *
@@ -33,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class AISMessageDecoder {
 
-    private final static Logger LOG = LogManager.getLogger( AISMessageDecoder.class );
+    private final static Logger LOG = LoggerFactory.getLogger( AISMessageDecoder.class );
 
     public final static int CHAR_RANGE_A_MIN = 48;
     public final static int CHAR_RANGE_A_MAX = 87;
