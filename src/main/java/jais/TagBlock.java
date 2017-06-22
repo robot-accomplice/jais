@@ -223,12 +223,12 @@ public final class TagBlock {
      * @return 
      */
     public static TagBlock parse( String rawTagBlock, byte [] source ) {
-        LOG.info( "Parsing {}", rawTagBlock );
+        if( LOG.isInfoEnabled() ) LOG.info( "Parsing {}", rawTagBlock );
         TagBlock tb = new TagBlock();
 
         // substring starts at 1 to remove leading \
         for( String part : AISPacket.fastSplit( rawTagBlock.substring( 1, rawTagBlock.indexOf( "*" ) ) ) ) {
-            LOG.info( "Processing: {}", part );
+            if( LOG.isInfoEnabled() ) LOG.info( "Processing: {}", part );
             String[] tag = AISPacket.fastSplit( part, ':' );
 
             switch( tag[0] ) {
