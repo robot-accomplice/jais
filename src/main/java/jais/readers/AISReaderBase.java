@@ -25,7 +25,8 @@ import jais.handlers.AISMessageHandler;
 import jais.handlers.AISPacketHandler;
 import jais.messages.AISMessage;
 import java.util.Observable;
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -34,17 +35,27 @@ import org.slf4j.*;
 public abstract class AISReaderBase extends Observable implements AISReader {
 
     private final static Logger LOG = LoggerFactory.getLogger( AISReaderBase.class );
+    private final static String DEFAULT_SOURCE = "UNSPECIFIED";
 
     AISMessageHandler _messageHandler;
     AISPacketHandler _packetHandler;
     private final AISPacketBuffer _buffer = new AISPacketBuffer();
     protected boolean _shouldRun = true;
-    protected String _source;
+    protected String _source = DEFAULT_SOURCE;
 
     /**
      * for use with observers in lieu of direct handler calls
      */
     AISReaderBase() {
+        this( DEFAULT_SOURCE );
+    }
+    
+    /**
+     * 
+     * @param source 
+     */
+    AISReaderBase( String source ) {
+        _source = source;
     }
 
     /**
@@ -58,6 +69,21 @@ public abstract class AISReaderBase extends Observable implements AISReader {
         if( handler instanceof AISMessageHandler ) {
             _messageHandler = ( AISMessageHandler ) handler;
         }
+        _source = DEFAULT_SOURCE;
+    }
+
+    /**
+     *
+     * @param handler
+     */
+    AISReaderBase( AISHandler handler, String source ) {
+        if( handler instanceof AISPacketHandler ) {
+            _packetHandler = ( AISPacketHandler ) handler;
+        }
+        if( handler instanceof AISMessageHandler ) {
+            _messageHandler = ( AISMessageHandler ) handler;
+        }
+        _source = source;
     }
 
     /**
@@ -68,6 +94,18 @@ public abstract class AISReaderBase extends Observable implements AISReader {
     AISReaderBase( AISPacketHandler packetHandler, AISMessageHandler messageHandler ) {
         _packetHandler = packetHandler;
         _messageHandler = messageHandler;
+        _source = DEFAULT_SOURCE;
+    }
+
+    /**
+     *
+     * @param packetHandler
+     * @param messageHandler
+     */
+    AISReaderBase( AISPacketHandler packetHandler, AISMessageHandler messageHandler, String source ) {
+        _packetHandler = packetHandler;
+        _messageHandler = messageHandler;
+        _source = source;
     }
 
     /**
