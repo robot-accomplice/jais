@@ -46,6 +46,7 @@ public final class AISPacket {
     private final static char FIELD_DELIMITER = ',';
     private final static char HEX_DELIMITER = '^';
     private final static char RESERVED_DELIMITER = '~';
+    private final static String DEFAULT_SOURCE = "UNSPECIFIED";
 
     private final static double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
     private final static double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
@@ -80,7 +81,7 @@ public final class AISPacket {
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( byte [] rawPacket ) throws AISPacketException {
-        this( rawPacket, str2bArray( "UNKNOWN" ) );
+        this( rawPacket, str2bArray( DEFAULT_SOURCE ) );
     }
 
     /**
@@ -101,7 +102,7 @@ public final class AISPacket {
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( String rawPacket ) throws AISPacketException {
-        this( rawPacket, "UNKNOWN" );
+        this( rawPacket, DEFAULT_SOURCE );
     }
 
     /**
@@ -113,7 +114,8 @@ public final class AISPacket {
     public AISPacket( String rawPacket, String source ) throws AISPacketException {
         if( LOG.isTraceEnabled() ) LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", rawPacket, source );
         _rawPacket = str2bArray( rawPacket.trim() );
-        _source = str2bArray( source.trim() );
+        if( _source != null ) _source = str2bArray( source.trim() );
+        else source = DEFAULT_SOURCE;
     }
 
     /**
