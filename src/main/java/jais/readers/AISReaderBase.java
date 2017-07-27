@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AISReaderBase extends Observable implements AISReader {
 
     private final static Logger LOG = LoggerFactory.getLogger( AISReaderBase.class );
-    private final static String DEFAULT_SOURCE = "UNSPECIFIED";
+    protected final static String DEFAULT_SOURCE = "UNSPECIFIED";
 
     AISMessageHandler _messageHandler;
     AISPacketHandler _packetHandler;

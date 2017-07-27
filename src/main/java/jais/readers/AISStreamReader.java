@@ -45,11 +45,32 @@ public class AISStreamReader extends AISReaderBase {
     
     /**
      * 
+     * @param input 
+     * @param source 
+     */
+    public AISStreamReader( InputStream input, String source ) {
+        this( input, source, DEFAULT_BUFFER_SIZE );
+    }
+    
+    /**
+     * 
      * @param input
      * @param bufferSize 
      */
     public AISStreamReader( InputStream input, int bufferSize ) {
         _input = input;
+        _bufferSize = bufferSize;
+    }
+    
+    /**
+     * 
+     * @param input
+     * @param source
+     * @param bufferSize 
+     */
+    public AISStreamReader( InputStream input, String source, int bufferSize ) {
+        _input = input;
+        _source = source;
         _bufferSize = bufferSize;
     }
     
@@ -68,11 +89,36 @@ public class AISStreamReader extends AISReaderBase {
      * 
      * @param input 
      * @param handler 
+     * @param source 
+     */
+    public AISStreamReader( InputStream input, AISHandler handler, String source ) {
+        super( handler );
+       _input = input;
+       _bufferSize = DEFAULT_BUFFER_SIZE;
+       _source = source;
+    }
+    
+    /**
+     * 
+     * @param input 
+     * @param handler 
      * @param bufferSize 
      */
     public AISStreamReader( InputStream input, AISHandler handler, int bufferSize ) {
+        this( input, handler, DEFAULT_SOURCE, bufferSize );
+    }
+    
+    /**
+     * 
+     * @param input 
+     * @param handler 
+     * @param source 
+     * @param bufferSize 
+     */
+    public AISStreamReader( InputStream input, AISHandler handler, String source, int bufferSize ) {
         super( handler );
        _input = input;
+       _source = source;
        _bufferSize = bufferSize;
     }
     
@@ -82,8 +128,7 @@ public class AISStreamReader extends AISReaderBase {
      * @param pktHandler
      * @param msgHandler 
      */
-    public AISStreamReader( InputStream input, AISPacketHandler pktHandler, 
-            AISMessageHandler msgHandler ) {
+    public AISStreamReader( InputStream input, AISPacketHandler pktHandler, AISMessageHandler msgHandler ) {
         super( pktHandler, msgHandler );
         _input = input;
         _bufferSize = DEFAULT_BUFFER_SIZE;
