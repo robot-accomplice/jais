@@ -54,7 +54,7 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
      */
     public AISSerialPortReader( String portName ) {
         this( portName, DEFAULT_BAUD_RATE, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS,
-                DEFAULT_PARITY );
+                DEFAULT_PARITY, portName );
     }
 
     /**
@@ -74,7 +74,7 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
      */
     public AISSerialPortReader( String portName, AISHandler handler ) {
         this( portName, DEFAULT_BAUD_RATE, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS,
-                DEFAULT_PARITY, handler );
+                DEFAULT_PARITY, handler, portName );
     }
 
     /**
@@ -139,6 +139,7 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
         _dataBits = dataBits;
         _stopBits = stopBits;
         _parity = parity;
+        _source = portName;
         if( LOG.isDebugEnabled() ) LOG.debug( "invoked with: " + portName + ", " + baud + ", " + dataBits
                 + ", " + stopBits + ", " + parity );
     }
