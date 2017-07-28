@@ -150,6 +150,14 @@ public class AISStreamReader extends AISReaderBase {
     
     /**
      * 
+     * @param source 
+     */
+    public void setSource( String source ) {
+       _source = source; 
+    }
+    
+    /**
+     * 
      * @throws jais.readers.AISReaderException
      */
     @Override
