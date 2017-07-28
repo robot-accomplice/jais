@@ -109,6 +109,14 @@ public abstract class AISReaderBase extends Observable implements AISReader {
     }
 
     /**
+     * 
+     * @param source 
+     */
+    public void setSource( String source ) {
+       _source = source; 
+    }
+    
+    /**
      *
      * @param packetString
      */

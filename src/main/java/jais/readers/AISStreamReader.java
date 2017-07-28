@@ -45,7 +45,7 @@ public class AISStreamReader extends AISReaderBase {
      * @param input 
      */
     public AISStreamReader( InputStream input ) {
-        this( input, DEFAULT_BUFFER_SIZE );
+        this( input, AISReaderBase.DEFAULT_SOURCE, DEFAULT_BUFFER_SIZE );
     }
     
     /**
@@ -63,8 +63,7 @@ public class AISStreamReader extends AISReaderBase {
      * @param bufferSize 
      */
     public AISStreamReader( InputStream input, int bufferSize ) {
-        _input = input;
-        _bufferSize = bufferSize;
+        this( input, DEFAULT_SOURCE, bufferSize );
     }
     
     /**
@@ -85,9 +84,7 @@ public class AISStreamReader extends AISReaderBase {
      * @param handler 
      */
     public AISStreamReader( InputStream input, AISHandler handler ) {
-        super( handler );
-       _input = input;
-       _bufferSize = DEFAULT_BUFFER_SIZE;
+        this( input, handler, AISReaderBase.DEFAULT_SOURCE );
     }
     
     /**
@@ -97,10 +94,7 @@ public class AISStreamReader extends AISReaderBase {
      * @param source 
      */
     public AISStreamReader( InputStream input, AISHandler handler, String source ) {
-        super( handler );
-       _input = input;
-       _bufferSize = DEFAULT_BUFFER_SIZE;
-       _source = source;
+        this( input, handler, source, DEFAULT_BUFFER_SIZE );
     }
     
     /**
@@ -110,7 +104,7 @@ public class AISStreamReader extends AISReaderBase {
      * @param bufferSize 
      */
     public AISStreamReader( InputStream input, AISHandler handler, int bufferSize ) {
-        this( input, handler, DEFAULT_SOURCE, bufferSize );
+        this( input, handler, AISReaderBase.DEFAULT_SOURCE, bufferSize );
     }
     
     /**
@@ -121,9 +115,8 @@ public class AISStreamReader extends AISReaderBase {
      * @param bufferSize 
      */
     public AISStreamReader( InputStream input, AISHandler handler, String source, int bufferSize ) {
-        super( handler );
+        super( handler, source );
        _input = input;
-       _source = source;
        _bufferSize = bufferSize;
     }
     
@@ -134,9 +127,7 @@ public class AISStreamReader extends AISReaderBase {
      * @param msgHandler 
      */
     public AISStreamReader( InputStream input, AISPacketHandler pktHandler, AISMessageHandler msgHandler ) {
-        super( pktHandler, msgHandler );
-        _input = input;
-        _bufferSize = DEFAULT_BUFFER_SIZE;
+        this( input, pktHandler, msgHandler, AISReaderBase.DEFAULT_SOURCE, DEFAULT_BUFFER_SIZE );
     }
     
     /**
@@ -146,9 +137,20 @@ public class AISStreamReader extends AISReaderBase {
      * @param msgHandler 
      * @param bufferSize
      */
-    public AISStreamReader( InputStream input, AISPacketHandler pktHandler, 
-            AISMessageHandler msgHandler, int bufferSize ) {
-        super( pktHandler, msgHandler );
+    public AISStreamReader( InputStream input, AISPacketHandler pktHandler, AISMessageHandler msgHandler, int bufferSize ) {
+        this( input, pktHandler, msgHandler, AISStreamReader.DEFAULT_SOURCE, bufferSize );
+    }
+    
+    /**
+     * 
+     * @param input
+     * @param pktHandler
+     * @param msgHandler 
+     * @param bufferSize
+     * @param source
+     */
+    public AISStreamReader( InputStream input, AISPacketHandler pktHandler, AISMessageHandler msgHandler, String source, int bufferSize ) {
+        super( pktHandler, msgHandler, source );
         _input = input;
         _bufferSize = bufferSize;
     }

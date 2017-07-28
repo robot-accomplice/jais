@@ -133,15 +133,14 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
      */
     public AISSerialPortReader( String portName, int baud, int dataBits,
             int stopBits, int parity, AISHandler handler ) {
-        super( handler );
+        super( handler, portName );
         _portName = portName;
         _baud = baud;
         _dataBits = dataBits;
         _stopBits = stopBits;
         _parity = parity;
-        _source = portName;
-        if( LOG.isDebugEnabled() ) LOG.debug( "invoked with: " + portName + ", " + baud + ", " + dataBits
-                + ", " + stopBits + ", " + parity );
+        if( LOG.isDebugEnabled() ) LOG.debug( "{} - AISSerialPortReader invoked with: {}, {}, {}, {}, {}",
+                portName, portName, baud, dataBits, stopBits, parity );
     }
 
     /**
@@ -156,15 +155,14 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
      */
     public AISSerialPortReader( String portName, int baud, int dataBits,
             int stopBits, int parity, AISHandler handler, String source ) {
-        super( handler );
+        super( handler, source );
         _portName = portName;
         _baud = baud;
         _dataBits = dataBits;
         _stopBits = stopBits;
         _parity = parity;
-        _source = source;
-        if( LOG.isDebugEnabled() ) LOG.debug( "invoked with: " + portName + ", " + baud + ", " + dataBits
-                + ", " + stopBits + ", " + parity + ", " + source );
+        if( LOG.isDebugEnabled() ) LOG.debug( "{} - AISSerialPortReader invoked with: {}, {}, {}, {}, {}",
+                source, portName, baud, dataBits, stopBits, parity );
     }
 
     /**

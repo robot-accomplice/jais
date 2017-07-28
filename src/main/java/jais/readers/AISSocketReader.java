@@ -49,8 +49,7 @@ public class AISSocketReader extends AISReaderBase {
      * @throws java.io.IOException 
      */
     public AISSocketReader( Socket s ) throws IOException {
-        _s = s;
-        _bufferSize = DEFAULT_BUFFER_SIZE;
+        this( s, DEFAULT_BUFFER_SIZE );
     }
 
     /**
@@ -82,7 +81,18 @@ public class AISSocketReader extends AISReaderBase {
      * @throws java.io.IOException 
      */
     public AISSocketReader( Socket s, AISHandler handler, int bufferSize ) throws IOException {
-        super( handler );
+        this( s, handler, AISReaderBase.DEFAULT_SOURCE, bufferSize );
+    }
+    
+    /**
+     * 
+     * @param s
+     * @param handler
+     * @param source
+     * @param bufferSize 
+     */
+    public AISSocketReader( Socket s, AISHandler handler, String source, int bufferSize ) {
+        super( handler, source );
         _s = s;
         _bufferSize = bufferSize;
     }
@@ -94,9 +104,8 @@ public class AISSocketReader extends AISReaderBase {
      * @param msgHandler 
      * @throws java.io.IOException 
      */
-    public AISSocketReader( Socket s, AISPacketHandler pktHandler, 
-            AISMessageHandler msgHandler ) throws IOException {
-        this( s, pktHandler, msgHandler, DEFAULT_BUFFER_SIZE );
+    public AISSocketReader( Socket s, AISPacketHandler pktHandler, AISMessageHandler msgHandler ) throws IOException {
+        this( s, pktHandler, msgHandler, AISReaderBase.DEFAULT_SOURCE, DEFAULT_BUFFER_SIZE );
     }
     
     /**
@@ -107,9 +116,33 @@ public class AISSocketReader extends AISReaderBase {
      * @param bufferSize
      * @throws java.io.IOException
      */
-    public AISSocketReader( Socket s, AISPacketHandler pktHandler, 
-            AISMessageHandler msgHandler, int bufferSize ) throws IOException {
-        super( pktHandler, msgHandler );
+    public AISSocketReader( Socket s, AISPacketHandler pktHandler, AISMessageHandler msgHandler, int bufferSize ) throws IOException {
+        this( s, pktHandler, msgHandler, AISReaderBase.DEFAULT_SOURCE, bufferSize );
+    }
+    
+    /**
+     * 
+     * @param s
+     * @param pktHandler
+     * @param msgHandler
+     * @param source
+     * @throws IOException 
+     */
+    public AISSocketReader( Socket s, AISPacketHandler pktHandler, AISMessageHandler msgHandler, String source ) throws IOException {
+        this( s, pktHandler, msgHandler, source, DEFAULT_BUFFER_SIZE );
+    }
+    
+    /**
+     * 
+     * @param s
+     * @param pktHandler
+     * @param msgHandler
+     * @param source
+     * @param bufferSize
+     * @throws IOException 
+     */
+    public AISSocketReader( Socket s, AISPacketHandler pktHandler, AISMessageHandler msgHandler, String source, int bufferSize ) throws IOException {
+        super( pktHandler, msgHandler, source );
         _s = s;
         _bufferSize = bufferSize;
     }
