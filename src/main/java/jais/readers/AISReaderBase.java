@@ -112,7 +112,7 @@ public abstract class AISReaderBase extends Observable implements AISReader {
      *
      * @param packetString
      */
-    final void processPacketString( String packetString, String source ) throws AISPacketException {
+    final void processPacketString( String packetString ) throws AISPacketException {
         if( packetString == null || packetString.isEmpty() ) {
             throw new AISPacketException( "Empty packetString" );
         }
