@@ -25,6 +25,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.CharBuffer;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,18 +165,41 @@ public class AISStreamReader extends AISReaderBase {
     @Override
     public void read() throws AISReaderException {
         LOG.info( "Reading..." );
+        
         try( BufferedInputStream bis = new BufferedInputStream( _input, _bufferSize ); 
                 InputStreamReader isr = new InputStreamReader( bis ); 
-                BufferedReader br = new BufferedReader( isr, _bufferSize ) ) {
+                BufferedReader br = new BufferedReader( isr, _bufferSize );
+                ) {
+
+            StringBuilder sb = new StringBuilder();
+            CharBuffer cb = CharBuffer.allocate( _bufferSize );
+            
             while( super._shouldRun ) {
                 try {
-                    String line = br.readLine();
-                    if( line != null && !line.isEmpty() ) super.processPacketString( line );
+//                    String line = br.readLine();
+//                    if( line != null && !line.isEmpty() ) super.processPacketString( line );
+
+                    int readCount = br.read( cb );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} bytes from stream", _source, readCount );
+                    
+                    for( char c : cb.array() ) {
+                        if( c == '\n' || c == '\r' ) {
+                            if( sb.length() > 0 ) {
+                                String line = sb.toString();
+                                sb.delete( 0, line.length() );
+
+                                if( !line.trim().isEmpty() ) {
+                                    super.processPacketString( line );
+                                }
+                            }
+                        } else {
+                            sb.append( c );
+                        }
+                    }
                 } catch( AISPacketException ae ) {
                     if( LOG.isDebugEnabled() ) LOG.debug( "Encountered an AISException: {}", ae.getMessage(), ae );
-                } catch( IOException ioe ) {
-                    LOG.error( "Encountered an IOException: {}", ioe.getMessage(), ioe );
-                    throw new AISReaderException( "Encountered an IOException: " + ioe.getMessage(), ioe );
+                } finally {
+                    cb.clear();
                 }
             }
         } catch( IOException ioe ) {
