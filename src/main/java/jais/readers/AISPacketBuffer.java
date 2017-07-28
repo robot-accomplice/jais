@@ -58,6 +58,8 @@ public class AISPacketBuffer {
      * @return
      */
     private String getKey( AISPacket packet ) {
+        if( packet == null ) throw new NullPointerException( "Packet is null!" );
+        if( packet.getSource() == null ) packet.setSource( AISPacket.str2bArray( AISReaderBase.DEFAULT_SOURCE ) );
         return new String( packet.getSource() ) + packet.getSequentialMessageId() + "_" + packet.getFragmentCount();
     }
 
