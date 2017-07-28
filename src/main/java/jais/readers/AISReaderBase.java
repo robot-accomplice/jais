@@ -112,7 +112,7 @@ public abstract class AISReaderBase extends Observable implements AISReader {
      *
      * @param packetString
      */
-    final void processPacketString( String packetString ) throws AISPacketException {
+    final void processPacketString( String packetString, String source ) throws AISPacketException {
         if( packetString == null || packetString.isEmpty() ) {
             throw new AISPacketException( "Empty packetString" );
         }
@@ -133,11 +133,16 @@ public abstract class AISReaderBase extends Observable implements AISReader {
      * @param packetString
      */
     private void processSingleton( String packetString ) {
+        // hacky NPE prevention for the short term
+        if( _source == null ) {
+            _source = DEFAULT_SOURCE;
+        }
+        
         try {
             if( packetString != null && !packetString.isEmpty() ) {
                 if( LOG.isDebugEnabled() ) LOG.debug( "Found packet to test: " + packetString );
 
-                AISPacket packet = new AISPacket( packetString, _source );
+                AISPacket packet = new AISPacket( packetString, _source ); // make sure we never 
                 packet.process();
 
                 // send packet to observers
