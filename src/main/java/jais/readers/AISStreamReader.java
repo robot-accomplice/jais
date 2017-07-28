@@ -20,8 +20,13 @@ import jais.exceptions.AISPacketException;
 import jais.handlers.AISHandler;
 import jais.handlers.AISMessageHandler;
 import jais.handlers.AISPacketHandler;
-import java.io.*;
-import org.slf4j.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -150,30 +155,28 @@ public class AISStreamReader extends AISReaderBase {
     
     /**
      * 
-     * @param source 
-     */
-    public void setSource( String source ) {
-       _source = source; 
-    }
-    
-    /**
-     * 
      * @throws jais.readers.AISReaderException
      */
     @Override
     public void read() throws AISReaderException {
         LOG.info( "Reading..." );
-        BufferedReader br = new BufferedReader( new InputStreamReader( new BufferedInputStream( _input, _bufferSize ) ), _bufferSize );
-        while( super._shouldRun ) {
-            try {
-                String line = br.readLine();
-                if( line != null && !line.isEmpty() ) super.processPacketString( line );
-            } catch( AISPacketException ae ) {
-                if( LOG.isDebugEnabled() ) LOG.debug( "Encountered an AISException: {}", ae.getMessage(), ae );
-            } catch( IOException ioe ) {
-                LOG.error( "Encountered an IOException: {}", ioe.getMessage(), ioe );
-                throw new AISReaderException( "Encountered an IOException: " + ioe.getMessage(), ioe );
+        try( BufferedInputStream bis = new BufferedInputStream( _input, _bufferSize ); 
+                InputStreamReader isr = new InputStreamReader( bis ); 
+                BufferedReader br = new BufferedReader( isr, _bufferSize ) ) {
+            while( super._shouldRun ) {
+                try {
+                    String line = br.readLine();
+                    if( line != null && !line.isEmpty() ) super.processPacketString( line );
+                } catch( AISPacketException ae ) {
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Encountered an AISException: {}", ae.getMessage(), ae );
+                } catch( IOException ioe ) {
+                    LOG.error( "Encountered an IOException: {}", ioe.getMessage(), ioe );
+                    throw new AISReaderException( "Encountered an IOException: " + ioe.getMessage(), ioe );
+                }
             }
+        } catch( IOException ioe ) {
+            LOG.error( "Encountered an IOException: {}", ioe.getMessage(), ioe );
+            throw new AISReaderException( "Encountered an IOException: " + ioe.getMessage(), ioe );
         }
     }
 }
