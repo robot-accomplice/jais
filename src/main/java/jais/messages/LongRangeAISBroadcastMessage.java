@@ -22,7 +22,8 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.NavigationStatus;
 import com.spatial4j.core.shape.Point;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -30,7 +31,7 @@ import org.slf4j.*;
  */
 public class LongRangeAISBroadcastMessage extends AISMessageBase {
 
-    private final static Logger LOG = LoggerFactory.getLogger( LongRangeAISBroadcastMessage.class );
+    private final static Logger LOG = LogManager.getLogger( LongRangeAISBroadcastMessage.class );
 
     private boolean _accurate;
     private boolean _raim;

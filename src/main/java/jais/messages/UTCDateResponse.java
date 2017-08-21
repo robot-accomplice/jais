@@ -21,7 +21,8 @@ import jais.messages.enums.AISMessageType;
 import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.EPFDFixType;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -29,7 +30,7 @@ import org.slf4j.*;
  */
 public class UTCDateResponse extends AISMessageBase {
 
-    private final static Logger LOG = LoggerFactory.getLogger( UTCDateResponse.class );
+    private final static Logger LOG = LogManager.getLogger( UTCDateResponse.class );
 
     private int _year;
     private int _month;

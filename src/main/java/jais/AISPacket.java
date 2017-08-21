@@ -29,7 +29,8 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.joda.time.DateTime;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -37,7 +38,7 @@ import org.slf4j.*;
  */
 public final class AISPacket {
 
-    private final static Logger LOG = LoggerFactory.getLogger( AISPacket.class );
+    private final static Logger LOG = LogManager.getLogger( AISPacket.class );
 
     // reserved characters
     private final static char ENCAP_START = '!';

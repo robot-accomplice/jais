@@ -25,8 +25,8 @@ import jais.handlers.AISMessageHandler;
 import jais.handlers.AISPacketHandler;
 import jais.messages.AISMessage;
 import java.util.Observable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AISReaderBase extends Observable implements AISReader {
 
-    private final static Logger LOG = LoggerFactory.getLogger( AISReaderBase.class );
+    private final static Logger LOG = LogManager.getLogger( AISReaderBase.class );
     protected final static String DEFAULT_SOURCE = "UNSPECIFIED";
 
     AISMessageHandler _messageHandler;

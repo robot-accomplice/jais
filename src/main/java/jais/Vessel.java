@@ -28,7 +28,8 @@ import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -36,7 +37,7 @@ import org.slf4j.*;
  */
 public class Vessel implements Cloneable {
 
-    private final static Logger LOG = LoggerFactory.getLogger( Vessel.class );
+    private final static Logger LOG = LogManager.getLogger( Vessel.class );
 
     private Identifier _id;
     private int _version;

@@ -22,7 +22,8 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
 import com.spatial4j.core.shape.Point;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -30,7 +31,7 @@ import org.slf4j.*;
  */
 public class BaseStationReport extends AISMessageBase {
 
-    private final static Logger LOG = LoggerFactory.getLogger( BaseStationReport.class );
+    private final static Logger LOG = LogManager.getLogger( BaseStationReport.class );
 
     private int _year;
     private int _month;

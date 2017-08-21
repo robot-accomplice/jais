@@ -26,7 +26,8 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.MutableDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -34,7 +35,7 @@ import org.slf4j.*;
  */
 public class StaticAndVoyageRelatedData extends AISMessageBase {
 
-    private final static Logger LOG = LoggerFactory.getLogger( StaticAndVoyageRelatedData.class );
+    private final static Logger LOG = LogManager.getLogger( StaticAndVoyageRelatedData.class );
 
     public final static DateTimeFormatter ETA_FORMATTER = DateTimeFormat.forPattern( "yyyy/MM/dd HH:mm" );
 

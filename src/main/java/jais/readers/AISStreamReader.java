@@ -26,10 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.CharBuffer;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.logging.Level;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -37,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AISStreamReader extends AISReaderBase {
     
-    private final static Logger LOG = LoggerFactory.getLogger( AISStreamReader.class );
+    private final static Logger LOG = LogManager.getLogger( AISStreamReader.class );
     private final static int DEFAULT_BUFFER_SIZE = 16384;
 
     private final InputStream _input;

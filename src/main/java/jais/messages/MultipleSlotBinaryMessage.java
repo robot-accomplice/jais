@@ -21,7 +21,8 @@ import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.AISMessageType;
 import java.util.BitSet;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -29,7 +30,7 @@ import org.slf4j.*;
  */
 public class MultipleSlotBinaryMessage extends AISMessageBase {
 
-    private final static Logger LOG = LoggerFactory.getLogger( MultipleSlotBinaryMessage.class );
+    private final static Logger LOG = LogManager.getLogger( MultipleSlotBinaryMessage.class );
 
     private boolean _addressed;
     private boolean _structured;

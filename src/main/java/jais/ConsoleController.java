@@ -34,7 +34,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -42,7 +43,7 @@ import org.slf4j.*;
  */
 public class ConsoleController implements Initializable {
     
-    static final Logger LOG = LoggerFactory.getLogger( ConsoleController.class );
+    static final Logger LOG = LogManager.getLogger( ConsoleController.class );
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;

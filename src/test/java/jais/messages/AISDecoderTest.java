@@ -26,7 +26,8 @@ import static jais.messages.enums.AISMessageType.POSITION_REPORT_CLASS_A_RESPONS
 import java.util.regex.Matcher;
 import org.junit.Test;
 import static junit.framework.Assert.assertTrue;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Unit test for simple decoding tasks
@@ -34,7 +35,7 @@ import org.slf4j.*;
 public class AISDecoderTest {
 
     // initialize log4j
-    private final static Logger LOG = LoggerFactory.getLogger( AISDecoderTest.class );
+    private final static Logger LOG = LogManager.getLogger( AISDecoderTest.class );
 
     private final static String[] TEST_PACKETS = {
         "!AIVDM,1,1,,B,15N9W:0P00ISR5hA7<A8:OvT0498,0*2F",

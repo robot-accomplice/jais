@@ -23,7 +23,8 @@ import jais.messages.enums.BinaryAddressedMessageType;
 import jais.messages.enums.FieldMap;
 import com.spatial4j.core.shape.Point;
 import jais.messages.AISMessageDecoder;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -31,7 +32,7 @@ import org.slf4j.*;
  */
 public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
 
-    private final static Logger LOG = LoggerFactory.getLogger( IMO289ClearanceTimeToEnterPort.class );
+    private final static Logger LOG = LogManager.getLogger( IMO289ClearanceTimeToEnterPort.class );
 
     private int _linkageId;
     private int _month;

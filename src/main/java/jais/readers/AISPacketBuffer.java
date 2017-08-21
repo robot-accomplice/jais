@@ -20,7 +20,8 @@ import jais.AISPacket;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.MutableDateTime;
 
 /**
@@ -29,7 +30,7 @@ import org.joda.time.MutableDateTime;
  */
 public class AISPacketBuffer {
 
-    private final static Logger LOG = LoggerFactory.getLogger( AISPacketBuffer.class );
+    private final static Logger LOG = LogManager.getLogger( AISPacketBuffer.class );
 
     private final Map<String, AISPacketSet> _buffer = new ConcurrentHashMap<>();  // Map is used to avoid Java 7/8 cross version compatibility issues
     private final int _maxPacketAge;

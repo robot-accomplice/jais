@@ -22,7 +22,8 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.BinaryBroadcastMessageType;
 import jais.messages.enums.FieldMap;
 import java.util.BitSet;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -30,7 +31,7 @@ import org.slf4j.*;
  */
 public abstract class BinaryBroadcastMessageBase extends AISMessageBase {
 
-    private final static Logger LOG = LoggerFactory.getLogger( BinaryBroadcastMessageBase.class );
+    private final static Logger LOG = LogManager.getLogger( BinaryBroadcastMessageBase.class );
 
     private int _dac; // designated area code
     private int _fid; // functional id

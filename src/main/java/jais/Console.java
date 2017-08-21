@@ -21,7 +21,8 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.slf4j.*;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -29,7 +30,7 @@ import org.slf4j.*;
  */
 public class Console extends Application {
 
-    private final static Logger LOG = LoggerFactory.getLogger( Console.class );
+    private final static Logger LOG = LogManager.getLogger( Console.class );
     private final static String FXML_PATH = "/fxml/console.fxml";
 
     /**

@@ -5,7 +5,8 @@
  */
 package jais.messages.enums;
 
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -103,7 +104,7 @@ public enum Talkers {
     ;
     
     public  final String description;
-    public final static Logger LOG = LoggerFactory.getLogger( Talkers.class );
+    public final static Logger LOG = LogManager.getLogger( Talkers.class );
     
     /**
      * 

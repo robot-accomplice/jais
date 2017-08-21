@@ -22,7 +22,8 @@ import jais.exceptions.AISException;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.BinaryAddressedMessageType;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -30,7 +31,7 @@ import org.slf4j.*;
  */
 public class IMO289NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
 
-    private final static Logger LOG = LoggerFactory.getLogger( IMO289NumberOfPersonsOnBoard.class );
+    private final static Logger LOG = LogManager.getLogger( IMO289NumberOfPersonsOnBoard.class );
 
     private int _persons;
 

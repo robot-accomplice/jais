@@ -20,7 +20,8 @@ import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.AISMessageType;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -28,7 +29,7 @@ import org.slf4j.*;
  */
 public class ChannelManagement extends AISMessageBase {
 
-    private final static Logger LOG = LoggerFactory.getLogger( ChannelManagement.class );
+    private final static Logger LOG = LogManager.getLogger( ChannelManagement.class );
 
     private int _channelA;
     private int _channelB;

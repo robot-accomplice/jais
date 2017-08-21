@@ -23,7 +23,8 @@ import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.NavaidType;
 import com.spatial4j.core.shape.Point;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -31,7 +32,7 @@ import org.slf4j.*;
  */
 public class AidToNavigationReport extends AISMessageBase {
 
-    private final static Logger LOG = LoggerFactory.getLogger( AidToNavigationReport.class );
+    private final static Logger LOG = LogManager.getLogger( AidToNavigationReport.class );
 
     private NavaidType _navaidType;
     private String _name;

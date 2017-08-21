@@ -24,14 +24,15 @@ import jais.messages.enums.ShipType;
 import jais.messages.enums.StationInterval;
 import jais.messages.enums.StationType;
 import jais.messages.enums.TransmitMode;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 /**
  *
  * @author Jonathan Machen
  */
 public class GroupAssignmentCommand extends AISMessageBase {
 
-    private final static Logger LOG = LoggerFactory.getLogger( GroupAssignmentCommand.class );
+    private final static Logger LOG = LogManager.getLogger( GroupAssignmentCommand.class );
 
     private float _neLon;
     private float _neLat;

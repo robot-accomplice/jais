@@ -20,7 +20,8 @@ import jais.AISPacket;
 import jais.exceptions.AISPacketException;
 import jais.readers.AISPacketBuffer;
 import java.util.concurrent.Callable;
-import org.slf4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -28,8 +29,7 @@ import org.slf4j.*;
  */
 public class PacketBuilderWorkerThread implements Callable<AISPacket []> {
 
-    private final static Logger LOG = LoggerFactory.getLogger(
-            PacketBuilderWorkerThread.class );
+    private final static Logger LOG = LogManager.getLogger( PacketBuilderWorkerThread.class );
 
     private final String _packetString;
     private final AISPacketBuffer _pBuffer;
