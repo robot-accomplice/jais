@@ -23,7 +23,8 @@ import jais.messages.enums.AISMessageType;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.BitSet;
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -93,7 +94,7 @@ public class AISMessageDecoder {
             try {
                 int oc = encodedToSixBitInt( c ); // pull the current raw message char
                 if( oc == -1 ) {
-                    LOG.info( "Invalid character:  '{}'", c );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Invalid character: '{}'", c );
                     bits.clear();
                     break;
                 } else {
@@ -102,7 +103,8 @@ public class AISMessageDecoder {
                     }
                 }
             } catch( InvalidAISCharacterException iace ) {
-                LOG.info( "Encountered an invalid character (possible message padding?) : {}", iace.getMessage() );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Encountered an invalid character (possible message padding?) : {}", iace.getMessage() );
+                break;
             }
         }
 
