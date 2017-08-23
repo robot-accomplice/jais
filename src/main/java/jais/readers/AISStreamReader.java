@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 public class AISStreamReader extends AISReaderBase {
     
     private final static Logger LOG = LogManager.getLogger( AISStreamReader.class );
-    private final static int DEFAULT_BUFFER_SIZE = 16384;
+    private final static int DEFAULT_BUFFER_SIZE = 8192;
 
     private final InputStream _input;
     private final int _bufferSize;
@@ -174,9 +174,6 @@ public class AISStreamReader extends AISReaderBase {
             
             while( super._shouldRun ) {
                 try {
-//                    String line = br.readLine();
-//                    if( line != null && !line.isEmpty() ) super.processPacketString( line );
-
                     int readCount = br.read( cb );
                     if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} bytes from stream", _source, readCount );
                     
