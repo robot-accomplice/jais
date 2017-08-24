@@ -16,6 +16,7 @@
 
 package jais.io;
 
+import jais.handlers.AISStringHandler;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 
@@ -24,6 +25,27 @@ import java.util.concurrent.ExecutorService;
  * @author Jonathan Machen {@literal <jon.machen@robotaccomplice.com>}
  */
 public class SocketConnectionFactory {
+    
+    /**
+     * 
+     * @param name
+     * @param host
+     * @param port
+     * @param runas
+     * @param readQueue
+     * @param readBufferSize
+     * @param threadPool
+     * @param stringHandler
+     * @return 
+     */
+    public static SocketConnection buildConnection( String name, String host, int port, ConnectionType runas,
+            ExecutorCompletionService<String> readQueue, int readBufferSize, ExecutorService threadPool, AISStringHandler stringHandler ) {
+        if( runas.isServer() ) {
+            return new SocketServer( name, port, runas, readQueue, readBufferSize, threadPool );
+        } else {
+            return new SocketClient( name, host, port, runas, readQueue, readBufferSize, threadPool );
+        }
+    }
     
     /**
      * Creates a read write SocketClient
@@ -40,11 +62,7 @@ public class SocketConnectionFactory {
     public static SocketConnection buildConnection( String name, String host, int port, ConnectionType runas, 
             ExecutorCompletionService<String> readQueue, int readBufferSize, ExecutorService threadPool ) {
 
-        if( runas.isServer() ) {
-            return new SocketServer( name, port, runas, readQueue, readBufferSize, threadPool );
-        } else {
-            return new SocketClient( name, host, port, runas, readQueue, readBufferSize, threadPool );
-        }
+        return buildConnection( name, host, port, runas, readQueue, readBufferSize, threadPool, null );
     }
     
     /**

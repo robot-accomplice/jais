@@ -16,6 +16,7 @@
 
 package jais.io;
 
+import jais.handlers.AISStringHandler;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,9 +47,10 @@ public class AISReader implements Runnable, AutoCloseable {
     private boolean _keepReading = true;
     
     private final ExecutorCompletionService<String> _readQueue;
+    private final AISStringHandler _handler;
     private final LongAdder _read;
     private final LongAdder _total;
-    public DateTime _lastReadTime;
+    private DateTime _lastReadTime;
     
     /**
      * 
@@ -58,15 +60,17 @@ public class AISReader implements Runnable, AutoCloseable {
      * @param readQueue
      * @param readCounter
      * @param readTotal
+     * @param handler
      */
     public AISReader( String name, Socket socket, int readBufferSize, ExecutorCompletionService<String> readQueue, 
-            LongAdder readCounter, LongAdder readTotal ) {
+            LongAdder readCounter, LongAdder readTotal, AISStringHandler handler ) {
         _name = name;
         _socket = socket;
         _readBufferSize = readBufferSize;
         _readQueue = readQueue;
         _read = readCounter;
         _total = readTotal;
+        _handler = handler;
     }
 
     /**
@@ -103,11 +107,18 @@ public class AISReader implements Runnable, AutoCloseable {
                                 sb.delete( 0, line.length() );
 
                                 if( !line.trim().isEmpty() ) {
-                                    _readQueue.submit( () -> {
-                                        LOG.info( "{} - \"{}\"", _name, line );
-                                        _read.increment();
-                                        _total.increment();
-                                    }, line );
+                                    if( _readQueue != null ) {
+                                        _readQueue.submit( () -> {
+                                            if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, line );
+                                            _read.increment();
+                                            _total.increment();
+                                        }, line );
+                                    }
+                                    
+                                    if( _handler != null ) {
+                                        if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to AISStringHandler...", _name, line );
+                                        _handler.processString( line );
+                                    }
                                 }
                             } 
                         }

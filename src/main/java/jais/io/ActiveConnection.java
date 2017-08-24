@@ -18,6 +18,7 @@ package jais.io;
 
 import jais.handlers.AISMessageHandler;
 import jais.handlers.AISPacketHandler;
+import jais.handlers.AISStringHandler;
 import java.net.Socket;
 import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
@@ -56,8 +57,7 @@ public class ActiveConnection implements AutoCloseable {
     private AISReader _reader;
     private AISWriter _writer;
     private boolean _purge;
-    private AISPacketHandler _pktHandler;
-    private AISMessageHandler _msgHandler;
+    private AISStringHandler _handler;
 
     /**
      *
@@ -70,7 +70,7 @@ public class ActiveConnection implements AutoCloseable {
      */
     public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<String> readQueue,
             int readBufferSize, ExecutorService threadPool ) {
-        this( name, socket, type, readQueue, readBufferSize, threadPool, false, null, null );
+        this( name, socket, type, readQueue, readBufferSize, threadPool, false, null );
     }
 
     /**
@@ -85,7 +85,7 @@ public class ActiveConnection implements AutoCloseable {
      */
     public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<String> readQueue,
             int readBufferSize, ExecutorService threadPool, boolean purgeQueuesOnDisconnect ) {
-        this( name, socket, type, readQueue, readBufferSize, threadPool, purgeQueuesOnDisconnect, null, null );
+        this( name, socket, type, readQueue, readBufferSize, threadPool, purgeQueuesOnDisconnect, null );
     }
 
     /**
@@ -96,12 +96,11 @@ public class ActiveConnection implements AutoCloseable {
      * @param readQueue
      * @param readBufferSize
      * @param threadPool
-     * @param purgeQueuesOnDisconnect
-     * @param pktHandler
-     * @param msgHandler 
+     * @param purgeQueuesOnDisconnect 
+     * @param handler 
      */
     public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<String> readQueue,
-            int readBufferSize, ExecutorService threadPool, boolean purgeQueuesOnDisconnect, AISPacketHandler pktHandler, AISMessageHandler msgHandler ) {
+            int readBufferSize, ExecutorService threadPool, boolean purgeQueuesOnDisconnect, AISStringHandler handler ) {
         _name = name + ":" + socket.getRemoteSocketAddress();
         _socket = socket;
         _type = type;
@@ -109,8 +108,7 @@ public class ActiveConnection implements AutoCloseable {
         _readBufferSize = readBufferSize;
         _threadPool = threadPool;
         _purge = purgeQueuesOnDisconnect;
-        _pktHandler = pktHandler;
-        _msgHandler = msgHandler;
+        _handler = handler;
     }
 
     /**
@@ -147,7 +145,7 @@ public class ActiveConnection implements AutoCloseable {
 
         if( _type.isReadable() ) {
             if( _reader == null ) {
-                _reader = new AISReader( _name, _socket, _readBufferSize, _readQueue, _currentRead, _sessionRead );
+                _reader = new AISReader( _name, _socket, _readBufferSize, _readQueue, _currentRead, _sessionRead, _handler );
             }
             LOG.fatal( "{} - Connection is readable, launching reader...", _name );
             _threadPool.execute( _reader );
