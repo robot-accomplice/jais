@@ -156,7 +156,7 @@ public abstract class AISReaderBase extends Observable implements AISReader {
                 super.setChanged();
                 super.notifyObservers( packet );
 
-                // send packet to observers
+                // send packet to handlers
                 if( _packetHandler != null ) _packetHandler.processPacket( packet );
 
                 try {
