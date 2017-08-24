@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.nio.CharBuffer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -162,17 +163,27 @@ public class AISSocketReader extends AISReaderBase {
             LOG.info( "Reading..." );
             
             DateTime lastRead = DateTime.now();
+            CharBuffer buffer = CharBuffer.allocate( this._bufferSize );
+            StringBuilder sb = new StringBuilder();
             
             while( super._shouldRun && _s.isConnected() && !_s.isInputShutdown() ) {
                 try {
+                    br.read( buffer );
+                    
+                    for( char c : buffer.array() ) {
+                        if( ( c == '\n' || c == '\r' ) && sb.length() > 0 ) {
+                            String line = sb.toString();
+                            sb.delete( 0, line.length() );
+                            
+                            if( !line.trim().isEmpty() ) {
+                                super.processPacketString( line );
+                                lastRead = DateTime.now();
+                            }
+                        }
+                    }
+                    
                     if( lastRead.plusMillis( TIMEOUT ).isBeforeNow() )
                         throw new AISReaderException( "Reader timed out!  No new data in " + TIMEOUT + "ms." );
-                    
-                    String line = br.readLine();
-                    if( line != null && !line.isEmpty() ) {
-                        super.processPacketString( line );
-                        lastRead = DateTime.now();
-                    }
                 } catch( AISPacketException ae ) {
                     if( LOG.isDebugEnabled() ) LOG.debug( "Encountered an AISException: {}", ae.getMessage(), ae );
                 } catch( IOException ioe ) {
