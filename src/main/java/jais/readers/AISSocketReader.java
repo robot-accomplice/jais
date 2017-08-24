@@ -16,31 +16,23 @@
 
 package jais.readers;
 
-import jais.exceptions.AISPacketException;
 import jais.handlers.AISHandler;
 import jais.handlers.AISMessageHandler;
 import jais.handlers.AISPacketHandler;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.Socket;
-import java.nio.CharBuffer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
 
 /**
  *
  * @author Jonathan Machen
  */
-public class AISSocketReader extends AISReaderBase {
+public class AISSocketReader extends AISStreamReader {
     
     private final static Logger LOG = LogManager.getLogger( AISSocketReader.class );
     private final static int DEFAULT_BUFFER_SIZE = 16384;
 
-    private final int _bufferSize;
     private final Socket _s;
     
     private final static int TIMEOUT = 30000;
@@ -61,8 +53,8 @@ public class AISSocketReader extends AISReaderBase {
      * @throws java.io.IOException 
      */
     public AISSocketReader( Socket s, int bufferSize ) throws IOException {
+        super( s.getInputStream(), bufferSize );
         _s = s;
-        _bufferSize = bufferSize;
     }
     
     /**
@@ -92,11 +84,11 @@ public class AISSocketReader extends AISReaderBase {
      * @param handler
      * @param source
      * @param bufferSize 
+     * @throws java.io.IOException 
      */
-    public AISSocketReader( Socket s, AISHandler handler, String source, int bufferSize ) {
-        super( handler, source );
+    public AISSocketReader( Socket s, AISHandler handler, String source, int bufferSize ) throws IOException {
+        super( s.getInputStream(), handler, source, bufferSize );
         _s = s;
-        _bufferSize = bufferSize;
     }
     
     /**
@@ -144,9 +136,8 @@ public class AISSocketReader extends AISReaderBase {
      * @throws IOException 
      */
     public AISSocketReader( Socket s, AISPacketHandler pktHandler, AISMessageHandler msgHandler, String source, int bufferSize ) throws IOException {
-        super( pktHandler, msgHandler, source );
+        super( s.getInputStream(), pktHandler, msgHandler, source, bufferSize );
         _s = s;
-        _bufferSize = bufferSize;
     }
     
     /**
@@ -155,45 +146,8 @@ public class AISSocketReader extends AISReaderBase {
      */
     @Override
     public void read() throws AISReaderException {
-        
-        try( InputStream is = _s.getInputStream(); 
-                BufferedInputStream bis = new BufferedInputStream( is, _bufferSize ); 
-                InputStreamReader isr = new InputStreamReader( bis ); 
-                BufferedReader br = new BufferedReader( isr, _bufferSize ) ) {
-            LOG.info( "Reading..." );
-            
-            DateTime lastRead = DateTime.now();
-            CharBuffer buffer = CharBuffer.allocate( this._bufferSize );
-            StringBuilder sb = new StringBuilder();
-            
-            while( super._shouldRun && _s.isConnected() && !_s.isInputShutdown() ) {
-                try {
-                    int readCount = br.read( buffer );
-                    if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} bytes from stream", _source, readCount );
-                    
-                    for( char c : buffer.array() ) {
-                        if( ( c == '\n' || c == '\r' ) && sb.length() > 0 ) {
-                            String line = sb.toString();
-                            sb.delete( 0, line.length() );
-                            
-                            if( !line.trim().isEmpty() ) {
-                                super.processPacketString( line );
-                                lastRead = DateTime.now();
-                            }
-                        }
-                    }
-                    
-                    if( lastRead.plusMillis( TIMEOUT ).isBeforeNow() )
-                        throw new AISReaderException( "Reader timed out!  No new data in " + TIMEOUT + "ms." );
-                } catch( AISPacketException ae ) {
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Encountered an AISException: {}", ae.getMessage(), ae );
-                } catch( IOException ioe ) {
-                    LOG.error( "Encountered an IOException: {}", ioe.getMessage(), ioe );
-                    throw new AISReaderException( "Encountered an IOException: " + ioe.getMessage(), ioe );
-                }
-            }
-        } catch( IOException ioe ) {
-            throw new AISReaderException( "Unable to read from socket: " + ioe.getMessage(), ioe );
+        try {
+            super.read();
         } finally {
             try {
                 LOG.error( "Socket is no longer valid.  Closing." );
