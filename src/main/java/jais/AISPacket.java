@@ -247,13 +247,15 @@ public final class AISPacket {
                     if( LOG.isDebugEnabled() ) LOG.debug( "Unrecognized field at position  8: {}", bArray2Str( _packetParts[7] ) );
                 case 7:
                     try {
-                        byte[] checksum = _packetParts[6];
-                        int csIndex = indexOf( _packetParts[6], CHECKSUM_DELIMITER );
-                        if( csIndex != -1 ) {
-                            _fillBits = Integer.parseInt( substring( checksum, 0, csIndex ) );
-                            _checksum = trim( Arrays.copyOfRange( checksum, csIndex + 1, checksum.length ) );
-                        } else {
-                            if( LOG.isDebugEnabled() ) LOG.debug( "Packet is missing checksum!" );
+                        if( _packetParts[6] != null && _packetParts[6].length > 0 ) {
+                            byte[] checksum = _packetParts[6];
+                            int csIndex = indexOf( _packetParts[6], CHECKSUM_DELIMITER );
+                            if( csIndex != -1 ) {
+                                _fillBits = Integer.parseInt( substring( checksum, 0, csIndex ) );
+                                _checksum = trim( Arrays.copyOfRange( checksum, csIndex + 1, checksum.length ) );
+                            } else {
+                                if( LOG.isDebugEnabled() ) LOG.debug( "Packet is missing checksum!" );
+                            }
                         }
                     } catch( NumberFormatException nfe ) {
                         if( LOG.isDebugEnabled() ) LOG.debug( "Failed to set fill bits and/or checksum due to NumberFormatException: {}", nfe.getMessage() );
@@ -266,23 +268,25 @@ public final class AISPacket {
                     }
                     _binaryString = _packetParts[5]; // only the binary string
                 case 5:
-                    _radioChannelCode = ( _packetParts[4].length != 0 ) ? ( char ) _packetParts[4][0] : 'Z';
+                    if( _packetParts[4] != null && _packetParts[4].length > 0 ) _radioChannelCode = ( _packetParts[4].length != 0 ) ? ( char ) _packetParts[4][0] : 'Z';
                 case 4:
                     try {
                         // default to -1 if no message ID is present
-                        _sequentialMessageId = ( _packetParts[3].length == 0 ) ? -1 : ( int )_packetParts[3][0]; 
+                        if( _packetParts[3] != null && _packetParts[3].length > 0 ) 
+                            _sequentialMessageId = ( _packetParts[3].length == 0 ) ? -1 : ( int )_packetParts[3][0]; 
                     } catch( NumberFormatException nfe ) {
                         if( LOG.isDebugEnabled() ) LOG.debug( "Failed to set sequential message ID due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 3:
                     try {
-                        _fragmentNumber = ( int )_packetParts[2][0];
+                        if( _packetParts[2] != null && _packetParts[2].length > 0 ) 
+                            _fragmentNumber = ( int )_packetParts[2][0];
                     } catch( NumberFormatException nfe ) {
                         if( LOG.isDebugEnabled() ) LOG.debug( "Failed to set fragment number due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 2:
                     try {
-                        _fragmentCount = ( int )_packetParts[1][0];
+                        if( _packetParts[1] != null && _packetParts[1].length > 0 ) _fragmentCount = ( int )_packetParts[1][0];
                     } catch( NumberFormatException nfe ) {
                         if( LOG.isDebugEnabled() ) LOG.debug( "Failed to set fragment count due to NumberFormatException: {}", nfe.getMessage() );
                     }
