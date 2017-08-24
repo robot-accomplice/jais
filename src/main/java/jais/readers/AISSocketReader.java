@@ -168,7 +168,8 @@ public class AISSocketReader extends AISReaderBase {
             
             while( super._shouldRun && _s.isConnected() && !_s.isInputShutdown() ) {
                 try {
-                    br.read( buffer );
+                    int readCount = br.read( buffer );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} bytes from stream", _source, readCount );
                     
                     for( char c : buffer.array() ) {
                         if( ( c == '\n' || c == '\r' ) && sb.length() > 0 ) {
