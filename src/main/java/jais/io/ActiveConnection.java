@@ -17,6 +17,7 @@
 package jais.io;
 
 import jais.handlers.AISStringHandler;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
@@ -49,8 +50,6 @@ public class ActiveConnection implements AutoCloseable {
     private final LongAdder _sessionWritten = new LongAdder();
     private final LongAdder _currentRead = new LongAdder();
     private final LongAdder _sessionRead = new LongAdder();
-
-    private boolean _closed = false;
 
     private AISReader _reader;
     private AISWriter _writer;
@@ -163,8 +162,6 @@ public class ActiveConnection implements AutoCloseable {
     public void launch() {
         LOG.debug( "{} - New ActiveConnection is of type {}", _name, _type.name() );
         
-        _closed = false;
-
         if( _type.isReadable() ) {
             if( _reader == null ) {
                 _reader = new AISReader( _name, _socket, _readBufferSize, _readQueue, _currentRead, _sessionRead, _handler );
@@ -348,7 +345,7 @@ public class ActiveConnection implements AutoCloseable {
      * @return
      */
     public boolean isClosed() {
-        return _closed;
+        return ( _socket == null || _socket.isClosed() || !_socket.isConnected() );
     }
 
     /**
@@ -374,8 +371,12 @@ public class ActiveConnection implements AutoCloseable {
             }
         }
         
-        _closed = true;
-
+        try {
+            _socket.close();
+        } catch( IOException ioe ) {
+            // do nothing
+        }
+        
         LOG.fatal( "\t{} - ActiveConnection successfully closed." );
     }
 }
