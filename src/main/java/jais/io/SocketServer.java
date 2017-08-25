@@ -167,7 +167,6 @@ public class SocketServer extends SocketConnectionBase {
         DateTime latestTime = null;
 
         for( ActiveConnection connection: _connections ) {
-
             if( latestTime == null && connection.getLastReadTime().isPresent() ) {
                 latestTime = connection.getLastReadTime().get();
             } else if( connection.getLastReadTime().isPresent() ) {
@@ -229,14 +228,21 @@ public class SocketServer extends SocketConnectionBase {
     /**
      * 
      * @return 
+     * 
+     * @ToDo need to preserve count across lost connections without making code more tightly coupled
      */
     @Override
     public long getTotalLinesRead() {
-        for( ActiveConnection connection : _connections ) {
-            // do something
-        }
+        if( _connections.isEmpty() ) return _totalRead;
+
+        long sessionRead = 0;
         
-        return _totalRead;
+        sessionRead = _connections.stream().map( ( connection ) -> 
+                connection.getSessionRead() ).reduce( sessionRead, ( accumulator, _item ) -> accumulator + _item );
+        
+        sessionRead += _totalRead;
+        
+        return sessionRead;
     }
     
     /**
@@ -313,11 +319,16 @@ public class SocketServer extends SocketConnectionBase {
      */
     @Override
     public long getTotalLinesWritten() {
-        for( ActiveConnection connection : _connections ) {
-            // do something
-        }
+        if( _connections.isEmpty() ) return _totalWritten;
+
+        long sessionWritten = 0;
         
-        return _totalWritten;
+        sessionWritten = _connections.stream().map( ( connection ) -> 
+                connection.getSessionWritten() ).reduce( sessionWritten, ( accumulator, _item ) -> accumulator + _item );
+        
+        sessionWritten += _totalWritten;
+        
+        return sessionWritten;
     }
     
     /**
@@ -386,6 +397,8 @@ public class SocketServer extends SocketConnectionBase {
             _connections.stream().filter( ( c ) -> ( c == null || c.isClosed() ) ).forEachOrdered( ( c ) -> {
                 LOG.fatal( "{} - Client {} is no longer connected.  Removing from list of active connections", _name, c.getName() );
                 c.close();
+                _totalRead += c.getSessionRead();
+                _totalWritten += c.getSessionWritten();
                 _connections.remove( c );
             } );
         }
