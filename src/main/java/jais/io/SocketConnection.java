@@ -59,6 +59,8 @@ public interface SocketConnection extends AutoCloseable {
     
     public abstract int getActiveConnections();
     
+    public abstract ConnectionType getConnectionType();
+    
     @Override
     public abstract void close();
 }
