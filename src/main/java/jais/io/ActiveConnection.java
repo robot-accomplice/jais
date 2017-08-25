@@ -16,8 +16,6 @@
 
 package jais.io;
 
-import jais.handlers.AISMessageHandler;
-import jais.handlers.AISPacketHandler;
 import jais.handlers.AISStringHandler;
 import java.net.Socket;
 import java.util.Optional;
@@ -37,8 +35,8 @@ public class ActiveConnection implements AutoCloseable {
 
     private final static Logger LOG = LogManager.getLogger( ActiveConnection.class );
     
-    public static long ABSOLUTE_WRITE_QUEUE_THRESHOLD = 500000;
-    public static long BACK_PRESSURE_THRESHOLD = 10000;
+    public final static long DEFAULT_WRITE_QUEUE_ABSOLUTE_THRESHOLD = 500000;
+    public final static long DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD = 10000;
 
     private final String _name;
     private final Socket _socket;
@@ -58,6 +56,8 @@ public class ActiveConnection implements AutoCloseable {
     private AISWriter _writer;
     private boolean _purge;
     private AISStringHandler _handler;
+    private long _wqThreshold;
+    private long _bpThreshold;
 
     /**
      *
@@ -101,6 +101,26 @@ public class ActiveConnection implements AutoCloseable {
      */
     public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<String> readQueue,
             int readBufferSize, ExecutorService threadPool, boolean purgeQueuesOnDisconnect, AISStringHandler handler ) {
+        this( name, socket, type, readQueue, readBufferSize, threadPool, purgeQueuesOnDisconnect, handler, 
+                ActiveConnection.DEFAULT_WRITE_QUEUE_ABSOLUTE_THRESHOLD, ActiveConnection.DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD );
+    }
+    
+    /**
+     * 
+     * @param name
+     * @param socket
+     * @param type
+     * @param readQueue
+     * @param readBufferSize
+     * @param threadPool
+     * @param purgeQueuesOnDisconnect 
+     * @param handler 
+     * @param writeQueueSizeLimit 
+     * @param backPressureLimit 
+     */
+    public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<String> readQueue,
+            int readBufferSize, ExecutorService threadPool, boolean purgeQueuesOnDisconnect, AISStringHandler handler, long writeQueueSizeLimit, 
+            long backPressureLimit ) {
         _name = name + ":" + socket.getRemoteSocketAddress();
         _socket = socket;
         _type = type;
@@ -109,8 +129,10 @@ public class ActiveConnection implements AutoCloseable {
         _threadPool = threadPool;
         _purge = purgeQueuesOnDisconnect;
         _handler = handler;
+        _wqThreshold = writeQueueSizeLimit;
+        _bpThreshold = backPressureLimit;
     }
-
+    
     /**
      *
      * @return
