@@ -57,6 +57,8 @@ public interface SocketConnection extends AutoCloseable {
     
     public abstract String getLastWriteTime();
     
+    public abstract int getActiveConnections();
+    
     @Override
     public abstract void close();
 }

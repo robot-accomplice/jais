@@ -353,6 +353,15 @@ public class SocketServer extends SocketConnectionBase {
      * @return 
      */
     @Override
+    public int getActiveConnections() {
+        return _connections.size();
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
     public long getWriteQueueSize() {
         long queueSize = 0;
         

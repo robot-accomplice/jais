@@ -45,6 +45,16 @@ public abstract class SocketConnectionBase implements SocketConnection {
      * @return 
      */
     @Override
+    public int getActiveConnections() {
+        if( this.isConnected() ) return 1;
+        return 0;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
     public long getTotalConnectAttempts() {
         return _totalConnectAttempts.sum();
     }
