@@ -58,4 +58,13 @@ public abstract class SocketConnectionBase implements SocketConnection {
     public long getTotalConnectAttempts() {
         return _totalConnectAttempts.sum();
     }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public ConnectionType getConnectionType() {
+        return _type;
+    }
 }
