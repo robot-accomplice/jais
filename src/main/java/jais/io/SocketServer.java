@@ -120,6 +120,8 @@ public class SocketServer extends SocketConnectionBase {
      */   
     @Override
     public void close() {
+        LOG.fatal( "{} - SocketServer.close() invoked, shutting down...", _name );
+        
         _keepOpen = false;
         
         try {
