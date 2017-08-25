@@ -36,7 +36,10 @@ public class AISWriter implements Runnable, AutoCloseable {
     private final LongAdder _write;
     private final LongAdder _total;
     private final boolean _purge;
+    private final long _bpThreshold;
+    private final long _wqThreshold;
     public DateTime _lastWriteTime;
+    
     
     /**
      * 
@@ -44,9 +47,11 @@ public class AISWriter implements Runnable, AutoCloseable {
      * @param socket
      * @param writeCounter 
      * @param totalCounter 
+     * @param wqThreshold 
+     * @param bpThreshold 
      */
-    public AISWriter( String name, Socket socket, LongAdder writeCounter, LongAdder totalCounter ) {
-        this( name, socket, writeCounter, totalCounter, true );
+    public AISWriter( String name, Socket socket, LongAdder writeCounter, LongAdder totalCounter, long wqThreshold, long bpThreshold ) {
+        this( name, socket, writeCounter, totalCounter, true, wqThreshold, bpThreshold );
     }
     
     /**
@@ -56,13 +61,18 @@ public class AISWriter implements Runnable, AutoCloseable {
      * @param writeCounter
      * @param totalCounter
      * @param purgeQueueOnDisconnect
+     * @param wqThreshold
+     * @param bpThreshold
      */
-    public AISWriter( String name, Socket socket, LongAdder writeCounter, LongAdder totalCounter, boolean purgeQueueOnDisconnect ) {
+    public AISWriter( String name, Socket socket, LongAdder writeCounter, LongAdder totalCounter, boolean purgeQueueOnDisconnect, long wqThreshold,
+            long bpThreshold ) {
         _name = name;
         _socket = socket;
         _write = writeCounter;
         _total = totalCounter;
         _purge = purgeQueueOnDisconnect;
+        _wqThreshold = wqThreshold;
+        _bpThreshold = bpThreshold;
     }
     
     /**
@@ -102,10 +112,14 @@ public class AISWriter implements Runnable, AutoCloseable {
                             _total.increment();
                         }
                         
-                        if( _queue.size() - startingSize > ActiveConnection.BACK_PRESSURE_THRESHOLD ) {
-                            LOG.fatal( "{} - Backpressure threshold ({} messages) exceeded.  Purging Queue.", _name, 
-                                    ActiveConnection.BACK_PRESSURE_THRESHOLD );
+                        if( _queue.size() > _wqThreshold ) {
+                            LOG.fatal( "{} - Maximum queue size ({}) exceeded.  Purging Queue.", _name, _wqThreshold );
                             purgeQueue();
+                        } else if( _queue.size() - startingSize > _bpThreshold ) {
+                            LOG.fatal( "{} - Backpressure threshold ({} messages) exceeded.  Purging Queue.", _name, _bpThreshold );
+                            purgeQueue();
+                        } else  {
+                            
                         }
                     }
                 }

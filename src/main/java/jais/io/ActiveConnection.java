@@ -175,7 +175,7 @@ public class ActiveConnection implements AutoCloseable {
 
         if( _type.isWriteable() ) {
             if( _writer == null )
-                _writer = new AISWriter( _name, _socket, _currentWritten, _sessionWritten, _purge );
+                _writer = new AISWriter( _name, _socket, _currentWritten, _sessionWritten, _purge, _wqThreshold, _bpThreshold );
             LOG.fatal( "{} - Connection is writeable, launching writer...", _name );
             _threadPool.execute( _writer );
         }
@@ -190,7 +190,7 @@ public class ActiveConnection implements AutoCloseable {
             LOG.error( "{} - AISWriter is null!", _name );
             if( _type.isWriteable() ) {
                 if( _writer == null )
-                    _writer = new AISWriter( _name, _socket, _currentWritten, _sessionWritten );
+                    _writer = new AISWriter( _name, _socket, _currentWritten, _sessionWritten, _wqThreshold, _bpThreshold );
                 LOG.fatal( "{} - Connection is writeable, launching writer...", _name );
                 _threadPool.execute( _writer );
             }
