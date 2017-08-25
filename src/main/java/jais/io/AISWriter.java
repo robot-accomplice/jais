@@ -118,8 +118,6 @@ public class AISWriter implements Runnable, AutoCloseable {
                         } else if( _queue.size() - startingSize > _bpThreshold ) {
                             LOG.fatal( "{} - Backpressure threshold ({} messages) exceeded.  Purging Queue.", _name, _bpThreshold );
                             purgeQueue();
-                        } else  {
-                            
                         }
                     }
                 }
