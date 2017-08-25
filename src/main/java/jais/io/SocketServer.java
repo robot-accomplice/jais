@@ -228,8 +228,6 @@ public class SocketServer extends SocketConnectionBase {
     /**
      * 
      * @return 
-     * 
-     * @ToDo need to preserve count across lost connections without making code more tightly coupled
      */
     @Override
     public long getTotalLinesRead() {
