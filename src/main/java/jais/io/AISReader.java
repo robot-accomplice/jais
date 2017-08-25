@@ -48,8 +48,8 @@ public class AISReader implements Runnable, AutoCloseable {
     
     private final ExecutorCompletionService<String> _readQueue;
     private final AISStringHandler _handler;
-    private final LongAdder _read;
-    private final LongAdder _total;
+    private final LongAdder _current;
+    private final LongAdder _session;
     private DateTime _lastReadTime;
     
     /**
@@ -68,8 +68,8 @@ public class AISReader implements Runnable, AutoCloseable {
         _socket = socket;
         _readBufferSize = readBufferSize;
         _readQueue = readQueue;
-        _read = readCounter;
-        _total = readTotal;
+        _current = readCounter;
+        _session = readTotal;
         _handler = handler;
     }
 
@@ -110,8 +110,8 @@ public class AISReader implements Runnable, AutoCloseable {
                                     if( _readQueue != null ) {
                                         _readQueue.submit( () -> {
                                             if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, line );
-                                            _read.increment();
-                                            _total.increment();
+                                            _current.increment();
+                                            _session.increment();
                                         }, line );
                                     }
                                     
