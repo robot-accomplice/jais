@@ -353,10 +353,11 @@ public class ActiveConnection implements AutoCloseable {
      */
     @Override
     public void close() {
-        LOG.fatal( "\t{} - ActiveConnection shutting down...." );
+        LOG.fatal( "\t{} - ActiveConnection shutting down..." );
 
         if( _reader != null ) {
             try {
+                LOG.fatal( "\t{} - Closing the reader..." );
                 _reader.close();
             } catch( Exception e ) {
                 // do nothing;
@@ -365,12 +366,14 @@ public class ActiveConnection implements AutoCloseable {
 
         if( _writer != null ) {
             try {
+                LOG.fatal( "\t{} - Closing the writer..." );
                 _writer.close();
             } catch( Exception e ) {
                 // do nothing
             }
         }
         
+        LOG.fatal( "\t{} - Closing the socket..." );
         try {
             _socket.close();
         } catch( IOException ioe ) {
