@@ -19,6 +19,7 @@ package jais.io;
 import jais.handlers.AISStringHandler;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -381,5 +382,31 @@ public class ActiveConnection implements AutoCloseable {
         }
         
         LOG.fatal( "\t{} - ActiveConnection successfully closed." );
+    }
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
+    public boolean equals( Object obj ) {
+        if( obj instanceof ActiveConnection ) {
+            ActiveConnection otherConnection = ( ActiveConnection )obj;
+            return ( otherConnection.getSocket().equals( _socket ) );
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 71 * hash + Objects.hashCode( this._socket );
+        return hash;
     }
 }
