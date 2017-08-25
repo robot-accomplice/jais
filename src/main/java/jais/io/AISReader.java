@@ -174,14 +174,9 @@ public class AISReader implements Runnable, AutoCloseable {
     @Override
     public void close() throws Exception {
         LOG.fatal( "\t{} - AISReader shutting down...", _name );
+        
         _keepReading = false;
         
-        try {
-            if( _socket != null ) _socket.close();
-        } catch( IOException ioe ) {
-            // ignore
-        }
-
         LOG.fatal( "\t{} - AISReader successfully closed.", _name );
     }
 }
