@@ -195,15 +195,12 @@ public class AISWriter implements Runnable, AutoCloseable {
     @Override
     public void close() throws Exception {
         LOG.fatal( "\t{} - AISWriter shutting down...", _name );
+        
         _keepWriting = false;
+        
+        LOG.fatal( "\t{} - Purging write queue...", _name );
         if( _purge ) _queue.clear();
         
-        try {
-            if( _socket != null ) _socket.close();
-        } catch( IOException ioe ) {
-            // ignore
-        }
-
         LOG.fatal( "\t{} - AISWriter successfully closed.", _name );
     }    
 }
