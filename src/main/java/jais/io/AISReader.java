@@ -89,9 +89,9 @@ public class AISReader implements Runnable, AutoCloseable {
             StringBuilder sb = new StringBuilder();
             CharBuffer cb = CharBuffer.allocate( _readBufferSize );
             
-            while( _keepReading ) {
+            while( _keepReading && isConnected() ) {
                 try {
-                    if( _socket.isClosed() || !_socket.isConnected() ) {
+                    if( !isConnected() ) {
                         throw new IOException( _name + " - Socket is closed." );
                     }
                     int readCount = reader.read( cb );
@@ -160,6 +160,13 @@ public class AISReader implements Runnable, AutoCloseable {
         return Optional.ofNullable( _lastReadTime );
     }
 
+    /**
+     * @return
+     */
+    private boolean isConnected() {
+        return ( _socket != null && !_socket.isClosed() && _socket.isConnected() && !_socket.isInputShutdown() );
+    }
+    
     /**
      * 
      * @throws Exception 

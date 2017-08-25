@@ -87,7 +87,7 @@ public class AISWriter implements Runnable, AutoCloseable {
             LOG.fatal( "{} - Creating BuffereredWriter...", _name );
             BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( bout ) );
             
-            while( _keepWriting && _socket != null && !_socket.isClosed() && _socket.isConnected() ) {
+            while( _keepWriting && isConnected() ) {
                 if( _queue.isEmpty() ) {
                     try {
                         Thread.sleep( 1000 );
@@ -99,7 +99,7 @@ public class AISWriter implements Runnable, AutoCloseable {
                     if( LOG.isInfoEnabled() ) LOG.info( "{} - processing {} queue entries...", _name, _queue.size() );
                     
                     for( String line : _queue ) {
-                        if( _socket == null || _socket.isClosed() || !_socket.isConnected() ) 
+                        if( !isConnected() ) 
                             throw new IOException( _name + " - Connection to socket was closed" );
                         
                         _queue.remove( line );
@@ -123,7 +123,7 @@ public class AISWriter implements Runnable, AutoCloseable {
                 }
             }
             
-            if( _socket.isClosed() || !_socket.isConnected() ) {
+            if( !isConnected() ) {
                 LOG.error( "{} - Socket connection was closed.", _name );
             }
         } catch( IOException ioe ) {
@@ -179,6 +179,13 @@ public class AISWriter implements Runnable, AutoCloseable {
      */
     public Optional<DateTime> getLastWriteTime() {
         return Optional.ofNullable( _lastWriteTime );
+    }
+    
+    /**
+     * @return
+     */
+    private boolean isConnected() {
+        return ( _socket != null && !_socket.isClosed() && _socket.isConnected() && !_socket.isOutputShutdown() );
     }
     
     /**

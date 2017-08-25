@@ -75,7 +75,7 @@ public class SocketClient extends SocketConnectionBase {
 
         while( _keepOpen ) {
             try {
-                if( _socket.isClosed() || !_socket.isConnected() ) {
+                if( _connection.isClosed() ) {
                     LOG.fatal( "{} - Socket is closed, (re)connecting to {}...", _name, _address );
                     _connection.close();
                     _socket = new Socket();
