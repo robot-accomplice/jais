@@ -120,21 +120,22 @@ public class SocketServer extends SocketConnectionBase {
      */   
     @Override
     public void close() {
-        LOG.fatal( "{} - SocketServer shutdown invoked.  Closing client connections...", _name );
-        _connections.forEach( ( connection ) -> {
-            connection.close();
-        } );
-        
         _keepOpen = false;
-        _houseKeeper.cancel();
-
+        
         try {
-            LOG.fatal( "{} - Closing socket connection...", _name );
+            LOG.fatal( "{} - Closing server socket connection...", _name );
             _socket.close();
         } catch( IOException ioe ) {
             // ignore
         }
         
+        LOG.fatal( "{} - SocketServer shutdown invoked.  Closing client connections...", _name );
+        _connections.forEach( ( connection ) -> {
+            connection.close();
+        } );
+        
+        _houseKeeper.cancel();
+
         LOG.fatal( "{} - SocketServer shutdown complete", _name );
     }
 
