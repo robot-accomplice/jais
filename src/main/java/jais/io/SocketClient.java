@@ -77,13 +77,18 @@ public class SocketClient extends SocketConnectionBase {
             try {
                 if( _connection.isClosed() ) {
                     LOG.fatal( "{} - Socket is closed, (re)connecting to {}...", _name, _address );
-                    _connection.close();
+
                     _socket = new Socket();
                     _socket.connect( _address );
-                    _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool );
-                    _connection.close();
-                    _connection.launch();
-                    _totalConnectAttempts.increment();
+                    
+                    if( _socket.isConnected() ) {
+                        _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool );
+                        _connection.launch();
+                        _totalConnectAttempts.increment();
+                    } else {
+                        LOG.fatal( "{} - Failed to connect to {}:{}. Sleeping for {} seconds before trying again...", _name, 
+                                ( RECONNECT_DELAY / 1000 ) );
+                    }
                 }
             } catch( IOException ioe ) {
                 LOG.error( "{} [{}:{}] - Encountered an IOException: {}", _name, _host, _port, ioe.getMessage() );
