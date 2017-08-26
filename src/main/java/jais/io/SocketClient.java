@@ -76,7 +76,7 @@ public class SocketClient extends SocketConnectionBase {
 
         while( _keepOpen ) {
             try {
-                if( _connection.isClosed() ) {
+                if( _keepOpen && _connection.isClosed() ) {
                     _totalConnectAttempts.increment();
                     LOG.fatal( "{} - Socket is closed, (re)connecting to {}...", _name, _address );
 
@@ -239,9 +239,9 @@ public class SocketClient extends SocketConnectionBase {
      */
     @Override
     public void close() {
-        LOG.fatal( "{} - SocketClient shutdown invoked.  Closing connection...", _name );
-        _connection.close();
         _keepOpen = false;
+        LOG.fatal( "{} - SocketClient shutdown invoked.  Closing connection...", _name );
+        if( !_connection.isClosed() ) _connection.close();
 
         try {
             LOG.fatal( "{} - Closing socket connection...", _name );
