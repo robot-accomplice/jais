@@ -39,7 +39,11 @@ public abstract class SocketConnectionBase implements SocketConnection {
 
     // counters used to track connection statistics
     final public LongAdder _totalConnectAttempts = new LongAdder();
-    
+    protected String _lastWrite = "never";
+    protected long _minutesSinceLastWrite = -1;
+    protected String _lastRead = "never";
+    protected long _minutesSinceLastRead = -1;
+
     /**
      * 
      * @return 

@@ -179,10 +179,10 @@ public class SocketServer extends SocketConnectionBase {
         }
         
         if( latestTime != null ) {
-            return latestTime.toString( DateTimeFormat.fullDateTime() );
+            _lastRead = latestTime.toString( DateTimeFormat.fullDateTime() );
         }
         
-        return "never";
+        return _lastRead;
     }
     
     /**
@@ -205,10 +205,10 @@ public class SocketServer extends SocketConnectionBase {
         }
         
         if( latestTime != null ) {
-            return ( DateTime.now().getMillis() - latestTime.getMillis() ) / ( 1000 * 60 );
+            _minutesSinceLastRead = ( DateTime.now().getMillis() - latestTime.getMillis() ) / ( 1000 * 60 );
         }
         
-        return -1;
+        return _minutesSinceLastRead;
     }
     
     /**
@@ -265,10 +265,10 @@ public class SocketServer extends SocketConnectionBase {
         }
         
         if( latestTime != null ) {
-            return latestTime.toString( DateTimeFormat.fullDateTime() );
+            _lastWrite = latestTime.toString( DateTimeFormat.fullDateTime() );
         }
         
-        return "never";
+        return _lastWrite;
     }
 
     /**
@@ -291,10 +291,10 @@ public class SocketServer extends SocketConnectionBase {
         }
         
         if( latestTime != null ) {
-            return ( DateTime.now().getMillis() - latestTime.getMillis() ) / ( 1000 * 60 );
+            _minutesSinceLastWrite = ( DateTime.now().getMillis() - latestTime.getMillis() ) / ( 1000 * 60 );
         }
         
-        return -1;
+        return _minutesSinceLastWrite;
     }
     
     /**

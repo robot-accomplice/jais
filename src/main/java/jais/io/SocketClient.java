@@ -140,7 +140,11 @@ public class SocketClient extends SocketConnectionBase {
      */
     @Override
     public String getLastReadTime() {
-        return _connection.getLastReadTimeAsString();
+        String lastRead = _connection.getLastReadTimeAsString();
+        
+        if( !lastRead.equals( "never" ) ) _lastRead = lastRead;
+        
+        return _lastRead;
     }
     
     /**
@@ -149,7 +153,11 @@ public class SocketClient extends SocketConnectionBase {
      */
     @Override
     public long getMinutesSinceLastRead() {
-        return _connection.getMinutesSinceLastRead();
+        long mins = _connection.getMinutesSinceLastRead();
+        
+        if( mins > -1 ) _minutesSinceLastRead = mins;
+        
+        return _minutesSinceLastRead;
     }
     
     /**
@@ -177,7 +185,11 @@ public class SocketClient extends SocketConnectionBase {
      */
     @Override
     public String getLastWriteTime() {
-        return _connection.getLastWriteTimeAsString();
+        String lastWrite = _connection.getLastWriteTimeAsString();
+        
+        if( !lastWrite.equals( "never" ) ) _lastWrite = lastWrite;
+                
+        return _lastWrite;
     }
     
     /**
@@ -186,7 +198,11 @@ public class SocketClient extends SocketConnectionBase {
      */
     @Override
     public long getMinutesSinceLastWrite() {
-        return _connection.getMinutesSinceLastWrite();
+        long mins = _connection.getMinutesSinceLastWrite();
+        
+        if( mins > -1 ) _minutesSinceLastWrite = mins;
+        
+        return _minutesSinceLastWrite;
     }
     
     /**
