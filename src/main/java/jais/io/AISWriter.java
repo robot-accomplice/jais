@@ -80,11 +80,11 @@ public class AISWriter implements Runnable, AutoCloseable {
      */
     @Override
     public void run() {
-        LOG.fatal( "{} - AISWriter thread started...", _name );
+        if( LOG.isInfoEnabled() ) LOG.info( "{} - AISWriter thread started...", _name );
         try( OutputStream out = _socket.getOutputStream() ) {
-            LOG.fatal( "{} - Creating BufferedOutputStream...", _name );
+            if( LOG.isInfoEnabled() ) LOG.info( "{} - Creating BufferedOutputStream...", _name );
             BufferedOutputStream bout = new BufferedOutputStream( out );
-            LOG.fatal( "{} - Creating BuffereredWriter...", _name );
+            if( LOG.isInfoEnabled() ) LOG.info( "{} - Creating BuffereredWriter...", _name );
             BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( bout ) );
             
             while( _keepWriting && isConnected() ) {
@@ -113,10 +113,11 @@ public class AISWriter implements Runnable, AutoCloseable {
                         }
                         
                         if( _queue.size() > _wqThreshold ) {
-                            LOG.fatal( "{} - Maximum queue size ({}) exceeded.  Purging Queue.", _name, _wqThreshold );
+                            if( LOG.isWarnEnabled() ) LOG.warn( "{} - Maximum queue size ({}) exceeded.  Purging Queue.", _name, _wqThreshold );
                             purgeQueue();
                         } else if( _queue.size() - startingSize > _bpThreshold ) {
-                            LOG.fatal( "{} - Back pressure threshold ({} messages) exceeded.  Purging Queue.", _name, _bpThreshold );
+                            if( LOG.isWarnEnabled() ) LOG.warn( "{} - Back pressure threshold ({} messages) exceeded.  Purging Queue.", 
+                                    _name, _bpThreshold );
                             purgeQueue();
                         }
                     }
@@ -124,7 +125,7 @@ public class AISWriter implements Runnable, AutoCloseable {
             }
             
             if( !isConnected() ) {
-                LOG.error( "{} - Socket connection was closed.", _name );
+                LOG.error( "{} - Socket and/or OutputStream are closed.", _name );
             }
         } catch( IOException ioe ) {
             LOG.error( "{} - IOException encountered: {}", _name, ioe.getMessage() );
@@ -143,12 +144,7 @@ public class AISWriter implements Runnable, AutoCloseable {
      */
     public void writeln( String line ) {
         if( LOG.isTraceEnabled() ) LOG.trace( "{} - {} bytes received, adding to queue...", _name, line.length() );
-        try {
-            if( line != null && !line.isEmpty() ) _queue.add( line );
-        } catch( Exception e ) {
-            LOG.error( "{} - Exception: {}", _name, e.getMessage() );
-            if( LOG.isTraceEnabled() ) LOG.trace( e );
-        }
+        if( line != null && !line.isEmpty() ) _queue.add( line );
     }
     
     /**

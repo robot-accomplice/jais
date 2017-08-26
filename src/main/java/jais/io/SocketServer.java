@@ -134,6 +134,12 @@ public class SocketServer extends SocketConnectionBase {
         LOG.fatal( "{} - SocketServer shutdown invoked.  Closing client connections...", _name );
         _connections.forEach( ( connection ) -> {
             connection.close();
+            try {
+                connection.getSocket().close();
+            } catch( IOException ioe ) {
+                if( LOG.isWarnEnabled() ) LOG.warn( "{} - Encountered IOException while closing client socket: {}", _name, ioe.getMessage() );
+                if( LOG.isTraceEnabled() ) LOG.trace( "StackTrace", ioe );
+            }
         } );
         
         _houseKeeper.cancel();
@@ -337,7 +343,7 @@ public class SocketServer extends SocketConnectionBase {
     @Override
     public void init() {
         // not relevant to this connection type
-        LOG.warn( "{} - This connection type does not require initialization. Ignoring.", _name );
+        if( LOG.isInfoEnabled() ) LOG.info( "{} - This connection type does not require initialization. Ignoring.", _name );
     }
 
     /**
@@ -347,7 +353,7 @@ public class SocketServer extends SocketConnectionBase {
     @Override
     public void setParams( Map<String, String> params ) {
         // not relevant to this connection type
-        LOG.warn( "{} - This connection type takes no parameters, ignoring specified parameters.", _name );
+        if( LOG.isInfoEnabled() ) LOG.info( "{} - This connection type takes no parameters, ignoring specified parameters.", _name );
     }
 
     /**
@@ -394,7 +400,8 @@ public class SocketServer extends SocketConnectionBase {
         public void run() {
             // housekeeping
             _connections.stream().filter( ( c ) -> ( c == null || c.isClosed() ) ).forEachOrdered( ( c ) -> {
-                LOG.fatal( "{} - Client {} is no longer connected.  Removing from list of active connections", _name, c.getName() );
+                if( LOG.isWarnEnabled() ) 
+                    LOG.warn( "{} - Client {} is no longer connected.  Removing from list of active connections", _name, c.getName() );
                 c.close();
                 _totalRead += c.getSessionRead();
                 _totalWritten += c.getSessionWritten();

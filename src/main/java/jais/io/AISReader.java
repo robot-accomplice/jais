@@ -92,8 +92,9 @@ public class AISReader implements Runnable, AutoCloseable {
             while( _keepReading && isConnected() ) {
                 try {
                     if( !isConnected() ) {
-                        throw new IOException( _name + " - Socket is closed." );
+                        throw new IOException( _name + " - Socket and/or InputStream are closed." );
                     }
+                    
                     int readCount = reader.read( cb );
                     if( readCount > 0 ) {
                         _lastReadTime = DateTime.now();

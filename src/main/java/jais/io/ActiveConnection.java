@@ -58,6 +58,7 @@ public class ActiveConnection implements AutoCloseable {
     private AISStringHandler _handler;
     private long _wqThreshold;
     private long _bpThreshold;
+    private boolean _launched = false;
 
     /**
      *
@@ -158,23 +159,32 @@ public class ActiveConnection implements AutoCloseable {
     }
 
     /**
+     * 
+     * @return 
+     */
+    public boolean isLaunched() {
+        return _launched;
+    }
+    
+    /**
      *
      */
     public void launch() {
-        LOG.debug( "{} - New ActiveConnection is of type {}", _name, _type.name() );
+        _launched = true;
+        if( LOG.isDebugEnabled() ) LOG.debug( "{} - New ActiveConnection is of type {}", _name, _type.name() );
         
         if( _type.isReadable() ) {
             if( _reader == null ) {
                 _reader = new AISReader( _name, _socket, _readBufferSize, _readQueue, _currentRead, _sessionRead, _handler );
             }
-            LOG.fatal( "{} - Connection is readable, launching reader...", _name );
+            if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection is readable, launching reader...", _name );
             _threadPool.execute( _reader );
         }
 
         if( _type.isWriteable() ) {
             if( _writer == null )
                 _writer = new AISWriter( _name, _socket, _currentWritten, _sessionWritten, _purge, _wqThreshold, _bpThreshold );
-            LOG.fatal( "{} - Connection is writeable, launching writer...", _name );
+            if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection is writeable, launching writer...", _name );
             _threadPool.execute( _writer );
         }
     }
@@ -184,21 +194,15 @@ public class ActiveConnection implements AutoCloseable {
      * @param line
      */
     public void writeln( String line ) {
-        if( _writer == null ) {
-            LOG.error( "{} - AISWriter is null!", _name );
-            if( _type.isWriteable() ) {
-                if( _writer == null )
-                    _writer = new AISWriter( _name, _socket, _currentWritten, _sessionWritten, _wqThreshold, _bpThreshold );
-                LOG.fatal( "{} - Connection is writeable, launching writer...", _name );
-                _threadPool.execute( _writer );
-            }
-        }
-
-        if( LOG.isTraceEnabled() )
-            LOG.trace( "{} - Sending \"{}\" to writer queue...", _name, line );
-
-        if( _type.isWriteable() )
+        if( _launched && _writer == null ) {
+            if( LOG.isWarnEnabled() ) LOG.warn( "{} - Ignoring attempt to write to null AISWriter.", _name );
+        } else if( _launched && _type.isWriteable() ) {
+            if( LOG.isTraceEnabled() )
+                LOG.trace( "{} - Sending \"{}\" to writer queue...", _name, line );
             _writer.writeln( line );
+        } else if( !_launched && LOG.isInfoEnabled() ) {
+            LOG.info( "{} - Ignoring attempt to write before ActiveConnection has been launched...", _name );
+        }
     }
 
     /**
@@ -323,7 +327,7 @@ public class ActiveConnection implements AutoCloseable {
      */
     public long getWriteQueueSize() {
         if( _writer == null ) {
-            if( LOG.isWarnEnabled() ) LOG.warn( "{} - Attempt to call getWriteQueueSize() on null writer", _name );
+            if( LOG.isWarnEnabled() ) LOG.warn( "{} - Ignoring attempt to call getWriteQueueSize() on null writer", _name );
             return 0;
         }
         
@@ -335,7 +339,7 @@ public class ActiveConnection implements AutoCloseable {
      */
     void purgeWriteQueue() {
         if( _writer == null ) {
-            if( LOG.isWarnEnabled() ) LOG.warn( "{} - Attempt to purge write queue when _writer is null!", _name );
+            if( LOG.isWarnEnabled() ) LOG.warn( "{} - Ignoring attempt to purge write queue when _writer is null!", _name );
         } else {
             _writer.purgeQueue();
         }
@@ -372,13 +376,6 @@ public class ActiveConnection implements AutoCloseable {
             } catch( Exception e ) {
                 // do nothing
             }
-        }
-        
-        LOG.fatal( "{} - Closing the socket...", _name );
-        try {
-            _socket.close();
-        } catch( IOException ioe ) {
-            // do nothing
         }
         
         LOG.fatal( "{} - ActiveConnection successfully closed.", _name );
