@@ -79,7 +79,7 @@ public class SocketClient extends SocketConnectionBase {
             try {
                 if( _keepOpen && _connection.isClosed() ) {
                     _totalConnectAttempts.increment();
-                    LOG.fatal( "{} - Socket is closed, (re)connecting to {}...", _name, _address );
+                    if( LOG.isInfoEnabled() ) LOG.info( "{} - Socket is closed, (re)connecting to {}...", _name, _address );
 
                     _socket = new Socket();
                     _socket.connect( _address );
