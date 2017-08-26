@@ -17,8 +17,8 @@
 package jais.io;
 
 import jais.handlers.AISStringHandler;
-import java.io.IOException;
 import java.net.Socket;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
@@ -26,8 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.LongAdder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 
 /**
  *
@@ -209,7 +207,8 @@ public class ActiveConnection implements AutoCloseable {
      *
      * @return
      */
-    public Optional<DateTime> getLastReadTime() {
+    public Optional<OffsetDateTime> getLastReadTime() {
+        if( _reader == null ) return Optional.empty();
         return _reader.getLastReadTime();
     }
 
@@ -217,29 +216,11 @@ public class ActiveConnection implements AutoCloseable {
      *
      * @return
      */
-    public String getLastReadTimeAsString() {
-        if( _reader != null ) {
-            Optional<DateTime> opt = _reader.getLastReadTime();
-
-            if( opt.isPresent() ) {
-                return opt.get().toString( DateTimeFormat.fullDateTime() );
-            }
-        }
-
-        return "never";
-    }
-
-    /**
-     *
-     * @return
-     */
     public long getMinutesSinceLastRead() {
-        if( _reader != null ) {
-            Optional<DateTime> opt = _reader.getLastReadTime();
+        Optional<OffsetDateTime> lastRead = _reader.getLastReadTime();
 
-            if( opt.isPresent() ) {
-                return ( DateTime.now().getMillis() - opt.get().getMillis() ) / ( 1000 * 60 );
-            }
+        if( lastRead.isPresent() ) {
+            return ( System.currentTimeMillis() - lastRead.get().toInstant().toEpochMilli() ) / ( 1000 * 60 );
         }
         
         return -1;
@@ -249,7 +230,8 @@ public class ActiveConnection implements AutoCloseable {
      *
      * @return
      */
-    public Optional<DateTime> getLastWriteTime() {
+    public Optional<OffsetDateTime> getLastWriteTime() {
+        if( _writer == null ) return Optional.empty();
         return _writer.getLastWriteTime();
     }
 
@@ -257,29 +239,11 @@ public class ActiveConnection implements AutoCloseable {
      *
      * @return
      */
-    public String getLastWriteTimeAsString() {
-        if( _writer != null ) {
-            Optional<DateTime> opt = _writer.getLastWriteTime();
-
-            if( opt.isPresent() ) {
-                return opt.get().toString( DateTimeFormat.fullDateTime() );
-            }
-        }
-
-        return "never";
-    }
-
-    /**
-     *
-     * @return
-     */
     public long getMinutesSinceLastWrite() {
-        if( _writer != null ) {
-            Optional<DateTime> opt = _writer.getLastWriteTime();
-
-            if( opt.isPresent() ) {
-                return ( DateTime.now().getMillis() - opt.get().getMillis() ) / ( 1000 * 60 );
-            }
+        Optional<OffsetDateTime> lastWrite = getLastWriteTime();
+        
+        if( lastWrite.isPresent() ) {
+            return ( System.currentTimeMillis() - lastWrite.get().toInstant().toEpochMilli() ) / ( 1000 * 60 );
         }
         
         return -1;

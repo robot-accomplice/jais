@@ -16,6 +16,7 @@
 
 package jais.io;
 
+import java.time.OffsetDateTime;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.LongAdder;
@@ -39,9 +40,9 @@ public abstract class SocketConnectionBase implements SocketConnection {
 
     // counters used to track connection statistics
     final public LongAdder _totalConnectAttempts = new LongAdder();
-    protected String _lastWrite = "never";
+    protected OffsetDateTime _lastWrite = null;
     protected long _minutesSinceLastWrite = -1;
-    protected String _lastRead = "never";
+    protected OffsetDateTime _lastRead = null;
     protected long _minutesSinceLastRead = -1;
 
     /**

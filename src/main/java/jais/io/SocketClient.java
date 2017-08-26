@@ -19,10 +19,10 @@ package jais.io;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.LongAdder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -139,11 +139,11 @@ public class SocketClient extends SocketConnectionBase {
      * @return 
      */
     @Override
-    public String getLastReadTime() {
-        String lastRead = _connection.getLastReadTimeAsString();
-        
-        if( !lastRead.equals( "never" ) ) _lastRead = lastRead;
-        
+    public OffsetDateTime getLastReadTime() {
+        if( _connection.getLastReadTime().isPresent() ) {
+            _lastRead = _connection.getLastReadTime().get();
+        }
+
         return _lastRead;
     }
     
@@ -184,11 +184,11 @@ public class SocketClient extends SocketConnectionBase {
      * @return 
      */
     @Override
-    public String getLastWriteTime() {
-        String lastWrite = _connection.getLastWriteTimeAsString();
+    public OffsetDateTime getLastWriteTime() {
+        if( _connection.getLastWriteTime().isPresent() ) {
+            _lastWrite = _connection.getLastWriteTime().get();
+        }
         
-        if( !lastWrite.equals( "never" ) ) _lastWrite = lastWrite;
-                
         return _lastWrite;
     }
     

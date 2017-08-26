@@ -24,13 +24,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.CharBuffer;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.LongAdder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
 
 /**
  * 
@@ -50,7 +51,7 @@ public class AISReader implements Runnable, AutoCloseable {
     private final AISStringHandler _handler;
     private final LongAdder _current;
     private final LongAdder _session;
-    private DateTime _lastReadTime;
+    private OffsetDateTime _lastReadTime;
     
     /**
      * 
@@ -97,7 +98,7 @@ public class AISReader implements Runnable, AutoCloseable {
                     
                     int readCount = reader.read( cb );
                     if( readCount > 0 ) {
-                        _lastReadTime = DateTime.now();
+                        _lastReadTime = java.time.OffsetDateTime.now( ZoneOffset.UTC.normalized() );
                     }
                     if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} bytes from stream", _name, readCount );
                     
@@ -153,7 +154,7 @@ public class AISReader implements Runnable, AutoCloseable {
      * 
      * @return 
      */
-    public Optional<DateTime> getLastReadTime() {
+    public Optional<OffsetDateTime> getLastReadTime() {
         return Optional.ofNullable( _lastReadTime );
     }
 
