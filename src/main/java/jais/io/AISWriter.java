@@ -116,7 +116,7 @@ public class AISWriter implements Runnable, AutoCloseable {
                             LOG.fatal( "{} - Maximum queue size ({}) exceeded.  Purging Queue.", _name, _wqThreshold );
                             purgeQueue();
                         } else if( _queue.size() - startingSize > _bpThreshold ) {
-                            LOG.fatal( "{} - Backpressure threshold ({} messages) exceeded.  Purging Queue.", _name, _bpThreshold );
+                            LOG.fatal( "{} - Back pressure threshold ({} messages) exceeded.  Purging Queue.", _name, _bpThreshold );
                             purgeQueue();
                         }
                     }
@@ -129,8 +129,6 @@ public class AISWriter implements Runnable, AutoCloseable {
         } catch( IOException ioe ) {
             LOG.error( "{} - IOException encountered: {}", _name, ioe.getMessage() );
             if( LOG.isTraceEnabled() ) LOG.trace( ioe );
-        } catch( Throwable t ) {
-            LOG.error( "{} - Unanticipated fault occurred: {}", _name, t.getMessage(), t );
         } finally {
             try {
                 close();
@@ -194,13 +192,13 @@ public class AISWriter implements Runnable, AutoCloseable {
      */
     @Override
     public void close() throws Exception {
-        LOG.fatal( "\t{} - AISWriter shutting down...", _name );
+        LOG.fatal( "{} - AISWriter shutting down...", _name );
         
         _keepWriting = false;
         
-        LOG.fatal( "\t{} - Purging write queue...", _name );
+        LOG.fatal( "{} - Purging write queue...", _name );
         if( _purge ) _queue.clear();
         
-        LOG.fatal( "\t{} - AISWriter successfully closed.", _name );
+        LOG.fatal( "{} - AISWriter successfully closed.", _name );
     }    
 }

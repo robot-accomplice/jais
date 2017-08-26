@@ -135,10 +135,6 @@ public class AISReader implements Runnable, AutoCloseable {
                     } catch( InterruptedException ie ) {
                         // ignore
                     }
-                } catch( OutOfMemoryError ome ) {
-                    LOG.error( "{} - Encountered OutOfMemoryError.  Current StringBuilder size is {}", _name, sb.length() );
-                    if( LOG.isTraceEnabled() ) LOG.trace( "{} - {}", _name, ome.getMessage(), ome );
-                    sb.delete( 0, sb.length() - 1);
                 }
             }
         } catch( IOException ioe ) {
@@ -173,10 +169,10 @@ public class AISReader implements Runnable, AutoCloseable {
      */
     @Override
     public void close() throws Exception {
-        LOG.fatal( "\t{} - AISReader shutting down...", _name );
+        LOG.fatal( "{} - AISReader shutting down...", _name );
         
         _keepReading = false;
         
-        LOG.fatal( "\t{} - AISReader successfully closed.", _name );
+        LOG.fatal( "{} - AISReader successfully closed.", _name );
     }
 }
