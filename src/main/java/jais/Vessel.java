@@ -23,8 +23,11 @@ import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.ManeuverType;
 import jais.messages.enums.NavigationStatus;
 import jais.messages.enums.ShipType;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,7 +71,7 @@ public class Vessel implements Cloneable {
     private boolean _raim = false;
     private int _repeat = 0;
     private int _radio;
-    private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm" );
+    private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm" ).withZone( ZoneOffset.UTC.normalized() );
     private ZonedDateTime _eta = ZonedDateTime.parse( "1970/01/01 00:00", ETA_FORMATTER );
     private ZonedDateTime _timeReceived;
 
