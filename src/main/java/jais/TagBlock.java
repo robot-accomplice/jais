@@ -17,7 +17,6 @@ package jais;
 
 import java.util.Arrays;
 import java.util.regex.Pattern;
-import org.joda.time.DateTime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -211,7 +210,7 @@ public final class TagBlock {
         
         TagBlock tb = new TagBlock();
         tb.setSource( source );
-        tb.setTimestamp( DateTime.now().getMillis() );
+        tb.setTimestamp( System.currentTimeMillis() );
         
         return tb;
     }

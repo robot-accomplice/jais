@@ -22,10 +22,11 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.ShipType;
-import org.joda.time.DateTimeZone;
-import org.joda.time.MutableDateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +38,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
     private final static Logger LOG = LogManager.getLogger( StaticAndVoyageRelatedData.class );
 
-    public final static DateTimeFormatter ETA_FORMATTER = DateTimeFormat.forPattern( "yyyy/MM/dd HH:mm" );
+    private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm" );
 
     private int _version;
     private int _imo;
@@ -192,11 +193,11 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      *
      * @return
      */
-    public MutableDateTime getETA() {
+    public ZonedDateTime getETA() {
         StringBuilder eta = new StringBuilder();
-        MutableDateTime dt = MutableDateTime.now();
+        ZonedDateTime dt = ZonedDateTime.now().toInstant().atZone( ZoneOffset.UTC.normalized() );
         int year = dt.getYear();
-        int month = dt.getMonthOfYear();
+        int month = dt.getMonthValue();
 
         if( _month > 0 ) {
             // properly formatted month
@@ -219,10 +220,10 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
             eta.insert( 0, year ).insert( 4, "/" );
 
             // recreate the Calendar object based on the validated month
-            dt = new MutableDateTime( year, _month, 1, 0, 0, 0, 0, DateTimeZone.UTC );
+            dt = dt.withMonth( month ).withYear( year );
 
             // Get the number of days in that month
-            int daysInMonth = dt.monthOfYear().getMaximumValue();
+            int daysInMonth = dt.getMonth().maxLength();
 
             // properly formatted day
             if( _day < 1 ) {
@@ -262,10 +263,10 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
         }
 
         try {
-            dt = MutableDateTime.parse( eta.toString(), ETA_FORMATTER );
+            dt = ZonedDateTime.parse( eta.toString(), ETA_FORMATTER );
         } catch( Exception e ) {
             LOG.warn( "Invalid ETA, setting to epoch" );
-            dt = MutableDateTime.parse( "1970/01/01 00:00", ETA_FORMATTER );
+            dt = ZonedDateTime.parse( "1970/01/01 00:00", ETA_FORMATTER );
         }
 
         return dt;

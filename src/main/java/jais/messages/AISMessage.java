@@ -22,7 +22,7 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.MMSIType;
 import com.spatial4j.core.shape.Point;
-import org.joda.time.DateTime;
+import java.time.OffsetDateTime;
 
 /**
  *
@@ -64,7 +64,7 @@ public interface AISMessage {
      * 
      * @return 
      */
-    DateTime getTimeReceived();
+    OffsetDateTime getTimeReceived();
 
     /**
      * 

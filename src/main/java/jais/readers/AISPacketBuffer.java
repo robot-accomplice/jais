@@ -17,12 +17,14 @@
 package jais.readers;
 
 import jais.AISPacket;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.MutableDateTime;
 
 /**
  *
@@ -124,10 +126,10 @@ public class AISPacketBuffer {
             try {
                 _buffer.keySet().forEach( ( k ) -> {
                     try {
-                        MutableDateTime timestamp = _buffer.get( k ).getTimestamp();
-                        timestamp.addMillis( _maxPacketAge );
+                        ZonedDateTime timestamp = _buffer.get( k ).getTimestamp();
+                        Instant i = timestamp.toInstant().plusMillis( _maxPacketAge );
 
-                        if( timestamp.isBeforeNow() ) {
+                        if( i.isBefore( Instant.now() ) ) {
                             if( LOG.isDebugEnabled() ) LOG.debug( "Removing expired packet set." );
                             _buffer.remove( k );
                         }
@@ -255,7 +257,7 @@ public class AISPacketBuffer {
      */
     private class AISPacketSet {
 
-        private final MutableDateTime _timestamp = MutableDateTime.now();
+        private final ZonedDateTime _timestamp = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
         private final ArrayList<AISPacket> _packets = new ArrayList<>();
         private final int _sequenceNumber;
         private final int _fragmentCount;
@@ -300,7 +302,7 @@ public class AISPacketBuffer {
          *
          * @return
          */
-        public MutableDateTime getTimestamp() {
+        public ZonedDateTime getTimestamp() {
             return _timestamp;
         }
 

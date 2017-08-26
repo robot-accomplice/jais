@@ -23,11 +23,10 @@ import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.ManeuverType;
 import jais.messages.enums.NavigationStatus;
 import jais.messages.enums.ShipType;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import org.joda.time.DateTime;
-import org.joda.time.MutableDateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -70,9 +69,9 @@ public class Vessel implements Cloneable {
     private boolean _raim = false;
     private int _repeat = 0;
     private int _radio;
-    private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormat.forPattern( "yyyy/MM/dd HH:mm" );
-    private MutableDateTime _eta = MutableDateTime.parse( "1970/01/01 00:00", ETA_FORMATTER );
-    private DateTime _timeReceived;
+    private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm" );
+    private ZonedDateTime _eta = ZonedDateTime.parse( "1970/01/01 00:00", ETA_FORMATTER );
+    private OffsetDateTime _timeReceived;
 
     /**
      *
@@ -545,7 +544,7 @@ public class Vessel implements Cloneable {
      *
      * @return
      */
-    public MutableDateTime getEta() {
+    public ZonedDateTime getEta() {
         return _eta;
     }
 
@@ -553,7 +552,7 @@ public class Vessel implements Cloneable {
      *
      * @return
      */
-    public DateTime getTimeReceived() {
+    public OffsetDateTime getTimeReceived() {
         return _timeReceived;
     }
 

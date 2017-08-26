@@ -24,11 +24,12 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.joda.time.DateTime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -72,7 +73,7 @@ public final class AISPacket {
     private byte [] _packetBody; // the message without the tagblock
     private int _fillBits;
     private byte [] _checksum;
-    private DateTime _timeReceived = DateTime.now();
+    private OffsetDateTime _timeReceived = OffsetDateTime.now( ZoneOffset.UTC.normalized() );
     private byte [][] _packetParts;
     private boolean _parsed = false;
 
@@ -768,7 +769,7 @@ public final class AISPacket {
     public final String generateTagBlockPacketString() {
         TagBlock tb = new TagBlock();
         tb.setSource( _source );
-        tb.setTimestamp( _timeReceived.getMillis() );
+        tb.setTimestamp( _timeReceived.toInstant().toEpochMilli() );
         return generateTagBlockPacketString( _rawPacket, tb );
     }
 
@@ -780,7 +781,7 @@ public final class AISPacket {
     public final String generateTagBlockPacketString( byte [] text ) {
         TagBlock tb = new TagBlock();
         tb.setSource( _source );
-        tb.setTimestamp( _timeReceived.getMillis() );
+        tb.setTimestamp( _timeReceived.toInstant().toEpochMilli() );
         tb.setTextStr( text );
         return generateTagBlockPacketString( _rawPacket, tb );
     }
@@ -890,7 +891,7 @@ public final class AISPacket {
      *
      * @return
      */
-    public final DateTime getTimeReceived() {
+    public final OffsetDateTime getTimeReceived() {
         return _timeReceived;
     }
 
@@ -898,7 +899,7 @@ public final class AISPacket {
      *
      * @param timeReceived
      */
-    public final void setTimeReceived( DateTime timeReceived ) {
+    public final void setTimeReceived( OffsetDateTime timeReceived ) {
         _timeReceived = timeReceived;
     }
 
