@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -39,7 +39,7 @@ public class AISWriter implements Runnable, AutoCloseable {
     private final boolean _purge;
     private final long _bpThreshold;
     private final long _wqThreshold;
-    public OffsetDateTime _lastWriteTime;
+    public ZonedDateTime _lastWriteTime;
     
     
     /**
@@ -108,7 +108,7 @@ public class AISWriter implements Runnable, AutoCloseable {
                         if( line != null && !line.isEmpty() ) {
                             if( LOG.isDebugEnabled() ) LOG.debug( "{} - Writing String \"{}\" to target", _name, line );
                             writer.write( line + LINE_TERMINATOR );
-                            _lastWriteTime = java.time.OffsetDateTime.now( ZoneOffset.UTC.normalized() );
+                            _lastWriteTime = java.time.ZonedDateTime.now( ZoneOffset.UTC.normalized() );
                             _write.increment();
                             _total.increment();
                         }
@@ -172,7 +172,7 @@ public class AISWriter implements Runnable, AutoCloseable {
      * 
      * @return 
      */
-    public Optional<OffsetDateTime> getLastWriteTime() {
+    public Optional<ZonedDateTime> getLastWriteTime() {
         return Optional.ofNullable( _lastWriteTime );
     }
     

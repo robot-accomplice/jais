@@ -18,7 +18,7 @@ package jais.io;
 
 import jais.handlers.AISStringHandler;
 import java.net.Socket;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
@@ -207,7 +207,7 @@ public class ActiveConnection implements AutoCloseable {
      *
      * @return
      */
-    public Optional<OffsetDateTime> getLastReadTime() {
+    public Optional<ZonedDateTime> getLastReadTime() {
         if( _reader == null ) return Optional.empty();
         return _reader.getLastReadTime();
     }
@@ -217,7 +217,7 @@ public class ActiveConnection implements AutoCloseable {
      * @return
      */
     public long getMinutesSinceLastRead() {
-        Optional<OffsetDateTime> lastRead = _reader.getLastReadTime();
+        Optional<ZonedDateTime> lastRead = _reader.getLastReadTime();
 
         if( lastRead.isPresent() ) {
             return ( System.currentTimeMillis() - lastRead.get().toInstant().toEpochMilli() ) / ( 1000 * 60 );
@@ -230,7 +230,7 @@ public class ActiveConnection implements AutoCloseable {
      *
      * @return
      */
-    public Optional<OffsetDateTime> getLastWriteTime() {
+    public Optional<ZonedDateTime> getLastWriteTime() {
         if( _writer == null ) return Optional.empty();
         return _writer.getLastWriteTime();
     }
@@ -240,7 +240,7 @@ public class ActiveConnection implements AutoCloseable {
      * @return
      */
     public long getMinutesSinceLastWrite() {
-        Optional<OffsetDateTime> lastWrite = getLastWriteTime();
+        Optional<ZonedDateTime> lastWrite = getLastWriteTime();
         
         if( lastWrite.isPresent() ) {
             return ( System.currentTimeMillis() - lastWrite.get().toInstant().toEpochMilli() ) / ( 1000 * 60 );

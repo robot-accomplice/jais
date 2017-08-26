@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -171,7 +171,7 @@ public class SocketServer extends SocketConnectionBase {
      * @return 
      */
     @Override
-    public Optional<OffsetDateTime> getLastReadTime() {
+    public Optional<ZonedDateTime> getLastReadTime() {
         _connections.forEach( ( connection ) -> {
             if( _lastRead == null && connection.getLastReadTime().isPresent() ) {
                 _lastRead = connection.getLastReadTime().get();
@@ -237,7 +237,7 @@ public class SocketServer extends SocketConnectionBase {
      * @return 
      */
     @Override
-    public Optional<OffsetDateTime> getLastWriteTime() {
+    public Optional<ZonedDateTime> getLastWriteTime() {
         _connections.forEach( ( connection ) -> {
             if( _lastWrite == null && connection.getLastWriteTime().isPresent() ) {
                 _lastWrite = connection.getLastWriteTime().get();

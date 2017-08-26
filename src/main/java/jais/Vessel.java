@@ -23,7 +23,7 @@ import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.ManeuverType;
 import jais.messages.enums.NavigationStatus;
 import jais.messages.enums.ShipType;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -71,7 +71,7 @@ public class Vessel implements Cloneable {
     private int _radio;
     private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm" );
     private ZonedDateTime _eta = ZonedDateTime.parse( "1970/01/01 00:00", ETA_FORMATTER );
-    private OffsetDateTime _timeReceived;
+    private ZonedDateTime _timeReceived;
 
     /**
      *
@@ -552,7 +552,7 @@ public class Vessel implements Cloneable {
      *
      * @return
      */
-    public OffsetDateTime getTimeReceived() {
+    public ZonedDateTime getTimeReceived() {
         return _timeReceived;
     }
 

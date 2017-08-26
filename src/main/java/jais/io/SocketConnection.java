@@ -17,7 +17,7 @@
 package jais.io;
 
 import java.io.IOException;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -51,13 +51,13 @@ public interface SocketConnection extends AutoCloseable {
     
     public abstract boolean isConnected();
     
-    public abstract Optional<OffsetDateTime> getLastReadTime();
+    public abstract Optional<ZonedDateTime> getLastReadTime();
     
     public abstract long getMinutesSinceLastRead();
     
     public abstract long getMinutesSinceLastWrite();
     
-    public abstract Optional<OffsetDateTime> getLastWriteTime();
+    public abstract Optional<ZonedDateTime> getLastWriteTime();
     
     public abstract int getActiveConnections();
     

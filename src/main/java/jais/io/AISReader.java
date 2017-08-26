@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.CharBuffer;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
@@ -51,7 +51,7 @@ public class AISReader implements Runnable, AutoCloseable {
     private final AISStringHandler _handler;
     private final LongAdder _current;
     private final LongAdder _session;
-    private OffsetDateTime _lastReadTime;
+    private ZonedDateTime _lastReadTime;
     
     /**
      * 
@@ -98,7 +98,7 @@ public class AISReader implements Runnable, AutoCloseable {
                     
                     int readCount = reader.read( cb );
                     if( readCount > 0 ) {
-                        _lastReadTime = java.time.OffsetDateTime.now( ZoneOffset.UTC.normalized() );
+                        _lastReadTime = java.time.ZonedDateTime.now( ZoneOffset.UTC.normalized() );
                     }
                     if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} bytes from stream", _name, readCount );
                     
@@ -154,7 +154,7 @@ public class AISReader implements Runnable, AutoCloseable {
      * 
      * @return 
      */
-    public Optional<OffsetDateTime> getLastReadTime() {
+    public Optional<ZonedDateTime> getLastReadTime() {
         return Optional.ofNullable( _lastReadTime );
     }
 

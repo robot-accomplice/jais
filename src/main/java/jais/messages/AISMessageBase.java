@@ -23,7 +23,7 @@ import jais.messages.enums.FieldMap;
 import jais.messages.enums.MMSIType;
 import com.spatial4j.core.context.SpatialContext;
 import com.spatial4j.core.shape.Point;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -118,7 +118,7 @@ public abstract class AISMessageBase implements AISMessage {
      * @return
      */
     @Override
-    public OffsetDateTime getTimeReceived() {
+    public ZonedDateTime getTimeReceived() {
         return _packets[0].getTimeReceived();
     }
 

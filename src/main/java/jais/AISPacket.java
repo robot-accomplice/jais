@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -73,7 +73,7 @@ public final class AISPacket {
     private byte [] _packetBody; // the message without the tagblock
     private int _fillBits;
     private byte [] _checksum;
-    private OffsetDateTime _timeReceived = OffsetDateTime.now( ZoneOffset.UTC.normalized() );
+    private ZonedDateTime _timeReceived = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
     private byte [][] _packetParts;
     private boolean _parsed = false;
 
@@ -891,7 +891,7 @@ public final class AISPacket {
      *
      * @return
      */
-    public final OffsetDateTime getTimeReceived() {
+    public final ZonedDateTime getTimeReceived() {
         return _timeReceived;
     }
 
@@ -899,7 +899,7 @@ public final class AISPacket {
      *
      * @param timeReceived
      */
-    public final void setTimeReceived( OffsetDateTime timeReceived ) {
+    public final void setTimeReceived( ZonedDateTime timeReceived ) {
         _timeReceived = timeReceived;
     }
 

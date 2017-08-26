@@ -19,7 +19,7 @@ package jais.io;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
@@ -140,7 +140,7 @@ public class SocketClient extends SocketConnectionBase {
      * @return 
      */
     @Override
-    public Optional<OffsetDateTime> getLastReadTime() {
+    public Optional<ZonedDateTime> getLastReadTime() {
         if( _connection.getLastReadTime().isPresent() ) {
             _lastRead = _connection.getLastReadTime().get();
         }
@@ -185,7 +185,7 @@ public class SocketClient extends SocketConnectionBase {
      * @return 
      */
     @Override
-    public Optional<OffsetDateTime> getLastWriteTime() {
+    public Optional<ZonedDateTime> getLastWriteTime() {
         if( _connection.getLastWriteTime().isPresent() ) {
             _lastWrite = _connection.getLastWriteTime().get();
         }
