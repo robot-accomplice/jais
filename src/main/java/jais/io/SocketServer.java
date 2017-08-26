@@ -25,6 +25,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorCompletionService;
@@ -170,7 +171,7 @@ public class SocketServer extends SocketConnectionBase {
      * @return 
      */
     @Override
-    public OffsetDateTime getLastReadTime() {
+    public Optional<OffsetDateTime> getLastReadTime() {
         _connections.forEach( ( connection ) -> {
             if( _lastRead == null && connection.getLastReadTime().isPresent() ) {
                 _lastRead = connection.getLastReadTime().get();
@@ -181,7 +182,7 @@ public class SocketServer extends SocketConnectionBase {
             }
         } );
         
-        return _lastRead;
+        return Optional.ofNullable( _lastRead );
     }
     
     /**
@@ -190,10 +191,8 @@ public class SocketServer extends SocketConnectionBase {
      */
     @Override
     public long getMinutesSinceLastRead() {
-        OffsetDateTime lastRead = getLastReadTime();
-        
-        if( _lastRead != null ) {
-            _minutesSinceLastRead = ( System.currentTimeMillis() - lastRead.toInstant().toEpochMilli() ) / ( 1000 * 60 );
+        if( getLastReadTime().isPresent() ) {
+            _minutesSinceLastRead = ( System.currentTimeMillis() - _lastRead.toInstant().toEpochMilli() ) / ( 1000 * 60 );
         }
         
         return _minutesSinceLastRead;
@@ -238,7 +237,7 @@ public class SocketServer extends SocketConnectionBase {
      * @return 
      */
     @Override
-    public OffsetDateTime getLastWriteTime() {
+    public Optional<OffsetDateTime> getLastWriteTime() {
         _connections.forEach( ( connection ) -> {
             if( _lastWrite == null && connection.getLastWriteTime().isPresent() ) {
                 _lastWrite = connection.getLastWriteTime().get();
@@ -249,7 +248,7 @@ public class SocketServer extends SocketConnectionBase {
             }
         } );
         
-        return _lastWrite;
+        return Optional.ofNullable( _lastWrite );
     }
 
     /**
@@ -258,10 +257,8 @@ public class SocketServer extends SocketConnectionBase {
      */
     @Override
     public long getMinutesSinceLastWrite() {
-        OffsetDateTime lastWrite = getLastWriteTime();
-        
-        if( _lastRead != null ) {
-            _minutesSinceLastWrite = ( System.currentTimeMillis() - lastWrite.toInstant().toEpochMilli() ) / ( 1000 * 60 );
+        if( getLastWriteTime().isPresent() ) {
+            _minutesSinceLastWrite = ( System.currentTimeMillis() - _lastWrite.toInstant().toEpochMilli() ) / ( 1000 * 60 );
         }
         
         return _minutesSinceLastWrite;

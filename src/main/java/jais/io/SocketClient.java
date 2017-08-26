@@ -21,6 +21,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.time.OffsetDateTime;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import org.apache.logging.log4j.LogManager;
@@ -139,12 +140,12 @@ public class SocketClient extends SocketConnectionBase {
      * @return 
      */
     @Override
-    public OffsetDateTime getLastReadTime() {
+    public Optional<OffsetDateTime> getLastReadTime() {
         if( _connection.getLastReadTime().isPresent() ) {
             _lastRead = _connection.getLastReadTime().get();
         }
 
-        return _lastRead;
+        return Optional.ofNullable( _lastRead );
     }
     
     /**
@@ -184,12 +185,12 @@ public class SocketClient extends SocketConnectionBase {
      * @return 
      */
     @Override
-    public OffsetDateTime getLastWriteTime() {
+    public Optional<OffsetDateTime> getLastWriteTime() {
         if( _connection.getLastWriteTime().isPresent() ) {
             _lastWrite = _connection.getLastWriteTime().get();
         }
         
-        return _lastWrite;
+        return Optional.ofNullable( _lastWrite );
     }
     
     /**
