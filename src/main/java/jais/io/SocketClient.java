@@ -22,6 +22,7 @@ import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.LongAdder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -76,6 +77,7 @@ public class SocketClient extends SocketConnectionBase {
         while( _keepOpen ) {
             try {
                 if( _connection.isClosed() ) {
+                    _totalConnectAttempts.increment();
                     LOG.fatal( "{} - Socket is closed, (re)connecting to {}...", _name, _address );
 
                     _socket = new Socket();
@@ -84,7 +86,6 @@ public class SocketClient extends SocketConnectionBase {
                     if( _socket.isConnected() ) {
                         _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool );
                         _connection.launch();
-                        _totalConnectAttempts.increment();
                     } else {
                         LOG.fatal( "{} - Failed to connect to {}:{}. Sleeping for {} seconds before trying again...", _name, 
                                 ( RECONNECT_DELAY / 1000 ) );

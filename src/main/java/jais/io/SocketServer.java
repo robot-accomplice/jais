@@ -47,7 +47,7 @@ public class SocketServer extends SocketConnectionBase {
     private boolean _keepOpen = true;
     private final List<ActiveConnection> _connections = new ArrayList();
     private final Timer _houseKeeper = new Timer();
-    private ServerSocket _socket;
+    private ServerSocket _ssocket;
     private long _totalRead;
     private long _totalWritten;
     
@@ -89,7 +89,7 @@ public class SocketServer extends SocketConnectionBase {
         _address = new InetSocketAddress( _port );
         
         try( ServerSocket ss = new ServerSocket() ) {
-            _socket = ss;
+            _ssocket = ss;
             
             // prebinding options
             ss.setReuseAddress( reuseAddress );
@@ -104,13 +104,13 @@ public class SocketServer extends SocketConnectionBase {
                     LOG.error( "{} - The socket is closed!", _name );
                 }
                 Socket s = ss.accept();
+                _totalConnectAttempts.increment();
                 LOG.fatal( "{} - New connection accepted! {}", _name, s.getRemoteSocketAddress() );
                 LOG.fatal( "{} - Launching new ActiveConnection instance...", _name );
                 ActiveConnection connection = new ActiveConnection( _name, s, _type, _readQueue, _readBufferSize, _threadPool, true );
                 connection.launch();
                 LOG.fatal( "{} - Adding new connection to list of connections...", _name );
                 _connections.add( connection );
-                _totalConnectAttempts.increment();
             }
         }
     }
@@ -126,7 +126,7 @@ public class SocketServer extends SocketConnectionBase {
         
         try {
             LOG.fatal( "{} - Closing server socket connection...", _name );
-            _socket.close();
+            _ssocket.close();
         } catch( IOException ioe ) {
             // ignore
         }
@@ -356,7 +356,7 @@ public class SocketServer extends SocketConnectionBase {
      */
     @Override
     public boolean isConnected() {
-        return !( _connections == null || _connections.isEmpty() );
+        return !( _ssocket == null || _ssocket.isClosed() );
     }
     
     /**
@@ -376,9 +376,8 @@ public class SocketServer extends SocketConnectionBase {
     public long getWriteQueueSize() {
         long queueSize = 0;
         
-        for( ActiveConnection connection : _connections ) {
-            queueSize += connection.getWriteQueueSize();
-        }
+        queueSize = _connections.stream().map( ( connection ) -> 
+                connection.getWriteQueueSize() ).reduce( queueSize, ( accumulator, _item ) -> accumulator + _item );
         
         return queueSize;
     }
