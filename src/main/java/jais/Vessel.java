@@ -24,7 +24,6 @@ import jais.messages.enums.ManeuverType;
 import jais.messages.enums.NavigationStatus;
 import jais.messages.enums.ShipType;
 import java.time.ZonedDateTime;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
