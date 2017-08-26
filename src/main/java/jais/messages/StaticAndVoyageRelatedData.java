@@ -36,7 +36,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
     private final static Logger LOG = LogManager.getLogger( StaticAndVoyageRelatedData.class );
 
-    private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm" );
+    private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm" ).withZone( ZoneOffset.UTC.normalized() );
 
     private int _version;
     private int _imo;
