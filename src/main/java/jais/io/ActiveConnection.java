@@ -354,11 +354,11 @@ public class ActiveConnection implements AutoCloseable {
      */
     @Override
     public void close() {
-        LOG.fatal( "\t{} - ActiveConnection shutting down..." );
+        LOG.fatal( "{} - ActiveConnection shutting down...", _name );
 
         if( _reader != null ) {
             try {
-                LOG.fatal( "\t{} - Closing the reader..." );
+                LOG.fatal( "{} - Closing the reader...", _name );
                 _reader.close();
             } catch( Exception e ) {
                 // do nothing;
@@ -367,21 +367,21 @@ public class ActiveConnection implements AutoCloseable {
 
         if( _writer != null ) {
             try {
-                LOG.fatal( "\t{} - Closing the writer..." );
+                LOG.fatal( "{} - Closing the writer...", _name );
                 _writer.close();
             } catch( Exception e ) {
                 // do nothing
             }
         }
         
-        LOG.fatal( "\t{} - Closing the socket..." );
+        LOG.fatal( "{} - Closing the socket...", _name );
         try {
             _socket.close();
         } catch( IOException ioe ) {
             // do nothing
         }
         
-        LOG.fatal( "\t{} - ActiveConnection successfully closed." );
+        LOG.fatal( "{} - ActiveConnection successfully closed.", _name );
     }
     
     /**
