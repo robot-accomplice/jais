@@ -85,6 +85,7 @@ public class SocketClient extends SocketConnectionBase {
                     _socket.connect( _address );
                     
                     if( _socket.isConnected() ) {
+                        if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection established to {}", _name, _address );
                         _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool );
                         _connection.launch();
                     } else {
