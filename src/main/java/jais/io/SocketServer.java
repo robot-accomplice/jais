@@ -361,17 +361,19 @@ public class SocketServer extends SocketConnectionBase {
         public void run() {
             // housekeeping
             for( ActiveConnection c : _connections ) {
-                try {
-                    if( LOG.isWarnEnabled() ) 
-                        LOG.warn( "{} - Client {} is no longer connected.  Removing from list of active connections", _name, c.getName() );
-                    if( c != null ) {
+                if( c != null && c.isLaunched() && c.isClosed() ) {
+                    try {
+                        if( LOG.isWarnEnabled() ) 
+                            LOG.warn( "{} - Client {} is no longer connected.  Removing from list of active connections", _name, c.getName() );
                         c.close();
                         _totalRead += c.getSessionRead();
                         _totalWritten += c.getSessionWritten();
                         _connections.remove( c );
+                    } catch( Exception e ) {
+                        if( LOG.isWarnEnabled() ) LOG.warn( "{} - Encountered an exception while trying to close client socket: {}", _name, e.getMessage() );
                     }
-                } catch( Exception e ) {
-                    if( LOG.isWarnEnabled() ) LOG.warn( "{} - Encountered an exception while trying to close client socket: {}", _name, e.getMessage() );
+                } else if( c == null ) {
+                    _connections.remove( c );
                 }
             }
         }

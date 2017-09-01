@@ -168,7 +168,6 @@ public class ActiveConnection implements AutoCloseable {
      *
      */
     public void launch() {
-        _launched = true;
         if( LOG.isDebugEnabled() ) LOG.debug( "{} - New ActiveConnection is of type {}", _name, _type.name() );
         
         if( _type.isReadable() ) {
@@ -185,6 +184,7 @@ public class ActiveConnection implements AutoCloseable {
             if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection is writeable, launching writer...", _name );
             _threadPool.execute( _writer );
         }
+        _launched = true;
     }
 
     /**
