@@ -361,19 +361,28 @@ public class SocketServer extends SocketConnectionBase {
         public void run() {
             // housekeeping
             for( ActiveConnection c : _connections ) {
-                if( c != null && c.isLaunched() && c.isClosed() ) {
-                    try {
-                        if( LOG.isWarnEnabled() ) 
-                            LOG.warn( "{} - Client {} is no longer connected.  Removing from list of active connections", _name, c.getName() );
-                        c.close();
-                        _totalRead += c.getSessionRead();
-                        _totalWritten += c.getSessionWritten();
-                        _connections.remove( c );
-                    } catch( Exception e ) {
-                        if( LOG.isWarnEnabled() ) LOG.warn( "{} - Encountered an exception while trying to close client socket: {}", _name, e.getMessage() );
+                try { 
+                    if( c.isLaunched() ) {
+                        if( c.isClosed() ) {
+                            try {
+                                if( LOG.isWarnEnabled() ) 
+                                    LOG.warn( "{} - Client {} is no longer connected.  Removing from list of active connections", _name, 
+                                            c.getSocket().getInetAddress() );
+                                c.close();
+                                _totalRead += c.getSessionRead();
+                                _totalWritten += c.getSessionWritten();
+                                _connections.remove( c );
+                            } catch( Exception e ) {
+                                if( LOG.isWarnEnabled() ) LOG.warn( "{} - Encountered an exception while trying to close client socket: {}", 
+                                        _name, e.getMessage() );
+                            }
+                        } else {
+                            if( LOG.isDebugEnabled() ) LOG.debug( "{} - Connection to {} is launched and active.  Skipping.", 
+                                    _name, c.getSocket().getInetAddress() );
+                        }
                     }
-                } else if( c == null ) {
-                    _connections.remove( c );
+                } catch( Throwable t ) {
+                    LOG.warn( "{} - Encountered an unforeseen error while cleaning out closed connections: {}", _name, t.getMessage() );
                 }
             }
         }
