@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import org.apache.logging.log4j.LogManager;
@@ -45,7 +46,7 @@ public class SocketServer extends SocketConnectionBase {
     
     private InetSocketAddress _address;
     private boolean _keepOpen = true;
-    private final List<ActiveConnection> _connections = new ArrayList();
+    private final ConcurrentLinkedQueue<ActiveConnection> _connections = new ConcurrentLinkedQueue<>();
     private final Timer _houseKeeper = new Timer();
     private ServerSocket _ssocket;
     private long _totalRead;
