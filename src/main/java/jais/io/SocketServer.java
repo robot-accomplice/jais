@@ -360,12 +360,12 @@ public class SocketServer extends SocketConnectionBase {
         @Override
         public void run() {
             // housekeeping
-            for( ActiveConnection c : _connections ) {
+            _connections.forEach( ( c ) -> {
                 try { 
                     if( c.isLaunched() ) {
                         if( c.isClosed() ) {
                             try {
-                                if( LOG.isWarnEnabled() ) 
+                                if( LOG.isWarnEnabled() )
                                     LOG.warn( "{} - Client {} is no longer connected.  Removing from list of active connections", _name, 
                                             c.getSocket().getInetAddress() );
                                 c.close();
@@ -384,7 +384,7 @@ public class SocketServer extends SocketConnectionBase {
                 } catch( Throwable t ) {
                     LOG.warn( "{} - Encountered an unforeseen error while cleaning out closed connections: {}", _name, t.getMessage() );
                 }
-            }
+            } );
         }
     }
 }
