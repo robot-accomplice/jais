@@ -238,11 +238,15 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
         try {
             _port = new SerialPort( _portName );
 
-            if( LOG.isDebugEnabled() ) {
-                LOG.debug( "*** Port Initialization ***************************************** " );
-                LOG.debug( " Port opened: {}", _port.openPort() );
-                LOG.debug( " Params set : {}", _port.setParams( _baud, _dataBits, _stopBits, _parity ) );
-                LOG.debug( "***************************************************************** " );
+            if( _port.openPort() ) {
+                if( LOG.isDebugEnabled() ) {
+                    LOG.debug( "*** Port Initialization ***************************************** " );
+                    LOG.debug( " Port opened: {}", _port.openPort() );
+                    LOG.debug( " Params set : {}", _port.setParams( _baud, _dataBits, _stopBits, _parity ) );
+                    LOG.debug( "***************************************************************** " );
+                }
+            } else {
+                LOG.fatal( "Failed to open serial port \"{}\"for an unknown reason.", _portName );
             }
 
             _port.addEventListener( this );
@@ -254,6 +258,7 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
                     if( LOG.isDebugEnabled() ) LOG.debug( "Thread interrupted: " + ie.getMessage() );
                 }
             }
+            
             try {
                 _port.closePort();
                 _port = null;
