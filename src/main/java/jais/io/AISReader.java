@@ -105,24 +105,23 @@ public class AISReader implements Runnable, AutoCloseable {
                     for( char c : cb.array() ) {
                         if( sb.length() > 0 ) {
                             if( c == '\n' || c == '\r' ) {
-                                String line = sb.toString();
-                                sb.delete( 0, line.length() );
-
-                                if( !line.trim().isEmpty() ) {
+                                if( sb.length() > 0 ) {
                                     if( _readQueue != null ) {
                                         _readQueue.submit( () -> {
-                                            if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, line );
+                                            if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, sb.toString() );
                                             _current.increment();
                                             _session.increment();
-                                        }, line );
+                                        }, sb.toString() );
                                     }
                                     
                                     if( _handler != null ) {
-                                        if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to AISStringHandler...", _name, line );
-                                        _handler.processString( line );
+                                        if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to AISStringHandler...", _name, sb.toString() );
+                                        _handler.processString( sb.toString() );
                                     }
                                 }
-                            } 
+                            }
+
+                            sb.delete( 0, sb.length() ); // clear the submitted content from the string builder
                         }
                         
                         sb.append( c );
