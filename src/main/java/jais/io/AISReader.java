@@ -97,31 +97,29 @@ public class AISReader implements Runnable, AutoCloseable {
                     }
                     
                     int readCount = reader.read( cb );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} bytes from stream", _name, readCount );
+                    
                     if( readCount > 0 ) {
                         _lastReadTime = java.time.ZonedDateTime.now( ZoneOffset.UTC.normalized() );
                     }
-                    if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} bytes from stream", _name, readCount );
                     
                     for( char c : cb.array() ) {
                         if( sb.length() > 0 ) {
                             if( c == '\n' || c == '\r' ) {
-                                if( sb.length() > 0 ) {
-                                    if( _readQueue != null ) {
-                                        _readQueue.submit( () -> {
-                                            if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, sb.toString() );
-                                            _current.increment();
-                                            _session.increment();
-                                        }, sb.toString() );
-                                    }
-                                    
-                                    if( _handler != null ) {
-                                        if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to AISStringHandler...", _name, sb.toString() );
-                                        _handler.processString( sb.toString() );
-                                    }
+                                if( _readQueue != null ) {
+                                    _readQueue.submit( () -> {
+                                        if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, sb.toString() );
+                                        _current.increment();
+                                        _session.increment();
+                                    }, sb.toString() );
                                 }
-                            }
 
-                            sb.delete( 0, sb.length() ); // clear the submitted content from the string builder
+                                if( _handler != null ) {
+                                    if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to AISStringHandler...", _name, sb.toString() );
+                                    _handler.processString( sb.toString() );
+                                }
+                                sb.delete( 0, sb.length() ); // clear the submitted content from the string builder
+                            }
                         }
                         
                         sb.append( c );
