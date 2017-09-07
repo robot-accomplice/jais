@@ -235,9 +235,9 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
      */
     @Override
     public void read() throws AISReaderException {
-        try {
-            _port = new SerialPort( _portName );
+        _port = new SerialPort( _portName );
 
+        try {
             if( _port.openPort() ) {
                 if( LOG.isDebugEnabled() ) {
                     LOG.debug( "*** Port Initialization ***************************************** " );
@@ -246,9 +246,20 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
                     LOG.debug( "***************************************************************** " );
                 }
             } else {
-                LOG.fatal( "Failed to open serial port \"{}\"for an unknown reason.", _portName );
+                LOG.fatal( "Failed to open serial port \"{}\" for an unknown reason.", _portName );
             }
+        } catch( Exception e ) {
+            LOG.fatal( "Failed to open serial port \"{}\" due to the following exception: {}", _portName, e.getMessage() );
+            if( LOG.isDebugEnabled() ) LOG.debug( "StackTrace: ", e );
+        } finally {
+            try {
+                _port.closePort();
+                _port = null;
+            } catch( SerialPortException spe ) {
+            }
+        }
 
+        try {
             _port.addEventListener( this );
 
             while( super._shouldRun && _port.isOpened() ) {
@@ -259,14 +270,15 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
                 }
             }
             
+        } catch( SerialPortException spe ) {
+            throw new RuntimeException( "There was a problem reading from the serial port: "
+                    + spe.getMessage(), spe );
+        } finally {
             try {
                 _port.closePort();
                 _port = null;
             } catch( SerialPortException spe ) {
             }
-        } catch( SerialPortException spe ) {
-            throw new RuntimeException( "There was a problem reading from the serial port: "
-                    + spe.getMessage(), spe );
         }
     }
 }
