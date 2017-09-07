@@ -241,7 +241,6 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
             if( _port.openPort() ) {
                 if( LOG.isDebugEnabled() ) {
                     LOG.debug( "*** Port Initialization ***************************************** " );
-                    LOG.debug( " Port opened: {}", _port.openPort() );
                     LOG.debug( " Params set : {}", _port.setParams( _baud, _dataBits, _stopBits, _parity ) );
                     LOG.debug( "***************************************************************** " );
                 }
