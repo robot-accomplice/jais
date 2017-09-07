@@ -36,10 +36,10 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
     private final static long LOOP_INTERVAL_MS = 1000;
 
     // connection settings for AIS-RX unit
-    private static final int DEFAULT_BAUD_RATE = 38400;
-    private static final int DEFAULT_DATA_BITS = 8;
-    private static final int DEFAULT_STOP_BITS = 1;
-    private static final int DEFAULT_PARITY = 0;
+    private static final int DEFAULT_BAUD_RATE = SerialPort.BAUDRATE_38400;
+    private static final int DEFAULT_DATA_BITS = SerialPort.DATABITS_8;
+    private static final int DEFAULT_STOP_BITS = SerialPort.STOPBITS_1;
+    private static final int DEFAULT_PARITY = SerialPort.PARITY_NONE;
 
     private final StringBuffer _sb = new StringBuffer();
     private SerialPort _port;
