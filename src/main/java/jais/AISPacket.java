@@ -289,7 +289,7 @@ public final class AISPacket {
                     try {
                         // default to -1 if no message ID is present
                         if( _packetParts[3] != null && _packetParts[3].length > 0 )
-                            _sequentialMessageId = ( _packetParts[3].length == 0 ) ? -1 : bArray2Int( _packetParts[3] );
+                            _sequentialMessageId = ( _packetParts[3].length == 0 ) ? -1 : Integer.parseInt( bArray2Str( _packetParts[3] ) );
                     } catch( NumberFormatException nfe ) {
                         if( LOG.isDebugEnabled() )
                             LOG.debug( "Failed to set sequential message ID due to NumberFormatException: {}", nfe.getMessage() );
@@ -297,7 +297,7 @@ public final class AISPacket {
                 case 3:
                     try {
                         if( _packetParts[2] != null && _packetParts[2].length > 0 )
-                            _fragmentNumber = bArray2Int( _packetParts[2] );
+                            _fragmentNumber = Integer.parseInt( bArray2Str( _packetParts[2] ) );
                     } catch( NumberFormatException nfe ) {
                         if( LOG.isDebugEnabled() )
                             LOG.debug( "Failed to set fragment number due to NumberFormatException: {}", nfe.getMessage() );
@@ -305,7 +305,7 @@ public final class AISPacket {
                 case 2:
                     try {
                         if( _packetParts[1] != null && _packetParts[1].length > 0 )
-                            _fragmentCount = bArray2Int( _packetParts[1] );
+                            _fragmentCount = Integer.parseInt( bArray2Str( _packetParts[1] ) );
                     } catch( NumberFormatException nfe ) {
                         if( LOG.isDebugEnabled() )
                             LOG.debug( "Failed to set fragment count due to NumberFormatException: {}", nfe.getMessage() );
@@ -330,33 +330,6 @@ public final class AISPacket {
 
         _parsed = true;
         return this;
-    }
-
-    /**
-     * 
-     * @param encodedValue
-     * @return 
-     */
-    public static int bArray2Int( byte[] encodedValue ) {
-        int value = ( encodedValue[3] << ( Byte.SIZE * 3 ) );
-        value |= ( encodedValue[2] & 0xFF ) << ( Byte.SIZE * 2 );
-        value |= ( encodedValue[1] & 0xFF ) << ( Byte.SIZE * 1 );
-        value |= ( encodedValue[0] & 0xFF );
-        return value;
-    }
-
-    /**
-     * 
-     * @param value
-     * @return 
-     */
-    public static byte[] int2bArray( int value ) {
-        byte[] encodedValue = new byte[Integer.SIZE / Byte.SIZE];
-        encodedValue[3] = ( byte ) ( value >> Byte.SIZE * 3 );
-        encodedValue[2] = ( byte ) ( value >> Byte.SIZE * 2 );
-        encodedValue[1] = ( byte ) ( value >> Byte.SIZE );
-        encodedValue[0] = ( byte ) value;
-        return encodedValue;
     }
 
     /**
