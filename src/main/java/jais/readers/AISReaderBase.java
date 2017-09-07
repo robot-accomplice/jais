@@ -147,7 +147,7 @@ public abstract class AISReaderBase extends Observable implements AISReader {
             } else if( packetString.isEmpty() ) {
                 if( LOG.isDebugEnabled() ) LOG.debug( "Packet string is empty!" );
             } else {
-                if( LOG.isDebugEnabled() ) LOG.debug( "Found packet to test: " + packetString );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Found packet String to test: " + packetString );
 
                 AISPacket packet = new AISPacket( packetString, _source );
                 packet.process();
