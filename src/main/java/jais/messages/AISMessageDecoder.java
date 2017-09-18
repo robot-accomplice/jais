@@ -22,6 +22,7 @@ import jais.messages.AISMessage.AISFieldMap;
 import jais.messages.enums.AISMessageType;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.util.BitSet;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -45,8 +46,18 @@ public class AISMessageDecoder {
      * @return
      */
     public static BitSet byteArrayToBitSet( byte [] rawMessage ) {
+        return byteArrayToBitSet( rawMessage, AISPacket.DEFAULT_CHARSET );
+    }
+    
+    /**
+     *
+     * @param rawMessage
+     * @param charset
+     * @return
+     */
+    public static BitSet byteArrayToBitSet( byte [] rawMessage, Charset charset ) {
         
-        char [] msgChars = AISPacket.CHARSET.decode( ByteBuffer.wrap( rawMessage ) ).array();
+        char [] msgChars = charset.decode( ByteBuffer.wrap( rawMessage ) ).array();
 
         if( LOG.isDebugEnabled() ) LOG.debug( "8 bit char array is {} bytes long.", rawMessage.length );
 
@@ -59,7 +70,7 @@ public class AISMessageDecoder {
             try {
                 int oc = encodedToSixBitInt( c ); // pull the current raw message char
                 if( oc == -1 ) {
-                    LOG.info( "Invalid character:  '{}'", c );
+                    LOG.info( "Invalid character: '{}'", c );
                     bits.clear();
                     break;
                 } else {
@@ -422,6 +433,19 @@ public class AISMessageDecoder {
      * @throws AISException
      */
     public static byte[] decodeToByteArray( BitSet bits, int startBit, int endBit ) throws AISException {
+        return decodeToByteArray( bits, startBit, endBit, AISPacket.DEFAULT_CHARSET );
+    }
+    
+    /**
+     *
+     * @param bits
+     * @param startBit
+     * @param endBit
+     * @param charset
+     * @return
+     * @throws AISException
+     */
+    public static byte[] decodeToByteArray( BitSet bits, int startBit, int endBit, Charset charset ) throws AISException {
         if( LOG.isTraceEnabled() ) LOG.trace( "Decoding bit {} through bit {} of {} BitSet", startBit, endBit, bits.length() );
         CharBuffer cb = CharBuffer.allocate( ( ( ( endBit - startBit ) / 6 ) + 1 ) );
         
@@ -452,6 +476,6 @@ public class AISMessageDecoder {
             if( LOG.isWarnEnabled() ) LOG.warn( "Could not decode String due to : {}", e.getMessage(), e );
         }
         
-        return AISPacket.CHARSET.encode( new String( cb.array() ).trim() ).array();
+        return charset.encode( new String( cb.array() ).trim() ).array();
     }
 }
