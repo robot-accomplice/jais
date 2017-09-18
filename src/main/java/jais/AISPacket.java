@@ -57,8 +57,8 @@ public final class AISPacket {
             + "]{1})([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
     public final static Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
     public final static Pattern PACKET_PATTERN = Pattern.compile( "(" + TagBlock.TAGBLOCK_STRING + ")?(" + PREAMBLE + "(.*))" );
-    public static int PREAMBLE_GROUPS = 5;
-    public final static Charset CHARSET = StandardCharsets.US_ASCII;
+    public final static int PREAMBLE_GROUPS = 5;
+    public final static Charset DEFAULT_CHARSET = StandardCharsets.US_ASCII;
 
     private TagBlock _tagBlock;
     private Preamble _preamble;
@@ -76,6 +76,7 @@ public final class AISPacket {
     private ZonedDateTime _timeReceived = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
     private byte[][] _packetParts;
     private boolean _parsed = false;
+    private Charset _charset;
 
     /**
      *
@@ -237,7 +238,7 @@ public final class AISPacket {
         }
 
         if( LOG.isDebugEnabled() )
-            LOG.debug( "_packetBody = {}", bArray2Str( _packetBody ) );
+            LOG.debug( "_packetBody = \"{}\"", bArray2Str( _packetBody ) );
 
         if( _packetParts == null ) {
             _packetParts = AISPacket.fastSplit( _packetBody, FIELD_DELIMITER );
@@ -338,7 +339,7 @@ public final class AISPacket {
      * @return
      */
     public static String bArray2Str( byte[] bytes ) {
-        return bArray2Str( bytes, CHARSET );
+        return bArray2Str( bytes, DEFAULT_CHARSET );
     }
 
     /**
@@ -357,7 +358,7 @@ public final class AISPacket {
      * @return
      */
     public static byte[] str2bArray( String string ) {
-        return str2bArray( string, CHARSET );
+        return str2bArray( string, DEFAULT_CHARSET );
     }
 
     /**
@@ -376,7 +377,7 @@ public final class AISPacket {
      * @return
      */
     public static char[] bArray2cArray( byte[] bytes ) {
-        return bArray2cArray( bytes, CHARSET );
+        return bArray2cArray( bytes, DEFAULT_CHARSET );
     }
 
     /**
@@ -405,7 +406,7 @@ public final class AISPacket {
      * @return
      */
     public static byte[] cArray2bArray( char[] ca ) {
-        return cArray2bArray( ca, CHARSET );
+        return cArray2bArray( ca, DEFAULT_CHARSET );
     }
 
     /**
@@ -414,7 +415,7 @@ public final class AISPacket {
      * @return
      */
     public static byte[] trim( byte[] bytes ) {
-        return trim( bytes, CHARSET );
+        return trim( bytes, DEFAULT_CHARSET );
     }
 
     /**
@@ -487,7 +488,7 @@ public final class AISPacket {
      * @return
      */
     public static int indexOf( byte[] ba, char c ) {
-        char[] chars = CHARSET.decode( ByteBuffer.wrap( ba ) ).array();
+        char[] chars = DEFAULT_CHARSET.decode( ByteBuffer.wrap( ba ) ).array();
         for( int i = 0; i < chars.length; i++ ) {
             if( chars[i] == c ) {
                 return i;
