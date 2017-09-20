@@ -168,8 +168,7 @@ public abstract class AISReaderBase extends Observable implements AISReader {
 
                     if( packets != null ) {
                         // last fragment, we can now build the full message
-                        if( LOG.isDebugEnabled() ) LOG.debug( "Processing a message with {} fragments.",
-                                packets.length );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Processing a message with {} fragments.", packets.length );
 
                         AISMessage message = AISMessageFactory.create( _source, packets );
 
