@@ -22,8 +22,6 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Timer;
@@ -62,7 +60,7 @@ public class SocketServer extends SocketConnectionBase {
      * @param threadPool
      */
     public SocketServer( String name, int port, ConnectionType type, 
-            ExecutorCompletionService<String> readQueue, int readBufferSize, ExecutorService threadPool ) {
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool ) {
         _name = name;
         _port = port;
         _type = type;

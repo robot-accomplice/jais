@@ -17,6 +17,7 @@
 package jais.io;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.LongAdder;
@@ -35,7 +36,7 @@ public abstract class SocketConnectionBase implements SocketConnection {
     protected ConnectionType _type;
     
     // threads & queues
-    protected ExecutorCompletionService<String> _readQueue;
+    protected ExecutorCompletionService<Optional<String>> _readQueue;
     protected ExecutorService _threadPool;
 
     // counters used to track connection statistics

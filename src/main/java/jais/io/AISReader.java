@@ -47,7 +47,7 @@ public class AISReader implements Runnable, AutoCloseable {
     
     private boolean _keepReading = true;
     
-    private final ExecutorCompletionService<String> _readQueue;
+    private final ExecutorCompletionService<Optional<String>> _readQueue;
     private final AISStringHandler _handler;
     private final LongAdder _current;
     private final LongAdder _session;
@@ -63,7 +63,7 @@ public class AISReader implements Runnable, AutoCloseable {
      * @param readTotal
      * @param handler
      */
-    public AISReader( String name, Socket socket, int readBufferSize, ExecutorCompletionService<String> readQueue, 
+    public AISReader( String name, Socket socket, int readBufferSize, ExecutorCompletionService<Optional<String>> readQueue, 
             LongAdder readCounter, LongAdder readTotal, AISStringHandler handler ) {
         _name = name;
         _socket = socket;
@@ -111,7 +111,7 @@ public class AISReader implements Runnable, AutoCloseable {
                                         if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, sb.toString() );
                                         _current.increment();
                                         _session.increment();
-                                    }, sb.toString() );
+                                    }, Optional.ofNullable( sb.toString() ) );
                                 }
 
                                 if( _handler != null ) {

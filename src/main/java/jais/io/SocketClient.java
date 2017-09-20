@@ -54,7 +54,7 @@ public class SocketClient extends SocketConnectionBase {
      * @param threadPool
      */
     public SocketClient( String name, String host, int port, ConnectionType type, 
-            ExecutorCompletionService<String> readQueue, int readBufferSize, ExecutorService threadPool ) {
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool ) {
         _name = name;
         _host = host;
         _port = port;

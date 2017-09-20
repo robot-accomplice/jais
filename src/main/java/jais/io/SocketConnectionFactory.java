@@ -17,6 +17,7 @@
 package jais.io;
 
 import jais.handlers.AISStringHandler;
+import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 
@@ -39,7 +40,7 @@ public class SocketConnectionFactory {
      * @return 
      */
     public static SocketConnection buildConnection( String name, String host, int port, ConnectionType runas,
-            ExecutorCompletionService<String> readQueue, int readBufferSize, ExecutorService threadPool, AISStringHandler stringHandler ) {
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool, AISStringHandler stringHandler ) {
         if( runas.isServer() ) {
             return new SocketServer( name, port, runas, readQueue, readBufferSize, threadPool );
         } else {
@@ -60,7 +61,7 @@ public class SocketConnectionFactory {
      * @return 
      */
     public static SocketConnection buildConnection( String name, String host, int port, ConnectionType runas, 
-            ExecutorCompletionService<String> readQueue, int readBufferSize, ExecutorService threadPool ) {
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool ) {
 
         return buildConnection( name, host, port, runas, readQueue, readBufferSize, threadPool, null );
     }
@@ -78,7 +79,7 @@ public class SocketConnectionFactory {
      * @return 
      */
     public static SocketConnection buildConnection( String name, int port, ConnectionType runas, 
-            ExecutorCompletionService<String> readQueue, int readBufferSize, ExecutorService threadPool ) {
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool ) {
         
         return buildConnection( name, null, port, runas, readQueue, readBufferSize, threadPool );
     }

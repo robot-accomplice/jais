@@ -41,7 +41,7 @@ public class ActiveConnection implements AutoCloseable {
     private final String _name;
     private final Socket _socket;
     private final ConnectionType _type;
-    private final ExecutorCompletionService<String> _readQueue;
+    private final ExecutorCompletionService<Optional<String>> _readQueue;
     private final int _readBufferSize;
     private final ExecutorService _threadPool;
 
@@ -67,7 +67,7 @@ public class ActiveConnection implements AutoCloseable {
      * @param readBufferSize
      * @param threadPool
      */
-    public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<String> readQueue,
+    public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue,
             int readBufferSize, ExecutorService threadPool ) {
         this( name, socket, type, readQueue, readBufferSize, threadPool, false, null );
     }
@@ -82,7 +82,7 @@ public class ActiveConnection implements AutoCloseable {
      * @param threadPool
      * @param purgeQueuesOnDisconnect
      */
-    public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<String> readQueue,
+    public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue,
             int readBufferSize, ExecutorService threadPool, boolean purgeQueuesOnDisconnect ) {
         this( name, socket, type, readQueue, readBufferSize, threadPool, purgeQueuesOnDisconnect, null );
     }
@@ -98,7 +98,7 @@ public class ActiveConnection implements AutoCloseable {
      * @param purgeQueuesOnDisconnect 
      * @param handler 
      */
-    public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<String> readQueue,
+    public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue,
             int readBufferSize, ExecutorService threadPool, boolean purgeQueuesOnDisconnect, AISStringHandler handler ) {
         this( name, socket, type, readQueue, readBufferSize, threadPool, purgeQueuesOnDisconnect, handler, 
                 ActiveConnection.DEFAULT_WRITE_QUEUE_ABSOLUTE_THRESHOLD, ActiveConnection.DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD );
@@ -117,7 +117,7 @@ public class ActiveConnection implements AutoCloseable {
      * @param writeQueueSizeLimit 
      * @param backPressureLimit 
      */
-    public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<String> readQueue,
+    public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue,
             int readBufferSize, ExecutorService threadPool, boolean purgeQueuesOnDisconnect, AISStringHandler handler, long writeQueueSizeLimit, 
             long backPressureLimit ) {
         _name = name + ":" + socket.getRemoteSocketAddress();
