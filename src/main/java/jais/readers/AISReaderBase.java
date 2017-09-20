@@ -178,7 +178,7 @@ public abstract class AISReaderBase extends Observable implements AISReader {
                         
                         // send message to handlers
                         if( _messageHandler != null ) {
-                            if( LOG.isDebugEnabled() ) LOG.debug( "{} - Sending new {} message to handlers...", _source, message.getType().name() );
+                            if( LOG.isDebugEnabled() ) LOG.debug( "{} - Sending new {} message to handler...", _source, message.getType().name() );
                             _messageHandler.processMessage( message );
                         }
                     } else if( LOG.isTraceEnabled() ) {
