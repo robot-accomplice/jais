@@ -118,9 +118,9 @@ public final class AISPacket {
     public AISPacket( String rawPacket, String source ) throws AISPacketException {
         if( LOG.isTraceEnabled() )
             LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", rawPacket, source );
-        _rawPacket = str2bArray( rawPacket.trim() );
+        _rawPacket = str2bArray( rawPacket );
         if( _source != null )
-            _source = str2bArray( source.trim() );
+            _source = str2bArray( source );
         else
             _source = str2bArray( DEFAULT_SOURCE );
     }
@@ -966,7 +966,7 @@ public final class AISPacket {
         if( truncIndex != -1 ) {
             if( LOG.isDebugEnabled() )
                 LOG.debug( "Truncating: {}", sb );
-            substring = sb.substring( 0, truncIndex ).trim();
+            substring = sb.substring( 0, truncIndex );
         }
 
         return substring;

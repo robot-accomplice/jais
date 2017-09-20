@@ -183,7 +183,7 @@ public class AISStreamReader extends AISReaderBase {
                                 String line = sb.toString();
                                 sb.delete( 0, line.length() );
 
-                                if( !line.trim().isEmpty() ) {
+                                if( !line.isEmpty() ) {
                                     super.processPacketString( line );
                                 }
                             }

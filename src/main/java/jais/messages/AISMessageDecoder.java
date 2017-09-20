@@ -476,6 +476,6 @@ public class AISMessageDecoder {
             if( LOG.isWarnEnabled() ) LOG.warn( "Could not decode String due to : {}", e.getMessage(), e );
         }
         
-        return charset.encode( new String( cb.array() ).trim() ).array();
+        return charset.encode( cb ).array();
     }
 }

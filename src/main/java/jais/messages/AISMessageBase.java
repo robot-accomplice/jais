@@ -190,10 +190,10 @@ public abstract class AISMessageBase implements AISMessage {
      */
     public static boolean isValidImo( String imo ) {
         if( imo.toLowerCase().startsWith( "imo" ) ) {
-            imo = imo.substring( 3 );
+            imo = imo.substring( 4 );
         }
 
-        return isValidImo( Long.parseLong( imo.trim() ) );
+        return isValidImo( Long.parseLong( imo ) );
     }
 
     /**
