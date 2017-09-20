@@ -115,7 +115,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
     @Override
     public Point getPosition() {
         if( _position == null ) {
-            _position = CTX.makePoint( _lon, _lat );
+            _position = CTX.makePoint( _lon, _lat ); // must be in x, y (lon, lat) order
         }
 
         return _position;
