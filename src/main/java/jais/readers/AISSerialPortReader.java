@@ -198,6 +198,8 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
                 try {
                     byte[] bytes = _port.readBytes();
                     if( bytes != null ) {
+                        if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} from serial port.", _portName, bytes.length );
+                        
                         for( byte b : bytes ) {
                             if( b == '\n' || b == '\r' ) {
                                 try {
