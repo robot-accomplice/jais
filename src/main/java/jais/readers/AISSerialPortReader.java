@@ -274,8 +274,9 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
                     + spe.getMessage(), spe );
         } finally {
             try {
-                _port.closePort();
-                _port = null;
+                if( _port != null ) {
+                    _port.closePort();
+                }
             } catch( SerialPortException spe ) {
             }
         }
