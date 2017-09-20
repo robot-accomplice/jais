@@ -247,15 +247,9 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
             } else {
                 LOG.fatal( "Failed to open serial port \"{}\" for an unknown reason.", _portName );
             }
-        } catch( Exception e ) {
-            LOG.fatal( "Failed to open serial port \"{}\" due to the following exception: {}", _portName, e.getMessage() );
-            if( LOG.isDebugEnabled() ) LOG.debug( "StackTrace: ", e );
-        } finally {
-            try {
-                _port.closePort();
-                _port = null;
-            } catch( SerialPortException spe ) {
-            }
+        } catch( SerialPortException spe ) {
+            LOG.fatal( "Failed to open serial port \"{}\" due to the following exception: {}", _portName, spe.getMessage() );
+            if( LOG.isDebugEnabled() ) LOG.debug( "StackTrace: ", spe );
         }
 
         try {
@@ -269,6 +263,9 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
                 }
             }
             
+            if( _shouldRun && !_port.isOpened() ) {
+                LOG.fatal( "Port was closed (presumably by the OS).  Shutting down." );
+            }
         } catch( SerialPortException spe ) {
             throw new RuntimeException( "There was a problem reading from the serial port: "
                     + spe.getMessage(), spe );
