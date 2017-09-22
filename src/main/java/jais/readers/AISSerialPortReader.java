@@ -173,28 +173,28 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
     @Override
     public synchronized void serialEvent( SerialPortEvent serialPortEvent ) {
 
-        if( LOG.isTraceEnabled() ) LOG.trace( "New SerialPortEvent: " );
+        if( LOG.isTraceEnabled() ) LOG.trace( "{} - New SerialPortEvent: ", _portName );
         switch( serialPortEvent.getEventType() ) {
             case SerialPortEvent.BREAK:
-                if( LOG.isTraceEnabled() ) LOG.trace( "BREAK received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "{} - BREAK received.", _portName );
                 break;
             case SerialPortEvent.CTS:
-                if( LOG.isTraceEnabled() ) LOG.trace( "CTS received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "{} - CTS received.", _portName );
                 break;
             case SerialPortEvent.DSR:
-                if( LOG.isTraceEnabled() ) LOG.trace( "DSR received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "{} - DSR received.", _portName );
                 break;
             case SerialPortEvent.ERR:
-                if( LOG.isTraceEnabled() ) LOG.trace( "ERR received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "{} - ERR received.", _portName );
                 break;
             case SerialPortEvent.RING:
-                if( LOG.isTraceEnabled() ) LOG.trace( "RING received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "{} - RING received.", _portName );
                 break;
             case SerialPortEvent.RLSD:
-                if( LOG.isTraceEnabled() ) LOG.trace( "RSLD received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "{} - RSLD received.", _portName );
                 break;
             case SerialPortEvent.RXCHAR:
-                if( LOG.isTraceEnabled() ) LOG.trace( "RXCHAR received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "{} - RXCHAR received.", _portName );
                 try {
                     byte[] bytes = _port.readBytes();
                     if( bytes != null ) {
@@ -202,14 +202,15 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
                         
                         for( byte b : bytes ) {
                             if( b == '\n' || b == '\r' ) {
+                                String line = _sb.toString();
+                                _sb.delete( 0, line.length() );
+                                
                                 try {
-                                    if( _sb.length() > 0 ) {
-                                        super.processPacketString( _sb.toString() );
+                                    if( line.length() > 0 ) {
+                                        super.processPacketString( line );
                                     }
                                 } catch( AISPacketException ipe ) {
-                                    if( LOG.isDebugEnabled() ) LOG.debug( "Invalid Packet: " + ipe.getMessage(), ipe );
-                                } finally {
-                                    _sb.delete( 0, _sb.length() );
+                                    if( LOG.isDebugEnabled() ) LOG.debug( "{} - Invalid Packet \"{}\": {}", _portName, line, ipe.getMessage(), ipe );
                                 }
                             } else {
                                 _sb.append( ( char ) b );
@@ -217,16 +218,16 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
                         }
                     }
                 } catch( SerialPortException spe ) {
-                    LOG.error( "ERROR reading port!" + spe.getMessage(), spe );
+                    LOG.error( "{} - ERROR reading port!  {}", _portName, spe.getMessage(), spe );
                 } catch( NullPointerException npe ) {
-                    if( LOG.isDebugEnabled() ) LOG.debug( "NullPointerException: " + npe.getMessage(), npe );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "{} - NullPointerException: {}", _portName, npe.getMessage(), npe );
                 }
                 break;
             case SerialPortEvent.RXFLAG:
-                if( LOG.isTraceEnabled() ) LOG.trace( "RXFLAG received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "{} - RXFLAG received.", _portName );
                 break;
             case SerialPortEvent.TXEMPTY:
-                if( LOG.isTraceEnabled() ) LOG.trace( "TXEMPTY received." );
+                if( LOG.isTraceEnabled() ) LOG.trace( "{} - TXEMPTY received.", _portName );
                 break;
         }
     }
@@ -237,24 +238,20 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
      */
     @Override
     public void read() throws AISReaderException {
-        _port = new SerialPort( _portName );
-
         try {
+            _port = new SerialPort( _portName );
             if( _port.openPort() ) {
                 if( LOG.isDebugEnabled() ) {
-                    LOG.debug( "*** Port Initialization ***************************************** " );
-                    LOG.debug( " Params set : {}", _port.setParams( _baud, _dataBits, _stopBits, _parity ) );
-                    LOG.debug( "***************************************************************** " );
+                    LOG.debug( "{} - Successfully opened port", _portName );
+                    LOG.debug( "{} - Initializing serial port with ({}, {}, {}, {})...", _portName, _baud, _dataBits, _stopBits, _parity );
                 }
-            } else {
-                LOG.fatal( "Failed to open serial port \"{}\" for an unknown reason.", _portName );
-            }
-        } catch( SerialPortException spe ) {
-            LOG.fatal( "Failed to open serial port \"{}\" due to the following exception: {}", _portName, spe.getMessage() );
-            if( LOG.isDebugEnabled() ) LOG.debug( "StackTrace: ", spe );
-        }
 
-        try {
+                _port.setParams( _baud, _dataBits, _stopBits, _parity );
+            } else {
+                LOG.fatal( "{} - Failed to open port for an unknown reason.", _portName );
+            }
+            
+            LOG.fatal( "{} - Adding event listener to serial port..." );
             _port.addEventListener( this );
 
             while( super._shouldRun && _port.isOpened() ) {
@@ -269,14 +266,15 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
                 LOG.fatal( "Port was closed (presumably by the OS).  Shutting down." );
             }
         } catch( SerialPortException spe ) {
-            throw new RuntimeException( "There was a problem reading from the serial port: "
-                    + spe.getMessage(), spe );
+            LOG.fatal( "There was a problem reading from the serial port: {}", spe.getMessage(), spe );
+            if( LOG.isTraceEnabled() ) LOG.trace( "StackTrace: ", spe );
         } finally {
             try {
                 if( _port != null ) {
                     _port.closePort();
                 }
             } catch( SerialPortException spe ) {
+                // ignore at this point
             }
         }
     }
