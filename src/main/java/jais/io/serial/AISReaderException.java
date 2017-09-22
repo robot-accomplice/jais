@@ -14,23 +14,34 @@
  * limitations under the License.
  */
 
-package jais.readers;
+package jais.io.serial;
+
+import jais.exceptions.AISException;
 
 /**
  *
  * @author Jonathan Machen
  */
-public interface AISReader extends AutoCloseable, Runnable {
- 
+public class AISReaderException extends AISException {
+
     /**
-     * 
-     * @throws AISReaderException 
+     * Constructs an instance of <code>AISReaderException</code> with the
+     * specified detail message.
+     *
+     * @param msg the detail message.
      */
-    void read() throws AISReaderException;
+    public AISReaderException(String msg) {
+        super(msg);
+    }
     
     /**
+     * Constructs an instance of <code>AISReaderException</code> with the
+     * specified detail message and parent exception
      * 
-     * @return 
+     * @param msg the detail message
+     * @param parent the parent exception
      */
-    long getBadPacketCount();
+    public AISReaderException( String msg, Exception parent ) {
+        super( msg, parent );
+    }
 }

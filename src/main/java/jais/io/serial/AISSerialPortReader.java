@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jais.readers;
+package jais.io.serial;
 
 import jais.exceptions.AISPacketException;
 import jais.handlers.AISHandler;
@@ -234,7 +234,7 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
 
     /**
      *
-     * @throws jais.readers.AISReaderException
+     * @throws jais.io.serial.AISReaderException
      */
     @Override
     public void read() throws AISReaderException {

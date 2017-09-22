@@ -168,10 +168,10 @@ public class AISSocketReader implements Runnable, AutoCloseable {
      */
     @Override
     public void close() throws Exception {
-        LOG.fatal( "{} - AISReader shutting down...", _name );
+        LOG.fatal( "{} - AISSocketReader shutting down...", _name );
         
         _keepReading = false;
         
-        LOG.fatal( "{} - AISReader successfully closed.", _name );
+        LOG.fatal( "{} - AISSocketReader successfully closed.", _name );
     }
 }

@@ -18,7 +18,7 @@ package jais.readers.threads;
 
 import jais.AISPacket;
 import jais.exceptions.AISPacketException;
-import jais.readers.AISPacketBuffer;
+import jais.io.serial.AISPacketBuffer;
 import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

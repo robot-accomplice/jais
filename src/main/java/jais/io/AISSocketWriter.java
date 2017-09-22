@@ -189,13 +189,13 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
      */
     @Override
     public void close() throws Exception {
-        LOG.fatal( "{} - AISWriter shutting down...", _name );
+        LOG.fatal( "{} - AISSocketWriter shutting down...", _name );
         
         _keepWriting = false;
         
         LOG.fatal( "{} - Purging write queue...", _name );
         if( _purge ) _queue.clear();
         
-        LOG.fatal( "{} - AISWriter successfully closed.", _name );
+        LOG.fatal( "{} - AISSocketWriter successfully closed.", _name );
     }    
 }

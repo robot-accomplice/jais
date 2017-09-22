@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jais.readers;
+package jais.io.serial;
 
 import jais.AISPacket;
 import java.time.Instant;
