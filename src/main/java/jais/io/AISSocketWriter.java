@@ -22,9 +22,9 @@ import org.apache.logging.log4j.Logger;
  * 
  * @author Jonathan Machen {@literal <jon.machen@robotaccomplice.com>}
  */
-public class AISWriter implements Runnable, AutoCloseable {
+public class AISSocketWriter implements Runnable, AutoCloseable {
     
-    private final static Logger LOG = LogManager.getLogger( AISWriter.class );
+    private final static Logger LOG = LogManager.getLogger(AISSocketWriter.class );
     
     private final static String LINE_TERMINATOR = "\n";
     
@@ -51,7 +51,7 @@ public class AISWriter implements Runnable, AutoCloseable {
      * @param wqThreshold 
      * @param bpThreshold 
      */
-    public AISWriter( String name, Socket socket, LongAdder writeCounter, LongAdder totalCounter, long wqThreshold, long bpThreshold ) {
+    public AISSocketWriter( String name, Socket socket, LongAdder writeCounter, LongAdder totalCounter, long wqThreshold, long bpThreshold ) {
         this( name, socket, writeCounter, totalCounter, true, wqThreshold, bpThreshold );
     }
     
@@ -65,7 +65,7 @@ public class AISWriter implements Runnable, AutoCloseable {
      * @param wqThreshold
      * @param bpThreshold
      */
-    public AISWriter( String name, Socket socket, LongAdder writeCounter, LongAdder totalCounter, boolean purgeQueueOnDisconnect, long wqThreshold,
+    public AISSocketWriter( String name, Socket socket, LongAdder writeCounter, LongAdder totalCounter, boolean purgeQueueOnDisconnect, long wqThreshold,
             long bpThreshold ) {
         _name = name;
         _socket = socket;

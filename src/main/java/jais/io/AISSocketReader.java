@@ -37,9 +37,9 @@ import org.apache.logging.log4j.Logger;
  * 
  * @author Jonathan Machen {@literal <jon.machen@robotaccomplice.com>}
  */
-public class AISReader implements Runnable, AutoCloseable {
+public class AISSocketReader implements Runnable, AutoCloseable {
     
-    private final static Logger LOG = LogManager.getLogger( AISReader.class );
+    private final static Logger LOG = LogManager.getLogger(AISSocketReader.class );
     
     private final String _name;
     private final Socket _socket;
@@ -63,7 +63,7 @@ public class AISReader implements Runnable, AutoCloseable {
      * @param readTotal
      * @param handler
      */
-    public AISReader( String name, Socket socket, int readBufferSize, ExecutorCompletionService<Optional<String>> readQueue, 
+    public AISSocketReader( String name, Socket socket, int readBufferSize, ExecutorCompletionService<Optional<String>> readQueue, 
             LongAdder readCounter, LongAdder readTotal, AISStringHandler handler ) {
         _name = name;
         _socket = socket;

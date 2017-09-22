@@ -50,8 +50,8 @@ public class ActiveConnection implements AutoCloseable {
     private final LongAdder _currentRead = new LongAdder();
     private final LongAdder _sessionRead = new LongAdder();
 
-    private AISReader _reader;
-    private AISWriter _writer;
+    private AISSocketReader _reader;
+    private AISSocketWriter _writer;
     private boolean _purge;
     private AISStringHandler _handler;
     private long _wqThreshold;
@@ -172,7 +172,7 @@ public class ActiveConnection implements AutoCloseable {
         
         if( _type.isReadable() ) {
             if( _reader == null ) {
-                _reader = new AISReader( _name, _socket, _readBufferSize, _readQueue, _currentRead, _sessionRead, _handler );
+                _reader = new AISSocketReader( _name, _socket, _readBufferSize, _readQueue, _currentRead, _sessionRead, _handler );
             }
             if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection is readable, launching reader...", _name );
             _threadPool.execute( _reader );
@@ -180,7 +180,7 @@ public class ActiveConnection implements AutoCloseable {
 
         if( _type.isWriteable() ) {
             if( _writer == null )
-                _writer = new AISWriter( _name, _socket, _currentWritten, _sessionWritten, _purge, _wqThreshold, _bpThreshold );
+                _writer = new AISSocketWriter( _name, _socket, _currentWritten, _sessionWritten, _purge, _wqThreshold, _bpThreshold );
             if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection is writeable, launching writer...", _name );
             _threadPool.execute( _writer );
         }
