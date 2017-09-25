@@ -1052,12 +1052,19 @@ public final class AISPacket {
      */
     @Override
     public final boolean equals( Object o ) {
-        if( o instanceof AISPacket ) {
-            AISPacket p = ( AISPacket ) o;
-            return ( Arrays.equals( p.getRawPacket(), _rawPacket ) && Arrays.equals( p.getSource(), _source ) );
+        if( o == null ) return false;
+        if( !( o instanceof AISPacket ) ) return false;
+
+        AISPacket p = ( AISPacket ) o;
+        if( p.getRawPacket() == null ) return false;
+        
+        boolean equals = Arrays.equals( p.getRawPacket(), _rawPacket );
+        
+        if( p.getSource() != null && _source != null ) {
+            equals &= Arrays.equals( p.getSource(), _source );
         }
 
-        return false;
+        return equals;
     }
 
     /**
