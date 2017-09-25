@@ -197,6 +197,14 @@ public abstract class AISReaderBase extends Observable implements AISReader {
             if( LOG.isTraceEnabled() ) LOG.trace( "StackTrace for AISPacketException: {}", ipe.getMessage(), ipe );
         }
     }
+    
+    /**
+     * 
+     * @return 
+     */
+    public int purgeExpiredPacketsFromBuffer() {
+        return _buffer.purgeExpired();
+    }
 
     /**
      *
@@ -207,6 +215,15 @@ public abstract class AISReaderBase extends Observable implements AISReader {
         _buffer.close();
         _shouldRun = false;
         LOG.info( "Reader successfully closed." );
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public long getBadPacketCount() {
+        return -1;
     }
 
     /**
@@ -222,14 +239,5 @@ public abstract class AISReaderBase extends Observable implements AISReader {
         } finally {
             close();
         }
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public long getBadPacketCount() {
-        return -1;
     }
 }

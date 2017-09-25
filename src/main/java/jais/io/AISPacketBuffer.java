@@ -153,9 +153,6 @@ public class AISPacketBuffer {
             }
         }
         
-        // perform maintenance on buffer before returning result
-        purgeExpired();
-
         return packets;
     }
 
