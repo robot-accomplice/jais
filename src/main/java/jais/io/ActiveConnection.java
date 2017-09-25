@@ -18,6 +18,7 @@ package jais.io;
 
 import jais.handlers.AISStringHandler;
 import java.net.Socket;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,8 +43,9 @@ public class ActiveConnection implements AutoCloseable {
     private final Socket _socket;
     private final ConnectionType _type;
     private final ExecutorCompletionService<Optional<String>> _readQueue;
-    private final int _readBufferSize;
     private final ExecutorService _threadPool;
+    private final int _readBufferSize;
+    private final ZonedDateTime _launchTime;
 
     private final LongAdder _currentWritten = new LongAdder();
     private final LongAdder _sessionWritten = new LongAdder();
@@ -130,6 +132,7 @@ public class ActiveConnection implements AutoCloseable {
         _handler = handler;
         _wqThreshold = writeQueueSizeLimit;
         _bpThreshold = backPressureLimit;
+        _launchTime = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
     }
     
     /**
@@ -247,6 +250,32 @@ public class ActiveConnection implements AutoCloseable {
         }
         
         return -1;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public long getIdleMilliseconds() {
+        ZonedDateTime now = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
+        Optional<ZonedDateTime> read = getLastReadTime();
+        Optional<ZonedDateTime> write = getLastWriteTime();
+        
+        if( read.isPresent() && write.isPresent() ) {
+            // we have peformed both reads and writes on this connection, figure out which happened last
+            if( read.get().isAfter( write.get() ) ) {
+                return now.toInstant().toEpochMilli() - read.get().toInstant().toEpochMilli();
+            } else {
+                return now.toInstant().toEpochMilli() - write.get().toInstant().toEpochMilli();
+            }
+        } else if( getLastReadTime().isPresent() ) {
+            return now.toInstant().toEpochMilli() - read.get().toInstant().toEpochMilli();
+        } else if( getLastWriteTime().isPresent() ) {
+            return now.toInstant().toEpochMilli() - write.get().toInstant().toEpochMilli();
+        } else {
+            // no reads or writes have been performed on this connection, return the difference between now and launch time
+            return ( now.toInstant().toEpochMilli() - _launchTime.toInstant().toEpochMilli() );
+        }
     }
     
     /**

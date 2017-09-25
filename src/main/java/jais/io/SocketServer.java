@@ -40,6 +40,8 @@ public class SocketServer extends SocketConnectionBase {
     
     private final static Logger LOG = LogManager.getLogger( SocketServer.class );
     
+    public final static long DEFAULT_CLIENT_IDLE_THRESHOLD_MS = 60000;
+    
     private final int _readBufferSize;
     
     private InetSocketAddress _address;
@@ -49,6 +51,7 @@ public class SocketServer extends SocketConnectionBase {
     private ServerSocket _ssocket;
     private long _totalRead;
     private long _totalWritten;
+    private final long _clientIdleThresholdMs;
     
     /**
      * 
@@ -59,14 +62,30 @@ public class SocketServer extends SocketConnectionBase {
      * @param readBufferSize
      * @param threadPool
      */
+    public SocketServer( String name, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, 
+            ExecutorService threadPool ) {
+        this( name, port, type, readQueue, readBufferSize, threadPool, DEFAULT_CLIENT_IDLE_THRESHOLD_MS );
+    }
+
+    /**
+     * 
+     * @param name
+     * @param port
+     * @param type 
+     * @param readQueue
+     * @param readBufferSize
+     * @param threadPool
+     * @param clientIdleThresholdMs
+     */
     public SocketServer( String name, int port, ConnectionType type, 
-            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool ) {
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool, long clientIdleThresholdMs ) {
         _name = name;
         _port = port;
         _type = type;
         _readQueue = readQueue;
         _readBufferSize = readBufferSize;
         _threadPool = threadPool;
+        _clientIdleThresholdMs = clientIdleThresholdMs;
     }
     
     /**
@@ -376,8 +395,19 @@ public class SocketServer extends SocketConnectionBase {
                                         _name, e.getMessage() );
                             }
                         } else {
-                            if( LOG.isDebugEnabled() ) LOG.debug( "{} - Connection to {} is launched and active.  Skipping.", 
-                                    _name, c.getSocket().getInetAddress() );
+                            long idleTimeMs = c.getIdleMilliseconds();
+                            
+                            if( idleTimeMs > _clientIdleThresholdMs ) {
+                                if( LOG.isInfoEnabled() ) LOG.info( "{} - Client {} has been idle for more than {} ms.  Disconnecting.", _name, 
+                                        c.getSocket().getInetAddress(), idleTimeMs );
+                                c.close();
+                                _totalRead += c.getSessionRead();
+                                _totalWritten += c.getSessionWritten();
+                                _connections.remove( c );
+                            } else if( LOG.isDebugEnabled() ) {
+                                LOG.debug( "{} - Connection to {} is launched, active, and does not exceed the idle threshold.  Skipping.", 
+                                        _name, c.getSocket().getInetAddress() );
+                            }
                         }
                     }
                 } catch( Throwable t ) {
