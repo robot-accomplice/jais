@@ -1052,15 +1052,12 @@ public final class AISPacket {
      */
     @Override
     public final boolean equals( Object o ) {
-        boolean isEqual = false;
-
         if( o instanceof AISPacket ) {
             AISPacket p = ( AISPacket ) o;
-            isEqual = Arrays.equals( p.getRawPacket(), _rawPacket );
-            isEqual = isEqual && _timeReceived.equals( p.getTimeReceived() );
+            return ( Arrays.equals( p.getRawPacket(), _rawPacket ) && Arrays.equals( p.getSource(), _source ) );
         }
 
-        return isEqual;
+        return false;
     }
 
     /**
@@ -1071,6 +1068,7 @@ public final class AISPacket {
     public final int hashCode() {
         int hash = 7;
         hash = 79 * hash + ( _rawPacket != null ? Arrays.hashCode( _rawPacket ) : 0 );
+        hash = 79 * hash + ( _source != null ? Arrays.hashCode( _source ) : 0 );
         return hash;
     }
 
