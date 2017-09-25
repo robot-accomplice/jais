@@ -23,11 +23,9 @@ import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.ManeuverType;
 import jais.messages.enums.NavigationStatus;
 import jais.messages.enums.ShipType;
-import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,8 +41,8 @@ public class Vessel implements Cloneable {
     private Identifier _id;
     private int _version;
     private int _imo;
-    private byte [] _callsign;
-    private byte [] _shipname;
+    private byte[] _callsign;
+    private byte[] _shipname;
     private ShipType _shiptype = ShipType.OTHER_NO_INFO;
     private int _toBow;
     private int _toStern;
@@ -56,7 +54,7 @@ public class Vessel implements Cloneable {
     private int _hour;
     private int _minute;
     private float _draught;
-    private byte [] _destination;
+    private byte[] _destination;
     private boolean _dte;
     private NavigationStatus _status = NavigationStatus.NOT_DEFINED;
     private float _turn;
@@ -73,7 +71,9 @@ public class Vessel implements Cloneable {
     private int _radio;
     private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm" ).withZone( ZoneOffset.UTC.normalized() );
     private ZonedDateTime _eta = ZonedDateTime.parse( "1970/01/01 00:00", ETA_FORMATTER );
-    private ZonedDateTime _timeReceived;
+    private ZonedDateTime _currentMessageTimestamp;
+    private ZonedDateTime _currentPositionTimestamp;
+    private ZonedDateTime _previousPositionTimestamp;
 
     /**
      *
@@ -81,7 +81,8 @@ public class Vessel implements Cloneable {
      */
     public Vessel( StandardClassBCSPositionReport report ) {
         _id = new Identifier( report.getMmsi(), report.getSource() );
-        _timeReceived = report.getTimeReceived();
+        _currentMessageTimestamp = report.getTimeReceived();
+        _currentPositionTimestamp = report.getTimeReceived();
         _course = report.getCourse();
         _heading = report.getHeading();
         _lat = report.getLat();
@@ -97,7 +98,8 @@ public class Vessel implements Cloneable {
      */
     public Vessel( ExtendedClassBCSPositionReport report ) {
         _id = new Identifier( report.getMmsi(), report.getSource() );
-        _timeReceived = report.getTimeReceived();
+        _currentMessageTimestamp = report.getTimeReceived();
+        _currentPositionTimestamp = report.getTimeReceived();
         _course = report.getCourse();
         _heading = report.getHeading();
         _lat = report.getLat();
@@ -119,7 +121,8 @@ public class Vessel implements Cloneable {
      */
     public Vessel( PositionReportBase prb ) {
         _id = new Identifier( prb.getMmsi(), prb.getSource() );
-        _timeReceived = prb.getTimeReceived();
+        _currentMessageTimestamp = prb.getTimeReceived();
+        _currentPositionTimestamp = prb.getTimeReceived();
         _course = prb.getCourse();
         _heading = prb.getHeading();
         _lat = prb.getLat();
@@ -141,7 +144,7 @@ public class Vessel implements Cloneable {
      */
     public Vessel( StaticAndVoyageRelatedData savrd ) {
         _id = new Identifier( savrd.getMmsi(), savrd.getSource() );
-        _timeReceived = savrd.getTimeReceived();
+        _currentMessageTimestamp = savrd.getTimeReceived();
         _imo = savrd.getImo();
         _shipname = AISPacket.str2bArray( savrd.getShipname() );
         _shiptype = savrd.getShiptype();
@@ -167,7 +170,9 @@ public class Vessel implements Cloneable {
      * @param prb
      */
     public void addUpdatePositionReport( PositionReportBase prb ) {
-        _timeReceived = prb.getTimeReceived();
+        _currentMessageTimestamp = prb.getTimeReceived();
+        _previousPositionTimestamp = _currentMessageTimestamp;
+        _currentPositionTimestamp = prb.getTimeReceived();
         _course = prb.getCourse();
         _heading = prb.getHeading();
         _lat = prb.getLat();
@@ -216,7 +221,7 @@ public class Vessel implements Cloneable {
      */
     @Override
     public Vessel clone() throws CloneNotSupportedException {
-        Vessel clone = ( Vessel )super.clone();
+        Vessel clone = ( Vessel ) super.clone();
 
         clone._id = _id;
         clone._accurate = _accurate;
@@ -244,7 +249,9 @@ public class Vessel implements Cloneable {
         clone._shiptype = _shiptype;
         clone._speed = _speed;
         clone._status = _status;
-        clone._timeReceived = _timeReceived;
+        clone._currentMessageTimestamp = _currentMessageTimestamp;
+        clone._previousPositionTimestamp = _previousPositionTimestamp;
+        clone._currentPositionTimestamp = _currentPositionTimestamp;
         clone._toBow = _toBow;
         clone._toPort = _toPort;
         clone._toStarboard = _toStarboard;
@@ -254,10 +261,10 @@ public class Vessel implements Cloneable {
 
         return clone;
     }
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public Identifier getId() {
         return _id;
@@ -554,8 +561,24 @@ public class Vessel implements Cloneable {
      *
      * @return
      */
-    public ZonedDateTime getTimeReceived() {
-        return _timeReceived;
+    public ZonedDateTime getCurrentMessageTimestamp() {
+        return _currentMessageTimestamp;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public ZonedDateTime getCurrentPositionTimestamp() {
+        return _currentPositionTimestamp;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public ZonedDateTime getPreviousPositionTimestamp() {
+        return _previousPositionTimestamp;
     }
 
     /**
@@ -576,122 +599,29 @@ public class Vessel implements Cloneable {
      */
     @Override
     public boolean equals( Object obj ) {
-        if (obj == null) {
+        if( obj == null ) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if( getClass() != obj.getClass() ) {
             return false;
         }
-        final Vessel other = (Vessel) obj;
+        final Vessel other = ( Vessel ) obj;
 
-        if (!_id.equals(other.getId())) {
-            return false;
-        }
-        if (_version != other.getVersion()) {
-            return false;
-        }
-        if (_imo != other.getImo()) {
-            return false;
-        }
-        if (_shiptype != other.getShiptype()) {
-            return false;
-        }
-        if (_toBow != other.getToBow()) {
-            return false;
-        }
-        if (_toStern != other.getToStern()) {
-            return false;
-        }
-        if (_toPort != other.getToPort()) {
-            return false;
-        }
-        if (_toStarboard != other.getToStarboard()) {
-            return false;
-        }
-        if (_epfd != other.getEpfd()) {
-            return false;
-        }
-        if (_month != other.getMonth()) {
-            return false;
-        }
-        if (_day != other.getDay()) {
-            return false;
-        }
-        if (_hour != other.getHour()) {
-            return false;
-        }
-        if (_minute != other.getMinute()) {
-            return false;
-        }
-        if (Float.floatToIntBits(_draught) != Float.floatToIntBits(other.getDraught())) {
-            return false;
-        }
-        if (_dte != other.isDte()) {
-            return false;
-        }
-        if (_status != other.getStatus()) {
-            return false;
-        }
-        if (Float.floatToIntBits(_turn) != Float.floatToIntBits(other.getTurn())) {
-            return false;
-        }
-        if (Float.floatToIntBits(_speed) != Float.floatToIntBits(other.getSpeed())) {
-            return false;
-        }
-        if (_accurate != other.isAccurate()) {
-            return false;
-        }
-        if (Float.floatToIntBits(_lon) != Float.floatToIntBits(other.getLon())) {
-            return false;
-        }
-        if (Float.floatToIntBits(_lat) != Float.floatToIntBits(other.getLat())) {
-            return false;
-        }
-        if (Float.floatToIntBits(_course) != Float.floatToIntBits(other.getCourse())) {
-            return false;
-        }
-        if (_heading != other.getHeading()) {
-            return false;
-        }
-        if (_second != other.getSecond()) {
-            return false;
-        }
-        if (_maneuver != other.getManeuver()) {
-            return false;
-        }
-        if (_raim != other.isRaim()) {
-            return false;
-        }
-        if (_repeat != other.getRepeat()) {
-            return false;
-        }
-        if (_radio != other.getRadio()) {
-            return false;
-        }
-        if (!Objects.equals(getCallsign(), other.getCallsign())) {
-            return false;
-        }
-        if (!Objects.equals(getShipname(), other.getShipname())) {
-            return false;
-        }
-        if (!Objects.equals(getDestination(), other.getDestination())) {
-            return false;
-        }
-        return Objects.equals(getEta(), other.getEta()) && Objects.equals(_timeReceived, other.getTimeReceived());
+        return( _id.equals( other.getId() ) );
     }
-    
+
     /**
-     * 
+     *
      */
     public static class Identifier {
-        
+
         private final int _mmsi;
         private final String _source;
-        
+
         /**
-         * 
+         *
          * @param mmsi
-         * @param source 
+         * @param source
          */
         public Identifier( int mmsi, String source ) {
             _mmsi = mmsi;
@@ -721,21 +651,24 @@ public class Vessel implements Cloneable {
          */
         @Override
         public boolean equals( Object o ) {
-            if( o == null ) return false;
-            if( !( o instanceof Identifier ) ) return false;
-            Identifier id = ( Identifier )o;
+            if( o == null )
+                return false;
+            if( !( o instanceof Identifier ) )
+                return false;
+            Identifier id = ( Identifier ) o;
             return ( id.getMmsi() == _mmsi && id.getSource().equals( _source ) );
         }
 
         /**
-         * 
-         * @return 
+         *
+         * @return
          */
         @Override
         public int hashCode() {
             int hash = 5;
             hash = 67 * hash + this._mmsi;
+            hash = 67 * hash + Objects.hashCode( _source );
             return hash;
-        }        
+        }
     }
 }
