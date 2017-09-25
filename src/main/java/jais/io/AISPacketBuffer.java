@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jais.io.serial;
+package jais.io;
 
 import jais.AISPacket;
 import java.time.Instant;
@@ -62,7 +62,7 @@ public class AISPacketBuffer {
      */
     private String getKey( AISPacket packet ) {
         if( packet == null ) throw new NullPointerException( "Packet is null!" );
-        if( packet.getSource() == null ) packet.setSource( AISPacket.str2bArray( AISReaderBase.DEFAULT_SOURCE ) );
+        if( packet.getSource() == null ) packet.setSource( AISPacket.str2bArray( "UNKNOWN" ) );
         return new String( packet.getSource() ) + packet.getSequentialMessageId() + "_" + packet.getFragmentCount();
     }
 

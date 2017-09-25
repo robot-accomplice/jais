@@ -16,6 +16,7 @@
 
 package jais.io.serial;
 
+import jais.io.AISPacketBuffer;
 import jais.messages.AISMessageFactory;
 import jais.AISPacket;
 import jais.exceptions.AISException;
