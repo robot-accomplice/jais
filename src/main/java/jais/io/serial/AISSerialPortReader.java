@@ -251,14 +251,14 @@ public class AISSerialPortReader extends AISReaderBase implements SerialPortEven
                 LOG.fatal( "{} - Failed to open port for an unknown reason.", _portName );
             }
             
-            LOG.fatal( "{} - Adding event listener to serial port..." );
+            LOG.fatal( "{} - Adding event listener to serial port...", _portName );
             _port.addEventListener( this );
 
             while( super._shouldRun && _port.isOpened() ) {
                 try {
                     Thread.sleep( LOOP_INTERVAL_MS );
                 } catch( InterruptedException ie ) {
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Thread interrupted: " + ie.getMessage() );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Thread interrupted: ", ie.getMessage() );
                 }
             }
             
