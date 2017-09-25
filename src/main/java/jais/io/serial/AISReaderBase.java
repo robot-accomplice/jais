@@ -163,7 +163,7 @@ public abstract class AISReaderBase extends Observable implements AISReader {
                 try {
                     // assemble the message fragments, THEN decode
                     if( LOG.isDebugEnabled() ) LOG.debug( "Adding message part {} of {} : '{}' to buffer.", 
-                            packet.getFragmentNumber(), packet.getFragmentCount(), packet.getRawPacket() );
+                            packet.getFragmentNumber(), packet.getFragmentCount(), AISPacket.bArray2Str( packet.getRawPacket() ) );
 
                     AISPacket [] packets = _buffer.add( packet );
 
