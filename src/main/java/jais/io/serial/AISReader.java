@@ -36,6 +36,13 @@ public interface AISReader extends AutoCloseable, Runnable {
     
     /**
      * 
+     * @param thresholdMs
+     * @return 
+     */
+    public int purgeExpiredPacketsFromBuffer( long thresholdMs );
+    
+    /**
+     * 
      * @return 
      */
     public long getBadPacketCount();

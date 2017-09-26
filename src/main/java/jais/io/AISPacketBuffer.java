@@ -37,7 +37,7 @@ public class AISPacketBuffer {
     private final Map<String, AISPacketSet> _buffer = new ConcurrentHashMap<>();  // Map is used to avoid Java 7/8 cross version compatibility issues
     private final int _maxPacketAge;
 
-    public final static int DEFAULT_MAX_PACKET_AGE = 60000; // one minute
+    public final static int DEFAULT_MAX_PACKET_AGE = 360000; // six minutes
 
     /**
      *
@@ -225,12 +225,21 @@ public class AISPacketBuffer {
     }
     
     /**
-     * Removes any expired AISPacketSets from the buffer.  Sets are considered to be expired when the first packet in
-     * the set is older than the max packet age set during AISPacketBuffer initialization
      * 
      * @return 
      */
     public int purgeExpired() {
+        return purgeExpired( _maxPacketAge );
+    }
+    
+    /**
+     * Removes any expired AISPacketSets from the buffer.  Sets are considered to be expired when the first packet in
+     * the set is older than the max packet age set during AISPacketBuffer initialization
+     * 
+     * @param thresholdMs
+     * @return 
+     */
+    public int purgeExpired( long thresholdMs ) {
         int purgeCount = 0;
         
         if( _buffer.isEmpty() ) {
@@ -239,9 +248,9 @@ public class AISPacketBuffer {
             for( String key : _buffer.keySet() ) {
                 if( _buffer.containsKey( key ) ) {
                     AISPacketSet set = _buffer.get( key );
-                    if( set == null || set.isExpired() ) {
+                    if( set == null || set.isExpired( thresholdMs ) ) {
                         purgeCount++;
-                        _buffer.remove( set );
+                        _buffer.remove( key );
                     }
                 }
             }
@@ -324,10 +333,19 @@ public class AISPacketBuffer {
         
         /**
          * 
+         * @param expiredThresholdMs
+         * @return 
+         */
+        public boolean isExpired( long expiredThresholdMs ) {
+            return ( getAgeInMilliseconds() > _maxPacketAge );
+        }
+        
+        /**
+         * 
          * @return 
          */
         public boolean isExpired() {
-            return ( getAgeInMilliseconds() > _maxPacketAge );
+            return isExpired( _maxPacketAge );
         }
 
         /**

@@ -206,6 +206,16 @@ public abstract class AISReaderBase extends Observable implements AISReader {
     public int purgeExpiredPacketsFromBuffer() {
         return _buffer.purgeExpired();
     }
+    
+    /**
+     * 
+     * @param thresholdMs
+     * @return 
+     */
+    @Override
+    public int purgeExpiredPacketsFromBuffer( long thresholdMs ) {
+        return _buffer.purgeExpired( thresholdMs );
+    }
 
     /**
      *
