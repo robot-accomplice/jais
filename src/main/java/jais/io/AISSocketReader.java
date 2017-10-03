@@ -79,71 +79,66 @@ public class AISSocketReader implements Runnable, AutoCloseable {
      */
     @Override
     public void run() {
-        try {
-            LOG.info( "{} - Getting InputStream...", _name );
-            InputStream in = _socket.getInputStream();
-            BufferedInputStream bin = new BufferedInputStream( in );
-            LOG.info( "{} - Creating BufferedReader...", _name );
-            BufferedReader reader = new BufferedReader( new InputStreamReader( bin ) );
-            
-            LOG.info( "{} - Reading from stream...", _name );
+        if( LOG.isInfoEnabled() ) LOG.info( "{} - Reading from stream...", _name );
+        
+        while( _keepReading && isConnected() ) {
             StringBuilder sb = new StringBuilder();
             CharBuffer cb = CharBuffer.allocate( _readBufferSize );
             
-            while( _keepReading && isConnected() ) {
-                try {
-                    if( !isConnected() ) {
-                        throw new IOException( _name + " - Socket and/or InputStream are closed." );
-                    }
-                    
-                    int readCount = reader.read( cb );
-                    if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} bytes from stream", _name, readCount );
-                    
-                    if( readCount > 0 ) {
-                        _lastReadTime = java.time.ZonedDateTime.now( ZoneOffset.UTC.normalized() );
-                    }
-                    
-                    for( char c : cb.array() ) {
-                        if( sb.length() > 0 ) {
-                            if( c == '\n' || c == '\r' ) {
-                                if( _readQueue != null ) {
-                                    _readQueue.submit( () -> {
-                                        if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, sb.toString() );
-                                        _current.increment();
-                                        _session.increment();
-                                    }, Optional.ofNullable( sb.toString() ) );
-                                }
+            try( InputStream in = _socket.getInputStream(); BufferedInputStream bin = new BufferedInputStream( in ); 
+                    BufferedReader reader = new BufferedReader( new InputStreamReader( bin ) ) ) {
 
-                                if( _handler != null ) {
-                                    if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to AISStringHandler...", _name, sb.toString() );
-                                    _handler.processString( sb.toString() );
-                                }
-                                sb.delete( 0, sb.length() ); // clear the submitted content from the string builder
+                int readCount = reader.read( cb );
+                if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} bytes from stream", _name, readCount );
+
+                if( readCount > 0 ) {
+                    _lastReadTime = java.time.ZonedDateTime.now( ZoneOffset.UTC.normalized() );
+                }
+
+                for( char c : cb.array() ) {
+                    if( sb.length() > 0 ) {
+                        if( c == '\n' || c == '\r' ) {
+                            if( _readQueue != null ) {
+                                _readQueue.submit( () -> {
+                                    if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, sb.toString() );
+                                    _current.increment();
+                                    _session.increment();
+                                }, Optional.ofNullable( sb.toString() ) );
                             }
+
+                            if( _handler != null ) {
+                                if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to AISStringHandler...", _name, sb.toString() );
+                                _handler.processString( sb.toString() );
+                            }
+                            sb.delete( 0, sb.length() ); // clear the submitted content from the string builder
                         }
-                        
-                        sb.append( c );
                     }
-                    
-                    cb.clear();
-                } catch( RejectedExecutionException ree ) {
-                    LOG.error( "{} - Queue size has been reached!  Pausing reads for 15 seconds...", _name );
-                    if( LOG.isTraceEnabled() ) LOG.trace( "{} - {}", _name, ree.getMessage(), ree );
-                    try {
-                        Thread.sleep( 15000 );
-                    } catch( InterruptedException ie ) {
-                        // ignore
-                    }
+
+                    sb.append( c );
+                }
+
+                cb.clear();
+            } catch( RejectedExecutionException ree ) {
+                LOG.error( "{} - Queue size has been reached!  Pausing reads for 15 seconds...", _name );
+                if( LOG.isTraceEnabled() ) LOG.trace( "{} - {}", _name, ree.getMessage(), ree );
+                try {
+                    Thread.sleep( 15000 );
+                } catch( InterruptedException ie ) {
+                    // ignore
+                }
+            } catch( IOException ioe ) {
+                LOG.error( "{} - IOException encountered: {}", _name, ioe.getMessage() );
+                if( LOG.isTraceEnabled() ) LOG.trace( ioe );
+                if( !isConnected() ) {
+                    LOG.fatal( "{} - Socket connection is closed.  Closing AISSocketReadder thread." );
+                    break;
                 }
             }
-        } catch( IOException ioe ) {
-            LOG.error( "{} - IOException encountered: {}", _name, ioe.getMessage() );
-            if( LOG.isTraceEnabled() ) LOG.trace( ioe );
-        } finally {
-            try {
-                close();
-            } catch( Exception e ) {
-            }
+        }
+        
+        try {
+            close();
+        } catch( Exception ex ) {
         }
     }
     
