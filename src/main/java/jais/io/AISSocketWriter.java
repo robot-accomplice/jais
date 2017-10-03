@@ -26,7 +26,7 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
     
     private final static Logger LOG = LogManager.getLogger(AISSocketWriter.class );
     
-    private final static String LINE_TERMINATOR = "\n";
+    private final static char LINE_TERMINATOR = '\n';
     
     private final String _name;
     private final Socket _socket;
@@ -82,13 +82,10 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
     @Override
     public void run() {
         if( LOG.isInfoEnabled() ) LOG.info( "{} - AISWriter thread started...", _name );
-        try( OutputStream out = _socket.getOutputStream() ) {
-            if( LOG.isInfoEnabled() ) LOG.info( "{} - Creating BufferedOutputStream...", _name );
-            BufferedOutputStream bout = new BufferedOutputStream( out );
-            if( LOG.isInfoEnabled() ) LOG.info( "{} - Creating BuffereredWriter...", _name );
-            BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( bout ) );
             
-            while( _keepWriting && isConnected() ) {
+        while( _keepWriting && isConnected() ) {
+            try( OutputStream out = _socket.getOutputStream(); BufferedOutputStream bout = new BufferedOutputStream( out ); 
+                    BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( bout ) ) ) {
                 if( _queue.isEmpty() ) {
                     try {
                         Thread.sleep( 1000 );
@@ -123,19 +120,19 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
                         }
                     }
                 }
+            } catch( IOException ioe ) {
+                LOG.error( "{} - IOException encountered: {}", _name, ioe.getMessage() );
+                if( LOG.isTraceEnabled() ) LOG.trace( ioe );
+            } finally {
+                try {
+                    close();
+                } catch( Exception e ) {
+                }
             }
+        }
             
-            if( !isConnected() ) {
-                LOG.error( "{} - Socket and/or OutputStream are closed.", _name );
-            }
-        } catch( IOException ioe ) {
-            LOG.error( "{} - IOException encountered: {}", _name, ioe.getMessage() );
-            if( LOG.isTraceEnabled() ) LOG.trace( ioe );
-        } finally {
-            try {
-                close();
-            } catch( Exception e ) {
-            }
+        if( !isConnected() ) {
+            LOG.error( "{} - Socket and/or OutputStream are closed.", _name );
         }
     }
 
