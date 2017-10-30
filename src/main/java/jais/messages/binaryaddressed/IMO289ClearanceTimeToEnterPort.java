@@ -143,7 +143,7 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
     @Override
     public Point getPosition() {
         if( _position == null ) {
-            _position = CTX.makePoint( _lat, _lon );
+            _position = CTX.getShapeFactory().pointXY( _lat, _lon );
         }
 
         return _position;

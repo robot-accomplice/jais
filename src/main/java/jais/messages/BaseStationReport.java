@@ -177,7 +177,7 @@ public class BaseStationReport extends AISMessageBase {
     @Override
     public Point getPosition() {
         if( _position == null ) {
-            _position = CTX.makePoint( _lon, _lat );
+            _position = CTX.getShapeFactory().pointXY( _lon, _lat );
         }
 
         return _position;
