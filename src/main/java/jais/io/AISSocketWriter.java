@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * 
- * @author Jonathan Machen {@literal <jon.machen@robotaccomplice.com>}
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class AISSocketWriter implements Runnable, AutoCloseable {
     

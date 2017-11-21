@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jon.machen@robotaccomplice.com>.
+ * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.LongAdder;
 
 /**
  * 
- * @author Jonathan Machen {@literal <jon.machen@robotaccomplice.com>}
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public abstract class SocketConnectionBase implements SocketConnection {
 

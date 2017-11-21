@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jon.machen@robotaccomplice.com>.
+ * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -159,7 +159,8 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput( "Latitude : " + prb.getLat() );
                         appendLineToOutput( "Longitude: " + prb.getLon() );
                         appendLineToOutput( "Maneuver : " + prb.getManeuver() );
-                        appendLineToOutput( "Position : " + prb.getPosition() );
+                        if( prb.isPositionValid() ) appendLineToOutput( "Position : " + prb.getPosition() );
+                        else appendLineToOutput( "Position : INVALID" );
                         appendLineToOutput( "Radio    : " + prb.getRadio() );
                         appendLineToOutput( "RAIM     : " + prb.isRaim() );
                         appendLineToOutput( "Second   : " + prb.getSecond() );
