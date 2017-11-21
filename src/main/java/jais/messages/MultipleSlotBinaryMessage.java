@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jon.machen@robotaccomplice.com>.
+ * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.messages;
 
 import jais.AISPacket;
@@ -133,29 +132,28 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
                     break;
                 case DESTINATION_MMSI:
                     if( _addressed ) {
-                        _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     }
                     break;
                 case DAC:
                     if( _structured ) {
-                        _dac = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        _dac = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     }
                     break;
                 case FID:
                     if( _structured ) {
-                        _fid = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        _fid = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     }
                     break;
                 case DATA:
-                    if( _addressed ) {
+                    if( _addressed && _bits.length() >= 160 ) {
                         _data = _bits.get( 70, ( _bits.size() - 90 ) );
-                    } else if( _structured ) {
+                    } else if( _structured && _bits.length() >= 166 ) {
                         _data = _bits.get( 56, ( _bits.size() - 76 ) );
-                    } else {
+                    } else if( _bits.length() > 61 ) {
                         _data = _bits.get( 40, ( _bits.size() - 61 ) );
+                    } else {
+                        LOG.fatal( "Invalid bit count.  BitVector size: {}, BitVector length: {}" );
                     }
                     break;
                 case RADIO:
