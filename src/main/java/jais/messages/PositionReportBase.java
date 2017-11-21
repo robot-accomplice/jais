@@ -47,6 +47,7 @@ public abstract class PositionReportBase extends AISMessageBase {
     // spare bits 145-147
     private boolean _raim; // bit 148
     private int _radio; // bits 149-167, Radio Status
+    private boolean _positionValid;
 
     /**
      *
@@ -88,6 +89,14 @@ public abstract class PositionReportBase extends AISMessageBase {
         }
 
         return _position;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public boolean isPositionValid() {
+        return ( _lon >= -90 && _lon <= 90 && _lat >= -180 && _lat <= 180 );
     }
 
     /**
