@@ -153,7 +153,7 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
                     } else if( _bits.length() > 61 ) {
                         _data = _bits.get( 40, ( _bits.size() - 61 ) );
                     } else {
-                        LOG.fatal( "Invalid bit count.  BitVector size: {}, BitVector length: {}" );
+                        throw new AISException( "Invalid bit count.  BitVector size: " + _bits.size() + ", BitVector length: " + _bits.length() );
                     }
                     break;
                 case RADIO:

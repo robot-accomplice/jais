@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.messages;
 
 import jais.AISPacket;
@@ -140,13 +139,15 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
                     }
                     break;
                 case DATA:
-                    if( _addressed ) {
+                    if( _addressed && _bits.size() >= 70 ) {
                         _data = new BitSet( _bits.size() - 70 );
                         _data = _bits.get( 70, 70 );
-                    } else if( _structured ) {
+                    } else if( _structured && _bits.size() >= 56 ) {
                         _data = _bits.get( 56, _bits.size() - 56 );
-                    } else {
+                    } else if( _bits.size() >= 40 ) {
                         _data = _bits.get( 40, _bits.size() - 40 );
+                    } else {
+                        throw new AISException( "Invalid bit count.  BitVector size: " + _bits.size() + ", BitVector length: " + _bits.length() );
                     }
                     break;
                 default:
