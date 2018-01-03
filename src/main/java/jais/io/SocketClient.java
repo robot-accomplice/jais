@@ -142,11 +142,7 @@ public class SocketClient extends SocketConnectionBase {
      */
     @Override
     public Optional<ZonedDateTime> getLastReadTime() {
-        if( _connection.getLastReadTime().isPresent() ) {
-            _lastRead = _connection.getLastReadTime().get();
-        }
-
-        return Optional.ofNullable( _lastRead );
+        return _connection.getLastReadTime();
     }
     
     /**
