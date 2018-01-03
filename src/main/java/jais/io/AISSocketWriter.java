@@ -83,40 +83,43 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
     public void run() {
         if( LOG.isInfoEnabled() ) LOG.info( "{} - AISWriter thread started...", _name );
             
-        while( _keepWriting && isConnected() ) {
-            try( OutputStream out = _socket.getOutputStream(); BufferedOutputStream bout = new BufferedOutputStream( out ); 
+        while( _keepWriting ) {
+            try( OutputStream out = _socket.getOutputStream(); 
+                    BufferedOutputStream bout = new BufferedOutputStream( out ); 
                     BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( bout ) ) ) {
-                if( _queue.isEmpty() ) {
-                    try {
-                        Thread.sleep( 1000 );
-                    } catch( InterruptedException ie ) {
-                        // do nothing
-                    }
-                } else {
-                    long startingSize = _queue.size();
-                    if( LOG.isInfoEnabled() ) LOG.info( "{} - processing {} queue entries...", _name, _queue.size() );
-                    
-                    for( String line : _queue ) {
-                        if( !isConnected() ) 
-                            throw new IOException( _name + " - Connection to socket was closed" );
-                        
-                        _queue.remove( line );
-                        
-                        if( line != null && !line.isEmpty() ) {
-                            if( LOG.isDebugEnabled() ) LOG.debug( "{} - Writing String \"{}\" to target", _name, line );
-                            writer.write( line + LINE_TERMINATOR );
-                            _lastWriteTime = java.time.ZonedDateTime.now( ZoneOffset.UTC.normalized() );
-                            _write.increment();
-                            _total.increment();
+                while( isConnected() ) {
+                    if( _queue.isEmpty() ) {
+                        try {
+                            Thread.sleep( 1000 );
+                        } catch( InterruptedException ie ) {
+                            // do nothing
                         }
-                        
-                        if( _queue.size() > _wqThreshold ) {
-                            if( LOG.isWarnEnabled() ) LOG.warn( "{} - Maximum queue size ({}) exceeded.  Purging Queue.", _name, _wqThreshold );
-                            purgeQueue();
-                        } else if( _queue.size() - startingSize > _bpThreshold ) {
-                            if( LOG.isWarnEnabled() ) LOG.warn( "{} - Back pressure threshold ({} messages) exceeded.  Purging Queue.", 
-                                    _name, _bpThreshold );
-                            purgeQueue();
+                    } else {
+                        long startingSize = _queue.size();
+                        if( LOG.isInfoEnabled() ) LOG.info( "{} - processing {} queue entries...", _name, _queue.size() );
+
+                        for( String line : _queue ) {
+                            if( !isConnected() ) 
+                                throw new IOException( _name + " - Connection to socket was closed" );
+
+                            _queue.remove( line );
+
+                            if( line != null && !line.isEmpty() ) {
+                                if( LOG.isDebugEnabled() ) LOG.debug( "{} - Writing String \"{}\" to target", _name, line );
+                                writer.write( line + LINE_TERMINATOR );
+                                _lastWriteTime = java.time.ZonedDateTime.now( ZoneOffset.UTC.normalized() );
+                                _write.increment();
+                                _total.increment();
+                            }
+
+                            if( _queue.size() > _wqThreshold ) {
+                                if( LOG.isWarnEnabled() ) LOG.warn( "{} - Maximum queue size ({}) exceeded.  Purging Queue.", _name, _wqThreshold );
+                                purgeQueue();
+                            } else if( _queue.size() - startingSize > _bpThreshold ) {
+                                if( LOG.isWarnEnabled() ) LOG.warn( "{} - Back pressure threshold ({} messages) exceeded.  Purging Queue.", 
+                                        _name, _bpThreshold );
+                                purgeQueue();
+                            }
                         }
                     }
                 }
@@ -129,10 +132,10 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
                 } catch( Exception e ) {
                 }
             }
-        }
             
-        if( !isConnected() ) {
-            LOG.error( "{} - Socket and/or OutputStream are closed.", _name );
+            if( !isConnected() ) {
+                LOG.error( "{} - Socket and/or OutputStream are closed.", _name );
+            }
         }
     }
 
