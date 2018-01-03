@@ -41,9 +41,9 @@ public abstract class SocketConnectionBase implements SocketConnection {
 
     // counters used to track connection statistics
     final public LongAdder _totalConnectAttempts = new LongAdder();
-    protected ZonedDateTime _lastWrite = null;
+    protected ZonedDateTime _lastWriteTime = null;
     protected long _minutesSinceLastWrite = -1;
-    protected ZonedDateTime _lastRead = null;
+    protected ZonedDateTime _lastReadTime = null;
     protected long _minutesSinceLastRead = -1;
 
     /**

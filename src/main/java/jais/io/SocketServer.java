@@ -191,16 +191,16 @@ public class SocketServer extends SocketConnectionBase {
     @Override
     public Optional<ZonedDateTime> getLastReadTime() {
         _connections.forEach( ( connection ) -> {
-            if( _lastRead == null && connection.getLastReadTime().isPresent() ) {
-                _lastRead = connection.getLastReadTime().get();
+            if( _lastReadTime == null && connection.getLastReadTime().isPresent() ) {
+                _lastReadTime = connection.getLastReadTime().get();
             } else if( connection.getLastReadTime().isPresent() ) {
-                if( connection.getLastReadTime().get().isAfter( _lastRead ) ) {
-                    _lastRead = connection.getLastReadTime().get();
+                if( connection.getLastReadTime().get().isAfter( _lastReadTime ) ) {
+                    _lastReadTime = connection.getLastReadTime().get();
                 }
             }
         } );
         
-        return Optional.ofNullable( _lastRead );
+        return Optional.ofNullable( _lastReadTime );
     }
     
     /**
@@ -210,7 +210,7 @@ public class SocketServer extends SocketConnectionBase {
     @Override
     public long getMinutesSinceLastRead() {
         if( getLastReadTime().isPresent() ) {
-            _minutesSinceLastRead = ( System.currentTimeMillis() - _lastRead.toInstant().toEpochMilli() ) / ( 1000 * 60 );
+            _minutesSinceLastRead = ( System.currentTimeMillis() - _lastReadTime.toInstant().toEpochMilli() ) / ( 1000 * 60 );
         }
         
         return _minutesSinceLastRead;
@@ -257,16 +257,16 @@ public class SocketServer extends SocketConnectionBase {
     @Override
     public Optional<ZonedDateTime> getLastWriteTime() {
         _connections.forEach( ( connection ) -> {
-            if( _lastWrite == null && connection.getLastWriteTime().isPresent() ) {
-                _lastWrite = connection.getLastWriteTime().get();
+            if( _lastWriteTime == null && connection.getLastWriteTime().isPresent() ) {
+                _lastWriteTime = connection.getLastWriteTime().get();
             } else if( connection.getLastWriteTime().isPresent() ) {
-                if( connection.getLastWriteTime().get().isAfter( _lastWrite ) ) {
-                    _lastWrite = connection.getLastWriteTime().get();
+                if( connection.getLastWriteTime().get().isAfter( _lastWriteTime ) ) {
+                    _lastWriteTime = connection.getLastWriteTime().get();
                 }
             }
         } );
         
-        return Optional.ofNullable( _lastWrite );
+        return Optional.ofNullable( _lastWriteTime );
     }
 
     /**
@@ -276,7 +276,7 @@ public class SocketServer extends SocketConnectionBase {
     @Override
     public long getMinutesSinceLastWrite() {
         if( getLastWriteTime().isPresent() ) {
-            _minutesSinceLastWrite = ( System.currentTimeMillis() - _lastWrite.toInstant().toEpochMilli() ) / ( 1000 * 60 );
+            _minutesSinceLastWrite = ( System.currentTimeMillis() - _lastWriteTime.toInstant().toEpochMilli() ) / ( 1000 * 60 );
         }
         
         return _minutesSinceLastWrite;
