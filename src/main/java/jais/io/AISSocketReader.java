@@ -81,50 +81,54 @@ public class AISSocketReader implements Runnable, AutoCloseable {
     public void run() {
         if( LOG.isInfoEnabled() ) LOG.info( "{} - Reading from stream...", _name );
         
-        while( _keepReading && isConnected() ) {
-            StringBuilder sb = new StringBuilder();
-            CharBuffer cb = CharBuffer.allocate( _readBufferSize );
-            
+        StringBuilder sb = new StringBuilder();
+        CharBuffer cb = CharBuffer.allocate( _readBufferSize );
+        
+        while( _keepReading ) {
             try( InputStream in = _socket.getInputStream(); BufferedInputStream bin = new BufferedInputStream( in ); 
                     BufferedReader reader = new BufferedReader( new InputStreamReader( bin ) ) ) {
+                while( isConnected() ) {
+                    try {
 
-                int readCount = reader.read( cb );
-                if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} bytes from stream", _name, readCount );
+                        int readCount = reader.read( cb );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} bytes from stream", _name, readCount );
 
-                if( readCount > 0 ) {
-                    _lastReadTime = java.time.ZonedDateTime.now( ZoneOffset.UTC.normalized() );
-                }
+                        if( readCount > 0 ) {
+                            _lastReadTime = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
+                        }
 
-                for( char c : cb.array() ) {
-                    if( sb.length() > 0 ) {
-                        if( c == '\n' || c == '\r' ) {
-                            if( _readQueue != null ) {
-                                _readQueue.submit( () -> {
-                                    if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, sb.toString() );
-                                    _current.increment();
-                                    _session.increment();
-                                }, Optional.ofNullable( sb.toString() ) );
+                        for( char c : cb.array() ) {
+                            if( sb.length() > 0 ) {
+                                if( c == '\n' || c == '\r' ) {
+                                    if( _readQueue != null ) {
+                                        _readQueue.submit( () -> {
+                                            if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, sb.toString() );
+                                            _current.increment();
+                                            _session.increment();
+                                        }, Optional.ofNullable( sb.toString() ) );
+                                    }
+
+                                    if( _handler != null ) {
+                                        if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to AISStringHandler...", _name, sb.toString() );
+                                        _handler.processString( sb.toString() );
+                                    }
+                                    sb.delete( 0, sb.length() ); // clear the submitted content from the string builder
+                                }
                             }
 
-                            if( _handler != null ) {
-                                if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to AISStringHandler...", _name, sb.toString() );
-                                _handler.processString( sb.toString() );
-                            }
-                            sb.delete( 0, sb.length() ); // clear the submitted content from the string builder
+                            sb.append( c );
+                        }
+
+                        cb.clear();
+                    } catch( RejectedExecutionException ree ) {
+                        LOG.error( "{} - Queue size has been reached!  Pausing reads for 15 seconds...", _name );
+                        if( LOG.isTraceEnabled() ) LOG.trace( "{} - {}", _name, ree.getMessage(), ree );
+                        try {
+                            Thread.sleep( 15000 );
+                        } catch( InterruptedException ie ) {
+                            // ignore
                         }
                     }
-
-                    sb.append( c );
-                }
-
-                cb.clear();
-            } catch( RejectedExecutionException ree ) {
-                LOG.error( "{} - Queue size has been reached!  Pausing reads for 15 seconds...", _name );
-                if( LOG.isTraceEnabled() ) LOG.trace( "{} - {}", _name, ree.getMessage(), ree );
-                try {
-                    Thread.sleep( 15000 );
-                } catch( InterruptedException ie ) {
-                    // ignore
                 }
             } catch( IOException ioe ) {
                 LOG.error( "{} - IOException encountered: {}", _name, ioe.getMessage() );
