@@ -48,9 +48,9 @@ public abstract class PositionReportBase extends AISMessageBase {
     private boolean _raim; // bit 148
     private int _radio; // bits 149-167, Radio Status
     private boolean _positionValid;
-
+    
     /**
-     *
+     * 
      * @param source
      * @param packets
      * @throws jais.exceptions.AISException
@@ -266,7 +266,7 @@ public abstract class PositionReportBase extends AISMessageBase {
     /**
      *
      */
-    private enum PositionFieldMap implements FieldMap {
+    protected enum PositionFieldMap implements FieldMap {
         STATUS( 38, 41 ),
         TURN( 42, 49 ),
         SPEED( 50, 59 ),

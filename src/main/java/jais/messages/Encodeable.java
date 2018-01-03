@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2017 Jonathan Machen {@literal <jon.machen@robotaccomplice.com>}.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.messages;
 
-import jais.messages.enums.AISMessageType;
-import jais.exceptions.AISException;
 import jais.AISPacket;
+import jais.exceptions.AISException;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jon.machen@robotaccomplice.com>}
  */
-public class PositionReportClassA extends PositionReportBase {
+public interface Encodeable {
     
-    /**
-     * 
-     * @param source
-     * @param aisPackets 
-     * @throws jais.exceptions.AISException 
-     */
-    public PositionReportClassA( String source, AISPacket... aisPackets ) throws AISException {
-        super( source, AISMessageType.POSITION_REPORT_CLASS_A, aisPackets );
-    }
+    public AISPacket[] encode() throws AISException;
 }
