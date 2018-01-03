@@ -183,11 +183,7 @@ public class SocketClient extends SocketConnectionBase {
      */
     @Override
     public Optional<ZonedDateTime> getLastWriteTime() {
-        if( _connection.getLastWriteTime().isPresent() ) {
-            _lastWrite = _connection.getLastWriteTime().get();
-        }
-        
-        return Optional.ofNullable( _lastWrite );
+        return _connection.getLastWriteTime();
     }
     
     /**
