@@ -126,11 +126,6 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
             } catch( IOException ioe ) {
                 LOG.error( "{} - IOException encountered: {}", _name, ioe.getMessage() );
                 if( LOG.isTraceEnabled() ) LOG.trace( ioe );
-            } finally {
-                try {
-                    close();
-                } catch( Exception e ) {
-                }
             }
             
             if( !isConnected() ) {

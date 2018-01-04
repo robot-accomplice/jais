@@ -86,8 +86,10 @@ public class SocketClient extends SocketConnectionBase {
                     
                     if( _socket.isConnected() ) {
                         if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection established to {}", _name, _address );
-                        _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool );
-                        _connection.launch();
+                        if( _connection == null ) {
+                            _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool );
+                            _connection.launch();
+                        }
                     } else {
                         LOG.fatal( "{} - Failed to connect to {}:{}. Sleeping for {} seconds before trying again...", _name, 
                                 ( RECONNECT_DELAY / 1000 ) );

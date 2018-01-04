@@ -133,10 +133,6 @@ public class AISSocketReader implements Runnable, AutoCloseable {
             } catch( IOException ioe ) {
                 LOG.error( "{} - IOException encountered: {}", _name, ioe.getMessage() );
                 if( LOG.isTraceEnabled() ) LOG.trace( ioe );
-                if( !isConnected() ) {
-                    LOG.fatal( "{} - Socket connection is closed.  Closing AISSocketReadder thread." );
-                    break;
-                }
             }
         }
         
