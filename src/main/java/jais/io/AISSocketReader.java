@@ -42,7 +42,7 @@ public class AISSocketReader implements Runnable, AutoCloseable {
     private final static Logger LOG = LogManager.getLogger(AISSocketReader.class );
     
     private final String _name;
-    private final Socket _socket;
+    private Socket _socket;
     private final int _readBufferSize;
     
     private boolean _keepReading = true;
@@ -131,8 +131,14 @@ public class AISSocketReader implements Runnable, AutoCloseable {
                     }
                 }
             } catch( IOException ioe ) {
-                LOG.error( "{} - IOException encountered: {}", _name, ioe.getMessage() );
+                LOG.warn( "{} - IOException encountered: {}", _name, ioe.getMessage() );
                 if( LOG.isTraceEnabled() ) LOG.trace( ioe );
+                try {
+                    LOG.info( "Sleeping for 1.5 seconds..." );
+                    Thread.sleep( 1500 );
+                } catch( InterruptedException ie ) {
+                    // ignore
+                }
             }
         }
         
@@ -155,6 +161,14 @@ public class AISSocketReader implements Runnable, AutoCloseable {
      */
     private boolean isConnected() {
         return ( _socket != null && !_socket.isClosed() && _socket.isConnected() && !_socket.isInputShutdown() );
+    }
+    
+    /**
+     * 
+     * @param socket 
+     */
+    protected void setSocket( Socket socket ) {
+        _socket = socket;
     }
     
     /**

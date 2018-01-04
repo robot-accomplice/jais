@@ -29,7 +29,7 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
     private final static char LINE_TERMINATOR = '\n';
     
     private final String _name;
-    private final Socket _socket;
+    private Socket _socket;
     
     private boolean _keepWriting = true;
     
@@ -124,12 +124,14 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
                     }
                 }
             } catch( IOException ioe ) {
-                LOG.error( "{} - IOException encountered: {}", _name, ioe.getMessage() );
+                LOG.warn( "{} - IOException encountered: {}", _name, ioe.getMessage() );
                 if( LOG.isTraceEnabled() ) LOG.trace( ioe );
-            }
-            
-            if( !isConnected() ) {
-                LOG.error( "{} - Socket and/or OutputStream are closed.", _name );
+                try {
+                    LOG.info( "Sleeping for 1.5 seconds..." );
+                    Thread.sleep( 1500 );
+                } catch( InterruptedException ie ) {
+                    // ignore
+                }
             }
         }
     }
@@ -176,6 +178,14 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
      */
     private boolean isConnected() {
         return ( _socket != null && !_socket.isClosed() && _socket.isConnected() && !_socket.isOutputShutdown() );
+    }
+    
+    /**
+     * 
+     * @param socket 
+     */
+    protected void setSocket( Socket socket ) {
+        _socket = socket;
     }
     
     /**

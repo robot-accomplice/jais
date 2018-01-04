@@ -40,7 +40,7 @@ public class ActiveConnection implements AutoCloseable {
     public final static long DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD = 10000;
 
     private final String _name;
-    private final Socket _socket;
+    private Socket _socket;
     private final ConnectionType _type;
     private final ExecutorCompletionService<Optional<String>> _readQueue;
     private final ExecutorService _threadPool;
@@ -149,6 +149,16 @@ public class ActiveConnection implements AutoCloseable {
      */
     public Socket getSocket() {
         return _socket;
+    }
+    
+    /**
+     * 
+     * @param socket 
+     */
+    protected void setSocket( Socket socket ) {
+        _socket = socket;
+        if( _reader != null ) _reader.setSocket( _socket );
+        if( _writer != null ) _writer.setSocket( _socket );
     }
 
     /**

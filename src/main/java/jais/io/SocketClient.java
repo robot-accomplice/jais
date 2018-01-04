@@ -34,7 +34,7 @@ import org.apache.logging.log4j.Logger;
 public class SocketClient extends SocketConnectionBase {
     
     private final static Logger LOG = LogManager.getLogger( SocketClient.class );
-    private final static int RECONNECT_DELAY = 15000;
+    private final static int RECONNECT_DELAY = 5000;
 
     private final InetSocketAddress _address;
     private Socket _socket;
@@ -81,14 +81,16 @@ public class SocketClient extends SocketConnectionBase {
                     _totalConnectAttempts.increment();
                     if( LOG.isInfoEnabled() ) LOG.info( "{} - Socket is closed, attempt # {} (re)connecting to {}...", _name, _totalConnectAttempts.longValue(), _address );
 
-                    if( _socket == null ) _socket = new Socket();
-                    
+                    if( _socket == null || _socket.isClosed() ) _socket = new Socket();
                     _socket.connect( _address );
                     
                     if( _socket.isConnected() ) {
                         if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection established to {}", _name, _address );
                         if( _connection == null ) {
                             _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool );
+                        } else {
+                            LOG.info( "{} - Updating ActiveConnection with new socket...", _name );
+                            _connection.setSocket( _socket );
                         }
                         if( !_connection.isLaunched() ) _connection.launch();
                     } else {
