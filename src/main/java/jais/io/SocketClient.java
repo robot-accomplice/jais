@@ -77,19 +77,20 @@ public class SocketClient extends SocketConnectionBase {
 
         while( _keepOpen ) {
             try {
-                if( _keepOpen && _connection.isClosed() ) {
+                if( _connection == null || _connection.isClosed() ) {
                     _totalConnectAttempts.increment();
-                    if( LOG.isInfoEnabled() ) LOG.info( "{} - Socket is closed, (re)connecting to {}...", _name, _address );
+                    if( LOG.isInfoEnabled() ) LOG.info( "{} - Socket is closed, attempt # {} (re)connecting to {}...", _name, _totalConnectAttempts.longValue(), _address );
 
-                    _socket = new Socket();
+                    if( _socket == null ) _socket = new Socket();
+                    
                     _socket.connect( _address );
                     
                     if( _socket.isConnected() ) {
                         if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection established to {}", _name, _address );
                         if( _connection == null ) {
                             _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool );
-                            _connection.launch();
                         }
+                        if( !_connection.isLaunched() ) _connection.launch();
                     } else {
                         LOG.fatal( "{} - Failed to connect to {}:{}. Sleeping for {} seconds before trying again...", _name, 
                                 ( RECONNECT_DELAY / 1000 ) );
