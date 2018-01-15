@@ -73,8 +73,6 @@ public class SocketConnectionFactory {
     
     /**
      * 
-     * Creates a read only SocketServer
-     * 
      * @param name
      * @param port
      * @param runas
@@ -85,7 +83,28 @@ public class SocketConnectionFactory {
      */
     public static SocketConnection buildConnection( String name, int port, ConnectionType runas, 
             ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool ) {
+        return buildConnection( name, port, runas, readQueue, readBufferSize, threadPool, ActiveConnection.DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD, 
+                ActiveConnection.DEFAULT_WRITE_QUEUE_ABSOLUTE_THRESHOLD );
+    }
+    
+    /**
+     * 
+     * Creates a read only SocketServer
+     * 
+     * @param name
+     * @param port
+     * @param runas
+     * @param readQueue
+     * @param readBufferSize
+     * @param threadPool
+     * @param backpressureThreshold
+     * @param absoluteThreshold
+     * @return 
+     */
+    public static SocketConnection buildConnection( String name, int port, ConnectionType runas, 
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool, long backpressureThreshold, 
+            long absoluteThreshold ) {
         
-        return buildConnection( name, null, port, runas, readQueue, readBufferSize, threadPool );
+        return new SocketServer( name, port, runas, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold );
     }
 }
