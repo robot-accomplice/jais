@@ -48,6 +48,31 @@ public class SocketConnectionFactory {
     
     /**
      * 
+     * @param name
+     * @param host
+     * @param port
+     * @param runas
+     * @param readQueue
+     * @param readBufferSize
+     * @param threadPool
+     * @param backpressureThreshold
+     * @param absoluteThreshold
+     * @param purgeOnDisconnect
+     * @return 
+     */
+    public static SocketConnection buildConnection( String name, String host, int port, ConnectionType runas, 
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool, long backpressureThreshold, 
+            long absoluteThreshold, boolean purgeOnDisconnect ) {
+        if( runas.isServer() ) {
+            return new SocketServer( name, port, runas, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold );
+        } else {
+            return new SocketClient( name, host, port, runas, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold, 
+                    purgeOnDisconnect );
+        }
+    }
+    
+    /**
+     * 
      * Creates a read only SocketServer
      * 
      * @param name

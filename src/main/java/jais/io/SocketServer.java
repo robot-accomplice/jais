@@ -17,6 +17,7 @@
 package jais.io;
 
 
+import jais.handlers.AISStringHandler;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -52,6 +53,8 @@ public class SocketServer extends SocketConnectionBase {
     private long _totalRead;
     private long _totalWritten;
     private final long _clientIdleThresholdMs;
+    private final long _backpressureThreshold;
+    private final long _absoluteThreshold;
     
     /**
      * 
@@ -64,7 +67,24 @@ public class SocketServer extends SocketConnectionBase {
      */
     public SocketServer( String name, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, 
             ExecutorService threadPool ) {
-        this( name, port, type, readQueue, readBufferSize, threadPool, DEFAULT_CLIENT_IDLE_THRESHOLD_MS );
+        this( name, port, type, readQueue, readBufferSize, threadPool, ActiveConnection.DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD, 
+                ActiveConnection.DEFAULT_WRITE_QUEUE_ABSOLUTE_THRESHOLD );
+    }
+    
+    /**
+     * 
+     * @param name
+     * @param port
+     * @param type
+     * @param readQueue
+     * @param readBufferSize
+     * @param threadPool
+     * @param backpressureThreshold
+     * @param absoluteThreshold 
+     */
+    public SocketServer( String name, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, 
+            ExecutorService threadPool, long backpressureThreshold, long absoluteThreshold ) {
+        this( name, port, type, readQueue, readBufferSize, threadPool, DEFAULT_CLIENT_IDLE_THRESHOLD_MS, backpressureThreshold, absoluteThreshold );
     }
 
     /**
@@ -76,9 +96,11 @@ public class SocketServer extends SocketConnectionBase {
      * @param readBufferSize
      * @param threadPool
      * @param clientIdleThresholdMs
+     * @param backpressureThreshold
+     * @param absoluteThreshold
      */
-    public SocketServer( String name, int port, ConnectionType type, 
-            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool, long clientIdleThresholdMs ) {
+    public SocketServer( String name, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, 
+            ExecutorService threadPool, long clientIdleThresholdMs, long backpressureThreshold, long absoluteThreshold ) {
         _name = name;
         _port = port;
         _type = type;
@@ -86,6 +108,8 @@ public class SocketServer extends SocketConnectionBase {
         _readBufferSize = readBufferSize;
         _threadPool = threadPool;
         _clientIdleThresholdMs = clientIdleThresholdMs;
+        _backpressureThreshold = backpressureThreshold;
+        _absoluteThreshold = absoluteThreshold;
     }
     
     /**
@@ -125,7 +149,8 @@ public class SocketServer extends SocketConnectionBase {
                 _totalConnectAttempts.increment();
                 LOG.fatal( "{} - New connection accepted! {}", _name, s.getRemoteSocketAddress() );
                 LOG.fatal( "{} - Launching new ActiveConnection instance...", _name );
-                ActiveConnection connection = new ActiveConnection( _name, s, _type, _readQueue, _readBufferSize, _threadPool, true );
+                ActiveConnection connection = new ActiveConnection( _name, s, _type, _readQueue, _readBufferSize, _threadPool, true, null, 
+                        _absoluteThreshold, _backpressureThreshold );
                 connection.launch();
                 LOG.fatal( "{} - Adding new connection to list of connections...", _name );
                 _connections.add( connection );

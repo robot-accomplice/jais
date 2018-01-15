@@ -39,6 +39,9 @@ public class SocketClient extends SocketConnectionBase {
     private final InetSocketAddress _address;
     private Socket _socket;
     private final int _readBufferSize;
+    private final long _backpressureThreshold;
+    private final long _absoluteThreshold;
+    private final boolean _purgeOnDisconnect;
     
     private boolean _keepOpen = true;
     private ActiveConnection _connection;
@@ -53,8 +56,59 @@ public class SocketClient extends SocketConnectionBase {
      * @param readBufferSize
      * @param threadPool
      */
-    public SocketClient( String name, String host, int port, ConnectionType type, 
-            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool ) {
+    public SocketClient( String name, String host, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, 
+            int readBufferSize, ExecutorService threadPool ) {
+        this( name, host, port, type, readQueue, readBufferSize, threadPool, ActiveConnection.DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD );
+    }
+    
+    /**
+     * 
+     * @param name
+     * @param host
+     * @param port
+     * @param type
+     * @param backPressureThreshold
+     * @param readQueue
+     * @param readBufferSize
+     * @param threadPool 
+     */
+    public SocketClient( String name, String host, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, 
+            int readBufferSize, ExecutorService threadPool, long backpressureThreshold ) {
+        this( name, host, port, type, readQueue, readBufferSize, threadPool, backpressureThreshold, 
+                ActiveConnection.DEFAULT_WRITE_QUEUE_ABSOLUTE_THRESHOLD );
+    }
+
+    /**
+     * 
+     * @param name
+     * @param host
+     * @param port
+     * @param type
+     * @param backpressureThreshold
+     * @param absoluteThreshold
+     * @param readQueue
+     * @param readBufferSize
+     * @param threadPool 
+     */
+    public SocketClient( String name, String host, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, 
+            int readBufferSize, ExecutorService threadPool, long backpressureThreshold, long absoluteThreshold ) {
+        this( name, host, port, type, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold, false );
+    }
+    
+    /**
+     * 
+     * @param name
+     * @param host
+     * @param port
+     * @param type
+     * @param backpressureThreshold
+     * @param absoluteThreshold
+     * @param readQueue
+     * @param readBufferSize
+     * @param threadPool 
+     */
+    public SocketClient( String name, String host, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, 
+            int readBufferSize, ExecutorService threadPool, long backpressureThreshold, long absoluteThreshold, boolean purgeOnDisconnect ) {
         _name = name;
         _host = host;
         _port = port;
@@ -64,7 +118,9 @@ public class SocketClient extends SocketConnectionBase {
         _address = new InetSocketAddress( _host, _port );
         _socket = new Socket();
         _threadPool = threadPool;
-        _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool );
+        _backpressureThreshold = backpressureThreshold;
+        _absoluteThreshold = absoluteThreshold;
+        _purgeOnDisconnect = purgeOnDisconnect;
     }
     
     /**
@@ -87,7 +143,8 @@ public class SocketClient extends SocketConnectionBase {
                     if( _socket.isConnected() ) {
                         if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection established to {}", _name, _address );
                         if( _connection == null ) {
-                            _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool );
+                            _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool, _purgeOnDisconnect, null, 
+                                    _absoluteThreshold, _backpressureThreshold );
                         } else {
                             LOG.info( "{} - Updating ActiveConnection with new socket...", _name );
                             _connection.setSocket( _socket );
