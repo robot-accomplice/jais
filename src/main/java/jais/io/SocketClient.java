@@ -67,7 +67,7 @@ public class SocketClient extends SocketConnectionBase {
      * @param host
      * @param port
      * @param type
-     * @param backPressureThreshold
+     * @param backpressureThreshold
      * @param readQueue
      * @param readBufferSize
      * @param threadPool 
