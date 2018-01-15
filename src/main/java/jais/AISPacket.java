@@ -80,7 +80,7 @@ public final class AISPacket {
 
     /**
      *
-     * @param rawPacket
+     * @param rawPacket A byte [] composed of the characters from the original undecoded String representing a complete or partial AIS message
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( byte[] rawPacket ) throws AISPacketException {
@@ -89,8 +89,8 @@ public final class AISPacket {
 
     /**
      *
-     * @param rawPacket
-     * @param source
+     * @param rawPacket A byte [] composed of the characters from the original undecoded String representing a complete or partial AIS message
+     * @param source The named source of the AIS packet
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( byte[] rawPacket, byte[] source ) throws AISPacketException {
@@ -102,7 +102,7 @@ public final class AISPacket {
 
     /**
      *
-     * @param rawPacket
+     * @param rawPacket original undecoded String representing a complete or partial AIS message
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( String rawPacket ) throws AISPacketException {
@@ -111,8 +111,8 @@ public final class AISPacket {
 
     /**
      *
-     * @param rawPacket
-     * @param source
+     * @param rawPacket original undecoded String representing a complete or partial AIS message
+     * @param source The named source of this AIS packet
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( String rawPacket, String source ) throws AISPacketException {
@@ -148,7 +148,7 @@ public final class AISPacket {
 
     /**
      *
-     * @param p
+     * @param p the Preamble object to evaluate for validity
      * @return
      */
     private static boolean validatePreamble( Preamble p ) {
@@ -157,7 +157,7 @@ public final class AISPacket {
 
     /**
      *
-     * @param preambleStr
+     * @param preambleStr the preamble String to evaluate for validity
      * @return
      */
     public static boolean validatePreamble( String preambleStr ) {
@@ -192,7 +192,7 @@ public final class AISPacket {
     /**
      * validate the contents of the packet and break it into its constituent parts
      *
-     * @param addTagBlock
+     * @param addTagBlock boolean flag indicating whether or not a TagBlock should be prepended to the packet
      * @return
      * @throws jais.exceptions.AISPacketException
      */
@@ -334,8 +334,8 @@ public final class AISPacket {
     }
 
     /**
-     *
-     * @param bytes
+     * uses the DEFAULT_CHARSET of StandardCharsets.US_ASCII
+     * @param bytes the byte[] to decode into a String
      * @return
      */
     public static String bArray2Str( byte[] bytes ) {
@@ -344,8 +344,8 @@ public final class AISPacket {
 
     /**
      *
-     * @param bytes
-     * @param cs
+     * @param bytes the byte[] to decode into a String
+     * @param cs the Charset that should be used to perform the decode operation
      * @return
      */
     public static String bArray2Str( byte[] bytes, Charset cs ) {
@@ -354,7 +354,7 @@ public final class AISPacket {
 
     /**
      *
-     * @param string
+     * @param string the String to encode into a byte[] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
      * @return
      */
     public static byte[] str2bArray( String string ) {
@@ -363,8 +363,8 @@ public final class AISPacket {
 
     /**
      *
-     * @param s
-     * @param cs
+     * @param s the String to encode into a byte []
+     * @param cs the Charset that should be used to perform the encode operation
      * @return
      */
     public static byte[] str2bArray( String s, Charset cs ) {
@@ -373,7 +373,7 @@ public final class AISPacket {
 
     /**
      *
-     * @param bytes
+     * @param bytes the byte[] to decode into a char[] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
      * @return
      */
     public static char[] bArray2cArray( byte[] bytes ) {
@@ -382,8 +382,8 @@ public final class AISPacket {
 
     /**
      *
-     * @param bytes
-     * @param cs
+     * @param bytes the byte[] to decode into a char[]
+     * @param cs the Charset that should be used to perform the decode operation
      * @return
      */
     public static char[] bArray2cArray( byte[] bytes, Charset cs ) {
@@ -392,8 +392,8 @@ public final class AISPacket {
 
     /**
      *
-     * @param ca
-     * @param cs
+     * @param ca the char[] to encode into a byte[]
+     * @param cs the Charset that should be used to perform the encode operation
      * @return
      */
     public static byte[] cArray2bArray( char[] ca, Charset cs ) {
@@ -402,7 +402,7 @@ public final class AISPacket {
 
     /**
      *
-     * @param ca
+     * @param ca the char[] to encode into a byte[] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
      * @return
      */
     public static byte[] cArray2bArray( char[] ca ) {
@@ -410,8 +410,9 @@ public final class AISPacket {
     }
 
     /**
-     *
-     * @param bytes
+     * performs a String.trim()-like operation on a byte[] using the StandardCharsets.US_ASCII Charset
+     * 
+     * @param bytes the byte[] to be trimmed
      * @return
      */
     public static byte[] trim( byte[] bytes ) {
@@ -419,9 +420,10 @@ public final class AISPacket {
     }
 
     /**
-     *
-     * @param bytes
-     * @param cs
+     * performs a String.trim()-like operation on a byte[] using the specified Charset
+     * 
+     * @param bytes the byte[] to be trimmed
+     * @param cs the Charset to use in the conversion of the byte[] into a char[]
      * @return
      */
     public static byte[] trim( byte[] bytes, Charset cs ) {
