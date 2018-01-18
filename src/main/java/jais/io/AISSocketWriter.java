@@ -96,32 +96,33 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
                         }
                     } else {
                         long startingSize = _queue.size();
-                        if( LOG.isInfoEnabled() ) LOG.info( "{} - processing {} queue entries...", _name, _queue.size() );
                         
-                        if( _queue.size() > _wqThreshold ) {
-                            if( LOG.isWarnEnabled() ) LOG.warn( "{} - Maximum queue size ({}) exceeded.  Purging Queue.", _name, _wqThreshold );
-                            purgeQueue();
-                        } else {
-                            for( String line : _queue ) {
-                                if( !isConnected() ) throw new IOException( _name + " - Connection to socket was closed" );
+                        if( LOG.isInfoEnabled() ) LOG.info( "{} - processing {} queue entries...", _name, _queue.size() );
+                        for( String line : _queue ) {
+                            if( !isConnected() ) throw new IOException( _name + " - Connection to socket was closed" );
 
-                                _queue.remove( line );
+                            _queue.remove( line );
 
-                                if( line != null && !line.isEmpty() ) {
-                                    if( LOG.isDebugEnabled() ) LOG.debug( "{} - Writing String \"{}\" to target", _name, line );
-                                    writer.write( line + LINE_TERMINATOR );
-                                    _lastWriteTime = java.time.ZonedDateTime.now( ZoneOffset.UTC.normalized() );
-                                    _write.increment();
-                                    _total.increment();
-                                }
+                            if( line != null && !line.isEmpty() ) {
+                                if( LOG.isDebugEnabled() ) LOG.debug( "{} - Writing String \"{}\" to target", _name, line );
+                                writer.write( line + LINE_TERMINATOR );
+                                _lastWriteTime = java.time.ZonedDateTime.now( ZoneOffset.UTC.normalized() );
+                                _write.increment();
+                                _total.increment();
+                            }
 
-                                if( _queue.size() - startingSize > _bpThreshold ) {
-                                    if( LOG.isWarnEnabled() ) LOG.warn( "{} - Back pressure threshold ({} messages) exceeded.  Purging Queue.", 
-                                            _name, _bpThreshold );
-                                    purgeQueue();
-                                } else {
-                                    startingSize = _queue.size();
-                                }
+                            long bpMeasure = _queue.size() - startingSize;
+
+                            if( _queue.size() > _wqThreshold ) {
+                                if( LOG.isWarnEnabled() ) 
+                                    LOG.warn( "{} - Maximum queue size ({}/{}) exceeded.  Purging Queue.", _name, _queue.size(), _wqThreshold );
+                                purgeQueue();
+                            } else if( bpMeasure > _bpThreshold ) {
+                                if( LOG.isWarnEnabled() ) LOG.warn( "{} - Back pressure threshold ({}/{} ) exceeded.  Purging Queue.", 
+                                        _name, bpMeasure, _bpThreshold );
+                                purgeQueue();
+                            } else {
+                                startingSize = _queue.size();
                             }
                         }
                     }
