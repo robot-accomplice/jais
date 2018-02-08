@@ -25,9 +25,9 @@ import static jais.messages.enums.AISMessageType.POSITION_REPORT_CLASS_A_ASSIGNE
 import static jais.messages.enums.AISMessageType.POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION;
 import java.util.regex.Matcher;
 import org.junit.Test;
-import static junit.framework.Assert.assertTrue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Assert;
 
 /**
  * Unit test for simple decoding tasks
@@ -235,8 +235,8 @@ public class AISDecoderTest {
             try {
                 String truncStr = AISPacket.truncatePacket( new StringBuilder( packetStr ) );
                 LOG.info( "AISPacket.truncatePacket() produced: \"{}\" from \"{}\"", truncStr, packetStr );
-                if( truncStr != null && !truncStr.isEmpty() ) assertTrue( new AISPacket( truncStr ).isValid() );
-                else assertTrue( new AISPacket( packetStr ).isValid() );
+                if( truncStr != null && !truncStr.isEmpty() ) Assert.assertTrue( new AISPacket( truncStr ).isValid() );
+                else Assert.assertTrue( new AISPacket( packetStr ).isValid() );
             } catch( AISPacketException t ) {
                 LOG.info( t.getMessage(), t );
             }
@@ -254,8 +254,8 @@ public class AISDecoderTest {
         LOG.info( "*** testPacketDecoding()" );
 
         LOG.info( "Testing with {} packets.", TEST_PACKETS.length );
-        for( String newMessage : TEST_PACKETS ) {
-            Matcher pm = AISPacket.PACKET_PATTERN.matcher( newMessage );
+        for( String packetStr : TEST_PACKETS ) {
+            Matcher pm = AISPacket.PACKET_PATTERN.matcher( packetStr );
 
             if( pm.find() ) {
                 LOG.info(  "Found {} groups", pm.groupCount() );
@@ -266,19 +266,19 @@ public class AISDecoderTest {
                 LOG.info( "MATCHER COMPLETELY FAILED! {}", AISPacket.PACKET_PATTERN );
             }
             
-            String truncStr = AISPacket.truncatePacket( new StringBuilder( newMessage ) );
-            if( truncStr != null && !truncStr.isEmpty() ) newMessage = truncStr;
+            String truncStr = AISPacket.truncatePacket( new StringBuilder( packetStr ) );
+            if( truncStr != null && !truncStr.isEmpty() ) packetStr = truncStr;
             
-            AISPacket packet = new AISPacket( newMessage.trim() );
+            AISPacket packet = new AISPacket( packetStr.trim() );
             packet.process();
             if( packet.getTagBlock() != null ) {
-                Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( newMessage );
+                Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( packetStr );
                 if( m.find() ) {
                     for( int i = 0; i <= m.groupCount(); i++ ) {
                         LOG.info( "Found: {}", m.group(i) );
                     }
                 }
-                LOG.info( "\n\n{}", newMessage );
+                LOG.info( "\n\n{}", packetStr );
                 LOG.info( "TagBlock: {}\n\n", packet.getTagBlock().toString() );
                 // assert( false );
             } else {
@@ -335,8 +335,8 @@ public class AISDecoderTest {
     public void testImoValidation() {
         LOG.info( "*** testImoValidation()" );
         LOG.info( "\tNumber:" );
-        assertTrue( AISMessageBase.isValidImo( 9074729 ) );
+        Assert.assertTrue( AISMessageBase.isValidImo( 9074729 ) );
         LOG.info( "\tString:" );
-        assertTrue( AISMessageBase.isValidImo( "IMO 9074729" ) );
+        Assert.assertTrue( AISMessageBase.isValidImo( "IMO 9074729" ) );
     }
 }
