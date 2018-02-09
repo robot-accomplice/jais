@@ -28,6 +28,7 @@ import jais.messages.enums.MMSIType;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -120,8 +121,9 @@ public class ConsoleController implements Initializable {
             }
             appendLineToOutput( "---------------------------------------------" );
             
-            AISMessage msg = AISMessageFactory.create( "CONSOLE", false, packets );
-            if( msg != null ) {
+            Optional<AISMessage> msgOpt = AISMessageFactory.create( "CONSOLE", false, packets );
+            if( msgOpt.isPresent() ) {
+                AISMessage msg = msgOpt.get();
                 // from AISMessageBase
                 appendLineToOutput( "Type   : " + msg.getType() );
                 appendLineToOutput( "Repeat : " + msg.getRepeat() );
