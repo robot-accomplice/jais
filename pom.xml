@@ -21,7 +21,7 @@
     
     <groupId>com.robotaccomplice</groupId>
     <artifactId>jais</artifactId>
-    <version>0.1.73</version>
+    <version>0.1.74</version>
     <packaging>jar</packaging>
     
     <name>JAIS</name>
@@ -96,7 +96,7 @@
                     <archive>
                         <index>true</index>
                         <manifest>
-                            <mainClass>jais.Console</mainClass>
+                            <mainClass>jais.Decoder</mainClass>
                             <packageName>jais</packageName>
                             <addClasspath>true</addClasspath>
                             <addExtensions/>
@@ -130,7 +130,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>jais.Console</mainClass>
+                            <mainClass>jais.Decoder</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -216,6 +216,12 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>2.10.0</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.4</version>
             <type>jar</type>
         </dependency>
     </dependencies>
