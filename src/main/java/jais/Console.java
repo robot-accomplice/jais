@@ -50,11 +50,4 @@ public class Console extends Application {
             System.exit( 1 );
         }
     }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main( String[] args ) {
-        launch( args );
-    }
 }
