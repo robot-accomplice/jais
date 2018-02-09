@@ -50,4 +50,12 @@ public class Console extends Application {
             System.exit( 1 );
         }
     }
+    
+    /**
+     * 
+     * @param args 
+     */
+    public static void draw( String [] args ) {
+        Console.launch( args );
+    }
 }
