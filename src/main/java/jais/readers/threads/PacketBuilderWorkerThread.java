@@ -19,6 +19,7 @@ package jais.readers.threads;
 import jais.AISPacket;
 import jais.exceptions.AISPacketException;
 import jais.io.AISPacketBuffer;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,13 +28,14 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen
  */
-public class PacketBuilderWorkerThread implements Callable<AISPacket []> {
+public class PacketBuilderWorkerThread implements Callable<Optional<AISPacket []>> {
 
     private final static Logger LOG = LogManager.getLogger( PacketBuilderWorkerThread.class );
 
-    private final String _packetString;
     private final AISPacketBuffer _pBuffer;
+    private String _packetString;
     private final String _source;
+    private volatile boolean _idle;
 
     /**
      *
@@ -47,24 +49,53 @@ public class PacketBuilderWorkerThread implements Callable<AISPacket []> {
         _packetString = packetString;
         _source = source;
     }
-
+    
+    /**
+     * 
+     * @param pBuffer 
+     * @param source 
+     */
+    public PacketBuilderWorkerThread( AISPacketBuffer pBuffer, String source ) {
+        _pBuffer = pBuffer;
+        _source = source;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public boolean isIdle() {
+        return _idle;
+    }
+    
+    /**
+     * 
+     * @param packetString
+     * @return 
+     */
+    public PacketBuilderWorkerThread init( String packetString ) {
+        _packetString = packetString;
+        return this;
+    }
+    
     /**
      *
      * @return
      */
     @Override
-    public AISPacket[] call() {
-        Thread.currentThread().setName( "PBT" );
+    public Optional<AISPacket[]> call() {
+        _idle = false;
 
         try {
-            if( LOG.isTraceEnabled() ) LOG.trace( "Processing packet: {}", _packetString );
-            AISPacket packet = new AISPacket( _packetString, _source );
-
-            return _pBuffer.add( packet.process(), true ); // true = remove from buffer if complete
+            LOG.trace( "Processing packet: {}", _packetString );
+            // true = remove from buffer if complete
+            return _pBuffer.add( new AISPacket( _packetString, _source ).process(), true );
         } catch( AISPacketException ape ) {
             LOG.info( "Discarding invalid packet: \"" + _packetString + "\": " + ape.getMessage(), ape );
+        } finally {
+            _idle = true;
         }
         
-        return null;
+        return Optional.empty();
     }
 }

@@ -22,6 +22,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -107,7 +108,7 @@ public class AISPacketBuffer {
      * @param packet
      * @return
      */
-    public synchronized AISPacket[] add( AISPacket packet ) {
+    public synchronized Optional<AISPacket[]> add( AISPacket packet ) {
         return add( packet, false );
     }
 
@@ -117,9 +118,7 @@ public class AISPacketBuffer {
      * @param removeIfComplete
      * @return
      */
-    public synchronized AISPacket[] add( AISPacket packet, boolean removeIfComplete ) {
-        AISPacket[] packets = null;
-        
+    public synchronized Optional<AISPacket[]> add( AISPacket packet, boolean removeIfComplete ) {
         if( packet == null ) {
             if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring null packet." );
         } else {
@@ -140,20 +139,20 @@ public class AISPacketBuffer {
                 if( isComplete( packet ) ) {
                     if( removeIfComplete ) {
                         if( LOG.isDebugEnabled() ) LOG.debug( "Removing completed packet set." );
-                        packets = remove( packet );
+                        return remove( packet );
                     } else {
-                        packets = getPackets( packet );
+                        return getPackets( packet );
                     }
                 }
             } else {
-                packets = new AISPacket[]{ packet };
                 if( !removeIfComplete ) {
                     _buffer.put( pk, new AISPacketSet( packet ) );
                 }
+                return Optional.of( new AISPacket[]{ packet } );
             }
         }
         
-        return packets;
+        return Optional.empty();
     }
 
     /**
@@ -161,7 +160,7 @@ public class AISPacketBuffer {
      * @param packet
      * @return
      */
-    public synchronized AISPacket[] remove( AISPacket packet ) {
+    public synchronized Optional<AISPacket[]> remove( AISPacket packet ) {
         String packetKey = getKey( packet );
         return remove( packetKey );
     }
@@ -171,10 +170,14 @@ public class AISPacketBuffer {
      * @param packetKey
      * @return
      */
-    private synchronized AISPacket[] remove( String packetKey ) {
-        AISPacket[] packets = getPackets( packetKey );
-        _buffer.remove( packetKey );
-        return packets;
+    private synchronized Optional<AISPacket[]> remove( String packetKey ) {
+        Optional<AISPacket[]> packets = getPackets( packetKey );
+        if( packets.isPresent() ) {
+            _buffer.remove( packetKey );
+            return packets;
+        }
+        
+        return Optional.empty();
     }
 
     /**
@@ -182,7 +185,7 @@ public class AISPacketBuffer {
      * @param packet
      * @return
      */
-    public synchronized AISPacket[] getPackets( AISPacket packet ) {
+    public synchronized Optional<AISPacket[]> getPackets( AISPacket packet ) {
         return getPackets( getKey( packet ) );
     }
 
@@ -191,14 +194,12 @@ public class AISPacketBuffer {
      * @param packetKey
      * @return
      */
-    private AISPacket[] getPackets( String packetKey ) {
-        AISPacket[] packets = null;
-
+    private Optional<AISPacket[]> getPackets( String packetKey ) {
         if( _buffer.containsKey( packetKey ) ) {
-            packets = _buffer.get( packetKey ).getPackets();
+            return Optional.of( _buffer.get( packetKey ).getPackets() );
         }
 
-        return packets;
+        return Optional.empty();
     }
 
     /**

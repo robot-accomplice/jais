@@ -21,6 +21,7 @@ import jais.messages.enums.AISMessageType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,7 +42,7 @@ public class AISMessageFactory {
      * @return
      * @throws AISException 
      */
-    public static AISMessage create( String source, boolean strict, List<AISPacket> packets ) throws AISException {
+    public static Optional<AISMessage> create( String source, boolean strict, List<AISPacket> packets ) throws AISException {
         AISPacket [] packetA = new AISPacket[packets.size()];
         packets.toArray( packetA );
         return create( source, strict, packetA );
@@ -55,8 +56,7 @@ public class AISMessageFactory {
      * @return
      * @throws jais.exceptions.AISException
      */
-    public static AISMessage create( String source, boolean strict, AISPacket... packets ) throws AISException {
-        AISMessage message = null;
+    public static Optional<AISMessage> create( String source, boolean strict, AISPacket... packets ) throws AISException {
         String compositeMsg = null;
 
         try {
@@ -83,6 +83,7 @@ public class AISMessageFactory {
                 Constructor con = mType.getMessageClass().getDeclaredConstructor( String.class, AISPacket[].class );
                 con.setAccessible( true );
 
+                AISMessage message;
                 if( packets.length == 1 ) {
                     // reflection won't work properly for singletons if we don't do this
                     message = ( AISMessage ) con.newInstance( ( Object )source, ( Object )packets );
@@ -104,6 +105,7 @@ public class AISMessageFactory {
 
                 // decode message
                 message.decode();
+                return Optional.of( message );
             } else {
                 throw new AISException( "MessageType is null for message String: " + compositeMsg );
             }
@@ -119,7 +121,7 @@ public class AISMessageFactory {
             }
         }
 
-        return message;
+        return Optional.empty();
     }
 
     /**
@@ -129,7 +131,7 @@ public class AISMessageFactory {
      * @return
      * @throws jais.exceptions.AISException
      */
-    public static AISMessage create( String source, AISPacket... packets ) throws AISException {
+    public static Optional<AISMessage> create( String source, AISPacket... packets ) throws AISException {
         return create( source, true, packets );
     }
 
@@ -141,7 +143,7 @@ public class AISMessageFactory {
      * @return
      * @throws AISException
      */
-    public static AISMessage create( String source, boolean strict, String... packetStrings ) throws AISException {
+    public static Optional<AISMessage> create( String source, boolean strict, String... packetStrings ) throws AISException {
         AISPacket[] packets = new AISPacket[packetStrings.length];
 
         for( int i = 0; i < packetStrings.length; i++ ) {
@@ -158,7 +160,7 @@ public class AISMessageFactory {
      * @return
      * @throws jais.exceptions.AISException
      */
-    public static AISMessage create( String source, List<AISPacket> packets ) throws AISException {
+    public static Optional<AISMessage> create( String source, List<AISPacket> packets ) throws AISException {
         AISPacket[] packetArray = new AISPacket[packets.size()];
         packets.toArray( packetArray );
         return create( source, packetArray );

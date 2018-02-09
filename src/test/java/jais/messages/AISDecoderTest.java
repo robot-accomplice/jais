@@ -23,6 +23,7 @@ import jais.exceptions.AISPacketException;
 import static jais.messages.enums.AISMessageType.POSITION_REPORT_CLASS_A;
 import static jais.messages.enums.AISMessageType.POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE;
 import static jais.messages.enums.AISMessageType.POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import org.junit.Test;
 import org.apache.logging.log4j.LogManager;
@@ -114,19 +115,19 @@ public class AISDecoderTest {
      */
     private void processPackets( AISPacket... packets ) throws AISException {
 
-        AISMessageBase amb = ( AISMessageBase ) AISMessageFactory.create( "UnitTest", packets );
+        Optional<AISMessage> msg = AISMessageFactory.create( "UnitTest", packets );
 
-        if( amb == null ) {
+        if( msg.isPresent() ) {
             LOG.warn( "Factory returned a null message!  May be an unsupported message type." );
         } else {
             // from AISMessageBase
-            LOG.info( "Type     : {}", amb.getType() );
-            LOG.info( "Repeat   : {}", amb.getRepeat() );
-            LOG.info( "MMSI     : {}", amb.getMmsi() );
+            LOG.info( "Type     : {}", msg.get().getType() );
+            LOG.info( "Repeat   : {}", msg.get().getRepeat() );
+            LOG.info( "MMSI     : {}", msg.get().getMmsi() );
 
-            switch( amb.getType() ) {
+            switch( msg.get().getType() ) {
                 case BASE_STATION_REPORT:
-                    BaseStationReport bsr = ( BaseStationReport ) amb;
+                    BaseStationReport bsr = ( BaseStationReport )msg.get();
 
                     LOG.info( "Year     : {}", bsr.getYear() );
                     LOG.info( "Month    : {}", bsr.getMonth() );
@@ -143,7 +144,7 @@ public class AISDecoderTest {
                 case POSITION_REPORT_CLASS_A:
                 case POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE:
                 case POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION:
-                    PositionReportBase prb = ( PositionReportBase ) amb;
+                    PositionReportBase prb = ( PositionReportBase )msg.get();
 
                     // from PositionReportBase
                     LOG.info( "Accuracy : {}", prb.isAccurate() );
@@ -162,7 +163,7 @@ public class AISDecoderTest {
                     break;
                 case STATIC_AND_VOYAGE_RELATED_DATA:
                     StaticAndVoyageRelatedData savrd
-                            = ( StaticAndVoyageRelatedData ) amb;
+                            = ( StaticAndVoyageRelatedData )msg.get();
 
                     LOG.info( "AIS Version  : {}", savrd.getVersion() );
                     LOG.info( "IMO Number   : {}", savrd.getImo() );
@@ -184,7 +185,7 @@ public class AISDecoderTest {
                     break;
                 case BINARY_ADDRESSED_MESSAGE:
                     BinaryAddressedMessageBase bamb
-                            = ( BinaryAddressedMessageBase ) amb;
+                            = ( BinaryAddressedMessageBase )msg.get();
                     LOG.info( "Source MMSI     : {}", bamb.getSourceMmsi() );
                     LOG.info( "Destination MMSI: {}", bamb.getDestMmsi() );
                     LOG.info( "Sequence Number : {}", bamb.getSeqno() );
@@ -196,7 +197,7 @@ public class AISDecoderTest {
                     // further
                     break;
                 case BINARY_ACKNOWLEDGE:
-                    BinaryAcknowledge ba = ( BinaryAcknowledge ) amb;
+                    BinaryAcknowledge ba = ( BinaryAcknowledge )msg.get();
 
                     LOG.info( "Source MMSI: {}", ba.getSourceMmsi() );
                     LOG.info( "MMSI 1     : {}", ba.getMmsi1() );
@@ -219,7 +220,7 @@ public class AISDecoderTest {
                 case SAFETY_RELATED_BROADCAST_MESSAGE:
                     break;
                 default:
-                    LOG.info( "Ignoring new {}", amb.getType().getDescription() );
+                    LOG.info( "Ignoring new {}", msg.get().getType().getDescription() );
             }
         }
     }

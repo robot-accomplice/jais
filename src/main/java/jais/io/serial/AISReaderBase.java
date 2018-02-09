@@ -26,6 +26,7 @@ import jais.handlers.AISMessageHandler;
 import jais.handlers.AISPacketHandler;
 import jais.messages.AISMessage;
 import java.util.Observable;
+import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -165,22 +166,25 @@ public abstract class AISReaderBase extends Observable implements AISReader {
                     if( LOG.isDebugEnabled() ) LOG.debug( "Adding message part {} of {} : '{}' to buffer.", 
                             packet.getFragmentNumber(), packet.getFragmentCount(), AISPacket.bArray2Str( packet.getRawPacket() ) );
 
-                    AISPacket [] packets = _buffer.add( packet );
+                    Optional<AISPacket []> packets = _buffer.add( packet );
 
-                    if( packets != null ) {
+                    if( packets.isPresent() ) {
                         // last fragment, we can now build the full message
-                        if( LOG.isDebugEnabled() ) LOG.debug( "Processing a message with {} fragments.", packets.length );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Processing a message with {} fragments.", packets.get().length );
 
-                        AISMessage message = AISMessageFactory.create( _source, packets );
+                        Optional<AISMessage> message = AISMessageFactory.create( _source, packets.get() );
 
-                        // send message to observers
-                        super.setChanged();
-                        super.notifyObservers( message );
-                        
-                        // send message to handlers
-                        if( _messageHandler != null ) {
-                            if( LOG.isDebugEnabled() ) LOG.debug( "{} - Sending new {} message to handler...", _source, message.getType().name() );
-                            _messageHandler.processMessage( message );
+                        if( message.isPresent() ) {
+                            // send message to observers
+                            super.setChanged();
+                            super.notifyObservers( message.get() );
+
+                            // send message to handlers
+                            if( _messageHandler != null ) {
+                                if( LOG.isDebugEnabled() ) LOG.debug( "{} - Sending new {} message to handler...", _source, 
+                                        message.get().getType().name() );
+                                _messageHandler.processMessage( message.get() );
+                            }
                         }
                     } else if( LOG.isTraceEnabled() ) {
                         LOG.trace( "Message is not complete." );
