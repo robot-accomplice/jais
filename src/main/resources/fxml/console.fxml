@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
  *
  * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
@@ -19,23 +20,20 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.*?>
-<AnchorPane minHeight="600.0" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="jais.ConsoleController">
-   <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-         AnchorPane.topAnchor="0.0">
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane minHeight="600.0" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jais.ConsoleController">
+   <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
-         <TextArea fx:id="outputArea" editable="false" focusTraversable="false" prefHeight="200.0" prefWidth="600.0"
-                   wrapText="true" VBox.vgrow="ALWAYS"/>
-         <HBox alignment="BOTTOM_CENTER" fillHeight="false" maxHeight="45.0" minWidth="20.0" prefHeight="45.0"
-               prefWidth="800.0" VBox.vgrow="NEVER">
+         <TextArea fx:id="outputArea" editable="false" focusTraversable="false" prefHeight="200.0" prefWidth="600.0" wrapText="true" VBox.vgrow="ALWAYS" />
+         <HBox alignment="BOTTOM_CENTER" fillHeight="false" maxHeight="45.0" minWidth="20.0" prefHeight="45.0" prefWidth="800.0" VBox.vgrow="NEVER">
             <children>
-               <TextArea fx:id="inputArea" prefHeight="50.0" prefWidth="585.0" HBox.hgrow="ALWAYS"/>
+               <TextArea fx:id="inputArea" prefHeight="50.0" prefWidth="698.0" HBox.hgrow="ALWAYS" />
                <VBox>
-                  <Button fx:id="decodeButton" minWidth="60.0" mnemonicParsing="false" onAction="#handleDecodeAction"
-                          text="Decode"/>
-                  <Button fx:id="clearButton" minWidth="60.0" mnemonicParsing="false" onAction="#handleClearAction"
-                          text="Clear"/>
+                  <Button fx:id="decodeButton" minWidth="75.0" mnemonicParsing="false" onAction="#handleDecodeAction" text="Decode" />
+                  <Button fx:id="clearButton" minWidth="75.0" mnemonicParsing="false" onAction="#handleClearAction" text="Clear" />
                </VBox>
             </children>
          </HBox>
