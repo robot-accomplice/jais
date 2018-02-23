@@ -34,6 +34,7 @@ public abstract class PositionReportBase extends AISMessageBase {
 
     private final static Logger LOG = LogManager.getLogger( PositionReportBase.class );
 
+    // bit positions are off spec by 1 because the BitSet counts from 0 rather than 1
     private NavigationStatus _status = NavigationStatus.NOT_DEFINED; // bits 38-41
     private float _turn; // bits 42-49
     private float _speed; // bits 50-59, represented in knots
@@ -264,7 +265,8 @@ public abstract class PositionReportBase extends AISMessageBase {
     }
 
     /**
-     *
+     *  bit position numbers differ from the NMEA spec in that the BitSet in 
+     *  which they are stored indexes from zero rather than one
      */
     protected enum PositionFieldMap implements FieldMap {
         STATUS( 38, 41 ),
