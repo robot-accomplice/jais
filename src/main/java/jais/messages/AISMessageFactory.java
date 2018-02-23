@@ -20,6 +20,7 @@ import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
@@ -43,20 +44,46 @@ public class AISMessageFactory {
      * @throws AISException 
      */
     public static Optional<AISMessage> create( String source, boolean strict, List<AISPacket> packets ) throws AISException {
+        return create( source, strict, AISPacket.DEFAULT_CHARSET, packets );
+    }
+    
+    /**
+     * 
+     * @param source
+     * @param strict
+     * @param charset
+     * @param packets
+     * @return
+     * @throws AISException 
+     */
+    public static Optional<AISMessage> create( String source, boolean strict, Charset charset, List<AISPacket> packets ) throws AISException {
         AISPacket [] packetA = new AISPacket[packets.size()];
         packets.toArray( packetA );
-        return create( source, strict, packetA );
+        return create( source, strict, charset, packetA );
+    }
+    
+    /**
+     * 
+     * @param source
+     * @param strict
+     * @param packets
+     * @return
+     * @throws AISException 
+     */
+    public static Optional<AISMessage> create( String source, boolean strict, AISPacket... packets ) throws AISException {
+        return create( source, strict, AISPacket.DEFAULT_CHARSET, packets );
     }
     
     /**
      *
      * @param source
      * @param strict
+     * @param charset
      * @param packets
      * @return
      * @throws jais.exceptions.AISException
      */
-    public static Optional<AISMessage> create( String source, boolean strict, AISPacket... packets ) throws AISException {
+    public static Optional<AISMessage> create( String source, boolean strict, Charset charset, AISPacket... packets ) throws AISException {
         String compositeMsg = null;
 
         try {
@@ -95,7 +122,7 @@ public class AISMessageFactory {
                 if( source != null ) {
                     message.setSource( source );
                 } else if( packets[0].getSource() != null ) {
-                    message.setSource( AISPacket.bArray2Str( packets[0].getSource() ) );
+                    message.setSource( AISPacket.bArray2Str( packets[0].getSource(), charset ) );
                 } else {
                     message.setSource( DEFAULT_SOURCE );
                 }
@@ -104,7 +131,7 @@ public class AISMessageFactory {
                 }
 
                 // decode message
-                message.decode();
+                message.decode( charset );
                 return Optional.of( message );
             } else {
                 throw new AISException( "MessageType is null for message String: " + compositeMsg );

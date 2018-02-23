@@ -21,6 +21,7 @@ import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.MMSIType;
+import java.nio.charset.Charset;
 import org.locationtech.spatial4j.context.SpatialContext;
 import org.locationtech.spatial4j.shape.Point;
 import java.time.ZonedDateTime;
@@ -314,13 +315,23 @@ public abstract class AISMessageBase implements AISMessage {
     public Point getPosition() {
         return _position;
     }
-
+    
     /**
-     *
-     * @throws AISException
+     * 
+     * @throws AISException 
      */
     @Override
     public void decode() throws AISException {
+        decode( AISPacket.DEFAULT_CHARSET );
+    }
+
+    /**
+     *
+     * @param charset
+     * @throws AISException
+     */
+    @Override
+    public void decode( Charset charset ) throws AISException {
         _decodedFieldMap.put( "time_received", getTimeReceived() );
 
         _compositeMsg = AISPacket.concatenate( getPackets() ) ;

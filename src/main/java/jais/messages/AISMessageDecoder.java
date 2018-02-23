@@ -301,7 +301,7 @@ public class AISMessageDecoder {
             case 0x3412140:
                 throw new AISException( "Latitude unavailable." );
             default:
-                lat = ( float ) ( ( ( double ) i ) / ( 60f * 10000f ) );
+                lat = ( float ) ( ( ( double )i ) / ( 60f * 10000f ) );
         }
 
         return lat;
@@ -422,6 +422,19 @@ public class AISMessageDecoder {
      */
     public static String decodeToString( BitSet bits, int startBit, int endBit ) throws AISException {
         return AISPacket.bArray2Str( decodeToByteArray( bits, startBit, endBit ) );
+    }
+    
+    /**
+     * 
+     * @param bits
+     * @param startBit
+     * @param endBit
+     * @param charset
+     * @return
+     * @throws AISException 
+     */
+    public static String decodeToString( BitSet bits, int startBit, int endBit, Charset charset ) throws AISException {
+        return AISPacket.bArray2Str( decodeToByteArray( bits, startBit, endBit ), charset );
     }
 
     /**

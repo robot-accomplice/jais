@@ -22,6 +22,7 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.ShipType;
+import java.nio.charset.Charset;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -299,8 +300,8 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
-        super.decode();
+    public final void decode( Charset charset ) throws AISException {
+        super.decode( charset );
 
         for( StaticAndVoyageFieldMap field : StaticAndVoyageFieldMap.values() ) {
             switch( field ) {
@@ -314,11 +315,11 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
                     break;
                 case CALL_SIGN:
                     _callsign = AISMessageDecoder.decodeToByteArray( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                            field.getStartBit(), field.getEndBit(), charset );
                     break;
                 case SHIP_NAME:
                     _shipname = AISMessageDecoder.decodeToByteArray( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                            field.getStartBit(), field.getEndBit(), charset );
                     break;
                 case SHIP_TYPE:
                     int shipCode = AISMessageDecoder.decodeUnsignedInt( _bits,
@@ -372,7 +373,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
                     break;
                 case DESTINATION:
                     _destination = AISMessageDecoder.decodeToByteArray( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                            field.getStartBit(), field.getEndBit(), charset );
                     break;
                 case DTE:
                     if( field.getStartBit() < _bits.size() ) {
