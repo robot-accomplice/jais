@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 public class Vessel implements Cloneable {
 
     private final static Logger LOG = LogManager.getLogger( Vessel.class );
+    private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm" ).withZone( ZoneOffset.UTC.normalized() );
 
     private Identifier _id;
     private int _version;
@@ -69,7 +70,6 @@ public class Vessel implements Cloneable {
     private boolean _raim = false;
     private int _repeat = 0;
     private int _radio;
-    private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm" ).withZone( ZoneOffset.UTC.normalized() );
     private ZonedDateTime _eta = ZonedDateTime.parse( "1970/01/01 00:00", ETA_FORMATTER );
     private ZonedDateTime _currentMessageTimestamp;
     private ZonedDateTime _currentPositionTimestamp;
@@ -90,6 +90,8 @@ public class Vessel implements Cloneable {
         _radio = report.getRadio();
         _repeat = report.getRepeat();
         _speed = report.getSpeed();
+        
+        LOG.debug( this.toString() );
     }
 
     /**
@@ -113,6 +115,8 @@ public class Vessel implements Cloneable {
         _second = report.getSecond();
         _shipname = AISPacket.str2bArray( report.getShipName() );
         _shiptype = report.getShipType();
+        
+        LOG.debug( this.toString() );
     }
 
     /**
@@ -136,6 +140,8 @@ public class Vessel implements Cloneable {
         _turn = prb.getTurn();
         _accurate = prb.isAccurate();
         _raim = prb.isRaim();
+        
+        LOG.debug( this.toString() );
     }
 
     /**
@@ -163,6 +169,8 @@ public class Vessel implements Cloneable {
         _toStarboard = savrd.getToStarboard();
         _toStern = savrd.getToStern();
         _version = savrd.getVersion();
+        
+        LOG.debug( this.toString() );
     }
 
     /**
@@ -186,6 +194,8 @@ public class Vessel implements Cloneable {
         _turn = prb.getTurn();
         _accurate = prb.isAccurate();
         _raim = prb.isRaim();
+        
+        LOG.debug( this.toString() );
     }
 
     /**
@@ -211,6 +221,8 @@ public class Vessel implements Cloneable {
         _toStarboard = savrd.getToStarboard();
         _toStern = savrd.getToStern();
         _version = savrd.getVersion();
+        
+        LOG.debug( this.toString() );
     }
 
     /**
@@ -608,6 +620,54 @@ public class Vessel implements Cloneable {
         final Vessel other = ( Vessel ) obj;
 
         return( _id.equals( other.getId() ) );
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "{ " );
+        sb.append( "id : { mmsi : " ).append( _id.getMmsi() ).append( ", source : \"" ).append( _id.getSource() ).append( " }" );
+        sb.append( ", version : " ).append( _version );
+        sb.append( ", imo : " ).append( _imo );
+        sb.append( ", callsign : \"" ).append( _callsign ).append( "\"" );
+        sb.append( ", shipname : \"" ).append( _shipname ).append( "\"" );
+        sb.append( ", shiptype : \"" ).append( _shiptype ).append( "\"" );
+        sb.append( ", toBow : " ).append( _toBow );
+        sb.append( ", toPort : " ).append( _toPort );
+        sb.append( ", toStern : " ).append( _toStern );
+        sb.append( ", toStarboard : " ).append( _toStarboard );
+        sb.append( ", epfd : " ).append( _epfd );
+        sb.append( ", month : " ).append( _month );
+        sb.append( ", day : " ).append( _day );
+        sb.append( ", hour : " ).append( _hour );
+        sb.append( ", minute : " ).append( _minute );
+        sb.append( ", second : " ).append( _second );
+        sb.append( ", draught : " ).append( _draught );
+        sb.append( ", destination : " ).append( _destination );
+        sb.append( ", dte : " ).append( _dte );
+        sb.append( ", status : " ).append( _status );
+        sb.append( ", turn : " ).append( _turn );
+        sb.append( ", speed : " ).append( _speed );
+        sb.append( ", accurate : " ).append( _accurate );
+        sb.append( ", lon : " ).append( _lon );
+        sb.append( ", lat : " ).append( _lat );
+        sb.append( ", course : " ).append( _course );
+        sb.append( ", heading : " ).append( _heading );
+        sb.append( ", maneuver : " ).append( _maneuver );
+        sb.append( ", raim : " ).append( _raim );
+        sb.append( ", repeat : " ).append( _repeat );
+        sb.append( ", radio : " ).append( _radio );
+        sb.append( ", eta : " ).append( _eta );
+        sb.append( ", currentMessageTimestamp : " ).append( _currentMessageTimestamp );
+        sb.append( ", currentPositionTimestamp : " ).append( _currentPositionTimestamp );
+        sb.append( ", previousPositionTimestamp : " ).append( _previousPositionTimestamp );
+        sb.append( "}" );
+        
+        return sb.toString();
     }
 
     /**
