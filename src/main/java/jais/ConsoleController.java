@@ -26,6 +26,7 @@ import jais.messages.StandardClassBCSPositionReport;
 import jais.messages.StaticAndVoyageRelatedData;
 import jais.messages.enums.MMSIType;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -121,7 +122,7 @@ public class ConsoleController implements Initializable {
             }
             appendLineToOutput( "---------------------------------------------" );
             
-            Optional<AISMessage> msgOpt = AISMessageFactory.create( "CONSOLE", false, packets );
+            Optional<AISMessage> msgOpt = AISMessageFactory.create( "CONSOLE", false, StandardCharsets.UTF_8, packets );
             if( msgOpt.isPresent() ) {
                 AISMessage msg = msgOpt.get();
                 // from AISMessageBase
