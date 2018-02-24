@@ -19,6 +19,7 @@ import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.AISMessageType;
+import java.nio.charset.Charset;
 import java.util.BitSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -119,8 +120,8 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
      * @throws jais.exceptions.AISException
      */
     @Override
-    public final void decode() throws AISException {
-        super.decode();
+    public final void decode( Charset charset ) throws AISException {
+        super.decode( charset );
 
         for( MultipleSlotBinaryMessageFieldMap field : MultipleSlotBinaryMessageFieldMap.values() ) {
             switch( field ) {

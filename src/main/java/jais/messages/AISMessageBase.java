@@ -285,7 +285,7 @@ public abstract class AISMessageBase implements AISMessage {
      * @return @throws jais.exceptions.AISException
      */
     @Override
-    public AISMessage getSubTypeInstance() throws AISException {
+    public AISMessage getSubTypeInstance( Charset charset ) throws AISException {
         return this;
     }
 

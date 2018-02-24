@@ -21,6 +21,7 @@ import jais.messages.enums.AISMessageType;
 import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.EPFDFixType;
+import java.nio.charset.Charset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -166,49 +167,40 @@ public class UTCDateResponse extends AISMessageBase {
      * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
-        super.decode();
+    public final void decode( Charset charset ) throws AISException {
+        super.decode( charset );
 
         for( UTCDateResponseFieldMap field : UTCDateResponseFieldMap.values() ) {
             switch( field ) {
                 case YEAR:
-                    _year = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _year = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case MONTH:
-                    _month = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _month = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case DAY:
-                    _day = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _day = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case HOUR:
-                    _hour = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _hour = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case MINUTE:
-                    _minute = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _minute = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SECOND:
-                    _second = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _second = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case ACCURACY:
                     _accurate = _bits.get( field.getStartBit() );
                     break;
                 case LON:
-                    _lon = AISMessageDecoder.decodeLongitude( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case LAT:
-                    _lat = AISMessageDecoder.decodeLatitude( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case EPFD:
-                    int epfdCode = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    int epfdCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     if( LOG.isDebugEnabled() ) LOG.debug( "Retrieving EPFDFixType for code: {}", epfdCode );
                     _epfd = EPFDFixType.getForCode( epfdCode );
                     break;
@@ -216,8 +208,7 @@ public class UTCDateResponse extends AISMessageBase {
                     _raim = _bits.get( field.getStartBit() );
                     break;
                 case RADIO:
-                    _radio = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _radio = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 default:
                     if( LOG.isDebugEnabled() ) LOG.debug( "Encountered unhandled field type of : {}", field );

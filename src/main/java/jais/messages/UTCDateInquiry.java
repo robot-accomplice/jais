@@ -20,6 +20,7 @@ import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
+import java.nio.charset.Charset;
 
 /**
  *
@@ -70,14 +71,13 @@ public class UTCDateInquiry extends AISMessageBase {
      * @throws AISException 
      */
     @Override
-    public final void decode() throws AISException {
-        super.decode();
+    public final void decode( Charset charset ) throws AISException {
+        super.decode( charset );
         
         for( UTCDateInquiryFieldMap field : UTCDateInquiryFieldMap.values() ) {
             switch( field ) {
                 case DEST_MMSI:
-                    _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
             }
         }

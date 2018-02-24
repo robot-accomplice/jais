@@ -117,10 +117,11 @@ public interface AISMessage {
     
     /**
      * 
+     * @param charset
      * @return 
      * @throws jais.exceptions.AISException 
      */
-    AISMessage getSubTypeInstance() throws AISException;
+    AISMessage getSubTypeInstance( Charset charset ) throws AISException;
     
     /**
      * 

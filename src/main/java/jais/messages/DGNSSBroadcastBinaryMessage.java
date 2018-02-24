@@ -20,6 +20,7 @@ import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
+import java.nio.charset.Charset;
 import org.locationtech.spatial4j.shape.Point;
 import java.util.BitSet;
 import org.apache.logging.log4j.LogManager;
@@ -106,8 +107,8 @@ public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
      * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
-        super.decode();
+    public final void decode( Charset charset ) throws AISException {
+        super.decode( charset );
 
         for( DGNSSBroadcastBinaryMessageFieldMap field : DGNSSBroadcastBinaryMessageFieldMap.values() ) {
             try {

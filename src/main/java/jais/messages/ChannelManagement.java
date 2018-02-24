@@ -20,6 +20,7 @@ import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.AISMessageType;
+import java.nio.charset.Charset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -181,8 +182,8 @@ public class ChannelManagement extends AISMessageBase {
      * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
-        super.decode();
+    public final void decode( Charset charset ) throws AISException {
+        super.decode( charset );
 
         for( ChannelManagementFieldMap field : ChannelManagementFieldMap.values() ) {
             switch( field ) {

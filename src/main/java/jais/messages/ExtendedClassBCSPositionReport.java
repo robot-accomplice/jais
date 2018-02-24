@@ -22,6 +22,7 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.ShipType;
+import java.nio.charset.Charset;
 import org.locationtech.spatial4j.shape.Point;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -233,66 +234,53 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
      * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
-        super.decode();
+    public final void decode( Charset charset ) throws AISException {
+        super.decode( charset );
         
         for( ExtendedClassBCSPositionReportFieldMap field : ExtendedClassBCSPositionReportFieldMap.values() ) {
             switch( field ) {
                 case SPEED:
-                    _speed = AISMessageDecoder.decodeUnsignedInt( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    _speed = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case ACCURATE:
                     _accurate = _bits.get( field.getStartBit() );
                     break;
                 case LON:
-                    _lon = AISMessageDecoder.decodeLongitude( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case LAT:
-                    _lat = AISMessageDecoder.decodeLatitude( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
                    break;
                 case COURSE:
-                    _course = AISMessageDecoder.decodeCourse( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    _course = AISMessageDecoder.decodeCourse( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case HEADING:
-                    _heading = AISMessageDecoder.decodeUnsignedInt( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    _heading = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SECOND:
-                    _second = AISMessageDecoder.decodeUnsignedInt( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    _second = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SHIP_NAME:
-                    _shipName = AISMessageDecoder.decodeToString( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    _shipName = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
                     break;
                 case SHIP_TYPE:
-                    int shipCode = AISMessageDecoder.decodeUnsignedInt( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    int shipCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     _shipType = ShipType.getForCode( shipCode );
                     break;
                 case TO_BOW:
-                    _toBow = AISMessageDecoder.decodeUnsignedInt( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    _toBow = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_STERN:
-                    _toStern = AISMessageDecoder.decodeUnsignedInt( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    _toStern = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_PORT:
-                    _toPort = AISMessageDecoder.decodeUnsignedInt( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    _toPort = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_STARBOARD:
-                    _toStarboard = AISMessageDecoder.decodeUnsignedInt( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    _toStarboard = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case EPFD:
-                    int epfdCode = AISMessageDecoder.decodeUnsignedInt(  _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    int epfdCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     _epfd = EPFDFixType.getForCode( epfdCode );
                     break;
                 case RAIM:
@@ -302,11 +290,10 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
                     _dte = _bits.get( field.getStartBit() );
                     break;
                 case ASSIGNED:
-                    _assigned = AISMessageDecoder.decodeUnsignedInt( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    _assigned = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 default:
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: " + field.name() );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
             }
         }
     }

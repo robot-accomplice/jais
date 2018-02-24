@@ -22,6 +22,7 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.BinaryAddressedMessageType;
 import jais.messages.enums.FieldMap;
 import java.lang.reflect.Constructor;
+import java.nio.charset.Charset;
 import java.util.BitSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -144,8 +145,7 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
      */
     public BinaryAddressedMessageType getSubType() {
         if( _subType == null ) {
-            _subType = BinaryAddressedMessageType.fetch( _dac, _fid,
-                    _bits.size() );
+            _subType = BinaryAddressedMessageType.fetch( _dac, _fid, _bits.size() );
         }
 
         return _subType;
@@ -161,10 +161,11 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
 
     /**
      *
+     * @param charset
      * @return @throws jais.exceptions.AISException
      */
     @Override
-    public BinaryAddressedMessageBase getSubTypeInstance() throws AISException {
+    public BinaryAddressedMessageBase getSubTypeInstance( Charset charset ) throws AISException {
         BinaryAddressedMessageBase message;
 
         if( _subType == null ) {
@@ -205,8 +206,8 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
      * @throws jais.exceptions.AISException
      */
     @Override
-    public void decode() throws AISException {
-        super.decode();
+    public void decode( Charset charset ) throws AISException {
+        super.decode( charset );
 
         for( BinaryAddressedMessageFieldMap field
                 : BinaryAddressedMessageFieldMap.values() ) {

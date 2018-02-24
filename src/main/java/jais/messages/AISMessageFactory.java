@@ -127,7 +127,7 @@ public class AISMessageFactory {
                     message.setSource( DEFAULT_SOURCE );
                 }
                 while( message.hasSubType() ) {
-                    message = message.getSubTypeInstance();
+                    message = message.getSubTypeInstance( charset );
                 }
 
                 // decode message

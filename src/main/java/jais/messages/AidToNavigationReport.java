@@ -22,6 +22,7 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.NavaidType;
+import java.nio.charset.Charset;
 import org.locationtech.spatial4j.shape.Point;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -233,63 +234,52 @@ public class AidToNavigationReport extends AISMessageBase {
      * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
-        super.decode();
+    public final void decode( Charset charset ) throws AISException {
+        super.decode( charset );
 
         for( AidToNavigationReportFieldMap field : AidToNavigationReportFieldMap.values() ) {
             try {
                 switch( field ) {
                     case NAVAID_TYPE:
-                        int navCode = AISMessageDecoder.decodeSignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        int navCode = AISMessageDecoder.decodeSignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         _navaidType = NavaidType.getForCode( navCode );
                         break;
                     case NAME:
-                        _name = AISMessageDecoder.decodeToString( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        _name = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
                         break;
                     case ACCURATE:
                         _accurate = _bits.get( field.getStartBit() );
                         break;
                     case LON:
-                        _lon = AISMessageDecoder.decodeLongitude( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case LAT:
-                        _lat = AISMessageDecoder.decodeLatitude( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case TO_BOW:
-                        _toBow = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        _toBow = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case TO_STERN:
-                        _toStern = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        _toStern = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case TO_PORT:
-                        _toPort = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        _toPort = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case TO_STARBOARD:
-                        _toStarboard = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        _toStarboard = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case EPFD:
-                        int epfdCode = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        int epfdCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         _epfd = EPFDFixType.getForCode( epfdCode );
                         break;
                     case SECOND:
-                        _second = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        _second = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case OFF_POSITION:
                         _offPosition = _bits.get( field.getStartBit() );
                         break;
                     case REGIONAL_RESERVED:
-                        _regional = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        _regional = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case RAIM:
                         _raim = _bits.get( field.getStartBit() );
@@ -298,15 +288,13 @@ public class AidToNavigationReport extends AISMessageBase {
                         _virtualAid = _bits.get( field.getStartBit() );
                         break;
                     case NAME_EXTENSION:
-                        _nameExtension = AISMessageDecoder.decodeToString( _bits,
-                                field.getStartBit(), _bits.size() - 1 );
+                        _nameExtension = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), _bits.size() - 1 );
                         break;
                     default:
                         if( LOG.isTraceEnabled() ) LOG.trace( "Ignoring field: {}", field.name() );
                 }
-            } catch( Exception e ) {
-                if( LOG.isDebugEnabled() ) LOG.debug( "Failed to decode field: {} due to {}", field.name(),
-                        e.getMessage(), e );
+            } catch( AISException e ) {
+                if( LOG.isDebugEnabled() ) LOG.debug( "Failed to decode field: {} due to {}", field.name(), e.getMessage(), e );
             }
         }
     }

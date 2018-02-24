@@ -24,6 +24,7 @@ import jais.messages.enums.ShipType;
 import jais.messages.enums.StationInterval;
 import jais.messages.enums.StationType;
 import jais.messages.enums.TransmitMode;
+import java.nio.charset.Charset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 /**
@@ -139,8 +140,8 @@ public class GroupAssignmentCommand extends AISMessageBase {
      * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
-        super.decode();
+    public final void decode( Charset charset ) throws AISException {
+        super.decode( charset );
 
         for( GroupAssignmentCommandFieldMap field : GroupAssignmentCommandFieldMap.values() ) {
             switch( field ) {
