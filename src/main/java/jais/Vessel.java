@@ -49,7 +49,7 @@ public class Vessel implements Cloneable {
     private int _toStern;
     private int _toPort;
     private int _toStarboard;
-    private EPFDFixType _epfd;
+    private EPFDFixType _epfd = EPFDFixType.UNDEFINED;
     private int _month = 1;
     private int _day = 1;
     private int _hour;
