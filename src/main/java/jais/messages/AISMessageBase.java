@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import java.util.Arrays;
+import java.util.Optional;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -342,7 +343,8 @@ public abstract class AISMessageBase implements AISMessage {
             switch( field ) {
                 case TYPE:
                     if( _decodedFieldMap.get( "message_type" ) == null ) {
-                        _messageType = AISMessageDecoder.decodeMessageType( _bits );
+                        Optional<AISMessageType> mType = AISMessageDecoder.decodeMessageType( _bits );
+                        if( mType.isPresent() ) _messageType = mType.get();
                     }
                     break;
                 case REPEAT:
