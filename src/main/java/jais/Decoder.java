@@ -75,7 +75,7 @@ public class Decoder {
                         }
                     }
                 } catch( AISException ae ) {
-                    System.err.println( "Encountered an AISException while processing AISPacket from String \"" + s + "\" " + 
+                    LOG.warn( "Encountered an AISException while processing AISPacket from String \"" + s + "\" " + 
                             ae.getMessage() );
                 }
             } );
@@ -155,9 +155,9 @@ public class Decoder {
          * opens file for creation and adds header line
          */
         public static void initFile( Path path ) throws IOException {
-            System.out.println( "Initiating file at " + path.toString() );
+            LOG.info( "Initiating file at " + path.toString() );
             Files.write( path, HEADER.getBytes(), StandardOpenOption.CREATE_NEW );
-            System.out.println( "WROTE: " + HEADER );
+            LOG.info( "WROTE: " + HEADER );
         }
         
         /**
@@ -190,10 +190,10 @@ public class Decoder {
                     msgSb.append( "," ).append( prb.getTurn() );
                     Files.write( path, msgSb.append( "\n" ).toString().getBytes(), 
                             StandardOpenOption.WRITE, StandardOpenOption.APPEND );
-                    System.out.println( "WROTE: " + msgSb.toString() );
+                    LOG.info( "WROTE: " + msgSb.toString() );
                     break;
                 default:
-                    System.out.println( "Skipping " + message.getType().name() + " message" );
+                    LOG.warn( "Skipping " + message.getType().name() + " message" );
             }
         }
     }
