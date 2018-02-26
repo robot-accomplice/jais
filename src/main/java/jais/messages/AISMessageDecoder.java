@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.BitSet;
+import java.util.Optional;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -238,7 +239,7 @@ public class AISMessageDecoder {
      * @return
      * @throws AISException
      */
-    public static AISMessageType decodeMessageType( AISPacket... packets ) throws AISException {
+    public static Optional<AISMessageType> decodeMessageType( AISPacket... packets ) throws AISException {
         // concatenate full raw message from all packets
         return decodeMessageType( AISPacket.concatenate( packets ) );
     }
@@ -249,7 +250,7 @@ public class AISMessageDecoder {
      * @return
      * @throws AISException
      */
-    public static AISMessageType decodeMessageType( String rawMessage ) throws AISException {
+    public static Optional<AISMessageType> decodeMessageType( String rawMessage ) throws AISException {
         return decodeMessageType( stringToBitSet( rawMessage ) );
     }
     
@@ -259,7 +260,7 @@ public class AISMessageDecoder {
      * @return
      * @throws AISException 
      */
-    public static AISMessageType decodeMessageType( byte [] rawMessage ) throws AISException {
+    public static Optional<AISMessageType> decodeMessageType( byte [] rawMessage ) throws AISException {
         return decodeMessageType( byteArrayToBitSet( rawMessage ) );
     }
 
@@ -269,18 +270,16 @@ public class AISMessageDecoder {
      * @return
      * @throws jais.exceptions.AISException
      */
-    public static AISMessageType decodeMessageType( BitSet bits )
-            throws AISException {
+    public static Optional<AISMessageType> decodeMessageType( BitSet bits ) throws AISException {
 
         if( bits.size() < AISFieldMap.TYPE.getEndBit() ) {
             throw new AISException( "BitSet is too short: " + bits.size() );
         }
         if( LOG.isDebugEnabled() ) LOG.debug( "BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(),
                 AISFieldMap.TYPE.getStartBit(), AISFieldMap.TYPE.getEndBit() );
-        int typeId = decodeUnsignedInt( bits, AISFieldMap.TYPE.getStartBit(),
-                AISFieldMap.TYPE.getEndBit() );
+        int typeId = decodeUnsignedInt( bits, AISFieldMap.TYPE.getStartBit(), AISFieldMap.TYPE.getEndBit() );
 
-        return AISMessageType.fetchById( typeId );
+        return Optional.of( AISMessageType.fetchById( typeId ) );
     }
 
     /**
