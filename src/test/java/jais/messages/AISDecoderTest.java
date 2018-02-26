@@ -328,6 +328,54 @@ public class AISDecoderTest {
 
         LOG.info( "AIS message decode test successful!" );
     }
+    
+    /**
+     * 
+     * @throws AISPacketException
+     * @throws AISException 
+     */
+    @Test
+    public void testDecodingSpeed() throws AISPacketException, AISException {
+        LOG.info( "*** testDecodingSpeed()" );
+        long start;
+        long stop;
+        
+        AISPacket pOne = new AISPacket( TEST_COMPOUND_MESSAGE[0] );
+        AISPacket pTwo = new AISPacket( TEST_COMPOUND_MESSAGE[1] );
+        start = System.nanoTime();
+        pOne.process();
+        pTwo.process();
+        stop = System.nanoTime();
+        
+        LOG.fatal( "============================================================================================" );
+        LOG.fatal( "Packet processing for two packets took {} ns", ( stop - start ) );
+        LOG.fatal( "============================================================================================" );
+        
+        start = System.nanoTime();
+        AISPacket[] compoundMsg = new AISPacket[]{pOne, pTwo};
+        AISMessageFactory.create( "UnitTest", compoundMsg );
+        stop = System.nanoTime();
+        
+        LOG.fatal( "============================================================================================" );
+        LOG.fatal( "Decoding of one compound message took {} ns", ( stop - start ) );
+        LOG.fatal( "============================================================================================" );
+        
+        start = System.nanoTime();
+        for( String packetStr : TEST_PACKETS ) {
+            try {
+                AISPacket packet = new AISPacket( packetStr );
+                AISMessageFactory.create( "UnitTest", packet );
+            } catch( Exception e ) {
+                // do nothing
+            }
+        }
+        stop = System.nanoTime();
+        
+        LOG.fatal( "============================================================================================" );
+        LOG.fatal( "Decoding {} individual AIS packets took a total of {} ns for an average of {} ns per message",
+                TEST_PACKETS.length, ( ( stop - start ) ), ( ( ( stop - start ) / TEST_PACKETS.length ) ) );
+        LOG.fatal( "============================================================================================" );
+    }
 
     /**
      *
