@@ -359,21 +359,29 @@ public class AISDecoderTest {
         LOG.fatal( "============================================================================================" );
         LOG.fatal( "Decoding of one compound message took {} ns", ( stop - start ) );
         LOG.fatal( "============================================================================================" );
+
+        long totalTime = 0;
+        long perMsgTime = 0;
         
-        start = System.nanoTime();
-        for( String packetStr : TEST_PACKETS ) {
-            try {
-                AISPacket packet = new AISPacket( packetStr );
-                AISMessageFactory.create( "UnitTest", packet );
-            } catch( Exception e ) {
-                // do nothing
+        for( int i = 0; i < 1000; i++ ) {
+            start = System.nanoTime();
+            for( String packetStr : TEST_PACKETS ) {
+                try {
+                    AISPacket packet = new AISPacket( packetStr );
+                    AISMessageFactory.create( "UnitTest", packet );
+                } catch( AISException e ) {
+                    // do nothing
+                }
             }
+            stop = System.nanoTime();
+            
+            totalTime  += ( stop - start );
+            perMsgTime += ( stop - start ) / TEST_PACKETS.length;
         }
-        stop = System.nanoTime();
         
         LOG.fatal( "============================================================================================" );
-        LOG.fatal( "Decoding {} individual AIS packets took a total of {} ns for an average of {} ns per message",
-                TEST_PACKETS.length, ( ( stop - start ) ), ( ( ( stop - start ) / TEST_PACKETS.length ) ) );
+        LOG.fatal( "Average msg decode time across 1000 runs for {} messages    :  {} ms", TEST_PACKETS.length, totalTime  / ( 1000f * 1000000f ) );
+        LOG.fatal( "Average per message decode time across 1000 runs            :  {} ms", perMsgTime / ( 1000f * 1000000f ) );
         LOG.fatal( "============================================================================================" );
     }
 
