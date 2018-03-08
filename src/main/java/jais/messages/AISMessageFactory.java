@@ -75,6 +75,81 @@ public class AISMessageFactory {
     }
     
     /**
+     * 
+     * @param source
+     * @param strict
+     * @param charset
+     * @param packets
+     * @return
+     * @throws AISException 
+     */
+    @Deprecated
+    public static Optional<AISMessage> createR( String source, boolean strict, Charset charset, AISPacket... packets ) throws AISException {
+        
+        String compositeMsg = null;
+
+        try {
+            if( packets.length < 1 ) throw new AISException( "Packets array is empty!" ); 
+            if( LOG.isDebugEnabled() ) LOG.debug( "Decoding message from {} packet(s). Strict is set to {}", packets.length, strict );
+            
+            byte [] compositeBytes;
+            if( packets.length == 1 ) {
+                if( ! packets[0].isParsed() ) packets[0].process();
+                compositeBytes = packets[0].getBinaryString();
+            } else {
+                compositeBytes = AISPacket.concatenate( packets );
+            }
+            
+            compositeMsg = AISPacket.bArray2Str( compositeBytes );
+            
+            if( LOG.isDebugEnabled() ) LOG.debug( "Composite message is: {}", compositeMsg );
+            
+            // we need the message type in order to invoke the reflective constructor
+            Optional<AISMessageType> mType = AISMessageDecoder.decodeMessageType( compositeMsg );
+
+            if( mType.isPresent() ) {
+                Constructor con = mType.get().getMessageClass().getDeclaredConstructor( String.class, AISPacket[].class );
+                con.setAccessible( true );
+
+                AISMessage message;
+                if( packets.length == 1 ) {
+                    // reflection won't work properly for singletons if we don't do this
+                    message = ( AISMessage ) con.newInstance( ( Object )source, ( Object )packets );
+                } else {
+                    message = ( AISMessage ) con.newInstance( source, packets );
+                }
+
+                message.setType( mType.get() );
+                if( source != null ) {
+                    message.setSource( source );
+                } else if( packets[0].getSource() != null ) {
+                    message.setSource( AISPacket.bArray2Str( packets[0].getSource(), charset ) );
+                } else {
+                    message.setSource( DEFAULT_SOURCE );
+                }
+                while( message.hasSubType() ) {
+                    message = message.getSubTypeInstance( charset );
+                }    
+                return Optional.of( message );
+            } else {
+                throw new AISException( "MessageType is null for message String: " + compositeMsg );
+            }
+        } catch( AISException t ) {
+            // repackage any and all throwables as AISExceptions
+            if( strict ) {
+                throw new AISException( "Failed to create a valid AISMessage from packet \"" + compositeMsg + "\" : " + t.getMessage(), t );
+            } else {
+                LOG.warn( "Incomplete AISMessage created from packet \"{}\" : {}", compositeMsg, t.getMessage() );
+                if( LOG.isTraceEnabled() ) LOG.trace( "Decode Failure: {}", t.getMessage(), t );
+            }
+        } catch( NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex ) {
+            LOG.error( "{} - Reflection use caused an Exception: {}", source, ex.getMessage(), ex );
+        }
+
+        return Optional.empty();
+    }
+    
+    /**
      *
      * @param source
      * @param strict
@@ -220,6 +295,18 @@ public class AISMessageFactory {
      * @throws jais.exceptions.AISException
      */
     public static Optional<AISMessage> create( String source, AISPacket... packets ) throws AISException {
+        return create( source, true, packets );
+    }
+
+    /**
+     *
+     * @param source
+     * @param packets
+     * @return
+     * @throws jais.exceptions.AISException
+     */
+    @Deprecated
+    public static Optional<AISMessage> createR( String source, AISPacket... packets ) throws AISException {
         return create( source, true, packets );
     }
 
