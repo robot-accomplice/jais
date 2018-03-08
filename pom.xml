@@ -21,7 +21,7 @@
     
     <groupId>com.robotaccomplice</groupId>
     <artifactId>jais</artifactId>
-    <version>0.1.77</version>
+    <version>0.1.78</version>
     <packaging>jar</packaging>
     
     <name>JAIS</name>
