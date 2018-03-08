@@ -218,7 +218,7 @@ public enum AISMessageType {
             if( type.getMessageClass().equals( messageClass ) ) {
                 foundType = type;
                 break;
-}
+            }
         }
         
         return foundType;
