@@ -275,10 +275,18 @@ public class AISMessageDecoder {
         if( bits.size() < AISFieldMap.TYPE.getEndBit() ) {
             throw new AISException( "BitSet is too short: " + bits.size() );
         }
-        if( LOG.isDebugEnabled() ) LOG.debug( "BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(),
+        
+        if( LOG.isDebugEnabled() ) {
+            LOG.debug( "BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(),
                 AISFieldMap.TYPE.getStartBit(), AISFieldMap.TYPE.getEndBit() );
+        }
+        
         int typeId = decodeUnsignedInt( bits, AISFieldMap.TYPE.getStartBit(), AISFieldMap.TYPE.getEndBit() );
 
+        if( typeId == 0 || AISMessageType.fetchById( typeId ) == null ) {
+            return Optional.empty();
+        }
+        
         return Optional.of( AISMessageType.fetchById( typeId ) );
     }
 
