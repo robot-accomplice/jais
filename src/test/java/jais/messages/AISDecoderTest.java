@@ -522,7 +522,7 @@ public class AISDecoderTest {
      *
      * @param packets
      */
-    private void processPackets( AISPacket... packets ) throws AISException {
+    private void decodePackets( AISPacket... packets ) throws AISException {
 
         Optional<AISMessage> msg = AISMessageFactory.create( "UnitTest", packets );
 
@@ -679,6 +679,7 @@ public class AISDecoderTest {
             String truncStr = AISPacket.truncatePacket( new StringBuilder( packetStr ) );
             if( truncStr != null && !truncStr.isEmpty() ) packetStr = truncStr;
             
+            LOG.debug( "Processing \"{}\"" );
             AISPacket packet = new AISPacket( packetStr.trim() );
             packet.process();
             if( packet.getTagBlock() != null ) {
@@ -694,7 +695,7 @@ public class AISDecoderTest {
             } else {
                 LOG.info( "TAGBLOCK is null" );
             }
-            processPackets( packet );
+            decodePackets( packet );
         }
 
         LOG.info( "Testing compound message with two parts" );
@@ -704,7 +705,7 @@ public class AISDecoderTest {
         pTwo.process();
         AISPacket[] compoundMsg = new AISPacket[]{pOne, pTwo};
 
-        processPackets( compoundMsg );
+        decodePackets( compoundMsg );
 
         LOG.info( "** Subtest of packet separation logic" );
         LOG.info( "Testing packets that are not newline separated" );
@@ -714,7 +715,7 @@ public class AISDecoderTest {
                 ps = "!AIVDM" + ps.trim();
                 LOG.info( "Found packet to test: {}", ps );
                 try {
-                    processPackets( new AISPacket( ps ) );
+                    decodePackets( new AISPacket( ps ) );
                 } catch( AISException t ) {
                     LOG.info( t.getMessage(), t );
                 }
@@ -728,7 +729,7 @@ public class AISDecoderTest {
                 ps = "!AIVD" + ps;
                 LOG.info( "Found packet to test: {}", ps );
                 try {
-                    processPackets( new AISPacket( ps ) );
+                    decodePackets( new AISPacket( ps ) );
                 } catch( AISException t ) {
                     LOG.info( t.getMessage(), t );
                 }
