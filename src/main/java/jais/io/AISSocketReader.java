@@ -89,7 +89,6 @@ public class AISSocketReader implements Runnable, AutoCloseable {
                     BufferedReader reader = new BufferedReader( new InputStreamReader( bin ) ) ) {
                 while( isConnected() ) {
                     try {
-
                         int readCount = reader.read( cb );
                         if( LOG.isDebugEnabled() ) LOG.debug( "{} - Read {} bytes from stream", _name, readCount );
 
@@ -98,30 +97,33 @@ public class AISSocketReader implements Runnable, AutoCloseable {
                         }
 
                         for( char c : cb.array() ) {
-                            if( sb.length() > 0 ) {
-                                if( c == '\n' || c == '\r' ) {
+                            if( c == '\n' || c == '\r' ) { // if we encounter a line terminator, process StringBuilder contents
+                                if( sb.length() > 0 ) { // if StringBuilder is not empty, submit contents to queue and/or handler
+                                    String submitStr = sb.toString(); // save StringBuilder content
+                                    sb.delete( 0, sb.length() ); // clear StringBuilder
+                                    
                                     if( _readQueue != null ) {
                                         _readQueue.submit( () -> {
                                             if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, sb.toString() );
                                             _current.increment();
                                             _session.increment();
-                                        }, Optional.ofNullable( sb.toString() ) );
+                                        }, Optional.ofNullable( submitStr ) );
                                     }
 
                                     if( _handler != null ) {
                                         if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to AISStringHandler...", _name, sb.toString() );
-                                        _handler.processString( sb.toString() );
+                                        _handler.processString( submitStr );
                                     }
-                                    sb.delete( 0, sb.length() ); // clear the submitted content from the string builder
                                 }
+                            } else { // if not a line terminator, append the new character to the StringBuilder
+                                sb.append( c );
                             }
-
-                            sb.append( c );
                         }
 
-                        cb.clear();
+                        cb.clear(); // clear the buffer now that we've processed everything
                     } catch( RejectedExecutionException ree ) {
-                        LOG.error( "{} - Queue size has been reached!  Pausing reads for 15 seconds...", _name );
+                        LOG.error( "{} - Queue element rejected!  Clearing CharBuffer and pausing reads for 15 seconds...", _name );
+                        cb.clear();
                         if( LOG.isTraceEnabled() ) LOG.trace( "{} - {}", _name, ree.getMessage(), ree );
                         try {
                             Thread.sleep( 15000 );
@@ -139,12 +141,10 @@ public class AISSocketReader implements Runnable, AutoCloseable {
                 } catch( InterruptedException ie ) {
                     // ignore
                 }
+            } catch( Throwable t ) {
+                LOG.error( "Unanticipated Fault: {}", t.getMessage(), t );
+                break;
             }
-        }
-        
-        try {
-            close();
-        } catch( Exception ex ) {
         }
     }
     
