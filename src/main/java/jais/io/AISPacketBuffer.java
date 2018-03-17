@@ -17,10 +17,7 @@
 package jais.io;
 
 import jais.AISPacket;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,14 +28,15 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen
  */
-public class AISPacketBuffer {
+public class AISPacketBuffer implements AutoCloseable {
 
     private final static Logger LOG = LogManager.getLogger( AISPacketBuffer.class );
 
-    private final Map<String, AISPacketSet> _buffer = new ConcurrentHashMap<>();  // Map is used to avoid Java 7/8 cross version compatibility issues
+    private final Map<AISPacketSet.Key, AISPacketSet> _packetSetMap = new ConcurrentHashMap<>();  // Map is used to avoid Java 7/8 cross version compatibility issues
     private final int _maxPacketAge;
 
     public final static int DEFAULT_MAX_PACKET_AGE = 360000; // six minutes
+    private boolean _closed = false;
 
     /**
      *
@@ -61,10 +59,10 @@ public class AISPacketBuffer {
      * @param packet
      * @return
      */
-    private String getKey( AISPacket packet ) {
+    private AISPacketSet.Key getKey( AISPacket packet ) {
         if( packet == null ) throw new NullPointerException( "Packet is null!" );
         if( packet.getSource() == null ) packet.setSource( AISPacket.str2bArray( "UNKNOWN" ) );
-        return new String( packet.getSource() ) + packet.getSequentialMessageId() + "_" + packet.getFragmentCount();
+        return new AISPacketSet.Key( packet.getSource(), packet.getSequentialMessageId(), packet.getFragmentCount() );
     }
 
     /**
@@ -72,8 +70,8 @@ public class AISPacketBuffer {
      * @param packetKey
      * @return
      */
-    public boolean has( String packetKey ) {
-        return _buffer.containsKey( packetKey );
+    private boolean has( AISPacketSet.Key packetKey ) {
+        return _packetSetMap.containsKey( packetKey );
     }
 
     /**
@@ -99,8 +97,8 @@ public class AISPacketBuffer {
      * @param packetKey
      * @return
      */
-    private boolean isComplete( String packetKey ) {
-        return _buffer.containsKey( packetKey ) && _buffer.get( packetKey ).isComplete();
+    private boolean isComplete( AISPacketSet.Key packetKey ) {
+        return _packetSetMap.containsKey( packetKey ) && _packetSetMap.get( packetKey ).isComplete();
     }
 
     /**
@@ -108,7 +106,7 @@ public class AISPacketBuffer {
      * @param packet
      * @return
      */
-    public synchronized Optional<AISPacket[]> add( AISPacket packet ) {
+    public Optional<AISPacket[]> add( AISPacket packet ) {
         return add( packet, false );
     }
 
@@ -118,22 +116,22 @@ public class AISPacketBuffer {
      * @param removeIfComplete
      * @return
      */
-    public synchronized Optional<AISPacket[]> add( AISPacket packet, boolean removeIfComplete ) {
+    public Optional<AISPacket[]> add( AISPacket packet, boolean removeIfComplete ) {
         if( packet == null ) {
             if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring null packet." );
         } else {
-            String pk = getKey( packet );
+            AISPacketSet.Key pk = getKey( packet );
             
             if( packet.getFragmentCount() > 1 ) {
                 if( LOG.isTraceEnabled() ) LOG.trace( "This is a multi-packet message." );
-                if( _buffer.containsKey( pk ) && _buffer.get( pk ) != null ) {
+                if( _packetSetMap.containsKey( pk ) && _packetSetMap.get( pk ) != null ) {
                     if( LOG.isTraceEnabled() ) LOG.trace( "Buffer already contains the first packet for this message." );
-                    AISPacketSet aps = _buffer.get( pk );
+                    AISPacketSet aps = _packetSetMap.get( pk );
                     aps.add( packet );
                 } else {
                     if( LOG.isTraceEnabled() ) LOG.trace( "This is the first packet in this message sequence." );
-                    AISPacketSet aps = new AISPacketSet( packet );
-                    _buffer.put( pk, aps );
+                    AISPacketSet aps = new AISPacketSet( packet, _maxPacketAge );
+                    _packetSetMap.put( pk, aps );
                 }
 
                 if( isComplete( packet ) ) {
@@ -146,7 +144,7 @@ public class AISPacketBuffer {
                 }
             } else {
                 if( !removeIfComplete ) {
-                    _buffer.put( pk, new AISPacketSet( packet ) );
+                    _packetSetMap.put( pk, new AISPacketSet( packet, _maxPacketAge ) );
                 }
                 return Optional.of( new AISPacket[]{ packet } );
             }
@@ -160,9 +158,17 @@ public class AISPacketBuffer {
      * @param packet
      * @return
      */
-    public synchronized Optional<AISPacket[]> remove( AISPacket packet ) {
-        String packetKey = getKey( packet );
+    public Optional<AISPacket[]> remove( AISPacket packet ) {
+        AISPacketSet.Key packetKey = getKey( packet );
         return remove( packetKey );
+    }
+    
+    /**
+     * 
+     * @param set 
+     */
+    public void remove( AISPacketSet set ) {
+        remove( set.getKey() );
     }
 
     /**
@@ -170,10 +176,10 @@ public class AISPacketBuffer {
      * @param packetKey
      * @return
      */
-    private synchronized Optional<AISPacket[]> remove( String packetKey ) {
+    private Optional<AISPacket[]> remove( AISPacketSet.Key packetKey ) {
         Optional<AISPacket[]> packets = getPackets( packetKey );
         if( packets.isPresent() ) {
-            _buffer.remove( packetKey );
+            _packetSetMap.remove( packetKey );
             return packets;
         }
         
@@ -185,8 +191,16 @@ public class AISPacketBuffer {
      * @param packet
      * @return
      */
-    public synchronized Optional<AISPacket[]> getPackets( AISPacket packet ) {
+    public Optional<AISPacket[]> getPackets( AISPacket packet ) {
         return getPackets( getKey( packet ) );
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public Collection<AISPacketSet> getAllPacketSets() {
+        return _packetSetMap.values();
     }
 
     /**
@@ -194,9 +208,9 @@ public class AISPacketBuffer {
      * @param packetKey
      * @return
      */
-    private Optional<AISPacket[]> getPackets( String packetKey ) {
-        if( _buffer.containsKey( packetKey ) ) {
-            return Optional.of( _buffer.get( packetKey ).getPackets() );
+    private Optional<AISPacket[]> getPackets( AISPacketSet.Key packetKey ) {
+        if( _packetSetMap.containsKey( packetKey ) ) {
+            return Optional.of( _packetSetMap.get( packetKey ).getPackets() );
         }
 
         return Optional.empty();
@@ -207,7 +221,7 @@ public class AISPacketBuffer {
      * @return
      */
     public int getBufferSize() {
-        return _buffer.size();
+        return _packetSetMap.size();
     }
 
     /**
@@ -219,7 +233,7 @@ public class AISPacketBuffer {
         int size = 0;
 
         if( has( packet ) ) {
-            size = _buffer.get( getKey( packet ) ).getSize();
+            size = _packetSetMap.get( getKey( packet ) ).getSize();
         }
 
         return size;
@@ -241,193 +255,45 @@ public class AISPacketBuffer {
      * @return 
      */
     public int purgeExpired( long thresholdMs ) {
+        LOG.fatal( "Purging AISPacketSets older than {}ms from AISPacketBuffer", thresholdMs );
         int purgeCount = 0;
         
-        if( _buffer.isEmpty() ) {
+        if( _packetSetMap.isEmpty() ) {
             // do nothing
+            LOG.info( "AISPacketBuffer is empty.  Aborting." );
         } else {
-            for( String key : _buffer.keySet() ) {
-                if( _buffer.containsKey( key ) ) {
-                    AISPacketSet set = _buffer.get( key );
+            for( AISPacketSet.Key key : _packetSetMap.keySet() ) {
+                if( _packetSetMap.containsKey( key ) ) {
+                    AISPacketSet set = _packetSetMap.get( key );
                     if( set == null || set.isExpired( thresholdMs ) ) {
                         purgeCount++;
-                        _buffer.remove( key );
+                        _packetSetMap.remove( key );
                     }
                 }
             }
         }
         
+        LOG.fatal( "{} AISPacketSets purged from AISPacketBuffer.  New AISPacketBuffer size is {} elements", 
+                purgeCount, _packetSetMap.size() );
+        
         return purgeCount;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public boolean isClosed() {
+        return _closed;
     }
 
     /**
      *
      */
+    @Override
     public void close() {
         LOG.info( "Closing AISPacketBuffer..." );
-        if( _buffer != null ) _buffer.clear();
-    }
-
-    /**
-     * ***********************************************************************
-     */
-    private class AISPacketSet {
-
-        private final ZonedDateTime _timestamp = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
-        private final AISPacket [] _packets;
-        private final int _sequenceNumber;
-        private final int _fragmentCount;
-        private final byte [] _source;
-
-        /**
-         *
-         * @param packet
-         */
-        public AISPacketSet( AISPacket packet ) {
-            _packets = new AISPacket[ packet.getFragmentCount() ];
-            _packets[0] = packet;
-            _sequenceNumber = packet.getSequentialMessageId();
-            _fragmentCount = packet.getFragmentCount();
-            _source = packet.getSource();
-        }
-
-        /**
-         *
-         * @return
-         */
-        public int getSequenceNumber() {
-            return _sequenceNumber;
-        }
-
-        /**
-         *
-         * @return
-         */
-        public int getFragmentCount() {
-            return _fragmentCount;
-        }
-
-        /**
-         *
-         * @return
-         */
-        public AISPacket[] getPackets() {
-            return _packets;
-        }
-
-        /**
-         *
-         * @return
-         */
-        public ZonedDateTime getTimestamp() {
-            return _timestamp;
-        }
-
-        /**
-         * 
-         * @return 
-         */
-        public long getAgeInMilliseconds() {
-            ZonedDateTime now = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
-            return now.toInstant().toEpochMilli() - _timestamp.toInstant().toEpochMilli();
-        }
-        
-        /**
-         * 
-         * @param expiredThresholdMs
-         * @return 
-         */
-        public boolean isExpired( long expiredThresholdMs ) {
-            return ( getAgeInMilliseconds() > _maxPacketAge );
-        }
-        
-        /**
-         * 
-         * @return 
-         */
-        public boolean isExpired() {
-            return isExpired( _maxPacketAge );
-        }
-
-        /**
-         *
-         * @return
-         */
-        public int getSize() {
-            return _packets.length;
-        }
-        
-        /**
-         * 
-         * @return 
-         */
-        public String getSource() {
-            return AISPacket.bArray2Str( _source );
-        }
-
-        /**
-         *
-         * @param packet
-         */
-        public synchronized void add( AISPacket packet ) {
-            // make sure this fragment number doesn't exceed the size of the array
-            if( packet.getFragmentNumber() <= _fragmentCount ) {
-                _packets[ packet.getFragmentNumber() - 1 ] = packet; // packet fragments are numbered starting at 1
-            }
-        }
-
-        /**
-         *
-         * @return
-         */
-        public boolean isComplete() {
-            boolean complete = true;
-            
-            if( _packets == null || _packets[0] == null ) {
-                if( LOG.isDebugEnabled() ) LOG.debug( "Packet set is empty." );
-                complete = false;
-            } else if( _packets[0].getFragmentCount() > _packets.length ) {
-                if( LOG.isDebugEnabled() ) LOG.debug( "Fragment count " + _packets[0].getFragmentCount() + " > " + _packets.length );
-                
-                // check age of first packet to see if it's time to retire the set
-                ZonedDateTime now = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
-                if( _packets[0].getTimeReceived().isAfter( now.plus( _maxPacketAge, ChronoUnit.MILLIS ) ) ) {
-                    complete = false;
-                } else if( LOG.isDebugEnabled() ) {
-                    LOG.debug( "Packetset has timed out" );
-                }
-            }
-
-            return complete;
-        }
-
-        /**
-         *
-         * @param o
-         * @return
-         */
-        @Override
-        public boolean equals( Object o ) {
-            if( o == null ) return false;
-            if( !( o instanceof AISPacketSet ) ) return false;
-            
-            AISPacketSet other = ( AISPacketSet )o;
-            if( other._sequenceNumber != _sequenceNumber ) return false;
-            
-            return Arrays.equals( _source, other._source );
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int hashCode() {
-            int hash = 7;
-            hash = 17 * hash + this._sequenceNumber;
-            hash = 17 * hash + Arrays.hashCode( _source );
-            
-            return hash;
-        }
+        if( _packetSetMap != null ) _packetSetMap.clear();
+        _closed = true;
     }
 }
