@@ -54,7 +54,7 @@ public final class AISPacket {
     private final static double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
 
     public final static String PREAMBLE = "([" + ENCAP_START + "|" + PARAM_START
-            + "]{1})([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1}))";
+            + "]{1})([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1})){1}";
     public final static Pattern PREAMBLE_PATTERN = Pattern.compile( PREAMBLE );
     public final static Pattern PACKET_PATTERN = Pattern.compile( "(" + TagBlock.TAGBLOCK_STRING + ")?(" + PREAMBLE + "(.*))" );
     public final static int PREAMBLE_GROUPS = 5;
@@ -80,7 +80,7 @@ public final class AISPacket {
 
     /**
      *
-     * @param rawPacket A byte [] composed of the characters from the original undecoded String representing a complete or partial AIS message
+     * @param rawPacket A byte [] composed of the characters from the original non-decoded String representing a complete or partial AIS message
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( byte[] rawPacket ) throws AISPacketException {
@@ -89,7 +89,7 @@ public final class AISPacket {
 
     /**
      *
-     * @param rawPacket A byte [] composed of the characters from the original undecoded String representing a complete or partial AIS message
+     * @param rawPacket A byte [] composed of the characters from the original non-decoded String representing a complete or partial AIS message
      * @param source The named source of the AIS packet
      * @throws jais.exceptions.AISPacketException
      */
@@ -102,7 +102,7 @@ public final class AISPacket {
 
     /**
      *
-     * @param rawPacket original undecoded String representing a complete or partial AIS message
+     * @param rawPacket original non-decoded String representing a complete or partial AIS message
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( String rawPacket ) throws AISPacketException {
@@ -111,7 +111,7 @@ public final class AISPacket {
 
     /**
      *
-     * @param rawPacket original undecoded String representing a complete or partial AIS message
+     * @param rawPacket original non-decoded String representing a complete or partial AIS message
      * @param source The named source of this AIS packet
      * @throws jais.exceptions.AISPacketException
      */
