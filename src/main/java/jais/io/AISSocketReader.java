@@ -134,6 +134,7 @@ public class AISSocketReader implements Runnable, AutoCloseable {
                         }
                     }
                 }
+                LOG.warn( "{} - Connection lost.", _name );
             } catch( IOException ioe ) {
                 LOG.warn( "{} - IOException encountered: {}", _name, ioe.getMessage() );
                 if( LOG.isTraceEnabled() ) LOG.trace( ioe );
@@ -162,6 +163,18 @@ public class AISSocketReader implements Runnable, AutoCloseable {
      * @return
      */
     private boolean isConnected() {
+        if( LOG.isTraceEnabled() ) {
+            if( _socket == null ) {
+                LOG.trace( "{} - Socket is null!", _name );
+            } else if( _socket.isClosed() ) {
+                LOG.trace( "{} - Socket is closed!", _name );
+            } else if( !_socket.isConnected() )  {
+                LOG.trace( "{} - Socket is disconnected!", _name );
+            } else if( _socket.isInputShutdown() ) {
+                LOG.trace( "{} - Socket InputStream is shutdown!", _name );
+            }
+        }
+
         return ( _socket != null && !_socket.isClosed() && _socket.isConnected() && !_socket.isInputShutdown() );
     }
     
@@ -179,7 +192,7 @@ public class AISSocketReader implements Runnable, AutoCloseable {
      */
     @Override
     public void close() throws Exception {
-        LOG.fatal( "{} - AISSocketReader shutting down...", _name );
+        LOG.fatal( "{} - Close invoked.  AISSocketReader shutting down...", _name );
         
         _keepReading = false;
         
