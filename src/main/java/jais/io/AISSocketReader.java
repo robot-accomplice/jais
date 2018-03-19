@@ -99,20 +99,22 @@ public class AISSocketReader implements Runnable, AutoCloseable {
                         for( char c : cb.array() ) {
                             if( c == '\n' || c == '\r' ) { // if we encounter a line terminator, process StringBuilder contents
                                 if( sb.length() > 0 ) { // if StringBuilder is not empty, submit contents to queue and/or handler
-                                    String submitStr = sb.toString(); // save StringBuilder content
+                                    String submitStr = sb.toString().trim(); // save StringBuilder content
                                     sb.delete( 0, sb.length() ); // clear StringBuilder
-                                    
-                                    if( _readQueue != null ) {
-                                        _readQueue.submit( () -> {
-                                            if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, sb.toString() );
-                                            _current.increment();
-                                            _session.increment();
-                                        }, Optional.ofNullable( submitStr ) );
-                                    }
 
-                                    if( _handler != null ) {
-                                        if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to AISStringHandler...", _name, sb.toString() );
-                                        _handler.processString( submitStr );
+                                    if( submitStr != null && !submitStr.isEmpty() ) {
+                                        if( _readQueue != null ) {
+                                            _readQueue.submit( () -> {
+                                                if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, submitStr );
+                                                _current.increment();
+                                                _session.increment();
+                                            }, Optional.ofNullable( submitStr ) );
+                                        }
+
+                                        if( _handler != null ) {
+                                            if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to AISStringHandler...", _name, submitStr );
+                                            _handler.processString( submitStr );
+                                        }
                                     }
                                 }
                             } else { // if not a line terminator, append the new character to the StringBuilder
