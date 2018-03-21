@@ -466,14 +466,14 @@ public class AISMessageDecoder {
      * @throws AISException
      */
     public static byte[] decodeToByteArray( BitSet bits, int startBit, int endBit, Charset charset ) throws AISException {
-        if( LOG.isTraceEnabled() ) LOG.trace( "Decoding bit {} through bit {} of {} BitSet", startBit, endBit, bits.length() );
-        CharBuffer cb = CharBuffer.allocate( ( ( ( endBit - startBit ) / 6 ) + 1 ) );
-        
-        if( endBit > bits.size() ) {
-            endBit = bits.size();
-        }
-
         try {
+            if( LOG.isTraceEnabled() ) LOG.trace( "Decoding bit {} through bit {} of {} BitSet", startBit, endBit, bits.length() );
+            CharBuffer cb = CharBuffer.allocate( ( ( ( endBit - startBit ) / 6 ) + 1 ) );
+
+            if( endBit > bits.size() ) {
+                endBit = bits.size();
+            }
+
             // we need to walk forward through every set of six bits without
             // travelling past the endBit
             for( int sb = startBit; sb <= endBit; sb += 6 ) {
@@ -492,10 +492,10 @@ public class AISMessageDecoder {
                     cb.put( c );
                 }
             }
-        } catch( AISException e ) {
-            if( LOG.isWarnEnabled() ) LOG.warn( "Could not decode String due to : {}", e.getMessage(), e );
+
+            return charset.encode( cb ).array();
+        } catch( Exception e ) {
+            throw new AISException( e );
         }
-        
-        return charset.encode( cb ).array();
     }
 }
