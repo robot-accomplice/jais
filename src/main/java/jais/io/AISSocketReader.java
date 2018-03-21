@@ -50,7 +50,6 @@ public class AISSocketReader implements Runnable, AutoCloseable {
     private final ExecutorCompletionService<Optional<String>> _readQueue;
     private final AISStringHandler _handler;
     private final LongAdder _current;
-    private final LongAdder _session;
     private ZonedDateTime _lastReadTime;
     
     /**
@@ -60,17 +59,15 @@ public class AISSocketReader implements Runnable, AutoCloseable {
      * @param readBufferSize
      * @param readQueue
      * @param readCounter
-     * @param readTotal
      * @param handler
      */
     public AISSocketReader( String name, Socket socket, int readBufferSize, ExecutorCompletionService<Optional<String>> readQueue, 
-            LongAdder readCounter, LongAdder readTotal, AISStringHandler handler ) {
+            LongAdder readCounter, AISStringHandler handler ) {
         _name = name;
         _socket = socket;
         _readBufferSize = readBufferSize;
         _readQueue = readQueue;
         _current = readCounter;
-        _session = readTotal;
         _handler = handler;
     }
 
@@ -102,12 +99,13 @@ public class AISSocketReader implements Runnable, AutoCloseable {
                                     String submitStr = sb.toString().trim(); // save StringBuilder content
                                     sb.delete( 0, sb.length() ); // clear StringBuilder
 
-                                    if( submitStr != null && !submitStr.isEmpty() ) {
+                                    if( submitStr == null || submitStr.isEmpty() ) {
+                                        if( LOG.isDebugEnabled() ) LOG.debug( "{} - Trimmed String was null or empty", _name );
+                                    } else {
                                         if( _readQueue != null ) {
                                             _readQueue.submit( () -> {
                                                 if( LOG.isInfoEnabled() ) LOG.info( "{} - Submitting \"{}\" to read queue...", _name, submitStr );
-                                                _current.increment();
-                                                _session.increment();
+                                                if( _current != null ) _current.increment();
                                             }, Optional.ofNullable( submitStr ) );
                                         }
 
