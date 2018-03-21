@@ -38,4 +38,12 @@ public class AISException extends Exception {
     public AISException( String message, Throwable t ) {
         super( message, t );
     }
+    
+    /**
+     * 
+     * @param t 
+     */
+    public AISException( Throwable t ) {
+        super( t );
+    }
 }
