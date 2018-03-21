@@ -39,13 +39,9 @@ public interface SocketConnection extends AutoCloseable {
 
     public abstract long getCurrentLinesWritten();
 
-    public abstract long getTotalLinesWritten();
-
     public abstract long getTotalConnectAttempts();
 
     public abstract long getWriteQueueSize();
-
-    public abstract long getTotalLinesRead();
 
     public abstract long getCurrentLinesRead();
     

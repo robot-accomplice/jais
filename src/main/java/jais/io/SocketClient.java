@@ -106,6 +106,7 @@ public class SocketClient extends SocketConnectionBase {
      * @param readQueue
      * @param readBufferSize
      * @param threadPool 
+     * @param purgeOnDisconnect 
      */
     public SocketClient( String name, String host, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, 
             int readBufferSize, ExecutorService threadPool, long backpressureThreshold, long absoluteThreshold, boolean purgeOnDisconnect ) {
@@ -141,10 +142,10 @@ public class SocketClient extends SocketConnectionBase {
                     _socket.connect( _address );
                     
                     if( _socket.isConnected() ) {
-                        if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection established to {}", _name, _address );
+                        LOG.fatal( "{} - Connection established to {}", _name, _address );
                         if( _connection == null ) {
                             _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool, _purgeOnDisconnect, null, 
-                                    _absoluteThreshold, _backpressureThreshold );
+                                    _absoluteThreshold, _backpressureThreshold, null, null );
                         } else {
                             LOG.info( "{} - Updating ActiveConnection with new socket...", _name );
                             _connection.setSocket( _socket );
@@ -235,15 +236,6 @@ public class SocketClient extends SocketConnectionBase {
      * @return 
      */
     @Override
-    public long getTotalLinesRead() {
-        return _connection.getSessionRead();
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    @Override
     public Optional<ZonedDateTime> getLastWriteTime() {
         return _connection.getLastWriteTime();
     }
@@ -279,15 +271,6 @@ public class SocketClient extends SocketConnectionBase {
     public long getCurrentLinesWritten() {
         if( _connection == null ) return 0;
         return _connection.getCurrentWritten();
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    @Override
-    public long getTotalLinesWritten() {
-        return _connection.getSessionWritten();
     }
     
     /**

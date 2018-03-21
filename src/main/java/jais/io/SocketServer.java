@@ -17,7 +17,6 @@
 package jais.io;
 
 
-import jais.handlers.AISStringHandler;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -150,7 +149,7 @@ public class SocketServer extends SocketConnectionBase {
                 LOG.fatal( "{} - New connection accepted! {}", _name, s.getRemoteSocketAddress() );
                 LOG.fatal( "{} - Launching new ActiveConnection instance...", _name );
                 ActiveConnection connection = new ActiveConnection( _name, s, _type, _readQueue, _readBufferSize, _threadPool, true, null, 
-                        _absoluteThreshold, _backpressureThreshold );
+                        _absoluteThreshold, _backpressureThreshold, null, null );
                 connection.launch();
                 LOG.fatal( "{} - Adding new connection to list of connections...", _name );
                 _connections.add( connection );
@@ -262,24 +261,6 @@ public class SocketServer extends SocketConnectionBase {
      * @return 
      */
     @Override
-    public long getTotalLinesRead() {
-        if( _connections.isEmpty() ) return _totalRead;
-
-        long sessionRead = 0;
-        
-        sessionRead = _connections.stream().map( ( connection ) -> 
-                connection.getSessionRead() ).reduce( sessionRead, ( accumulator, _item ) -> accumulator + _item );
-        
-        sessionRead += _totalRead;
-        
-        return sessionRead;
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    @Override
     public Optional<ZonedDateTime> getLastWriteTime() {
         _connections.forEach( ( connection ) -> {
             if( _lastWriteTime == null && connection.getLastWriteTime().isPresent() ) {
@@ -321,24 +302,6 @@ public class SocketServer extends SocketConnectionBase {
                 .reduce( currentTotal, ( accumulator, _item ) -> accumulator + _item );
         
         return currentTotal;
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    @Override
-    public long getTotalLinesWritten() {
-        if( _connections.isEmpty() ) return _totalWritten;
-
-        long sessionWritten = 0;
-        
-        sessionWritten = _connections.stream().map( ( connection ) -> 
-                connection.getSessionWritten() ).reduce( sessionWritten, ( accumulator, _item ) -> accumulator + _item );
-        
-        sessionWritten += _totalWritten;
-        
-        return sessionWritten;
     }
     
     /**
@@ -412,8 +375,6 @@ public class SocketServer extends SocketConnectionBase {
                                     LOG.warn( "{} - Client {} is no longer connected.  Removing from list of active connections", _name, 
                                             c.getSocket().getInetAddress() );
                                 c.close();
-                                _totalRead += c.getSessionRead();
-                                _totalWritten += c.getSessionWritten();
                                 _connections.remove( c );
                             } catch( Exception e ) {
                                 if( LOG.isWarnEnabled() ) LOG.warn( "{} - Encountered an exception while trying to close client socket: {}", 
@@ -426,8 +387,6 @@ public class SocketServer extends SocketConnectionBase {
                                 if( LOG.isInfoEnabled() ) LOG.info( "{} - Client {} has been idle for more than {} ms.  Disconnecting.", _name, 
                                         c.getSocket().getInetAddress(), idleTimeMs );
                                 c.close();
-                                _totalRead += c.getSessionRead();
-                                _totalWritten += c.getSessionWritten();
                                 _connections.remove( c );
                             } else if( LOG.isDebugEnabled() ) {
                                 LOG.debug( "{} - Connection to {} is launched, active, and does not exceed the idle threshold.  Skipping.", 
