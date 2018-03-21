@@ -29,6 +29,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.LongAdder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,21 +40,20 @@ import org.apache.logging.log4j.Logger;
 public class SocketServer extends SocketConnectionBase {
     
     private final static Logger LOG = LogManager.getLogger( SocketServer.class );
-    
     public final static long DEFAULT_CLIENT_IDLE_THRESHOLD_MS = 60000;
     
     private final int _readBufferSize;
-    
-    private InetSocketAddress _address;
-    private boolean _keepOpen = true;
     private final ConcurrentLinkedQueue<ActiveConnection> _connections = new ConcurrentLinkedQueue<>();
     private final Timer _houseKeeper = new Timer();
-    private ServerSocket _ssocket;
-    private long _totalRead;
-    private long _totalWritten;
     private final long _clientIdleThresholdMs;
     private final long _backpressureThreshold;
     private final long _absoluteThreshold;
+    private final LongAdder _readCounter;
+    private final LongAdder _writeCounter;
+
+    private ServerSocket _ssocket;
+    private InetSocketAddress _address;
+    private boolean _keepOpen = true;
     
     /**
      * 
@@ -100,6 +100,26 @@ public class SocketServer extends SocketConnectionBase {
      */
     public SocketServer( String name, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, 
             ExecutorService threadPool, long clientIdleThresholdMs, long backpressureThreshold, long absoluteThreshold ) {
+        this( name, port, type, readQueue, readBufferSize, threadPool, clientIdleThresholdMs, backpressureThreshold, absoluteThreshold, null, null );
+    }
+    
+    /**
+     * 
+     * @param name
+     * @param port
+     * @param type 
+     * @param readQueue
+     * @param readBufferSize
+     * @param threadPool
+     * @param clientIdleThresholdMs
+     * @param backpressureThreshold
+     * @param absoluteThreshold
+     * @param readCounter
+     * @param writeCounter
+     */
+    public SocketServer( String name, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, 
+            ExecutorService threadPool, long clientIdleThresholdMs, long backpressureThreshold, long absoluteThreshold, LongAdder readCounter, 
+            LongAdder writeCounter ) {
         _name = name;
         _port = port;
         _type = type;
@@ -109,6 +129,8 @@ public class SocketServer extends SocketConnectionBase {
         _clientIdleThresholdMs = clientIdleThresholdMs;
         _backpressureThreshold = backpressureThreshold;
         _absoluteThreshold = absoluteThreshold;
+        _readCounter = readCounter;
+        _writeCounter = writeCounter;
     }
     
     /**
@@ -149,7 +171,7 @@ public class SocketServer extends SocketConnectionBase {
                 LOG.fatal( "{} - New connection accepted! {}", _name, s.getRemoteSocketAddress() );
                 LOG.fatal( "{} - Launching new ActiveConnection instance...", _name );
                 ActiveConnection connection = new ActiveConnection( _name, s, _type, _readQueue, _readBufferSize, _threadPool, true, null, 
-                        _absoluteThreshold, _backpressureThreshold, null, null );
+                        _absoluteThreshold, _backpressureThreshold, _readCounter, _writeCounter );
                 connection.launch();
                 LOG.fatal( "{} - Adding new connection to list of connections...", _name );
                 _connections.add( connection );

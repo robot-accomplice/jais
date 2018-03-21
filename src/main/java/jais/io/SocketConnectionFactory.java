@@ -19,6 +19,7 @@ package jais.io;
 import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * 
@@ -43,31 +44,6 @@ public class SocketConnectionFactory {
             return new SocketServer( name, port, runas, readQueue, readBufferSize, threadPool );
         } else {
             return new SocketClient( name, host, port, runas, readQueue, readBufferSize, threadPool );
-        }
-    }
-    
-    /**
-     * 
-     * @param name
-     * @param host
-     * @param port
-     * @param runas
-     * @param readQueue
-     * @param readBufferSize
-     * @param threadPool
-     * @param backpressureThreshold
-     * @param absoluteThreshold
-     * @param purgeOnDisconnect
-     * @return 
-     */
-    public static SocketConnection buildConnection( String name, String host, int port, ConnectionType runas, 
-            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool, long backpressureThreshold, 
-            long absoluteThreshold, boolean purgeOnDisconnect ) {
-        if( runas.isServer() ) {
-            return new SocketServer( name, port, runas, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold );
-        } else {
-            return new SocketClient( name, host, port, runas, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold, 
-                    purgeOnDisconnect );
         }
     }
     
@@ -107,4 +83,55 @@ public class SocketConnectionFactory {
         
         return new SocketServer( name, port, runas, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold );
     }
+    
+    /**
+     * 
+     * @param name
+     * @param host
+     * @param port
+     * @param runas
+     * @param readQueue
+     * @param readBufferSize
+     * @param threadPool
+     * @param backpressureThreshold
+     * @param absoluteThreshold
+     * @param purgeOnDisconnect
+     * @return 
+     */
+    public static SocketConnection buildConnection( String name, String host, int port, ConnectionType runas, 
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool, long backpressureThreshold, 
+            long absoluteThreshold, boolean purgeOnDisconnect ) {
+        return buildConnection( name, host, port, runas, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold, 
+                purgeOnDisconnect, null, null );
+    }
+    
+    /**
+     * 
+     * @param name
+     * @param host
+     * @param port
+     * @param runas
+     * @param readQueue
+     * @param readBufferSize
+     * @param threadPool
+     * @param backpressureThreshold
+     * @param absoluteThreshold
+     * @param purgeOnDisconnect
+     * @param readCounter
+     * @param writeCounter
+     * @return 
+     */
+    public static SocketConnection buildConnection( String name, String host, int port, ConnectionType runas, 
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool, long backpressureThreshold,
+            long absoluteThreshold, boolean purgeOnDisconnect, LongAdder readCounter, LongAdder writeCounter ) {
+        if( runas.isServer() ) {
+            return new SocketServer( name, port, runas, readQueue, readBufferSize, threadPool, SocketServer.DEFAULT_CLIENT_IDLE_THRESHOLD_MS, 
+                    backpressureThreshold, absoluteThreshold, readCounter, writeCounter );
+        } else {
+            return new SocketClient( name, host, port, runas, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold, 
+                    purgeOnDisconnect, readCounter, writeCounter );
+        }
+        
+    }
+    
 }

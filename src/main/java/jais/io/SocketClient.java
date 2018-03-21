@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.LongAdder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,12 +38,14 @@ public class SocketClient extends SocketConnectionBase {
     private final static int RECONNECT_DELAY = 5000;
 
     private final InetSocketAddress _address;
-    private Socket _socket;
     private final int _readBufferSize;
     private final long _backpressureThreshold;
     private final long _absoluteThreshold;
     private final boolean _purgeOnDisconnect;
+    private final LongAdder _readCounter;
+    private final LongAdder _writeCounter;
     
+    private Socket _socket;
     private boolean _keepOpen = true;
     private ActiveConnection _connection;
     
@@ -110,6 +113,27 @@ public class SocketClient extends SocketConnectionBase {
      */
     public SocketClient( String name, String host, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, 
             int readBufferSize, ExecutorService threadPool, long backpressureThreshold, long absoluteThreshold, boolean purgeOnDisconnect ) {
+        this( name, host, port, type, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold, purgeOnDisconnect, null, null );
+    }
+    
+    /**
+     * 
+     * @param name
+     * @param host
+     * @param port
+     * @param type
+     * @param backpressureThreshold
+     * @param absoluteThreshold
+     * @param readQueue
+     * @param readBufferSize
+     * @param threadPool 
+     * @param purgeOnDisconnect 
+     * @param readCounter 
+     * @param writeCounter 
+     */
+    public SocketClient( String name, String host, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, 
+            int readBufferSize, ExecutorService threadPool, long backpressureThreshold, long absoluteThreshold, boolean purgeOnDisconnect,
+            LongAdder readCounter, LongAdder writeCounter ) {
         _name = name;
         _host = host;
         _port = port;
@@ -122,6 +146,8 @@ public class SocketClient extends SocketConnectionBase {
         _backpressureThreshold = backpressureThreshold;
         _absoluteThreshold = absoluteThreshold;
         _purgeOnDisconnect = purgeOnDisconnect;
+        _readCounter = readCounter;
+        _writeCounter = writeCounter;
     }
     
     /**
@@ -145,7 +171,7 @@ public class SocketClient extends SocketConnectionBase {
                         LOG.fatal( "{} - Connection established to {}", _name, _address );
                         if( _connection == null ) {
                             _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool, _purgeOnDisconnect, null, 
-                                    _absoluteThreshold, _backpressureThreshold, null, null );
+                                    _absoluteThreshold, _backpressureThreshold, _readCounter, _writeCounter );
                         } else {
                             LOG.info( "{} - Updating ActiveConnection with new socket...", _name );
                             _connection.setSocket( _socket );
