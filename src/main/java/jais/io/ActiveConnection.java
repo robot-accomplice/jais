@@ -47,10 +47,8 @@ public class ActiveConnection implements AutoCloseable {
     private final int _readBufferSize;
     private final ZonedDateTime _launchTime;
 
-    private final LongAdder _currentWritten = new LongAdder();
-    private final LongAdder _sessionWritten = new LongAdder();
-    private final LongAdder _currentRead = new LongAdder();
-    private final LongAdder _sessionRead = new LongAdder();
+    private final LongAdder _currentWritten;
+    private final LongAdder _currentRead;
 
     private AISSocketReader _reader;
     private AISSocketWriter _writer;
@@ -103,7 +101,7 @@ public class ActiveConnection implements AutoCloseable {
     public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue,
             int readBufferSize, ExecutorService threadPool, boolean purgeQueuesOnDisconnect, AISStringHandler handler ) {
         this( name, socket, type, readQueue, readBufferSize, threadPool, purgeQueuesOnDisconnect, handler, 
-                ActiveConnection.DEFAULT_WRITE_QUEUE_ABSOLUTE_THRESHOLD, ActiveConnection.DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD );
+                ActiveConnection.DEFAULT_WRITE_QUEUE_ABSOLUTE_THRESHOLD, ActiveConnection.DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD, null, null );
     }
     
     /**
@@ -118,10 +116,12 @@ public class ActiveConnection implements AutoCloseable {
      * @param handler 
      * @param writeQueueSizeLimit 
      * @param backPressureLimit 
+     * @param readCounter 
+     * @param writeCounter 
      */
     public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue,
             int readBufferSize, ExecutorService threadPool, boolean purgeQueuesOnDisconnect, AISStringHandler handler, long writeQueueSizeLimit, 
-            long backPressureLimit ) {
+            long backPressureLimit, LongAdder readCounter, LongAdder writeCounter ) {
         _name = name + ":" + socket.getRemoteSocketAddress();
         _socket = socket;
         _type = type;
@@ -133,6 +133,8 @@ public class ActiveConnection implements AutoCloseable {
         _wqThreshold = writeQueueSizeLimit;
         _bpThreshold = backPressureLimit;
         _launchTime = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
+        _currentRead = readCounter;
+        _currentWritten = writeCounter;
     }
     
     /**
@@ -185,7 +187,7 @@ public class ActiveConnection implements AutoCloseable {
         
         if( _type.isReadable() ) {
             if( _reader == null ) {
-                _reader = new AISSocketReader( _name, _socket, _readBufferSize, _readQueue, _currentRead, _sessionRead, _handler );
+                _reader = new AISSocketReader( _name, _socket, _readBufferSize, _readQueue, _currentRead, _handler );
             }
             if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection is readable, launching reader...", _name );
             _threadPool.execute( _reader );
@@ -193,7 +195,7 @@ public class ActiveConnection implements AutoCloseable {
 
         if( _type.isWriteable() ) {
             if( _writer == null )
-                _writer = new AISSocketWriter( _name, _socket, _currentWritten, _sessionWritten, _purge, _wqThreshold, _bpThreshold );
+                _writer = new AISSocketWriter( _name, _socket, _currentWritten, _purge, _wqThreshold, _bpThreshold );
             if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection is writeable, launching writer...", _name );
             _threadPool.execute( _writer );
         }
@@ -233,7 +235,8 @@ public class ActiveConnection implements AutoCloseable {
         Optional<ZonedDateTime> lastRead = _reader.getLastReadTime();
 
         if( lastRead.isPresent() ) {
-            return ( System.currentTimeMillis() - lastRead.get().toInstant().toEpochMilli() ) / ( 1000 * 60 );
+            ZonedDateTime now = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
+            return ( now.toInstant().toEpochMilli() - lastRead.get().toInstant().toEpochMilli() ) / ( 1000 * 60 );
         }
         
         return -1;
@@ -256,7 +259,8 @@ public class ActiveConnection implements AutoCloseable {
         Optional<ZonedDateTime> lastWrite = getLastWriteTime();
         
         if( lastWrite.isPresent() ) {
-            return ( System.currentTimeMillis() - lastWrite.get().toInstant().toEpochMilli() ) / ( 1000 * 60 );
+            ZonedDateTime now = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
+            return ( now.toInstant().toEpochMilli() - lastWrite.get().toInstant().toEpochMilli() ) / ( 1000 * 60 );
         }
         
         return -1;
@@ -289,38 +293,24 @@ public class ActiveConnection implements AutoCloseable {
     }
     
     /**
-     * Returns the number of "lines" read during this instantiation of ActiveConnection
-     * 
-     * @return 
-     */
-    public long getSessionRead() {
-        return _sessionRead.sum();
-    }
-    
-    /**
-     * Returns the number of "lines" read since the last call to getCurrentRead within the current session and then resets the counter to zero
+     * Returns the number of "lines" read since the last call to getCurrentRead within the current session and then resets the counter to zero. If no
+     * LongAdder for counting current lines read was specified at invocation, -1 is returned
      * 
      * @return 
      */
     public long getCurrentRead() {
+        if( _currentRead == null ) return -1;
         return _currentRead.sumThenReset();
     }
 
     /**
-     * Returns the number of "lines" written during this instantiation of ActiveConnection
-     * 
-     * @return 
-     */
-    public long getSessionWritten() {
-        return _sessionWritten.sum();
-    }
-    
-    /**
-     * Returns the number of "lines" written since the last call to getCurrentRead within the current session and then resets the counter to zero
+     * Returns the number of "lines" written since the last call to getCurrentRead within the current session and then resets the counter to zero.  If
+     * noLongAdder for counting current lines written was specified at invocation, -1 is returned
      * 
      * @return 
      */
     public long getCurrentWritten() {
+        if( _currentWritten == null ) return -1;
         return _currentWritten.sumThenReset();
     }
 
