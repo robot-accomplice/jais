@@ -35,7 +35,6 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
     
     private final ConcurrentLinkedQueue<String> _queue = new ConcurrentLinkedQueue<>();
     private final LongAdder _write;
-    private final LongAdder _total;
     private final boolean _purge;
     private final long _bpThreshold;
     private final long _wqThreshold;
@@ -52,7 +51,7 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
      * @param bpThreshold 
      */
     public AISSocketWriter( String name, Socket socket, LongAdder writeCounter, LongAdder totalCounter, long wqThreshold, long bpThreshold ) {
-        this( name, socket, writeCounter, totalCounter, true, wqThreshold, bpThreshold );
+        this( name, socket, writeCounter, true, wqThreshold, bpThreshold );
     }
     
     /**
@@ -60,17 +59,15 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
      * @param name
      * @param socket
      * @param writeCounter
-     * @param totalCounter
      * @param purgeQueueOnDisconnect
      * @param wqThreshold
      * @param bpThreshold
      */
-    public AISSocketWriter( String name, Socket socket, LongAdder writeCounter, LongAdder totalCounter, boolean purgeQueueOnDisconnect, long wqThreshold,
+    public AISSocketWriter( String name, Socket socket, LongAdder writeCounter, boolean purgeQueueOnDisconnect, long wqThreshold,
             long bpThreshold ) {
         _name = name;
         _socket = socket;
         _write = writeCounter;
-        _total = totalCounter;
         _purge = purgeQueueOnDisconnect;
         _wqThreshold = wqThreshold;
         _bpThreshold = bpThreshold;
@@ -107,8 +104,7 @@ public class AISSocketWriter implements Runnable, AutoCloseable {
                                 if( LOG.isDebugEnabled() ) LOG.debug( "{} - Writing String \"{}\" to target", _name, line );
                                 writer.write( line + LINE_TERMINATOR );
                                 _lastWriteTime = java.time.ZonedDateTime.now( ZoneOffset.UTC.normalized() );
-                                _write.increment();
-                                _total.increment();
+                                if( _write != null ) _write.increment();
                             }
 
                             long bpMeasure = _queue.size() - startingSize;
