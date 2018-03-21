@@ -119,7 +119,7 @@ public final class AISPacket {
         if( LOG.isTraceEnabled() )
             LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", rawPacket, source );
         _rawPacket = str2bArray( rawPacket );
-        if( _source != null )
+        if( source != null )
             _source = str2bArray( source );
         else
             _source = str2bArray( DEFAULT_SOURCE );
