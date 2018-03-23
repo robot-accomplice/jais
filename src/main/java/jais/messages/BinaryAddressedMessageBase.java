@@ -211,23 +211,23 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
         for( BinaryAddressedMessageFieldMap field : BinaryAddressedMessageFieldMap.values() ) {
             switch( field ) {
                 case SEQUENCE_NUMBER:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _seqno = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case DESTINATION_MMSI:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case RETRANSMIT:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _retransmit = _bits.get( field.getStartBit() );
                     break;
                 case DAC:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _dac = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case FID:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _fid = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
             }

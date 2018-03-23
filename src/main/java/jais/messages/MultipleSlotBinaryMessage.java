@@ -126,28 +126,28 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
         for( MultipleSlotBinaryMessageFieldMap field : MultipleSlotBinaryMessageFieldMap.values() ) {
             switch( field ) {
                 case ADDRESSED:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _addressed = _bits.get( field.getStartBit() );
                     break;
                 case STRUCTURED:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _structured = _bits.get( field.getStartBit() );
                     break;
                 case DESTINATION_MMSI:
                     if( _addressed ) {
-                        if( _bits.length() >= field.getEndBit() )
+                        if( _bits.size() >= field.getStartBit() )
                             _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     }
                     break;
                 case DAC:
                     if( _structured ) {
-                        if( _bits.length() >= field.getEndBit() )
+                        if( _bits.size() >= field.getStartBit() )
                             _dac = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     }
                     break;
                 case FID:
                     if( _structured ) {
-                        if( _bits.length() >= field.getEndBit() )
+                        if( _bits.size() >= field.getStartBit() )
                             _fid = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     }
                     break;

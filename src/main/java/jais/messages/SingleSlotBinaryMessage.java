@@ -116,7 +116,7 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
         for( SingleSlotBinaryMessageFieldMap field : SingleSlotBinaryMessageFieldMap.values() ) {
             switch( field ) {
                 case ADDRESSED:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                             _addressed = _bits.get( field.getStartBit() );
                     break;
                 case STRUCTURED:
@@ -124,32 +124,32 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
                     break;
                 case DESTINATION_MMSI:
                     if( _addressed ) {
-                        if( _bits.length() >= field.getEndBit() )
+                        if( _bits.size() >= field.getStartBit() )
                             _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     }
                     break;
                 case DAC:
                     if( _structured ) {
-                        if( _bits.length() >= field.getEndBit() )
+                        if( _bits.size() >= field.getStartBit() )
                             _dac = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     }
                     break;
                 case FID:
                     if( _structured ) {
-                        if( _bits.length() >= field.getEndBit() )
+                        if( _bits.size() >= field.getStartBit() )
                             _fid = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     }
                     break;
                 case DATA:
                     _data = new BitSet( _bits.size() );
                     if( _addressed && _bits.size() >= 70 ) {
-                        if( _bits.length() >= field.getEndBit() )
+                        if( _bits.size() >= field.getStartBit() )
                             _data = _bits.get( 70, 70 );
                     } else if( _structured && _bits.size() >= 56 ) {
-                        if( _bits.length() >= field.getEndBit() )
+                        if( _bits.size() >= field.getStartBit() )
                             _data = _bits.get( 56, _bits.size() );
                     } else if( _bits.size() >= 40 ) {
-                        if( _bits.length() >= field.getEndBit() )
+                        if( _bits.size() >= field.getStartBit() )
                             _data = _bits.get( 40, _bits.size() );
                     } else {
                         throw new AISException( "Invalid bit count.  BitVector size: " + _bits.size() + ", BitVector length: " + _bits.length() );

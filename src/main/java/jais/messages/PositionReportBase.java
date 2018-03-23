@@ -208,45 +208,45 @@ public abstract class PositionReportBase extends AISMessageBase {
         for( PositionFieldMap field : PositionFieldMap.values() ) {
             switch( field ) {
                 case STATUS:
-                    if( _bits.length() >= field.getEndBit() ) {
+                    if( _bits.size() >= field.getStartBit() ) {
                         int nsId = AISMessageDecoder.decodeUnsignedInt( super._bits, field.getStartBit(), field.getEndBit() );
                         _status = NavigationStatus.getForCode( nsId );
                     }
                     break;
                 case TURN:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _turn = AISMessageDecoder.decodeTurn( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SPEED:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _speed = AISMessageDecoder.decodeSpeed( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case ACCURACY:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _accurate = _bits.get( field.getEndBit() );
                     break;
                 case LON:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case LAT:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case COURSE:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _course = AISMessageDecoder.decodeCourse( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case HEADING:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _heading = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SECOND:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _second = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case MANEUVER:
-                    if( _bits.length() >= field.getEndBit() ) {
+                    if( _bits.size() >= field.getStartBit() ) {
                         int mId = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         _maneuver = ManeuverType.getForCode( mId );
                         if( _maneuver == null ) {
@@ -255,11 +255,11 @@ public abstract class PositionReportBase extends AISMessageBase {
                     }
                     break;
                 case RAIM:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _raim = _bits.get( field.getEndBit() );
                     break;
                 case RADIO:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _radio = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 default:

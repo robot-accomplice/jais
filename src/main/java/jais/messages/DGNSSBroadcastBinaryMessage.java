@@ -113,10 +113,10 @@ public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
         for( DGNSSBroadcastBinaryMessageFieldMap field : DGNSSBroadcastBinaryMessageFieldMap.values() ) {
             switch( field ) {
                 case LON:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
                 case LAT:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
                 case DATA:
                     // store the undecoded portion of the bitArray in the data 

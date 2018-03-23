@@ -284,6 +284,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      * @return
      */
     public String getDestination() {
+        if( _destination == null ) return null;
         return AISPacket.bArray2Str( _destination );
     }
 
@@ -306,24 +307,24 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
         for( StaticAndVoyageFieldMap field : StaticAndVoyageFieldMap.values() ) {
             switch( field ) {
                 case VERSION:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _version = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case IMO:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _imo = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case CALL_SIGN:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _callsign = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit(), charset );
                     break;
                 case SHIP_NAME:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _shipname = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit(), charset );
                     break;
                 case SHIP_TYPE:
                     int shipCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _shiptype = ShipType.getForCode( shipCode );
                     if( _shiptype == null ) {
                         LOG.error( "No ShipType for {}", shipCode );
@@ -331,49 +332,53 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
                     }
                     break;
                 case TO_BOW:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _toBow = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_STERN:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _toStern = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_PORT:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _toPort = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_STARBOARD:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _toStarboard = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case EPFD:
                     int epfdCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _epfd = EPFDFixType.getForCode( epfdCode );
                     break;
                 case ETA_MONTH:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _month = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case ETA_DAY:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _day = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case ETA_HOUR:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _hour = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case ETA_MINUTE:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _minute = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case DRAUGHT:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _draught = AISMessageDecoder.decodeDraught( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case DESTINATION:
-                    if( _bits.length() >= field.getEndBit() )
-                        _destination = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit(), charset );
+                    if( _bits.size() >= field.getStartBit() )
+                        try {
+                            _destination = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit(), charset );
+                        } catch( AISException ae ) {
+                            LOG.fatal( ae.getMessage(), ae );
+                        }
                     break;
                 case DTE:
                     if( field.getStartBit() < _bits.size() ) {

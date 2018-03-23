@@ -95,16 +95,13 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
         for( AddressedSafetyRelatedMessageFieldMap field : AddressedSafetyRelatedMessageFieldMap.values() ) {
             switch( field ) {
                 case DEST_MMSI:
-                    if( _bits.length() >= field.getEndBit() )
-                        _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case RETRANSMIT:
-                    if( _bits.length() >= field.getEndBit() )
-                        _retransmit = _bits.get( field.getStartBit() );
+                    _retransmit = _bits.get( field.getStartBit() );
                     break;
                 case TEXT:
-                    if( _bits.length() >= field.getEndBit() )
-                        _text = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), _bits.size() - 1, charset );
+                    _text = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), _bits.size() - 1, charset );
                     break;
             }
         }

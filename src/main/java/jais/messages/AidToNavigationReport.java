@@ -240,70 +240,70 @@ public class AidToNavigationReport extends AISMessageBase {
         for( AidToNavigationReportFieldMap field : AidToNavigationReportFieldMap.values() ) {
             switch( field ) {
                 case NAVAID_TYPE:
-                    if( _bits.length() >= field.getEndBit() ) {
+                    if( _bits.size() >= field.getStartBit() ) {
                         int navCode = AISMessageDecoder.decodeSignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         _navaidType = NavaidType.getForCode( navCode );
                     }
                     break;
                 case NAME:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _name = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
                     break;
                 case ACCURATE:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _accurate = _bits.get( field.getStartBit() );
                     break;
                 case LON:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case LAT:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_BOW:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _toBow = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_STERN:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _toStern = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_PORT:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _toPort = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_STARBOARD:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _toStarboard = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case EPFD:
                     int epfdCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _epfd = EPFDFixType.getForCode( epfdCode );
                     break;
                 case SECOND:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _second = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case OFF_POSITION:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _offPosition = _bits.get( field.getStartBit() );
                     break;
                 case REGIONAL_RESERVED:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _regional = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case RAIM:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _raim = _bits.get( field.getStartBit() );
                     break;
                 case VIRTUAL_AID:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _virtualAid = _bits.get( field.getStartBit() );
                     break;
                 case NAME_EXTENSION:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _nameExtension = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), _bits.size() - 1 );
                     break;
                 default:

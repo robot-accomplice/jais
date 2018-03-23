@@ -114,11 +114,11 @@ public abstract class BinaryBroadcastMessageBase extends AISMessageBase {
         for( BinaryBroadcastMessageBaseFieldMap field : BinaryBroadcastMessageBaseFieldMap.values() ) {
             switch( field ) {
                 case DAC:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _dac = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case FID:
-                    if( _bits.length() >= field.getEndBit() )
+                    if( _bits.size() >= field.getStartBit() )
                         _fid = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case DATA:
