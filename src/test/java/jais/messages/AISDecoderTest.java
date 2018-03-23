@@ -18,6 +18,7 @@ package jais.messages;
 
 import jais.AISPacket;
 import jais.TagBlock;
+import jais.Vessel;
 import jais.exceptions.AISException;
 import jais.exceptions.AISPacketException;
 import jais.messages.enums.AISMessageType;
@@ -526,7 +527,7 @@ public class AISDecoderTest {
 
         Optional<AISMessage> msg = AISMessageFactory.create( "UnitTest", packets );
 
-        if( msg.isPresent() ) {
+        if( !msg.isPresent() ) {
             LOG.warn( "Factory returned a null message!  May be an unsupported message type." );
         } else {
             // from AISMessageBase
@@ -554,47 +555,14 @@ public class AISDecoderTest {
                 case POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE:
                 case POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION:
                     PositionReportBase prb = ( PositionReportBase )msg.get();
-
-                    // from PositionReportBase
-                    LOG.info( "Accuracy : {}", prb.isAccurate() );
-                    LOG.info( "Course   : {}", prb.getCourse() );
-                    LOG.info( "Heading  : {}", prb.getHeading() );
-                    LOG.info( "Latitude : {}", prb.getLat() );
-                    LOG.info( "Longitude: {}", prb.getLon() );
-                    LOG.info( "Maneuver : {}", prb.getManeuver() );
-                    LOG.info( "Position : {}", prb.getPosition() );
-                    LOG.info( "Radio    : {}", prb.getRadio() );
-                    LOG.info( "RAIM     : {}", prb.isRaim() );
-                    LOG.info( "Second   : {}", prb.getSecond() );
-                    LOG.info( "Speed    : {}", prb.getSpeed() );
-                    LOG.info( "Status   : {}", prb.getStatus() );
-                    LOG.info( "Turn     : {}", prb.getTurn() );
+                    LOG.fatal( "Decoded a PositionReport Message:\n{}", new Vessel( prb ) );
                     break;
                 case STATIC_AND_VOYAGE_RELATED_DATA:
-                    StaticAndVoyageRelatedData savrd
-                            = ( StaticAndVoyageRelatedData )msg.get();
-
-                    LOG.info( "AIS Version  : {}", savrd.getVersion() );
-                    LOG.info( "IMO Number   : {}", savrd.getImo() );
-                    LOG.info( "Call Sign    : {}", savrd.getCallsign() );
-                    LOG.info( "Ship Name    : {}", savrd.getShipname() );
-                    LOG.info( "Ship Type    : {}", savrd.getShiptype() );
-                    LOG.info( "To Bow       : {}", savrd.getToBow() );
-                    LOG.info( "To Stern     : {}", savrd.getToStern() );
-                    LOG.info( "To Port      : {}", savrd.getToPort() );
-                    LOG.info( "To Starboard : {}", savrd.getToStarboard() );
-                    LOG.info( "EPFD Fix Type: {}", savrd.getEpfd() );
-                    LOG.info( "ETA Month    : {}", savrd.getMonth() );
-                    LOG.info( "ETA Day      : {}", savrd.getDay() );
-                    LOG.info( "ETA Hour     : {}", savrd.getHour() );
-                    LOG.info( "ETA Minute   : {}", savrd.getMinute() );
-                    LOG.info( "Draught      : {}", savrd.getDraught() );
-                    LOG.info( "Destination  : {}", savrd.getDestination() );
-                    LOG.info( "DTE Ready    : {}", savrd.dteReady() );
+                    StaticAndVoyageRelatedData savrd = ( StaticAndVoyageRelatedData )msg.get();
+                    LOG.fatal( "Decoded a StaticAndVoyageRelatedData Message:\n{}", new Vessel( savrd ) );
                     break;
                 case BINARY_ADDRESSED_MESSAGE:
-                    BinaryAddressedMessageBase bamb
-                            = ( BinaryAddressedMessageBase )msg.get();
+                    BinaryAddressedMessageBase bamb = ( BinaryAddressedMessageBase )msg.get();
                     LOG.info( "Source MMSI     : {}", bamb.getSourceMmsi() );
                     LOG.info( "Destination MMSI: {}", bamb.getDestMmsi() );
                     LOG.info( "Sequence Number : {}", bamb.getSeqno() );
@@ -679,7 +647,7 @@ public class AISDecoderTest {
             String truncStr = AISPacket.truncatePacket( new StringBuilder( packetStr ) );
             if( truncStr != null && !truncStr.isEmpty() ) packetStr = truncStr;
             
-            LOG.debug( "Processing \"{}\"" );
+            LOG.debug( "Processing \"{}\"", packetStr );
             AISPacket packet = new AISPacket( packetStr.trim() );
             packet.process();
             if( packet.getTagBlock() != null ) {
