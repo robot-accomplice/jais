@@ -467,15 +467,14 @@ public class AISMessageDecoder {
      */
     public static byte[] decodeToByteArray( BitSet bits, int startBit, int endBit, Charset charset ) throws AISException {
         try {
-            if( LOG.isTraceEnabled() ) LOG.trace( "Decoding bit {} through bit {} of {} BitSet", startBit, endBit, bits.length() );
+            if( LOG.isTraceEnabled() ) LOG.trace( "Decoding bit {} through bit {} of {} element BitSet", startBit, endBit, bits.size() );
             CharBuffer cb = CharBuffer.allocate( ( ( ( endBit - startBit ) / 6 ) + 1 ) );
 
             if( endBit > bits.size() ) {
                 endBit = bits.size();
             }
 
-            // we need to walk forward through every set of six bits without
-            // travelling past the endBit
+            // we need to walk forward through every set of six bits without traveling past the endBit
             for( int sb = startBit; sb <= endBit; sb += 6 ) {
                 int binPosVal = 1;    // binary position value
                 int charVal = 0;      // current binary position value
@@ -494,8 +493,8 @@ public class AISMessageDecoder {
             }
 
             return charset.encode( cb ).array();
-        } catch( Exception e ) {
-            throw new AISException( e );
+        } catch( Throwable t ) {  // not ideal, but the easiest way to ensure any odd thrown exceptions will be handled
+            throw new AISException( t );
         }
     }
 }
