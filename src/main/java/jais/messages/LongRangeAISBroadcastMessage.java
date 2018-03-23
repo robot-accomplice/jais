@@ -159,34 +159,38 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
         for( LongRangeAISBroadcastMessageFieldMap field : LongRangeAISBroadcastMessageFieldMap.values() ) {
             switch( field ) {
                 case ACCURATE:
-                    _accurate = _bits.get( field.getStartBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _accurate = _bits.get( field.getStartBit() );
                     break;
                 case RAIM:
-                    _raim = _bits.get( field.getStartBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _raim = _bits.get( field.getStartBit() );
                     break;
                 case NAVIGATION_STATUS:
-                    int nsCode = AISMessageDecoder.decodeUnsignedInt( _bits, 
-                            field.getStartBit(), field.getEndBit() );
-                    _navStatus = NavigationStatus.getForCode( nsCode );
+                    if( _bits.length() >= field.getEndBit() ) {
+                        int nsCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                        _navStatus = NavigationStatus.getForCode( nsCode );
+                    }
                     break;
                 case LON:
-                    _lon = AISMessageDecoder.decodeLongitude( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case LAT:
-                    _lat = AISMessageDecoder.decodeLatitude( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SPEED:
-                    _speed = AISMessageDecoder.decodeUnsignedInt( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _speed = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case COURSE:
-                    _course = AISMessageDecoder.decodeUnsignedInt( _bits, 
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _course = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case GNSS:
-                    _gnss = !_bits.get( field.getStartBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _gnss = !_bits.get( field.getStartBit() );
                     break;
                 default:
                     if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name());

@@ -77,7 +77,8 @@ public class SafetyRelatedBroadcastMessage extends AISMessageBase {
         for( SRBMFieldMap field : SRBMFieldMap.values() ) {
             switch( field ) {
                 case TEXT:
-                    _text = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
+                    if( _bits.length() >= field.getEndBit() )
+                        _text = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
                     break;
             }
         }

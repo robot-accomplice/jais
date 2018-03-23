@@ -222,56 +222,64 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
             try {
                 switch( field ) {
                     case SPEED:
-                        _speed = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _speed = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case ACCURATE:
-                        _accurate = _bits.get( field.getStartBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _accurate = _bits.get( field.getStartBit() );
                         break;
                     case LON:
-                        _lon = AISMessageDecoder.decodeLongitude( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case LAT:
-                        _lat = AISMessageDecoder.decodeLatitude( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case COURSE:
-                        _course = AISMessageDecoder.decodeCourse( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _course = AISMessageDecoder.decodeCourse( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case HEADING:
-                        _heading = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _heading = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case SECOND:
-                        _second = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _second = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     case CS:
-                        _cs = _bits.get( field.getStartBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _cs = _bits.get( field.getStartBit() );
                         break;
                     case DISPLAY:
-                        _display = _bits.get( field.getStartBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _display = _bits.get( field.getStartBit() );
                         break;
                     case DSC:
-                        _dsc = _bits.get( field.getStartBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _dsc = _bits.get( field.getStartBit() );
                         break;
                     case MSG22:
-                        _msg22 = _bits.get( field.getStartBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _msg22 = _bits.get( field.getStartBit() );
                         break;
                     case ASSIGNED:
-                        _assigned = _bits.get( field.getStartBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _assigned = _bits.get( field.getStartBit() );
                         break;
                     case RAIM:
-                        _raim = _bits.get( field.getStartBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _raim = _bits.get( field.getStartBit() );
                         break;
                     case BAND:
-                        _band = _bits.get( field.getStartBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _band = _bits.get( field.getStartBit() );
                         break;
                     case RADIO:
-                        _radio = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _radio = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         break;
                     default:
                         if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );

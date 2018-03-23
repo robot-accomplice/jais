@@ -203,108 +203,67 @@ public class DataLinkManagementMessage extends AISMessageBase {
     public final void decode( Charset charset ) throws AISException {
         super.decode( charset );
 
-        for( DataLinkManagementMessageFieldMap field
-                : DataLinkManagementMessageFieldMap.values() ) {
+        for( DataLinkManagementMessageFieldMap field : DataLinkManagementMessageFieldMap.values() ) {
             switch( field ) {
                 case OFFSET1:
-                    _offset1 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _offset1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SLOTS1:
-                    _slots1 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _slots1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TIMEOUT1:
-                    _timeout1 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _timeout1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case INCREMENT1:
-                    _increment1 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _increment1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case OFFSET2:
-                    if( _bits.size() < 70 ) {
-                        break;
-                    }
-                    _offset2 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _offset2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SLOTS2:
-                    if( _bits.size() < 70 ) {
-                        break;
-                    }
-                    _slots2 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _slots2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TIMEOUT2:
-                    if( _bits.size() < 70 ) {
-                        break;
-                    }
-                    _timeout2 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _timeout2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case INCREMENT2:
-                    if( _bits.size() < 70 ) {
-                        break;
-                    }
-                    _increment2 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _increment2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case OFFSET3:
-                    if( _bits.size() < 100 ) {
-                        break;
-                    }
-                    _offset3 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _offset3 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SLOTS3:
-                    if( _bits.size() < 100 ) {
-                        break;
-                    }
-                    _slots3 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _slots3 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TIMEOUT3:
-                    if( _bits.size() < 100 ) {
-                        break;
-                    }
-                    _timeout3 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _timeout3 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case INCREMENT3:
-                    if( _bits.size() < 100 ) {
-                        break;
-                    }
-                    _increment3 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _increment3 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case OFFSET4:
-                    if( _bits.size() < 130 ) {
-                        break;
-                    }
-                    _offset4 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _offset4 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SLOTS4:
-                    if( _bits.size() < 130 ) {
-                        break;
-                    }
-                    _slots4 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _slots4 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TIMEOUT4:
-                    if( _bits.size() < 130 ) {
-                        break;
-                    }
-                    _timeout4 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _timeout4 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case INCREMENT4:
-                    if( _bits.size() < 130 ) {
-                        break;
-                    }
-                    _increment4 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _increment4 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 default:
                     if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );

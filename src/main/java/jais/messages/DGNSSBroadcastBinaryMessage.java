@@ -111,27 +111,25 @@ public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
         super.decode( charset );
 
         for( DGNSSBroadcastBinaryMessageFieldMap field : DGNSSBroadcastBinaryMessageFieldMap.values() ) {
-            try {
-                switch( field ) {
-                    case LON:
-                        _lon = AISMessageDecoder.decodeLongitude( _bits,
-                                field.getStartBit(), field.getEndBit() );
-                    case LAT:
-                        _lat = AISMessageDecoder.decodeLatitude( _bits,
-                                field.getStartBit(), field.getEndBit() );
-                    case DATA:
-                        // store the undecoded portion of the bitArray in the data 
-                        // field for later decoding by subtype
+            switch( field ) {
+                case LON:
+                    if( _bits.length() >= field.getEndBit() )
+                        _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
+                case LAT:
+                    if( _bits.length() >= field.getEndBit() )
+                        _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
+                case DATA:
+                    // store the undecoded portion of the bitArray in the data 
+                    // field for later decoding by subtype
+                    if( _bits.size() > field.getStartBit() ) {
                         _data = new BitSet( _bits.size() - field.getStartBit() );
                         for( int b = field.getStartBit(); b < _bits.size() - 1; b++ ) {
                             _data.set( b, _bits.get( field.getStartBit() + b ) );
                         }
-                        break;
-                    default:
-                        if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
-                }
-            } catch( ArrayIndexOutOfBoundsException aioobe ) {
-                if( LOG.isDebugEnabled() ) LOG.debug( "Encountered an ArrayIndexOutofBoundsException: {}.", aioobe.getMessage(), aioobe );
+                    }
+                    break;
+                default:
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
             }
         }
     }

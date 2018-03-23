@@ -238,63 +238,76 @@ public class AidToNavigationReport extends AISMessageBase {
         super.decode( charset );
 
         for( AidToNavigationReportFieldMap field : AidToNavigationReportFieldMap.values() ) {
-            try {
-                switch( field ) {
-                    case NAVAID_TYPE:
+            switch( field ) {
+                case NAVAID_TYPE:
+                    if( _bits.length() >= field.getEndBit() ) {
                         int navCode = AISMessageDecoder.decodeSignedInt( _bits, field.getStartBit(), field.getEndBit() );
                         _navaidType = NavaidType.getForCode( navCode );
-                        break;
-                    case NAME:
+                    }
+                    break;
+                case NAME:
+                    if( _bits.length() >= field.getEndBit() )
                         _name = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
-                        break;
-                    case ACCURATE:
+                    break;
+                case ACCURATE:
+                    if( _bits.length() >= field.getEndBit() )
                         _accurate = _bits.get( field.getStartBit() );
-                        break;
-                    case LON:
+                    break;
+                case LON:
+                    if( _bits.length() >= field.getEndBit() )
                         _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
-                        break;
-                    case LAT:
+                    break;
+                case LAT:
+                    if( _bits.length() >= field.getEndBit() )
                         _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
-                        break;
-                    case TO_BOW:
+                    break;
+                case TO_BOW:
+                    if( _bits.length() >= field.getEndBit() )
                         _toBow = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                        break;
-                    case TO_STERN:
+                    break;
+                case TO_STERN:
+                    if( _bits.length() >= field.getEndBit() )
                         _toStern = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                        break;
-                    case TO_PORT:
+                    break;
+                case TO_PORT:
+                    if( _bits.length() >= field.getEndBit() )
                         _toPort = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                        break;
-                    case TO_STARBOARD:
+                    break;
+                case TO_STARBOARD:
+                    if( _bits.length() >= field.getEndBit() )
                         _toStarboard = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                        break;
-                    case EPFD:
-                        int epfdCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    break;
+                case EPFD:
+                    int epfdCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
                         _epfd = EPFDFixType.getForCode( epfdCode );
-                        break;
-                    case SECOND:
+                    break;
+                case SECOND:
+                    if( _bits.length() >= field.getEndBit() )
                         _second = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                        break;
-                    case OFF_POSITION:
+                    break;
+                case OFF_POSITION:
+                    if( _bits.length() >= field.getEndBit() )
                         _offPosition = _bits.get( field.getStartBit() );
-                        break;
-                    case REGIONAL_RESERVED:
+                    break;
+                case REGIONAL_RESERVED:
+                    if( _bits.length() >= field.getEndBit() )
                         _regional = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                        break;
-                    case RAIM:
+                    break;
+                case RAIM:
+                    if( _bits.length() >= field.getEndBit() )
                         _raim = _bits.get( field.getStartBit() );
-                        break;
-                    case VIRTUAL_AID:
+                    break;
+                case VIRTUAL_AID:
+                    if( _bits.length() >= field.getEndBit() )
                         _virtualAid = _bits.get( field.getStartBit() );
-                        break;
-                    case NAME_EXTENSION:
+                    break;
+                case NAME_EXTENSION:
+                    if( _bits.length() >= field.getEndBit() )
                         _nameExtension = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), _bits.size() - 1 );
-                        break;
-                    default:
-                        if( LOG.isTraceEnabled() ) LOG.trace( "Ignoring field: {}", field.name() );
-                }
-            } catch( AISException e ) {
-                if( LOG.isDebugEnabled() ) LOG.debug( "Failed to decode field: {} due to {}", field.name(), e.getMessage(), e );
+                    break;
+                default:
+                    if( LOG.isTraceEnabled() ) LOG.trace( "Ignoring field: {}", field.name() );
             }
         }
     }

@@ -141,45 +141,41 @@ public class Interrogation extends AISMessageBase {
         super.decode( charset );
 
         for( InterrogationFieldMap field : InterrogationFieldMap.values() ) {
-            try {
-                switch( field ) {
-                    case MMSI1:
-                        _mmsi1 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
-                        break;
-                    case TYPE1_1:
-                        _type1_1 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
-                        break;
-                    case OFFSET1_1:
-                        _offset1_1 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
-                        break;
-                    case TYPE1_2:
-                        _type1_2 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
-                        break;
-                    case OFFSET1_2:
-                        _offset1_2 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
-                        break;
-                    case MMSI2:
-                        _mmsi2 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
-                        break;
-                    case TYPE2_1:
-                        _type2_1 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
-                        break;
-                    case OFFSET2_1:
-                        _offset2_1 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
-                        break;
-                    default:
-                        if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
-                }
-            } catch( Throwable t ) {
-                if( LOG.isTraceEnabled() ) LOG.trace( "Unable to decode field: {}: {}.", field.name(), t.getMessage(), t );
+            switch( field ) {
+                case MMSI1:
+                    if( _bits.length() >= field.getEndBit() )
+                        _mmsi1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    break;
+                case TYPE1_1:
+                    if( _bits.length() >= field.getEndBit() )
+                        _type1_1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    break;
+                case OFFSET1_1:
+                    if( _bits.length() >= field.getEndBit() )
+                        _offset1_1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    break;
+                case TYPE1_2:
+                    if( _bits.length() >= field.getEndBit() )
+                        _type1_2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    break;
+                case OFFSET1_2:
+                    if( _bits.length() >= field.getEndBit() )
+                        _offset1_2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    break;
+                case MMSI2:
+                    if( _bits.length() >= field.getEndBit() )
+                        _mmsi2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    break;
+                case TYPE2_1:
+                    if( _bits.length() >= field.getEndBit() )
+                        _type2_1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    break;
+                case OFFSET2_1:
+                    if( _bits.length() >= field.getEndBit() )
+                        _offset2_1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    break;
+                default:
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
             }
         }
     }

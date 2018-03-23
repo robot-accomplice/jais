@@ -306,58 +306,74 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
         for( StaticAndVoyageFieldMap field : StaticAndVoyageFieldMap.values() ) {
             switch( field ) {
                 case VERSION:
-                    _version = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _version = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case IMO:
-                    _imo = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _imo = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case CALL_SIGN:
-                    _callsign = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit(), charset );
+                    if( _bits.length() >= field.getEndBit() )
+                        _callsign = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit(), charset );
                     break;
                 case SHIP_NAME:
-                    _shipname = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit(), charset );
+                    if( _bits.length() >= field.getEndBit() )
+                        _shipname = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit(), charset );
                     break;
                 case SHIP_TYPE:
                     int shipCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                    _shiptype = ShipType.getForCode( shipCode );
+                    if( _bits.length() >= field.getEndBit() )
+                        _shiptype = ShipType.getForCode( shipCode );
                     if( _shiptype == null ) {
                         LOG.error( "No ShipType for {}", shipCode );
                         _shiptype = ShipType.OTHER_NO_INFO;
                     }
                     break;
                 case TO_BOW:
-                    _toBow = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _toBow = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_STERN:
-                    _toStern = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _toStern = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_PORT:
-                    _toPort = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _toPort = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_STARBOARD:
-                    _toStarboard = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _toStarboard = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case EPFD:
                     int epfdCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                    _epfd = EPFDFixType.getForCode( epfdCode );
+                    if( _bits.length() >= field.getEndBit() )
+                        _epfd = EPFDFixType.getForCode( epfdCode );
                     break;
                 case ETA_MONTH:
-                    _month = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _month = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case ETA_DAY:
-                    _day = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _day = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case ETA_HOUR:
-                    _hour = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _hour = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case ETA_MINUTE:
-                    _minute = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _minute = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case DRAUGHT:
-                    _draught = AISMessageDecoder.decodeDraught( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _draught = AISMessageDecoder.decodeDraught( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case DESTINATION:
-                    _destination = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit(), charset );
+                    if( _bits.length() >= field.getEndBit() )
+                        _destination = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit(), charset );
                     break;
                 case DTE:
                     if( field.getStartBit() < _bits.size() ) {

@@ -91,18 +91,20 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
     @Override
     public final void decode( Charset charset ) throws AISException {
         super.decode( charset );
-        
-        for( AddressedSafetyRelatedMessageFieldMap field :
-                AddressedSafetyRelatedMessageFieldMap.values() ) {
+
+        for( AddressedSafetyRelatedMessageFieldMap field : AddressedSafetyRelatedMessageFieldMap.values() ) {
             switch( field ) {
                 case DEST_MMSI:
-                    _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case RETRANSMIT:
-                    _retransmit = _bits.get( field.getStartBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _retransmit = _bits.get( field.getStartBit() );
                     break;
                 case TEXT:
-                    _text = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), _bits.size() - 1, charset );
+                    if( _bits.length() >= field.getEndBit() )
+                        _text = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), _bits.size() - 1, charset );
                     break;
             }
         }

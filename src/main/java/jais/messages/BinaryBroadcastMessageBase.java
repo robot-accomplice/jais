@@ -111,21 +111,21 @@ public abstract class BinaryBroadcastMessageBase extends AISMessageBase {
     public void decode( Charset charset ) throws AISException {
         super.decode( charset );
 
-        for( BinaryBroadcastMessageBaseFieldMap field
-                : BinaryBroadcastMessageBaseFieldMap.values() ) {
+        for( BinaryBroadcastMessageBaseFieldMap field : BinaryBroadcastMessageBaseFieldMap.values() ) {
             switch( field ) {
                 case DAC:
-                    _dac = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _dac = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case FID:
-                    _fid = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _fid = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case DATA:
                     // store the undecoded portion of the BitSet in the data 
                     // field for later decoding by subtype
-                    _data = _bits.get( field.getStartBit(), _bits.size() - 1 );
+                    if( _bits.length() > field.getStartBit() )
+                        _data = _bits.get( field.getStartBit(), _bits.size() - 1 );
                     break;
             }
         }

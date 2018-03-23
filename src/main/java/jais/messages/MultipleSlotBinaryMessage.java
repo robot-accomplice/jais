@@ -126,24 +126,29 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
         for( MultipleSlotBinaryMessageFieldMap field : MultipleSlotBinaryMessageFieldMap.values() ) {
             switch( field ) {
                 case ADDRESSED:
-                    _addressed = _bits.get( field.getStartBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _addressed = _bits.get( field.getStartBit() );
                     break;
                 case STRUCTURED:
-                    _structured = _bits.get( field.getStartBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _structured = _bits.get( field.getStartBit() );
                     break;
                 case DESTINATION_MMSI:
                     if( _addressed ) {
-                        _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     }
                     break;
                 case DAC:
                     if( _structured ) {
-                        _dac = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _dac = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     }
                     break;
                 case FID:
                     if( _structured ) {
-                        _fid = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                        if( _bits.length() >= field.getEndBit() )
+                            _fid = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     }
                     break;
                 case DATA:

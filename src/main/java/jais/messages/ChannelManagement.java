@@ -188,41 +188,44 @@ public class ChannelManagement extends AISMessageBase {
         for( ChannelManagementFieldMap field : ChannelManagementFieldMap.values() ) {
             switch( field ) {
                 case NE_LON:
-                    _neLon = AISMessageDecoder.decodeLongitude( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _neLon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case NE_LAT:
-                    _neLat = AISMessageDecoder.decodeLatitude( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _neLat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SW_LON:
-                    _swLon = AISMessageDecoder.decodeLongitude( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _swLon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SW_LAT:
-                    _swLat = AISMessageDecoder.decodeLatitude( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _swLat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case DEST_MMSI1:
-                    _destMmsi1 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _destMmsi1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case DEST_MMSI2:
-                    _destMmsi2 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _destMmsi2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case ADDRESSED:
-                    _addressed = _bits.get( field.getStartBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _addressed = _bits.get( field.getStartBit() );
                     break;
                 case CHANNEL_A_BAND:
-                    _bandA = _bits.get( field.getStartBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _bandA = _bits.get( field.getStartBit() );
                     break;
                 case CHANNEL_B_BAND:
-                    _bandB = _bits.get( field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _bandB = _bits.get( field.getEndBit() );
                     break;
                 case ZONE_SIZE:
-                    _zoneSize = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _zoneSize = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 default:
                     if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );

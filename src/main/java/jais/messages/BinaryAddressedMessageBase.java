@@ -194,8 +194,7 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
                 throw new AISException( "SecurityException: " + se.getMessage(), se );
             }
         } else {
-            throw new AISException( "Unable to determine message subtype for DAC: "
-                    + _dac + " and FID: " + _fid );
+            throw new AISException( "Unable to determine message subtype for DAC: " + _dac + " and FID: " + _fid );
         }
 
         return message;
@@ -209,27 +208,27 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
     public void decode( Charset charset ) throws AISException {
         super.decode( charset );
 
-        for( BinaryAddressedMessageFieldMap field
-                : BinaryAddressedMessageFieldMap.values() ) {
+        for( BinaryAddressedMessageFieldMap field : BinaryAddressedMessageFieldMap.values() ) {
             switch( field ) {
                 case SEQUENCE_NUMBER:
-                    _seqno = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _seqno = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case DESTINATION_MMSI:
-                    _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case RETRANSMIT:
-                    _retransmit = _bits.get( field.getStartBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _retransmit = _bits.get( field.getStartBit() );
                     break;
                 case DAC:
-                    _dac = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _dac = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case FID:
-                    _fid = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _fid = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
             }
         }

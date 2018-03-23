@@ -105,24 +105,23 @@ public class SafetyRelatedAcknowledgement extends AISMessageBase {
     public final void decode( Charset charset ) throws AISException {
         super.decode( charset );
 
-        for( SafetyRelatedAcknowledgeFieldMap field
-                : SafetyRelatedAcknowledgeFieldMap.values() ) {
+        for( SafetyRelatedAcknowledgeFieldMap field : SafetyRelatedAcknowledgeFieldMap.values() ) {
             switch( field ) {
                 case MMSI1:
-                    _mmsi1 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                            _mmsi1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case MMSI2:
-                    _mmsi2 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                            _mmsi2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case MMSI3:
-                    _mmsi3 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                            _mmsi3 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case MMSI4:
-                    _mmsi4 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                            _mmsi4 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
             }
         }

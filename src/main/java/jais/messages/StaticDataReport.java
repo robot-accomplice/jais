@@ -154,35 +154,45 @@ public class StaticDataReport extends AISMessageBase {
         for( StaticDataReportFieldMap field : StaticDataReportFieldMap.values() ) {
             switch( field ) {
                 case PART_NUMBER:
-                    _partNo = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _partNo = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SHIP_NAME:
-                    _shipName = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
+                    if( _bits.length() >= field.getEndBit() )
+                        _shipName = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
                     break;
                 case SHIP_TYPE:
-                    int stCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                    _shipType = ShipType.getForCode( stCode );
+                    if( _bits.length() >= field.getEndBit() ) {
+                        int stCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                        _shipType = ShipType.getForCode( stCode );
+                    }
                     break;
                 case VENDOR_ID:
-                    _vendorId = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
+                    if( _bits.length() >= field.getEndBit() )
+                        _vendorId = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
                     break;
                 case CALL_SIGN:
-                    _callSign = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
+                    if( _bits.length() >= field.getEndBit() )
+                        _callSign = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
                     break;
                 case TO_BOW:
-                    _toBow = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _toBow = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_STERN:
-                    _toStern = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _toStern = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_PORT:
-                    _toPort = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _toPort = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_STARBOARD:
                     _toStarboard = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case MOTHERSHIP_MMSI:
-                    _mothershipMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _mothershipMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 default:
                     if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );

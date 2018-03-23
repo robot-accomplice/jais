@@ -108,26 +108,20 @@ public class BinaryAcknowledge extends AISMessageBase {
         for( BinaryAcknowledgeFieldMap field : BinaryAcknowledgeFieldMap.values() ) {
             switch( field ) {
                 case MMSI1:
-                    _mmsi1 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _mmsi1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case MMSI2:
-                    if( _bits.size() > 72 ) {
-                        _mmsi2 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
-                    }
+                    if( _bits.length() >= field.getEndBit() )
+                        _mmsi2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case MMSI3:
-                    if( _bits.size() > 104 ) {
-                        _mmsi3 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
-                    }
+                    if( _bits.length() >= field.getEndBit() )
+                        _mmsi3 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case MMSI4:
-                    if( _bits.size() > 136 ) {
-                        _mmsi4 = AISMessageDecoder.decodeUnsignedInt( _bits,
-                                field.getStartBit(), field.getEndBit() );
-                    }
+                    if( _bits.length() >= field.getEndBit() )
+                        _mmsi4 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 default:
                     if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );

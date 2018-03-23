@@ -189,44 +189,48 @@ public class StandardSARAircraftPositionReport extends AISMessageBase {
                 : SSARAircraftPositionReportFieldMap.values() ) {
             switch( field ) {
                 case ALT:
-                    _alt = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _alt = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SPEED:
-                    _speed = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _speed = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case ACCURACY:
-                    _accurate = _bits.get( field.getStartBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _accurate = _bits.get( field.getStartBit() );
                     break;
                 case LON:
-                    _lon = AISMessageDecoder.decodeSignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _lon = AISMessageDecoder.decodeSignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case LAT:
-                    _lat = AISMessageDecoder.decodeSignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _lat = AISMessageDecoder.decodeSignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case COURSE:
-                    _course = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _course = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SECOND:
-                    _second = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _second = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case DTE:
-                    _dte = _bits.get( field.getStartBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _dte = _bits.get( field.getStartBit() );
                     break;
                 case ASSIGNED:
-                    _assigned = _bits.get( field.getStartBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _assigned = _bits.get( field.getStartBit() );
                     break;
                 case RAIM:
-                    _raim = _bits.get( field.getStartBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _raim = _bits.get( field.getStartBit() );
                     break;
                 case RADIO:
-                    _radio = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    if( _bits.length() >= field.getEndBit() )
+                        _radio = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
             }
         }
