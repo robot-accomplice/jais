@@ -195,7 +195,7 @@ public class Vessel implements Cloneable {
         _accurate = prb.isAccurate();
         _raim = prb.isRaim();
         
-        LOG.debug( this.toString() );
+        if( LOG.isDebugEnabled() ) LOG.debug( this.toString() );
     }
 
     /**
@@ -222,7 +222,7 @@ public class Vessel implements Cloneable {
         _toStern = savrd.getToStern();
         _version = savrd.getVersion();
         
-        LOG.debug( this.toString() );
+        if( LOG.isDebugEnabled() ) LOG.debug( this.toString() );
     }
 
     /**
