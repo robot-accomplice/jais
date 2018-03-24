@@ -306,7 +306,7 @@ public class SocketClient extends SocketConnectionBase {
     public void close() {
         _keepOpen = false;
         LOG.fatal( "{} - SocketClient shutdown invoked.  Closing connection...", _name );
-        if( !_connection.isClosed() ) _connection.close();
+        if( _connection != null && !_connection.isClosed() ) _connection.close();
 
         try {
             LOG.fatal( "{} - Closing socket connection...", _name );
