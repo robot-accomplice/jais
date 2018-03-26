@@ -220,7 +220,7 @@ public class AISPacketBuffer implements AutoCloseable {
      *
      * @return
      */
-    public int getBufferSize() {
+    public int size() {
         return _packetSetMap.size();
     }
 
