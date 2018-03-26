@@ -26,7 +26,6 @@ import jais.messages.enums.ShipType;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -588,7 +587,7 @@ public class Vessel implements Cloneable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 89 * hash + Objects.hashCode( _id );
+        hash = 89 * hash + _id.hashCode();
         return hash;
     }
 
@@ -607,7 +606,7 @@ public class Vessel implements Cloneable {
         }
         final Vessel other = ( Vessel ) obj;
 
-        return( _id.equals( other.getId() ) );
+        return ( _id.equals( other.getId() ) );
     }
     
     /**
@@ -704,8 +703,9 @@ public class Vessel implements Cloneable {
                 return false;
             if( !( o instanceof Identifier ) )
                 return false;
-            Identifier id = ( Identifier ) o;
-            return ( id.getMmsi() == _mmsi && id.getSource().equals( _source ) );
+            Identifier id = ( Identifier )o;
+            if( id._mmsi != _mmsi ) return false;
+            return id._source.equals( _source );
         }
 
         /**
@@ -715,8 +715,8 @@ public class Vessel implements Cloneable {
         @Override
         public int hashCode() {
             int hash = 5;
-            hash = 67 * hash + this._mmsi;
-            hash = 67 * hash + Objects.hashCode( _source );
+            hash = 67 * hash + _mmsi;
+            hash = 67 * hash + _source.hashCode();
             return hash;
         }
     }
