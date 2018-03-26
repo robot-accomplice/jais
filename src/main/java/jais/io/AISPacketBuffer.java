@@ -255,7 +255,7 @@ public class AISPacketBuffer implements AutoCloseable {
      * @return 
      */
     public int purgeExpired( long thresholdMs ) {
-        LOG.fatal( "Purging AISPacketSets older than {}ms from AISPacketBuffer", thresholdMs );
+        LOG.info( "Purging AISPacketSets older than {}ms from AISPacketBuffer", thresholdMs );
         int purgeCount = 0;
         
         if( _packetSetMap.isEmpty() ) {
@@ -273,7 +273,8 @@ public class AISPacketBuffer implements AutoCloseable {
             }
         }
         
-        LOG.fatal( "{} AISPacketSets purged from AISPacketBuffer.  New AISPacketBuffer size is {} elements", 
+        if( LOG.isInfoEnabled() )
+            LOG.info( "{} AISPacketSets purged from AISPacketBuffer.  New AISPacketBuffer size is {} elements", 
                 purgeCount, _packetSetMap.size() );
         
         return purgeCount;
