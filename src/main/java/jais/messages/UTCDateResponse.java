@@ -21,7 +21,6 @@ import jais.messages.enums.AISMessageType;
 import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.EPFDFixType;
-import java.nio.charset.Charset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -167,8 +166,8 @@ public class UTCDateResponse extends AISMessageBase {
      * @throws AISException
      */
     @Override
-    public final void decode( Charset charset ) throws AISException {
-        super.decode( charset );
+    public final void decode() throws AISException {
+        super.decode();
 
         for( UTCDateResponseFieldMap field : UTCDateResponseFieldMap.values() ) {
             switch( field ) {

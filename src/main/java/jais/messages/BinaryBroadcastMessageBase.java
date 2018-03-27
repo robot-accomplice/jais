@@ -21,7 +21,6 @@ import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.BinaryBroadcastMessageType;
 import jais.messages.enums.FieldMap;
-import java.nio.charset.Charset;
 import java.util.BitSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -108,8 +107,8 @@ public abstract class BinaryBroadcastMessageBase extends AISMessageBase {
      * @throws jais.exceptions.AISException
      */
     @Override
-    public void decode( Charset charset ) throws AISException {
-        super.decode( charset );
+    public void decode() throws AISException {
+        super.decode();
 
         for( BinaryBroadcastMessageBaseFieldMap field : BinaryBroadcastMessageBaseFieldMap.values() ) {
             switch( field ) {

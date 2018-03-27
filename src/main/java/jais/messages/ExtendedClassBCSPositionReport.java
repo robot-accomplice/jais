@@ -22,7 +22,6 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.ShipType;
-import java.nio.charset.Charset;
 import org.locationtech.spatial4j.shape.Point;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -234,8 +233,8 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
      * @throws AISException
      */
     @Override
-    public final void decode( Charset charset ) throws AISException {
-        super.decode( charset );
+    public final void decode() throws AISException {
+        super.decode();
         
         for( ExtendedClassBCSPositionReportFieldMap field : ExtendedClassBCSPositionReportFieldMap.values() ) {
             switch( field ) {
@@ -269,7 +268,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
                     break;
                 case SHIP_NAME:
                     if( _bits.size() >= field.getStartBit() )
-                        _shipName = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
+                        _shipName = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SHIP_TYPE:
                     if( _bits.size() >= field.getStartBit() ) {

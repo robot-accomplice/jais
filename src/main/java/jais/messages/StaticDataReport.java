@@ -21,7 +21,6 @@ import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.ShipType;
-import java.nio.charset.Charset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -148,8 +147,8 @@ public class StaticDataReport extends AISMessageBase {
      * @throws AISException
      */
     @Override
-    public final void decode( Charset charset ) throws AISException {
-        super.decode( charset );
+    public final void decode() throws AISException {
+        super.decode();
 
         for( StaticDataReportFieldMap field : StaticDataReportFieldMap.values() ) {
             switch( field ) {
@@ -159,7 +158,7 @@ public class StaticDataReport extends AISMessageBase {
                     break;
                 case SHIP_NAME:
                     if( _bits.size() >= field.getStartBit() )
-                        _shipName = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
+                        _shipName = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SHIP_TYPE:
                     if( _bits.size() >= field.getStartBit() ) {
@@ -169,11 +168,11 @@ public class StaticDataReport extends AISMessageBase {
                     break;
                 case VENDOR_ID:
                     if( _bits.size() >= field.getStartBit() )
-                        _vendorId = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
+                        _vendorId = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case CALL_SIGN:
                     if( _bits.size() >= field.getStartBit() )
-                        _callSign = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
+                        _callSign = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case TO_BOW:
                     if( _bits.size() >= field.getStartBit() )

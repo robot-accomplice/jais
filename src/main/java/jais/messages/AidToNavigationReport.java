@@ -22,7 +22,6 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.NavaidType;
-import java.nio.charset.Charset;
 import org.locationtech.spatial4j.shape.Point;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -234,8 +233,8 @@ public class AidToNavigationReport extends AISMessageBase {
      * @throws AISException
      */
     @Override
-    public final void decode( Charset charset ) throws AISException {
-        super.decode( charset );
+    public final void decode() throws AISException {
+        super.decode();
 
         for( AidToNavigationReportFieldMap field : AidToNavigationReportFieldMap.values() ) {
             switch( field ) {
@@ -247,7 +246,7 @@ public class AidToNavigationReport extends AISMessageBase {
                     break;
                 case NAME:
                     if( _bits.size() >= field.getStartBit() )
-                        _name = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit(), charset );
+                        _name = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case ACCURATE:
                     if( _bits.size() >= field.getStartBit() )

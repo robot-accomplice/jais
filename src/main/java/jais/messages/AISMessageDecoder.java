@@ -420,27 +420,14 @@ public class AISMessageDecoder {
     }
 
     /**
-     *
-     * @param bits
-     * @param startBit
-     * @param endBit
-     * @return
-     * @throws AISException
-     */
-    public static String decodeToString( BitSet bits, int startBit, int endBit ) throws AISException {
-        return AISPacket.bArray2Str( decodeToByteArray( bits, startBit, endBit ) );
-    }
-    
-    /**
      * 
      * @param bits
      * @param startBit
      * @param endBit
-     * @param charset
      * @return
      * @throws AISException 
      */
-    public static String decodeToString( BitSet bits, int startBit, int endBit, Charset charset ) throws AISException {
+    public static String decodeToString( BitSet bits, int startBit, int endBit ) throws AISException {
         try {
             if( LOG.isTraceEnabled() ) LOG.trace( "Decoding bit {} through bit {} of {} element BitSet", startBit, endBit, bits.size() );
             CharBuffer cb = CharBuffer.allocate( ( ( ( endBit - startBit ) / 6 ) + 1 ) );

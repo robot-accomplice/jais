@@ -75,7 +75,6 @@ public final class AISPacket {
     private ZonedDateTime _timeReceived = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
     private byte[][] _packetParts;
     private boolean _parsed = false;
-    private Charset _charset;
 
     /**
      *

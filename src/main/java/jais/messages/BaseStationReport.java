@@ -21,7 +21,6 @@ import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
-import java.nio.charset.Charset;
 import org.locationtech.spatial4j.shape.Point;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -188,8 +187,8 @@ public class BaseStationReport extends AISMessageBase {
      * @throws AISException
      */
     @Override
-    public final void decode( Charset charset ) throws AISException {
-        super.decode( charset );
+    public final void decode() throws AISException {
+        super.decode();
 
         for( BaseReportFieldMap field : BaseReportFieldMap.values() ) {
             switch( field ) {

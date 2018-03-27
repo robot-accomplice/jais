@@ -26,9 +26,6 @@ import jais.messages.StandardClassBCSPositionReport;
 import jais.messages.StaticAndVoyageRelatedData;
 import jais.messages.enums.MMSIType;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -80,11 +77,12 @@ public class ConsoleController implements Initializable {
             
             if( inText == null || inText.isEmpty() ) throw new Exception( "Null Input" );
             
-            List<AISPacket> packets = new ArrayList<>();
-            for( String packetStr : inText.split( "\n" ) ) {
-                AISPacket packet = ( AISPacket.validatePreamble( packetStr ) ) ? 
-                        new AISPacket( packetStr ) : 
-                        AISPacket.createFromBinaryString( packetStr, null );
+            String [] packetStrings = inText.split( "\n" );
+            AISPacket [] packets = new AISPacket[ inText.length() ];
+            for( int i = 0; i < packetStrings.length; i++ ) {
+                AISPacket packet = ( AISPacket.validatePreamble( packetStrings[i] ) ) ? 
+                        new AISPacket( packetStrings[i] ) : 
+                        AISPacket.createFromBinaryString( packetStrings[i], null );
                 packet.process();
                     appendLineToOutput( "---------------------------------------------" );
                 TagBlock tb = packet.getTagBlock();
@@ -118,11 +116,11 @@ public class ConsoleController implements Initializable {
                     appendLineToOutput( "\tmanufacturer : " + pre.manufacturer.fullName );
                 }
                 appendLineToOutput( "\tvalid packet: " + packet.isValid() );
-                packets.add( packet );
+                packets[i] = packet;
             }
             appendLineToOutput( "---------------------------------------------" );
             
-            Optional<AISMessage> msgOpt = AISMessageFactory.create( "CONSOLE", false, StandardCharsets.UTF_8, packets );
+            Optional<AISMessage> msgOpt = AISMessageFactory.create( "CONSOLE", false, packets );
             if( msgOpt.isPresent() ) {
                 AISMessage msg = msgOpt.get();
                 // from AISMessageBase

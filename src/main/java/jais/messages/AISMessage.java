@@ -21,7 +21,6 @@ import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.MMSIType;
-import java.nio.charset.Charset;
 import org.locationtech.spatial4j.shape.Point;
 import java.time.ZonedDateTime;
 
@@ -117,24 +116,16 @@ public interface AISMessage {
     
     /**
      * 
-     * @param charset
      * @return 
      * @throws jais.exceptions.AISException 
      */
-    AISMessage getSubTypeInstance( Charset charset ) throws AISException;
+    AISMessage getSubTypeInstance() throws AISException;
     
     /**
      * 
-     * @throws jais.exceptions.AISException
+     * @throws jais.exceptions.AISException 
      */
     void decode() throws AISException;
-    
-    /**
-     * 
-     * @param charset
-     * @throws AISException 
-     */
-    void decode( Charset charset ) throws AISException;
 
     /**
      * Fields common to all messages

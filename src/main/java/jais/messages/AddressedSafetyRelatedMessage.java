@@ -20,7 +20,6 @@ import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
-import java.nio.charset.Charset;
 
 /**
  *
@@ -89,8 +88,8 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
      * @throws AISException 
      */
     @Override
-    public final void decode( Charset charset ) throws AISException {
-        super.decode( charset );
+    public final void decode() throws AISException {
+        super.decode();
 
         for( AddressedSafetyRelatedMessageFieldMap field : AddressedSafetyRelatedMessageFieldMap.values() ) {
             switch( field ) {
@@ -101,7 +100,7 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
                     _retransmit = _bits.get( field.getStartBit() );
                     break;
                 case TEXT:
-                    _text = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), _bits.size() - 1, charset );
+                    _text = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), _bits.size() - 1 );
                     break;
             }
         }

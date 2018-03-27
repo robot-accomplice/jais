@@ -18,8 +18,6 @@ package jais.messages;
 import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
-import java.nio.charset.Charset;
-import java.util.List;
 import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,57 +29,16 @@ import org.apache.logging.log4j.Logger;
 public class AISMessageFactory {
 
     private final static Logger LOG = LogManager.getLogger( AISMessageFactory.class );
-    private final static String DEFAULT_SOURCE = "UNKNOWN";
-    
-    /**
-     * 
-     * @param source
-     * @param strict
-     * @param packets
-     * @return
-     * @throws AISException 
-     */
-    public static Optional<AISMessage> create( String source, boolean strict, List<AISPacket> packets ) throws AISException {
-        return create( source, strict, AISPacket.DEFAULT_CHARSET, packets );
-    }
-    
-    /**
-     * 
-     * @param source
-     * @param strict
-     * @param charset
-     * @param packets
-     * @return
-     * @throws AISException 
-     */
-    public static Optional<AISMessage> create( String source, boolean strict, Charset charset, List<AISPacket> packets ) throws AISException {
-        AISPacket [] packetA = new AISPacket[packets.size()];
-        packets.toArray( packetA );
-        return create( source, strict, charset, packetA );
-    }
-    
-    /**
-     * 
-     * @param source
-     * @param strict
-     * @param packets
-     * @return
-     * @throws AISException 
-     */
-    public static Optional<AISMessage> create( String source, boolean strict, AISPacket... packets ) throws AISException {
-        return create( source, strict, AISPacket.DEFAULT_CHARSET, packets );
-    }
     
     /**
      *
      * @param source
      * @param strict
-     * @param charset
      * @param packets
      * @return
      * @throws jais.exceptions.AISException
      */
-    public static Optional<AISMessage> create( String source, boolean strict, Charset charset, AISPacket... packets ) throws AISException {
+    public static Optional<AISMessage> create( String source, boolean strict, AISPacket... packets ) throws AISException {
         String compositeMsg = null;
 
         try {
@@ -190,7 +147,7 @@ public class AISMessageFactory {
 
                 if( message != null ) {
                     // decode message
-                    message.decode( charset );
+                    message.decode();
                 }
                 
                 return Optional.of( message );
@@ -237,18 +194,5 @@ public class AISMessageFactory {
         }
 
         return create( source, strict, packets );
-    }
-
-    /**
-     *
-     * @param source
-     * @param packets
-     * @return
-     * @throws jais.exceptions.AISException
-     */
-    public static Optional<AISMessage> create( String source, List<AISPacket> packets ) throws AISException {
-        AISPacket[] packetArray = new AISPacket[packets.size()];
-        packets.toArray( packetArray );
-        return create( source, packetArray );
     }
 }

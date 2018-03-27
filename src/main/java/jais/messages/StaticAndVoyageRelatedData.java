@@ -22,7 +22,6 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.ShipType;
-import java.nio.charset.Charset;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -301,8 +300,8 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      * @throws AISException
      */
     @Override
-    public final void decode( Charset charset ) throws AISException {
-        super.decode( charset );
+    public final void decode() throws AISException {
+        super.decode();
 
         for( StaticAndVoyageFieldMap field : StaticAndVoyageFieldMap.values() ) {
             switch( field ) {
@@ -316,11 +315,11 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
                     break;
                 case CALL_SIGN:
                     if( _bits.size() >= field.getStartBit() )
-                        _callsign = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit(), charset );
+                        _callsign = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SHIP_NAME:
                     if( _bits.size() >= field.getStartBit() )
-                        _shipname = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit(), charset );
+                        _shipname = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case SHIP_TYPE:
                     int shipCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
@@ -375,7 +374,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
                 case DESTINATION:
                     if( _bits.size() >= field.getStartBit() )
                         try {
-                            _destination = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit(), charset );
+                            _destination = AISMessageDecoder.decodeToByteArray( _bits, field.getStartBit(), field.getEndBit() );
                         } catch( AISException ae ) {
                             LOG.fatal( ae.getMessage(), ae );
                         }

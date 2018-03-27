@@ -20,7 +20,6 @@ import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
-import java.nio.charset.Charset;
 
 /**
  *
@@ -71,8 +70,8 @@ public class UTCDateInquiry extends AISMessageBase {
      * @throws AISException 
      */
     @Override
-    public final void decode( Charset charset ) throws AISException {
-        super.decode( charset );
+    public final void decode() throws AISException {
+        super.decode();
         
         for( UTCDateInquiryFieldMap field : UTCDateInquiryFieldMap.values() ) {
             switch( field ) {
