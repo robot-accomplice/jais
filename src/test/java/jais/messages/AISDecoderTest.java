@@ -503,6 +503,7 @@ public class AISDecoderTest {
         "!ABVDM,1,1,,A,34Ses01Oh8Jm?Ll;ERH<b1Gd0000,0*61",
         "!AIVDM,1,1,,A,15NHl8500pqSdR8A7jnq9oRF0<<P,0*38",
         "!ABVDM,1,1,,A,34Ses01Oh8Jm?Ll;ERH<b1Gd0000,0*61",
+        "!AIVDM,2,1,5,B,53ld6602@2qCTP7?WGLpE1ADpF0PDhh5>22222162bC9C4un0EPDj13i8888,0*04",
         "\\g:1-2-73874,n:157036,s:r003669945,c:1241544035*4A\\!AIVDM,1,1,,B,15N4cJ`005Jrek0H@9n`DW5608EP,0*13"
     };
 
