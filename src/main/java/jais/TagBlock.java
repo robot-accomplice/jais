@@ -42,6 +42,8 @@ public final class TagBlock {
     public final static Logger LOG = LogManager.getLogger( TagBlock.class );
     public final static String TAGBLOCK_STRING = "\\\\(([cdgnrst]{1}\\:[A-Za-z0-9\\\\-]+\\,?)+)\\*([A-Za-z0-9]{2})\\\\";
     public final static Pattern TAGBLOCK_PATTERN = Pattern.compile( TAGBLOCK_STRING );
+    
+    boolean _parsed;
 
     byte [] rawTagBlock;
     byte [] checksum;
@@ -65,6 +67,21 @@ public final class TagBlock {
      *
      */
     public TagBlock() {
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public final boolean isParsed() {
+        return _parsed;
+    }
+    
+    /**
+     * 
+     */
+    public final void setParsed() {
+        _parsed = true;
     }
     
     /**
@@ -114,6 +131,18 @@ public final class TagBlock {
     public final void setTimestamp( long timestamp ) {
         this.timestamp = timestamp;
     }
+    
+    /**
+     * 
+     * @return 
+     */
+    public final boolean hasTimestamp() {
+        if( _parsed ) {
+            return ( this.timestamp > 0 );
+        }
+        
+        return false;
+    }
 
     /**
      *
@@ -121,6 +150,17 @@ public final class TagBlock {
      */
     public final byte [] getDestination() {
         return destination;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public final boolean hasDestination() {
+        if( _parsed ) {
+            return ( this.destination != null );
+        }
+        return false;
     }
 
     /**
@@ -140,6 +180,17 @@ public final class TagBlock {
     }
 
     /**
+     * 
+     * @return 
+     */
+    public final boolean hasSentenceGrouping() {
+        if( _parsed ) {
+            return ( this.sentenceGrouping != null );
+        }
+        return false;
+    }
+
+    /**
      *
      * @param sentenceGrouping
      */
@@ -153,6 +204,17 @@ public final class TagBlock {
      */
     public final int getLineCount() {
         return lineCount;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public final boolean hasLineCount() {
+        if( _parsed ) {
+            return ( this.lineCount != 0 );
+        }
+        return false;
     }
 
     /**
@@ -172,6 +234,17 @@ public final class TagBlock {
     }
 
     /**
+     * 
+     * @return 
+     */
+    public final boolean hasRelativeTime() {
+        if( _parsed ) {
+            return ( this.relativeTime != 0 );
+        }
+        return false;
+    }
+
+    /**
      *
      * @param relativeTime
      */
@@ -188,6 +261,17 @@ public final class TagBlock {
     }
 
     /**
+     * 
+     * @return 
+     */
+    public final boolean hasSource() {
+        if( _parsed ) {
+            return ( this.source != null );
+        }
+        return false;
+    }
+
+    /**
      *
      * @param source
      */
@@ -201,6 +285,17 @@ public final class TagBlock {
      */
     public final byte [] getTextStr() {
         return textStr;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public final boolean hasTextStr() {
+        if( _parsed ) {
+            return ( this.textStr != null );
+        }
+        return false;
     }
 
     /**
@@ -292,6 +387,7 @@ public final class TagBlock {
             tb.setSource( source );
         }
         
+        tb.setParsed();
         tb.setRawTagBlock( AISPacket.str2bArray( tb.toString() ) );
         
         return tb;
@@ -305,7 +401,7 @@ public final class TagBlock {
     public static TagBlock parse( String rawTagBlock ) {
         return parse( rawTagBlock, null );
     }
-
+    
     /**
      *
      * @return
