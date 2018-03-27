@@ -42,7 +42,7 @@ public class AISMessageFactory {
         String compositeMsg = null;
 
         try {
-            if( packets.length < 1 ) throw new AISException( "Packets array is empty!" ); 
+            if( packets == null || packets.length < 1 ) throw new AISException( "Packets array is empty!" ); 
             if( LOG.isDebugEnabled() ) LOG.debug( "Decoding message from {} packet(s). Strict is set to {}", packets.length, strict );
             
             byte [] compositeBytes;
