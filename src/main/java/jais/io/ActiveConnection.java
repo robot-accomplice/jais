@@ -23,7 +23,7 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.LongAdder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,7 +43,6 @@ public class ActiveConnection implements AutoCloseable {
     private Socket _socket;
     private final ConnectionType _type;
     private final ExecutorCompletionService<Optional<String>> _readQueue;
-    private final ExecutorService _threadPool;
     private final int _readBufferSize;
     private final ZonedDateTime _launchTime;
 
@@ -65,11 +64,10 @@ public class ActiveConnection implements AutoCloseable {
      * @param type
      * @param readQueue
      * @param readBufferSize
-     * @param threadPool
      */
     public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue,
-            int readBufferSize, ExecutorService threadPool ) {
-        this( name, socket, type, readQueue, readBufferSize, threadPool, false, null );
+            int readBufferSize ) {
+        this( name, socket, type, readQueue, readBufferSize, false, null );
     }
 
     /**
@@ -79,12 +77,11 @@ public class ActiveConnection implements AutoCloseable {
      * @param type
      * @param readQueue
      * @param readBufferSize
-     * @param threadPool
      * @param purgeQueuesOnDisconnect
      */
     public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue,
-            int readBufferSize, ExecutorService threadPool, boolean purgeQueuesOnDisconnect ) {
-        this( name, socket, type, readQueue, readBufferSize, threadPool, purgeQueuesOnDisconnect, null );
+            int readBufferSize, boolean purgeQueuesOnDisconnect ) {
+        this( name, socket, type, readQueue, readBufferSize, purgeQueuesOnDisconnect, null );
     }
 
     /**
@@ -94,13 +91,12 @@ public class ActiveConnection implements AutoCloseable {
      * @param type
      * @param readQueue
      * @param readBufferSize
-     * @param threadPool
      * @param purgeQueuesOnDisconnect 
      * @param handler 
      */
     public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue,
-            int readBufferSize, ExecutorService threadPool, boolean purgeQueuesOnDisconnect, AISStringHandler handler ) {
-        this( name, socket, type, readQueue, readBufferSize, threadPool, purgeQueuesOnDisconnect, handler, 
+            int readBufferSize, boolean purgeQueuesOnDisconnect, AISStringHandler handler ) {
+        this( name, socket, type, readQueue, readBufferSize, purgeQueuesOnDisconnect, handler, 
                 ActiveConnection.DEFAULT_WRITE_QUEUE_ABSOLUTE_THRESHOLD, ActiveConnection.DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD, null, null );
     }
     
@@ -111,7 +107,6 @@ public class ActiveConnection implements AutoCloseable {
      * @param type
      * @param readQueue
      * @param readBufferSize
-     * @param threadPool
      * @param purgeQueuesOnDisconnect 
      * @param handler 
      * @param writeQueueSizeLimit 
@@ -120,14 +115,13 @@ public class ActiveConnection implements AutoCloseable {
      * @param writeCounter 
      */
     public ActiveConnection( String name, Socket socket, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue,
-            int readBufferSize, ExecutorService threadPool, boolean purgeQueuesOnDisconnect, AISStringHandler handler, long writeQueueSizeLimit, 
+            int readBufferSize, boolean purgeQueuesOnDisconnect, AISStringHandler handler, long writeQueueSizeLimit, 
             long backPressureLimit, LongAdder readCounter, LongAdder writeCounter ) {
         _name = name + ":" + socket.getRemoteSocketAddress();
         _socket = socket;
         _type = type;
         _readQueue = readQueue;
         _readBufferSize = readBufferSize;
-        _threadPool = threadPool;
         _purge = purgeQueuesOnDisconnect;
         _handler = handler;
         _wqThreshold = writeQueueSizeLimit;
@@ -190,14 +184,14 @@ public class ActiveConnection implements AutoCloseable {
                 _reader = new AISSocketReader( _name, _socket, _readBufferSize, _readQueue, _currentRead, _handler );
             }
             if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection is readable, launching reader...", _name );
-            _threadPool.execute( _reader );
+            Executors.newSingleThreadExecutor().execute( _reader );
         }
 
         if( _type.isWriteable() ) {
             if( _writer == null )
                 _writer = new AISSocketWriter( _name, _socket, _currentWritten, _purge, _wqThreshold, _bpThreshold );
             if( LOG.isInfoEnabled() ) LOG.info( "{} - Connection is writeable, launching writer...", _name );
-            _threadPool.execute( _writer );
+            Executors.newSingleThreadExecutor().execute( _writer );
         }
         _launched = true;
     }
