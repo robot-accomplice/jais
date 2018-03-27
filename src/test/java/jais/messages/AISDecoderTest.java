@@ -713,92 +713,9 @@ public class AISDecoderTest {
      * @throws AISException 
      */
     @Test
-    public void testReflectionDecodingSpeed() throws AISPacketException, AISException {
+    public void testDecodingSpeed() throws AISPacketException, AISException {
         LOG.fatal( "*************************************" );
-        LOG.fatal( "*** testReflectionDecodingSpeed() ***" );
-        LOG.fatal( "*************************************" );
-        long start;
-        long stop;
-        
-        AISPacket pOne = new AISPacket( TEST_COMPOUND_MESSAGE[0] );
-        AISPacket pTwo = new AISPacket( TEST_COMPOUND_MESSAGE[1] );
-        start = System.nanoTime();
-        pOne.process();
-        pTwo.process();
-        stop = System.nanoTime();
-        
-        LOG.fatal( "============================================================================================" );
-        LOG.fatal( "Packet processing for two packets took {} ms", ( stop - start ) / 1000000f );
-        LOG.fatal( "============================================================================================" );
-        
-        AISPacket[] packets = new AISPacket[]{pOne, pTwo};
-        start = System.nanoTime();
-        AISMessageFactory.create( "UnitTest", packets );
-        stop = System.nanoTime();
-        
-        LOG.fatal( "============================================================================================" );
-        LOG.fatal( "Decoding of one compound message took {} ms", ( stop - start ) / 1000000f );
-        LOG.fatal( "============================================================================================" );
-
-        long processTotalTime = 0;
-        long processPerMsgTime = 0;
-        long decodeTotalTime = 0;
-        long decodePerMsgTime = 0;
-        Map<AISMessageType,Integer> counts = new HashMap<>();
-
-        for( int i = 0; i < 1000; i++ ) {
-            for( String packetStr : TEST_PACKETS ) {
-                try {
-                    AISPacket packet = new AISPacket( packetStr );
-                    start = System.nanoTime();
-                    packet.process();
-                    stop = System.nanoTime();
-                    processTotalTime += ( stop - start );
-                    processPerMsgTime += ( stop - start ) / TEST_PACKETS.length;
-                    
-                    start = System.nanoTime();
-                    Optional<AISMessage> message = AISMessageFactory.createR( "UnitTest", packet );
-                    stop = System.nanoTime();
-                    decodeTotalTime  += ( stop - start );
-                    decodePerMsgTime += ( stop - start ) / TEST_PACKETS.length;
-                    if( message.isPresent() && i == 0 ) {
-                        AISMessageType type = message.get().getType();
-                        int count = ( counts.get( type ) ==  null ) ? 0 : counts.get( type );
-                        counts.put( type, ++count );
-                    }
-                } catch( AISException e ) {
-                    // do nothing
-                }
-            }
-            
-        }
-        
-        LOG.fatal( "============================================================================================" );
-        LOG.fatal( "Average packet process time across 1000 runs for {} messages    :  {} ms", 
-                TEST_PACKETS.length, processTotalTime  / ( 1000f * 1000000f ) );
-        LOG.fatal( "Average per packet process time across 1000 runs                 :  {} ms", 
-                processPerMsgTime / ( 1000f * 1000000f ) );
-        
-        LOG.fatal( "Average message decode time across 1000 runs for {} messages    :  {} ms", 
-                TEST_PACKETS.length, decodeTotalTime  / ( 1000f * 1000000f ) );
-        LOG.fatal( "Average per message decode time across 1000 runs                 :  {} ms", 
-                decodePerMsgTime / ( 1000f * 1000000f ) );
-        LOG.fatal( "============================================================================================" );
-
-        counts.keySet().forEach( ( type ) -> {
-            LOG.printf( Level.FATAL, "%2d x %s", counts.get( type ), type );
-        } );
-    }
-    
-    /**
-     * 
-     * @throws AISPacketException
-     * @throws AISException 
-     */
-    @Test
-    public void testSwitchCaseDecodingSpeed() throws AISPacketException, AISException {
-        LOG.fatal( "*************************************" );
-        LOG.fatal( "*** testSwitchCaseDecodingSpeed() ***" );
+        LOG.fatal( "*** testDecodingSpeed() ***" );
         LOG.fatal( "*************************************" );
         long start;
         long stop;
