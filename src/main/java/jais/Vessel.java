@@ -32,7 +32,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * An aggregate representation of a vessel based on PositionReport and StaticAndVoyageRelatedData messages
  * 
- * @author Jonathan Machen <jonathan.machen@robotaccomplice.com>
+ * @author Jonathan Machen
  */
 public class Vessel implements Cloneable {
 
