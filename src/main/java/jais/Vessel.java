@@ -74,6 +74,7 @@ public class Vessel implements Cloneable {
     private ZonedDateTime _currentMessageTimestamp;
     private ZonedDateTime _currentPositionTimestamp;
     private ZonedDateTime _previousPositionTimestamp;
+    private long _timeSent;
 
     /**
      * Creates a new Vessel object based on a StandardClassBCSPositionReport
@@ -91,6 +92,7 @@ public class Vessel implements Cloneable {
         _radio = report.getRadio();
         _repeat = report.getRepeat();
         _speed = report.getSpeed();
+        _timeSent = report.getTimeSent();
     }
 
     /**
@@ -115,6 +117,7 @@ public class Vessel implements Cloneable {
         _second = report.getSecond();
         _shipname = AISPacket.str2bArray( report.getShipName() );
         _shiptype = report.getShipType();
+        _timeSent = report.getTimeSent();
     }
 
     /**
@@ -140,6 +143,7 @@ public class Vessel implements Cloneable {
         _turn = report.getTurn();
         _accurate = report.isAccurate();
         _raim = report.isRaim();
+        _timeSent = report.getTimeSent();
     }
 
     /**
@@ -168,6 +172,7 @@ public class Vessel implements Cloneable {
         _toStarboard = savrd.getToStarboard();
         _toStern = savrd.getToStern();
         _version = savrd.getVersion();
+        _timeSent = savrd.getTimeSent();
     }
 
     /**
@@ -193,6 +198,7 @@ public class Vessel implements Cloneable {
         _turn = report.getTurn();
         _accurate = report.isAccurate();
         _raim = report.isRaim();
+        _timeSent = report.getTimeSent();
     }
 
     /**
@@ -219,6 +225,7 @@ public class Vessel implements Cloneable {
         _toStarboard = savrd.getToStarboard();
         _toStern = savrd.getToStern();
         _version = savrd.getVersion();
+        _timeSent = savrd.getTimeSent();
     }
 
     /**
@@ -266,6 +273,7 @@ public class Vessel implements Cloneable {
         clone._toStern = _toStern;
         clone._turn = _turn;
         clone._version = _version;
+        clone._timeSent = _timeSent;
 
         return clone;
     }
@@ -545,6 +553,14 @@ public class Vessel implements Cloneable {
      */
     public ZonedDateTime getPreviousPositionTimestamp() {
         return _previousPositionTimestamp;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public long getTimeSent() {
+        return _timeSent;
     }
 
     /**
