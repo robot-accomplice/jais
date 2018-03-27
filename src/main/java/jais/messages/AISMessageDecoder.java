@@ -454,7 +454,7 @@ public class AISMessageDecoder {
                 }
             }
 
-            return new String( cb.array() );
+            return new String( cb.array() ).trim();
         } catch( Throwable t ) {  // not ideal, but the easiest way to ensure any odd thrown exceptions will be handled
             throw new AISException( t );
         }
