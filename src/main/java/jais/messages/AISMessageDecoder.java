@@ -441,31 +441,6 @@ public class AISMessageDecoder {
      * @throws AISException 
      */
     public static String decodeToString( BitSet bits, int startBit, int endBit, Charset charset ) throws AISException {
-        return AISPacket.bArray2Str( decodeToByteArray( bits, startBit, endBit ), charset );
-    }
-
-    /**
-     *
-     * @param bits
-     * @param startBit
-     * @param endBit
-     * @return
-     * @throws AISException
-     */
-    public static byte[] decodeToByteArray( BitSet bits, int startBit, int endBit ) throws AISException {
-        return decodeToByteArray( bits, startBit, endBit, AISPacket.DEFAULT_CHARSET );
-    }
-    
-    /**
-     *
-     * @param bits
-     * @param startBit
-     * @param endBit
-     * @param charset
-     * @return
-     * @throws AISException
-     */
-    public static byte[] decodeToByteArray( BitSet bits, int startBit, int endBit, Charset charset ) throws AISException {
         try {
             if( LOG.isTraceEnabled() ) LOG.trace( "Decoding bit {} through bit {} of {} element BitSet", startBit, endBit, bits.size() );
             CharBuffer cb = CharBuffer.allocate( ( ( ( endBit - startBit ) / 6 ) + 1 ) );
@@ -492,9 +467,21 @@ public class AISMessageDecoder {
                 }
             }
 
-            return charset.encode( cb ).array();
+            return new String( cb.array() );
         } catch( Throwable t ) {  // not ideal, but the easiest way to ensure any odd thrown exceptions will be handled
             throw new AISException( t );
         }
+    }
+
+    /**
+     *
+     * @param bits
+     * @param startBit
+     * @param endBit
+     * @return
+     * @throws AISException
+     */
+    public static byte[] decodeToByteArray( BitSet bits, int startBit, int endBit ) throws AISException {
+        return decodeToString( bits, startBit, endBit ).getBytes();
     }
 }
