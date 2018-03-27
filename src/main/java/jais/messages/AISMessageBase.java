@@ -21,6 +21,8 @@ import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.MMSIType;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import org.locationtech.spatial4j.context.SpatialContext;
 import org.locationtech.spatial4j.shape.Point;
 import java.time.ZonedDateTime;
@@ -120,7 +122,15 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public ZonedDateTime getTimeReceived() {
-        return _packets[0].getTimeReceived();
+        return ZonedDateTime.ofInstant( Instant.ofEpochMilli( _packets[0].getTimeReceived() ), ZoneOffset.UTC );
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public long getTimeSent() {
+        return _packets[0].getTimeSent();
     }
 
     /**
