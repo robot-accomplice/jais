@@ -18,7 +18,6 @@ package jais.io;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -35,15 +34,14 @@ public class SocketConnectionFactory {
      * @param runas
      * @param readQueue
      * @param readBufferSize
-     * @param threadPool
      * @return 
      */
     public static SocketConnection buildConnection( String name, String host, int port, ConnectionType runas,
-            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool ) {
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize ) {
         if( runas.isServer() ) {
-            return new SocketServer( name, port, runas, readQueue, readBufferSize, threadPool );
+            return new SocketServer( name, port, runas, readQueue, readBufferSize );
         } else {
-            return new SocketClient( name, host, port, runas, readQueue, readBufferSize, threadPool );
+            return new SocketClient( name, host, port, runas, readQueue, readBufferSize );
         }
     }
     
@@ -54,12 +52,11 @@ public class SocketConnectionFactory {
      * @param runas
      * @param readQueue
      * @param readBufferSize
-     * @param threadPool
      * @return 
      */
     public static SocketConnection buildConnection( String name, int port, ConnectionType runas, 
-            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool ) {
-        return buildConnection( name, port, runas, readQueue, readBufferSize, threadPool, ActiveConnection.DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD, 
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize ) {
+        return buildConnection( name, port, runas, readQueue, readBufferSize, ActiveConnection.DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD, 
                 ActiveConnection.DEFAULT_WRITE_QUEUE_ABSOLUTE_THRESHOLD );
     }
     
@@ -72,16 +69,15 @@ public class SocketConnectionFactory {
      * @param runas
      * @param readQueue
      * @param readBufferSize
-     * @param threadPool
      * @param backpressureThreshold
      * @param absoluteThreshold
      * @return 
      */
     public static SocketConnection buildConnection( String name, int port, ConnectionType runas, 
-            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool, long backpressureThreshold, 
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, long backpressureThreshold, 
             long absoluteThreshold ) {
         
-        return new SocketServer( name, port, runas, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold );
+        return new SocketServer( name, port, runas, readQueue, readBufferSize, backpressureThreshold, absoluteThreshold );
     }
     
     /**
@@ -92,16 +88,15 @@ public class SocketConnectionFactory {
      * @param runas
      * @param readQueue
      * @param readBufferSize
-     * @param threadPool
      * @param backpressureThreshold
      * @param absoluteThreshold
      * @param purgeOnDisconnect
      * @return 
      */
     public static SocketConnection buildConnection( String name, String host, int port, ConnectionType runas, 
-            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool, long backpressureThreshold, 
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, long backpressureThreshold, 
             long absoluteThreshold, boolean purgeOnDisconnect ) {
-        return buildConnection( name, host, port, runas, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold, 
+        return buildConnection( name, host, port, runas, readQueue, readBufferSize, backpressureThreshold, absoluteThreshold, 
                 purgeOnDisconnect, null, null );
     }
     
@@ -113,7 +108,6 @@ public class SocketConnectionFactory {
      * @param runas
      * @param readQueue
      * @param readBufferSize
-     * @param threadPool
      * @param backpressureThreshold
      * @param absoluteThreshold
      * @param purgeOnDisconnect
@@ -122,16 +116,14 @@ public class SocketConnectionFactory {
      * @return 
      */
     public static SocketConnection buildConnection( String name, String host, int port, ConnectionType runas, 
-            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, ExecutorService threadPool, long backpressureThreshold,
+            ExecutorCompletionService<Optional<String>> readQueue, int readBufferSize, long backpressureThreshold,
             long absoluteThreshold, boolean purgeOnDisconnect, LongAdder readCounter, LongAdder writeCounter ) {
         if( runas.isServer() ) {
-            return new SocketServer( name, port, runas, readQueue, readBufferSize, threadPool, SocketServer.DEFAULT_CLIENT_IDLE_THRESHOLD_MS, 
+            return new SocketServer( name, port, runas, readQueue, readBufferSize, SocketServer.DEFAULT_CLIENT_IDLE_THRESHOLD_MS, 
                     backpressureThreshold, absoluteThreshold, readCounter, writeCounter );
         } else {
-            return new SocketClient( name, host, port, runas, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold, 
+            return new SocketClient( name, host, port, runas, readQueue, readBufferSize, backpressureThreshold, absoluteThreshold, 
                     purgeOnDisconnect, readCounter, writeCounter );
         }
-        
     }
-    
 }

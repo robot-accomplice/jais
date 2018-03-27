@@ -23,7 +23,6 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.LongAdder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,11 +56,10 @@ public class SocketClient extends SocketConnectionBase {
      * @param type
      * @param readQueue
      * @param readBufferSize
-     * @param threadPool
      */
     public SocketClient( String name, String host, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, 
-            int readBufferSize, ExecutorService threadPool ) {
-        this( name, host, port, type, readQueue, readBufferSize, threadPool, ActiveConnection.DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD );
+            int readBufferSize ) {
+        this( name, host, port, type, readQueue, readBufferSize, ActiveConnection.DEFAULT_WRITE_BACK_PRESSURE_THRESHOLD );
     }
     
     /**
@@ -73,11 +71,10 @@ public class SocketClient extends SocketConnectionBase {
      * @param backpressureThreshold
      * @param readQueue
      * @param readBufferSize
-     * @param threadPool 
      */
     public SocketClient( String name, String host, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, 
-            int readBufferSize, ExecutorService threadPool, long backpressureThreshold ) {
-        this( name, host, port, type, readQueue, readBufferSize, threadPool, backpressureThreshold, 
+            int readBufferSize, long backpressureThreshold ) {
+        this( name, host, port, type, readQueue, readBufferSize, backpressureThreshold, 
                 ActiveConnection.DEFAULT_WRITE_QUEUE_ABSOLUTE_THRESHOLD );
     }
 
@@ -91,11 +88,10 @@ public class SocketClient extends SocketConnectionBase {
      * @param absoluteThreshold
      * @param readQueue
      * @param readBufferSize
-     * @param threadPool 
      */
     public SocketClient( String name, String host, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, 
-            int readBufferSize, ExecutorService threadPool, long backpressureThreshold, long absoluteThreshold ) {
-        this( name, host, port, type, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold, false );
+            int readBufferSize, long backpressureThreshold, long absoluteThreshold ) {
+        this( name, host, port, type, readQueue, readBufferSize, backpressureThreshold, absoluteThreshold, false );
     }
     
     /**
@@ -108,12 +104,11 @@ public class SocketClient extends SocketConnectionBase {
      * @param absoluteThreshold
      * @param readQueue
      * @param readBufferSize
-     * @param threadPool 
      * @param purgeOnDisconnect 
      */
     public SocketClient( String name, String host, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, 
-            int readBufferSize, ExecutorService threadPool, long backpressureThreshold, long absoluteThreshold, boolean purgeOnDisconnect ) {
-        this( name, host, port, type, readQueue, readBufferSize, threadPool, backpressureThreshold, absoluteThreshold, purgeOnDisconnect, null, null );
+            int readBufferSize, long backpressureThreshold, long absoluteThreshold, boolean purgeOnDisconnect ) {
+        this( name, host, port, type, readQueue, readBufferSize, backpressureThreshold, absoluteThreshold, purgeOnDisconnect, null, null );
     }
     
     /**
@@ -125,15 +120,14 @@ public class SocketClient extends SocketConnectionBase {
      * @param backpressureThreshold
      * @param absoluteThreshold
      * @param readQueue
-     * @param readBufferSize
-     * @param threadPool 
+     * @param readBufferSize 
      * @param purgeOnDisconnect 
      * @param readCounter 
      * @param writeCounter 
      */
     public SocketClient( String name, String host, int port, ConnectionType type, ExecutorCompletionService<Optional<String>> readQueue, 
-            int readBufferSize, ExecutorService threadPool, long backpressureThreshold, long absoluteThreshold, boolean purgeOnDisconnect,
-            LongAdder readCounter, LongAdder writeCounter ) {
+            int readBufferSize, long backpressureThreshold, long absoluteThreshold, boolean purgeOnDisconnect, LongAdder readCounter, 
+            LongAdder writeCounter ) {
         _name = name;
         _host = host;
         _port = port;
@@ -142,7 +136,6 @@ public class SocketClient extends SocketConnectionBase {
         _readBufferSize = readBufferSize;
         _address = new InetSocketAddress( _host, _port );
         _socket = new Socket();
-        _threadPool = threadPool;
         _backpressureThreshold = backpressureThreshold;
         _absoluteThreshold = absoluteThreshold;
         _purgeOnDisconnect = purgeOnDisconnect;
@@ -170,7 +163,7 @@ public class SocketClient extends SocketConnectionBase {
                     if( _socket.isConnected() ) {
                         LOG.fatal( "{} - Connection established to {}", _name, _address );
                         if( _connection == null ) {
-                            _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _threadPool, _purgeOnDisconnect, null, 
+                            _connection = new ActiveConnection( _name, _socket, _type, _readQueue, _readBufferSize, _purgeOnDisconnect, null, 
                                     _absoluteThreshold, _backpressureThreshold, _readCounter, _writeCounter );
                         } else {
                             LOG.info( "{} - Updating ActiveConnection with new socket...", _name );
