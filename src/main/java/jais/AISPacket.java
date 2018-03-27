@@ -170,6 +170,14 @@ public final class AISPacket {
     public final Preamble getPreamble() {
         return _preamble;
     }
+    
+    /**
+     * 
+     * @return 
+     */
+    public boolean hasTagBlock() {
+        return ( _tagBlock != null );
+    }
 
     /**
      *
