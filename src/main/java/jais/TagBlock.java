@@ -21,7 +21,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- *
+ * An object representing the TagBlock section of an AIS packet.  A "tagblock" is a comma separated collection of fields that appear before the 
+ * message preamble (see example below) and provide a spec compliant way of providing metadata about the AIS packet that travels with the packet.  
+ * Supported fields include:  
+ *      
+ *      t - timestamp        : in c unix time and represented as a positive integer 
+ *      d - destination      : a string of 15 characters or less indicating a destination
+ *      g - sentence grouping: a numeric string used to indicate when messages are associated and their proper message order
+ *      n - line count       : a positive integer indicating the number of lines for a given message
+ *      r - relative time    : a positive integer representing the relative time differential
+ *      s - source id        : a string of 15 characters or less representing the message source
+ *      t - text string      : a text string of 15 characters or less containing any data the sender cares to include
+ * 
+ * Example:
+ * 
+ *      \g:1-2-73874,n:157036,s:r003669945,c:1241544035,t:*4A\!AIVDM,1,1,,B,15N4cJ`005Jrek0H@9n`DW5608EP,0*13
  */
 public final class TagBlock {
     
@@ -44,7 +58,7 @@ public final class TagBlock {
     long relativeTime;
     // s source id, alphanumeric (<= 15 chars)
     byte [] source = AISPacket.str2bArray( "UKNOWN" );
-    // t text string
+    // t text string (<= 15 chars)
     byte [] textStr;
 
     /**
