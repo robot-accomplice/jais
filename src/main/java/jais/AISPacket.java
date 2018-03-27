@@ -24,6 +24,8 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
@@ -72,7 +74,7 @@ public final class AISPacket {
     private byte[] _packetBody; // the message without the tagblock
     private int _fillBits;
     private byte[] _checksum;
-    private ZonedDateTime _timeReceived = ZonedDateTime.now( ZoneOffset.UTC.normalized() );
+    private long _timeReceived = ZonedDateTime.now( ZoneOffset.UTC.normalized() ).toInstant().toEpochMilli();
     private byte[][] _packetParts;
     private boolean _parsed = false;
 
@@ -812,7 +814,7 @@ public final class AISPacket {
     public final String generateTagBlockPacketString() {
         TagBlock tb = new TagBlock();
         tb.setSource( _source );
-        tb.setTimestamp( _timeReceived.toInstant().toEpochMilli() );
+        tb.setTimestamp( _timeReceived );
         return generateTagBlockPacketString( _rawPacket, tb );
     }
 
@@ -824,7 +826,7 @@ public final class AISPacket {
     public final String generateTagBlockPacketString( byte[] text ) {
         TagBlock tb = new TagBlock();
         tb.setSource( _source );
-        tb.setTimestamp( _timeReceived.toInstant().toEpochMilli() );
+        tb.setTimestamp( _timeReceived );
         tb.setTextStr( text );
         return generateTagBlockPacketString( _rawPacket, tb );
     }
@@ -934,16 +936,36 @@ public final class AISPacket {
      *
      * @return
      */
-    public final ZonedDateTime getTimeReceived() {
+    public final long getTimeReceived() {
         return _timeReceived;
+    }
+    
+    /**
+     * 
+     * @param zone
+     * @return 
+     */
+    public final ZonedDateTime getTimeReceived( ZoneId zone ) {
+        return ZonedDateTime.ofInstant( Instant.ofEpochMilli( _timeReceived ), zone );
     }
 
     /**
      *
      * @param timeReceived
      */
-    public final void setTimeReceived( ZonedDateTime timeReceived ) {
+    public final void setTimeReceived( long timeReceived ) {
         _timeReceived = timeReceived;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public final long getTimeSent() {
+        if( hasTagBlock() ) {
+            return _tagBlock.getTimestamp();
+        }
+        return 0;
     }
 
     /**
