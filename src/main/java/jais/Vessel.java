@@ -145,8 +145,8 @@ public class Vessel implements Cloneable {
         _id = new Identifier( savrd.getMmsi(), savrd.getSource() );
         _currentMessageTimestamp = savrd.getTimeReceived();
         _imo = savrd.getImo();
-        _shipname = ( savrd.getShipname() == null ) ? null : AISPacket.str2bArray( savrd.getShipname() );
         _shiptype = savrd.getShiptype();
+        _shipname = ( savrd.getShipname() == null ) ? null : AISPacket.str2bArray( savrd.getShipname() );
         _callsign = ( savrd.getCallsign() == null ) ? null : AISPacket.str2bArray( savrd.getCallsign() );
         _destination = ( savrd.getDestination() == null ) ? null : AISPacket.str2bArray( savrd.getDestination() );
         _draught = savrd.getDraught();
@@ -193,10 +193,10 @@ public class Vessel implements Cloneable {
      */
     public void addUpdateStaticReport( StaticAndVoyageRelatedData savrd ) {
         _imo = savrd.getImo();
-        _shipname = AISPacket.str2bArray( savrd.getShipname() );
         _shiptype = savrd.getShiptype();
-        _callsign = AISPacket.str2bArray( savrd.getCallsign() );
-        _destination = AISPacket.str2bArray( savrd.getDestination() );
+        _shipname = ( savrd.getShipname() == null ) ? null : AISPacket.str2bArray( savrd.getShipname() );
+        _callsign = ( savrd.getCallsign() == null ) ? null : AISPacket.str2bArray( savrd.getCallsign() );
+        _destination = ( savrd.getDestination() == null ) ? null : AISPacket.str2bArray( savrd.getDestination() );
         _draught = savrd.getDraught();
         _eta = savrd.getETA();
         _epfd = savrd.getEpfd();
@@ -290,9 +290,7 @@ public class Vessel implements Cloneable {
      * @return
      */
     public String getCallsign() {
-        if( _callsign == null )
-            return null;
-        return AISPacket.bArray2Str( _callsign );
+        return ( _callsign == null ) ? null : AISPacket.bArray2Str( _callsign );
     }
 
     /**
@@ -300,9 +298,7 @@ public class Vessel implements Cloneable {
      * @return
      */
     public String getShipname() {
-        if( _shipname == null )
-            return null;
-        return AISPacket.bArray2Str( _shipname );
+        return ( _shipname == null ) ? null : AISPacket.bArray2Str( _shipname );
     }
 
     /**
@@ -310,9 +306,7 @@ public class Vessel implements Cloneable {
      * @return
      */
     public String getDestination() {
-        if( _destination == null )
-            return null;
-        return AISPacket.bArray2Str( _destination );
+        return ( _destination == null ) ? null : AISPacket.bArray2Str( _destination );
     }
 
     /**
