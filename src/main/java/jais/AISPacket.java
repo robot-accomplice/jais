@@ -943,6 +943,15 @@ public final class AISPacket {
     
     /**
      * 
+     * @param offset
+     * @return 
+     */
+    public final ZonedDateTime getTimeReceived( ZoneOffset offset ) {
+        return ZonedDateTime.ofInstant( Instant.ofEpochMilli( _timeReceived ), offset );
+    }
+    
+    /**
+     * 
      * @param zone
      * @return 
      */
@@ -967,6 +976,15 @@ public final class AISPacket {
             return _tagBlock.getTimestamp();
         }
         return 0;
+    }
+
+    /**
+     * 
+     * @param offset
+     * @return 
+     */
+    public final ZonedDateTime getTimeSent( ZoneOffset offset ) {
+        return ZonedDateTime.ofInstant( Instant.ofEpochMilli( getTimeSent() ), offset );
     }
 
     /**
