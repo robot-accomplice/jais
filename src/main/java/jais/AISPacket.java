@@ -219,6 +219,7 @@ public final class AISPacket {
 
         Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( rawPacket );
         if( m.find() ) {
+            if( LOG.isDebugEnabled() ) LOG.debug( "Found a TagBlock in \"{}\"", rawPacket );
             try {
                 if( _source == null || _source.length == 0 ) {
                     _tagBlock = TagBlock.parse( m.group( 0 ) );
