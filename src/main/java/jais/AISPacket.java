@@ -1050,7 +1050,7 @@ public final class AISPacket {
      * @throws jais.exceptions.AISException
      */
     public static byte[] concatenate( AISPacket... packets ) throws AISException {
-        if( packets.length <= 1 ) {
+        if( packets.length == 1 ) {
             if( !packets[0].isParsed() )
                 packets[0].process();
             return packets[0].getBinaryString();
@@ -1061,8 +1061,12 @@ public final class AISPacket {
         if( LOG.isDebugEnabled() )
             LOG.debug( "Concatenating {} packets.", packets.length );
         for( AISPacket packet : packets ) {
-            if( !packet.isParsed() )
+            if( packet == null ) {
+                if( LOG.isWarnEnabled() ) LOG.warn( "Skipping null packet in {} length array of packets.", packets.length );
+                continue;
+            } else if( !packet.isParsed() )
                 packet.process();
+            
             if( compositeMsg == null ) {
                 compositeMsg = packet.getBinaryString();
             } else {
