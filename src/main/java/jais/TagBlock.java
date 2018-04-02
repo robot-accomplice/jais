@@ -15,6 +15,9 @@
  */
 package jais;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
@@ -122,6 +125,15 @@ public final class TagBlock {
      */
     public final long getTimestamp() {
         return timestamp;
+    }
+
+    /**
+     * 
+     * @param offset
+     * @return 
+     */
+    public final ZonedDateTime getTimeStamp( ZoneOffset offset ) {
+        return ZonedDateTime.ofInstant( Instant.ofEpochMilli( timestamp ), offset );
     }
 
     /**
