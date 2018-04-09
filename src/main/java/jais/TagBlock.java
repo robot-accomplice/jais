@@ -15,8 +15,6 @@
  */
 package jais;
 
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -129,15 +127,6 @@ public final class TagBlock {
     }
 
     /**
-     * 
-     * @param offset
-     * @return 
-     */
-    public final ZonedDateTime getTimeStamp( ZoneOffset offset ) {
-        return ZonedDateTime.ofInstant( Instant.ofEpochSecond( timestamp ), offset );
-    }
-
-    /**
      *
      * @param timestamp
      */
@@ -150,11 +139,7 @@ public final class TagBlock {
      * @return 
      */
     public final boolean hasTimestamp() {
-        if( _parsed ) {
-            return ( this.timestamp > 0 );
-        }
-        
-        return false;
+        return ( this.timestamp > 0 );
     }
 
     /**
@@ -170,10 +155,7 @@ public final class TagBlock {
      * @return 
      */
     public final boolean hasDestination() {
-        if( _parsed ) {
-            return ( this.destination != null );
-        }
-        return false;
+        return ( this.destination != null );
     }
 
     /**
@@ -197,10 +179,7 @@ public final class TagBlock {
      * @return 
      */
     public final boolean hasSentenceGrouping() {
-        if( _parsed ) {
-            return ( this.sentenceGrouping != null );
-        }
-        return false;
+        return ( this.sentenceGrouping != null );
     }
 
     /**
@@ -224,10 +203,7 @@ public final class TagBlock {
      * @return 
      */
     public final boolean hasLineCount() {
-        if( _parsed ) {
-            return ( this.lineCount != 0 );
-        }
-        return false;
+        return ( this.lineCount != 0 );
     }
 
     /**
@@ -251,10 +227,7 @@ public final class TagBlock {
      * @return 
      */
     public final boolean hasRelativeTime() {
-        if( _parsed ) {
-            return ( this.relativeTime != 0 );
-        }
-        return false;
+        return ( this.relativeTime > 0 );
     }
 
     /**
@@ -278,10 +251,7 @@ public final class TagBlock {
      * @return 
      */
     public final boolean hasSource() {
-        if( _parsed ) {
-            return ( this.source != null );
-        }
-        return false;
+        return ( this.source != null );
     }
 
     /**
@@ -305,10 +275,7 @@ public final class TagBlock {
      * @return 
      */
     public final boolean hasTextStr() {
-        if( _parsed ) {
-            return ( this.textStr != null );
-        }
-        return false;
+        return ( this.textStr != null );
     }
 
     /**
