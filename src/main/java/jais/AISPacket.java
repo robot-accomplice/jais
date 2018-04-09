@@ -984,7 +984,7 @@ public final class AISPacket {
      * @return 
      */
     public final ZonedDateTime getTimeSent( ZoneOffset offset ) {
-        return ZonedDateTime.ofInstant( Instant.ofEpochMilli( getTimeSent() ), offset );
+        return ZonedDateTime.ofInstant( Instant.ofEpochSecond( getTimeSent() ), offset );
     }
 
     /**

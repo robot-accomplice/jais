@@ -16,6 +16,7 @@
 package jais;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -133,7 +134,7 @@ public final class TagBlock {
      * @return 
      */
     public final ZonedDateTime getTimeStamp( ZoneOffset offset ) {
-        return ZonedDateTime.ofInstant( Instant.ofEpochMilli( timestamp ), offset );
+        return ZonedDateTime.ofInstant( Instant.ofEpochSecond( timestamp ), offset );
     }
 
     /**
@@ -331,7 +332,7 @@ public final class TagBlock {
         
         TagBlock tb = new TagBlock();
         tb.setSource( source );
-        tb.setTimestamp( System.currentTimeMillis() );
+        tb.setTimestamp( ZonedDateTime.now( ZoneOffset.UTC ).toEpochSecond() );
         
         return tb;
     }
