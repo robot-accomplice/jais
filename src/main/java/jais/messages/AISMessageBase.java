@@ -121,8 +121,17 @@ public abstract class AISMessageBase implements AISMessage {
      * @return
      */
     @Override
-    public ZonedDateTime getTimeReceived() {
-        return ZonedDateTime.ofInstant( Instant.ofEpochMilli( _packets[0].getTimeReceived() ), ZoneOffset.UTC );
+    public ZonedDateTime getTimeReceived( ZoneOffset offset ) {
+        return _packets[0].getTimeReceived( offset );
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public long getTimeReceived() {
+        return _packets[0].getTimeReceived();
     }
     
     /**

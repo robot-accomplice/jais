@@ -74,7 +74,7 @@ public final class AISPacket {
     private byte[] _packetBody; // the message without the tagblock
     private int _fillBits;
     private byte[] _checksum;
-    private long _timeReceived = ZonedDateTime.now( ZoneOffset.UTC.normalized() ).toInstant().toEpochMilli();
+    private final long _timeReceived = ZonedDateTime.now( ZoneOffset.UTC.normalized() ).toInstant().toEpochMilli();
     private byte[][] _packetParts;
     private boolean _parsed = false;
 
@@ -959,14 +959,6 @@ public final class AISPacket {
         return ZonedDateTime.ofInstant( Instant.ofEpochMilli( _timeReceived ), zone );
     }
 
-    /**
-     *
-     * @param timeReceived
-     */
-    public final void setTimeReceived( long timeReceived ) {
-        _timeReceived = timeReceived;
-    }
-    
     /**
      * 
      * @return 

@@ -71,9 +71,9 @@ public class Vessel implements Cloneable {
     private int _repeat = 0;
     private int _radio;
     private ZonedDateTime _eta = ZonedDateTime.parse( "1970/01/01 00:00", ETA_FORMATTER );
-    private ZonedDateTime _currentMessageTimestamp;
-    private ZonedDateTime _currentPositionTimestamp;
-    private ZonedDateTime _previousPositionTimestamp;
+    private long _currentMessageTimestamp;
+    private long _currentPositionTimestamp;
+    private long _previousPositionTimestamp;
     private long _timeSent;
 
     /**
@@ -565,21 +565,21 @@ public class Vessel implements Cloneable {
     /**
      * @return the timestamp of the most recent update to this Vessel object
      */
-    public ZonedDateTime getCurrentMessageTimestamp() {
+    public long getCurrentMessageTimestamp() {
         return _currentMessageTimestamp;
     }
 
     /**
      * @return the timestamp of the most recent position update for this Vessel object
      */
-    public ZonedDateTime getCurrentPositionTimestamp() {
+    public long getCurrentPositionTimestamp() {
         return _currentPositionTimestamp;
     }
 
     /**
      * @return the timestamp of the most recent position update prior to the most current position update for this Vessel object
      */
-    public ZonedDateTime getPreviousPositionTimestamp() {
+    public long getPreviousPositionTimestamp() {
         return _previousPositionTimestamp;
     }
     

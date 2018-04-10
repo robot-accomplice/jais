@@ -21,6 +21,7 @@ import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.MMSIType;
+import java.time.ZoneOffset;
 import org.locationtech.spatial4j.shape.Point;
 import java.time.ZonedDateTime;
 
@@ -62,9 +63,16 @@ public interface AISMessage {
     
     /**
      * 
+     * @param offset
      * @return 
      */
-    ZonedDateTime getTimeReceived();
+    ZonedDateTime getTimeReceived( ZoneOffset offset );
+    
+    /**
+     * 
+     * @return 
+     */
+    long getTimeReceived();
 
     /**
      * 
