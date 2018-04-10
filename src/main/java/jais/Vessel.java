@@ -93,6 +93,10 @@ public class Vessel implements Cloneable {
         _repeat = report.getRepeat();
         _speed = report.getSpeed();
         _timeSent = report.getTimeSent();
+        
+        if( LOG.isDebugEnabled() ) {
+            LOG.debug( "New Vessel from StandardClassBCSPositionReport:\n{}", toString() );
+        }
     }
 
     /**
@@ -118,6 +122,10 @@ public class Vessel implements Cloneable {
         _shipname = AISPacket.str2bArray( report.getShipName() );
         _shiptype = report.getShipType();
         _timeSent = report.getTimeSent();
+        
+        if( LOG.isDebugEnabled() ) {
+            LOG.debug( "New Vessel from ExtendedClassBCSPositionReport:\n{}", toString() );
+        }
     }
 
     /**
@@ -144,6 +152,10 @@ public class Vessel implements Cloneable {
         _accurate = report.isAccurate();
         _raim = report.isRaim();
         _timeSent = report.getTimeSent();
+        
+        if( LOG.isDebugEnabled() ) {
+            LOG.debug( "New Vessel from PositionReportBase:\n{}", toString() );
+        }
     }
 
     /**
@@ -173,6 +185,10 @@ public class Vessel implements Cloneable {
         _toStern = savrd.getToStern();
         _version = savrd.getVersion();
         _timeSent = savrd.getTimeSent();
+        
+        if( LOG.isDebugEnabled() ) {
+            LOG.debug( "New Vessel from StaticAndVoyageRelatedData:\n{}", toString() );
+        }
     }
 
     /**
@@ -199,6 +215,10 @@ public class Vessel implements Cloneable {
         _accurate = report.isAccurate();
         _raim = report.isRaim();
         _timeSent = report.getTimeSent();
+        
+        if( LOG.isDebugEnabled() ) {
+            LOG.debug( "Vessel updated with PositionReportBase:\n{}", toString() );
+        }
     }
 
     /**
@@ -226,6 +246,10 @@ public class Vessel implements Cloneable {
         _toStern = savrd.getToStern();
         _version = savrd.getVersion();
         _timeSent = savrd.getTimeSent();
+        
+        if( LOG.isDebugEnabled() ) {
+            LOG.debug( "Vessel updated with StaticAndVoyageRelatedData:\n{}", toString() );
+        }
     }
 
     /**
@@ -236,6 +260,10 @@ public class Vessel implements Cloneable {
      */
     @Override
     public Vessel clone() throws CloneNotSupportedException {
+        if( LOG.isDebugEnabled() ) {
+            LOG.debug( "Cloning Vessel:\n{}", toString() );
+        }
+        
         Vessel clone = ( Vessel ) super.clone();
 
         clone._id = _id;
