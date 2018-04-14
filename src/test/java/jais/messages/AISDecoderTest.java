@@ -802,4 +802,16 @@ public class AISDecoderTest {
         LOG.info( "\tString:" );
         Assert.assertTrue( AISMessageBase.isValidImo( "IMO 9074729" ) );
     }
+
+    /**
+     * 
+     * @throws AISPacketException 
+     */
+    @Test
+    public void testAISPacketGenerationFromBinaryString() throws AISPacketException {
+        LOG.info( "*** testAISPacketGenerationFromBinaryString()" );
+        AISPacket p = AISPacket.createFromBinaryString( "15P<mB003?L02DPGIfh:F`A<0000", "TEST" );
+        p.process();
+        Assert.assertTrue( p.isValid() );
+    }
 }
