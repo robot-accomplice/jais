@@ -624,9 +624,16 @@ public final class AISPacket {
      * @return
      */
     private static int getChecksum( String data ) {
-        if( LOG.isTraceEnabled() )
-            LOG.trace( "Found * at {}", data.indexOf( String.valueOf( CHECKSUM_DELIMITER ) ) );
-        return getChecksum( data, 1, data.indexOf( String.valueOf( CHECKSUM_DELIMITER ) ) );
+        int index = data.indexOf( String.valueOf( CHECKSUM_DELIMITER ) );
+        if( index > -1 ) {
+            if( LOG.isDebugEnabled() )
+                LOG.debug( "Found * at {}", index );
+        
+            return getChecksum( data, 0, data.indexOf( ( String.valueOf( CHECKSUM_DELIMITER ) ) ) );
+        } else {
+            LOG.debug( "Index was {}", index );
+            return getChecksum( data, 0, data.length() );
+        }
     }
 
     /**
@@ -696,8 +703,10 @@ public final class AISPacket {
      * @return
      */
     private static String createPacketStringFromBinaryString( String rawData ) {
-        rawData = "!AIVDM,1,1,,A," + rawData + ",0*";
-        rawData += AISPacket.getChecksum( rawData );
+        rawData = "!AIVDM,1,1,,A," + rawData;
+        LOG.debug( "Packet before checksum: {}", rawData );
+        rawData += ",0*" + AISPacket.getChecksum( rawData );
+        LOG.debug( "Packet after checksum: {}", rawData );
 
         return rawData;
     }
