@@ -78,12 +78,12 @@ public class ConsoleController implements Initializable {
             if( inText == null || inText.isEmpty() ) throw new Exception( "Null Input" );
             
             String [] packetStrings = inText.split( "\n" );
-            AISPacket [] packets = new AISPacket[ inText.length() ];
+            AISPacket [] packets = new AISPacket[ packetStrings.length ];
             for( int i = 0; i < packetStrings.length; i++ ) {
                 AISPacket packet = ( AISPacket.validatePreamble( packetStrings[i] ) ) ? 
                         new AISPacket( packetStrings[i] ) : 
                         AISPacket.createFromBinaryString( packetStrings[i], null );
-                packet.process();
+                    packet.process();
                     appendLineToOutput( "---------------------------------------------" );
                 TagBlock tb = packet.getTagBlock();
                 if( tb != null ) {
