@@ -439,8 +439,8 @@ public final class AISPacket {
         char[] chars = bArray2cArray( bytes, cs );
 
         for( int i = chars.length - 1; i > -1; i-- ) {
-            if( LOG.isDebugEnabled() )
-                LOG.debug( "Character at position {} is {}", i, chars[i] );
+            if( LOG.isTraceEnabled() )
+                LOG.trace( "Character at position {} is {}", i, chars[i] );
 
             switch( chars[i] ) {
                 case '\n':
@@ -599,8 +599,8 @@ public final class AISPacket {
             crc ^= aSource;
         }
 
-        if( LOG.isTraceEnabled() )
-            LOG.trace( "Generated CRC = {}", crc );
+        if( LOG.isDebugEnabled() )
+            LOG.debug( "Generated CRC = {}(int)/{}(hex)", crc, Integer.toHexString( crc ) );
 
         return crc;
     }
@@ -614,6 +614,8 @@ public final class AISPacket {
         String hexString = Integer.toHexString( generateChecksum( sourceString.toCharArray() ) );
 
         hexString = ( hexString.length() == 1 ) ? "0" + hexString : hexString;
+        
+        LOG.debug( "Produced hex string {} from sourceString {}", hexString, sourceString );
 
         return hexString;
     }
@@ -629,10 +631,10 @@ public final class AISPacket {
             if( LOG.isDebugEnabled() )
                 LOG.debug( "Found * at {}", index );
         
-            return getChecksum( data, 0, data.indexOf( ( String.valueOf( CHECKSUM_DELIMITER ) ) ) );
+            return getChecksum( data, 1, data.indexOf( ( String.valueOf( CHECKSUM_DELIMITER ) ) ) );
         } else {
             LOG.debug( "Index was {}", index );
-            return getChecksum( data, 0, data.length() );
+            return getChecksum( data, 1, data.length() );
         }
     }
 
@@ -703,9 +705,9 @@ public final class AISPacket {
      * @return
      */
     private static String createPacketStringFromBinaryString( String rawData ) {
-        rawData = "!AIVDM,1,1,,A," + rawData;
+        rawData = "!AIVDM,1,1,,A," + rawData + ",0*";
         LOG.debug( "Packet before checksum: {}", rawData );
-        rawData += ",0*" + AISPacket.getChecksum( rawData );
+        rawData += Integer.toHexString( AISPacket.getChecksum( rawData ) );
         LOG.debug( "Packet after checksum: {}", rawData );
 
         return rawData;
