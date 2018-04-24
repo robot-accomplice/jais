@@ -662,6 +662,7 @@ public class Vessel implements Cloneable {
         sb.append( ", currentMessageTimestamp : " ).append( getCurrentMessageTimestamp() );
         sb.append( ", currentPositionTimestamp : " ).append( getCurrentPositionTimestamp() );
         sb.append( ", previousPositionTimestamp : " ).append( getPreviousPositionTimestamp() );
+        sb.append( ", timeSent : " ).append( _timeSent );
         sb.append( "}" );
         
         return sb.toString();
