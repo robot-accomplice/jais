@@ -26,7 +26,7 @@ import jais.messages.SingleSlotBinaryMessage;
 import jais.messages.PositionReportClassAAssignedSchedule;
 import jais.messages.SafetyRelatedBroadcastMessage;
 import jais.messages.StaticDataReport;
-import jais.messages.BinaryBroadcastMessageBase;
+import jais.messages.BinaryBroadcastMessage;
 import jais.messages.Interrogation;
 import jais.messages.StandardClassBCSPositionReport;
 import jais.messages.ChannelManagement;
@@ -83,7 +83,7 @@ public enum AISMessageType {
     // encrypted private message, usually military
     BINARY_BROADCAST_MESSAGE( 8, 
             "Binary Broadcast Message", 
-            BinaryBroadcastMessageBase.class ),
+            BinaryBroadcastMessage.class ),
     STANDARD_SAR_AIRCRAFT_POSITION_REPORT( 9, 
             "Standard SAR Aircraft Position Report", 
             StandardSARAircraftPositionReport.class ),

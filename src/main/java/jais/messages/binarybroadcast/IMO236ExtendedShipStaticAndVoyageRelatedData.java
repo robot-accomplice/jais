@@ -17,7 +17,7 @@
 package jais.messages.binarybroadcast;
 
 import jais.AISPacket;
-import jais.messages.BinaryBroadcastMessageBase;
+import jais.messages.BinaryBroadcastMessage;
 import jais.messages.enums.BinaryBroadcastMessageType;
 
 /**
@@ -25,7 +25,7 @@ import jais.messages.enums.BinaryBroadcastMessageType;
  * @author Jonathan Machen
  */
 public class IMO236ExtendedShipStaticAndVoyageRelatedData 
-        extends BinaryBroadcastMessageBase {
+        extends BinaryBroadcastMessage {
 
     /**
      * 
@@ -42,7 +42,6 @@ public class IMO236ExtendedShipStaticAndVoyageRelatedData
      */
     @Override
     public BinaryBroadcastMessageType getSubType() {
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        return BinaryBroadcastMessageType.IMO289_EXTENDED_SHIP_STATIC_AND_VOYAGE_RELATED_DATA;
     }
-    
 }

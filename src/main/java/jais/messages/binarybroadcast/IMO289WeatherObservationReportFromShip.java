@@ -17,7 +17,7 @@
 package jais.messages.binarybroadcast;
 
 import jais.AISPacket;
-import jais.messages.BinaryBroadcastMessageBase;
+import jais.messages.BinaryBroadcastMessage;
 import jais.messages.enums.BinaryBroadcastMessageType;
 
 /**
@@ -25,7 +25,7 @@ import jais.messages.enums.BinaryBroadcastMessageType;
  * @author Jonathan Machen
  */
 public class IMO289WeatherObservationReportFromShip 
-        extends BinaryBroadcastMessageBase {
+        extends BinaryBroadcastMessage {
 
     /**
      * 
@@ -42,6 +42,6 @@ public class IMO289WeatherObservationReportFromShip
      */
     @Override
     public BinaryBroadcastMessageType getSubType() {
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        return BinaryBroadcastMessageType.IMO289_WEATHER_OBSERVATION_REPORT_FROM_SHIP;
     }
 }

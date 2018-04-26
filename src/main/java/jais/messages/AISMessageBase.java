@@ -21,7 +21,6 @@ import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.MMSIType;
-import java.time.Instant;
 import java.time.ZoneOffset;
 import org.locationtech.spatial4j.context.SpatialContext;
 import org.locationtech.spatial4j.shape.Point;

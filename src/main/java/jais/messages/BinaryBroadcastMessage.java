@@ -29,9 +29,9 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen
  */
-public abstract class BinaryBroadcastMessageBase extends AISMessageBase {
+public class BinaryBroadcastMessage extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( BinaryBroadcastMessageBase.class );
+    private final static Logger LOG = LogManager.getLogger(BinaryBroadcastMessage.class );
 
     private int _dac; // designated area code
     private int _fid; // functional id
@@ -42,7 +42,7 @@ public abstract class BinaryBroadcastMessageBase extends AISMessageBase {
      * @param source
      * @param packets
      */
-    public BinaryBroadcastMessageBase( String source, AISPacket... packets ) {
+    public BinaryBroadcastMessage( String source, AISPacket... packets ) {
         super( source, packets );
     }
 
@@ -52,15 +52,9 @@ public abstract class BinaryBroadcastMessageBase extends AISMessageBase {
      * @param messageType
      * @param packets
      */
-    public BinaryBroadcastMessageBase( String source, AISMessageType messageType, AISPacket... packets ) {
+    public BinaryBroadcastMessage( String source, AISMessageType messageType, AISPacket... packets ) {
         super( source, messageType, packets );
     }
-
-    /**
-     *
-     * @return
-     */
-    public abstract BinaryBroadcastMessageType getSubType();
 
     /**
      *
@@ -100,6 +94,14 @@ public abstract class BinaryBroadcastMessageBase extends AISMessageBase {
      */
     public BitSet getData() {
         return _data;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public BinaryBroadcastMessageType getSubType() {
+        return BinaryBroadcastMessageType.UNKNOWN;
     }
 
     /**

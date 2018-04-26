@@ -140,8 +140,12 @@ public class AISMessageFactory {
                     case POSITION_REPORT_FOR_LONG_RANGE_APPLICATIONS:
                         message = new LongRangeAISBroadcastMessage( source, packets );
                         break;
+                    case BINARY_BROADCAST_MESSAGE:
+                        message = new BinaryBroadcastMessage( source, packets );
+                        break;
                     default:
-                        LOG.warn( "{} - Unknown or invalid message type ", source );
+                        if( LOG.isWarnEnabled() ) LOG.warn( "{} - Unknown or invalid message type:  ", source, mType.get() );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "{} - AIS Packet String: \"{}\"", compositeMsg );
                         return Optional.empty();
                 }
 
