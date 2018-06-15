@@ -615,7 +615,7 @@ public class AISDecoderTest {
                 String truncStr = AISPacket.truncatePacket( new StringBuilder( packetStr ) );
                 LOG.info( "AISPacket.truncatePacket() produced: \"{}\" from \"{}\"", truncStr, packetStr );
                 if( truncStr != null && !truncStr.isEmpty() ) Assert.assertTrue( new AISPacket( truncStr ).isValid() );
-                else Assert.assertTrue( new AISPacket( packetStr ).isValid() );
+                else Assert.assertTrue( "Packet is invalid: " + packetStr, ( new AISPacket( packetStr ) ).isValid() );
             } catch( AISPacketException t ) {
                 LOG.info( t.getMessage(), t );
             }
@@ -812,6 +812,6 @@ public class AISDecoderTest {
         LOG.info( "*** testAISPacketGenerationFromBinaryString()" );
         AISPacket p = AISPacket.createFromBinaryString( "15P<mB003?L02DPGIfh:F`A<0000", "TEST" );
         p.process();
-        Assert.assertTrue( p.isValid() );
+        Assert.assertTrue( "Packet is invalid: " + AISPacket.bArray2Str( p.getRawPacket() ), p.isValid() );
     }
 }
