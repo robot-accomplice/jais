@@ -79,7 +79,8 @@ public final class AISPacket {
     private boolean _parsed = false;
 
     /**
-     *
+     * Constructor
+     * 
      * @param rawPacket A byte [] composed of the characters from the original non-decoded String representing a complete or partial AIS message
      * @throws jais.exceptions.AISPacketException
      */
@@ -88,6 +89,7 @@ public final class AISPacket {
     }
 
     /**
+     * Constructor
      *
      * @param rawPacket A byte [] composed of the characters from the original non-decoded String representing a complete or partial AIS message
      * @param source The named source of the AIS packet
@@ -101,8 +103,9 @@ public final class AISPacket {
     }
 
     /**
-     *
-     * @param rawPacket original non-decoded String representing a complete or partial AIS message
+     * Constructor
+     * 
+     * @param rawPacket The original 6 bit encoded String representing a complete or partial AIS message
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( String rawPacket ) throws AISPacketException {
@@ -110,8 +113,9 @@ public final class AISPacket {
     }
 
     /**
-     *
-     * @param rawPacket original non-decoded String representing a complete or partial AIS message
+     * Constructor
+     * 
+     * @param rawPacket The original 6 bit encoded String representing a complete or partial AIS message
      * @param source The named source of this AIS packet
      * @throws jais.exceptions.AISPacketException
      */
@@ -126,7 +130,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Validates the AIS packet preamble against a regular expression constant
+     * 
      * @return
      */
     private boolean validatePreamble() {
@@ -147,16 +152,17 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Validates that the provided Preamble object is non-null and does not contain null fields
+     * 
      * @param p the Preamble object to evaluate for validity
      * @return
      */
     private static boolean validatePreamble( Preamble p ) {
-        return ( ( p.talker != null ) && ( p.format != null ) );
+        return ( ( p != null ) && ( p.talker != null ) && ( p.format != null ) );
     }
 
     /**
-     *
+     * Validates the AIS packet preamble against a regular expression constant
      * @param preambleStr the preamble String to evaluate for validity
      * @return
      */
@@ -174,6 +180,7 @@ public final class AISPacket {
     }
     
     /**
+     * Determines whether or not a TagBlock was parsed from this AISPacket
      * 
      * @return 
      */
@@ -182,7 +189,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Returns the TagBlock parsed from this AISPacket
+     * 
      * @return
      */
     public final TagBlock getTagBlock() {
@@ -190,7 +198,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Validates the contents of the packet and breaks it into its constituent parts
+     * 
      * @return @throws AISPacketException
      */
     public final AISPacket process() throws AISPacketException {
@@ -198,7 +207,7 @@ public final class AISPacket {
     }
 
     /**
-     * validate the contents of the packet and break it into its constituent parts
+     * Validates the contents of the packet and breaks it into its constituent parts
      *
      * @param addTagBlock boolean flag indicating whether or not a TagBlock should be prepended to the packet
      * @return
@@ -343,8 +352,9 @@ public final class AISPacket {
     }
 
     /**
-     * uses the DEFAULT_CHARSET of StandardCharsets.US_ASCII
-     * @param bytes the byte[] to decode into a String
+     * Uses the DEFAULT_CHARSET of StandardCharsets.US_ASCII
+     * 
+     * @param bytes the byte [] to decode into a String
      * @return
      */
     public static String bArray2Str( byte[] bytes ) {
@@ -352,7 +362,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Decodes a byte [] into a String using the provided Charset
+     * 
      * @param bytes the byte[] to decode into a String
      * @param cs the Charset that should be used to perform the decode operation
      * @return
@@ -362,8 +373,9 @@ public final class AISPacket {
     }
 
     /**
-     *
-     * @param string the String to encode into a byte[] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
+     * Encodes a String into a byte [] using the default Charset (US_ASCII)
+     * 
+     * @param string the String to encode into a byte [] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
      * @return
      */
     public static byte[] str2bArray( String string ) {
@@ -371,6 +383,7 @@ public final class AISPacket {
     }
 
     /**
+     * Encodes a String into a byte array using the provided Charset 
      *
      * @param s the String to encode into a byte []
      * @param cs the Charset that should be used to perform the encode operation
@@ -381,8 +394,9 @@ public final class AISPacket {
     }
 
     /**
+     * Decodes a byte [] into a char [] using the default character set (US_ASCII)
      *
-     * @param bytes the byte[] to decode into a char[] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
+     * @param bytes the byte [] to decode into a char [] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
      * @return
      */
     public static char[] bArray2cArray( byte[] bytes ) {
@@ -390,8 +404,9 @@ public final class AISPacket {
     }
 
     /**
+     * Decodes a byte [] into a char [] using the provided Charset
      *
-     * @param bytes the byte[] to decode into a char[]
+     * @param bytes the byte [] to decode into a char []
      * @param cs the Charset that should be used to perform the decode operation
      * @return
      */
@@ -400,7 +415,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Encodes a char [] into a byte [] using the provided Charset
+     * 
      * @param ca the char[] to encode into a byte[]
      * @param cs the Charset that should be used to perform the encode operation
      * @return
@@ -410,7 +426,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Encodes a char [] into a byte [] using the default Charset (US_ASCII)
+     * 
      * @param ca the char[] to encode into a byte[] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
      * @return
      */
@@ -419,7 +436,7 @@ public final class AISPacket {
     }
 
     /**
-     * performs a String.trim()-like operation on a byte[] using the StandardCharsets.US_ASCII Charset
+     * Performs a String.trim()-like operation on a byte[] using the StandardCharsets.US_ASCII Charset
      * 
      * @param bytes the byte[] to be trimmed
      * @return
@@ -429,7 +446,7 @@ public final class AISPacket {
     }
 
     /**
-     * performs a String.trim()-like operation on a byte[] using the specified Charset
+     * Performs a String.trim()-like operation on a byte[] using the specified Charset
      * 
      * @param bytes the byte[] to be trimmed
      * @param cs the Charset to use in the conversion of the byte[] into a char[]
@@ -470,7 +487,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Constructs a String object from a subset of a byte []
+     * 
      * @param bytes
      * @param start
      * @param end
@@ -481,7 +499,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Attempts to convert a byte [] into an int
+     * 
      * @param bytes
      * @return
      * @throws jais.exceptions.AISException
@@ -493,7 +512,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Returns the index of the first occurrence of char c in byte [] ba or -1 if the char is not present
+     * 
      * @param ba
      * @param c
      * @return
@@ -510,7 +530,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Returns a boolean representing the parse state of the AISPacket object
+     * 
      * @return
      */
     public final boolean isParsed() {
@@ -518,7 +539,9 @@ public final class AISPacket {
     }
 
     /**
-     * Checks the validity of the current AIS packet
+     * Checks the validity of the current AIS packet by analyzing the length of its String representation, the number of comma separated fields it
+     * contains, whether or not it has a valid preamble, whether or not it contains any invalid characters, and whether or not it has a valid
+     * checksum
      *
      * @return
      */
@@ -585,7 +608,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Attempts to generate a valid checksum based on the provided char []
+     * 
      * @param source
      * @return
      */
@@ -606,6 +630,7 @@ public final class AISPacket {
     }
 
     /**
+     * Attempts to generate a valid checksum based on the provided String
      *
      * @param sourceString
      * @return
@@ -621,7 +646,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Attempts to extract a checksum from the provided String
+     * 
      * @param data
      * @return
      */
@@ -639,6 +665,7 @@ public final class AISPacket {
     }
 
     /**
+     * Attempts to generate a checksum for the provided byte []
      *
      * @param bytes
      * @return
@@ -648,6 +675,7 @@ public final class AISPacket {
     }
 
     /**
+     * Attempts to generate a checksum for the substring of String genString (based on int startFrom and int endAt indices)
      *
      * @param genString
      * @param startFrom
@@ -662,7 +690,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Validates the provided checksum (byte [] packetChecksum) by generating a new checksum for byte [] data and comparing them
+     * 
      * @param data
      * @param packetChecksum
      * @return
@@ -714,9 +743,10 @@ public final class AISPacket {
     }
 
     /**
-     *
-     * @param rawData
-     * @param source
+     * Generates an AISPacket object from a raw 6-bit encoded String and 
+     * 
+     * @param rawData The binary encoded String
+     * @param source A string representing the source from which this packet emanated
      * @return
      * @throws jais.exceptions.AISPacketException
      */
@@ -727,6 +757,7 @@ public final class AISPacket {
     }
 
     /**
+     * Splits the provided String by commas
      *
      * @param s
      * @return
@@ -736,7 +767,7 @@ public final class AISPacket {
     }
 
     /**
-     * an alternative to String.split() which is a memory hog and performance donkey at scale
+     * An alternative to String.split() (which is a memory hog and performance donkey at scale)
      *
      * @param s
      * @param delimiter
@@ -774,7 +805,7 @@ public final class AISPacket {
     }
 
     /**
-     * an alternative to String.split() which is a memory hog and performance donkey at scale
+     * An alternative to String.split() (which is a memory hog and performance donkey at scale)
      *
      * @param s
      * @param delimiter
@@ -812,6 +843,7 @@ public final class AISPacket {
     }
 
     /**
+     * Returns the unparsed, non-decoded raw AISPacket contents as a byte []
      *
      * @return
      */
@@ -820,6 +852,8 @@ public final class AISPacket {
     }
 
     /**
+     * Generates a String representation of the AISPacket with a prepended TagBlock String which contains only 
+     * the source and time stamp values of the AISPacket object
      *
      * @return
      */
@@ -831,6 +865,8 @@ public final class AISPacket {
     }
 
     /**
+     * Generates a String representation of the AISPacket with a prepended TagBlock String containing the source and time stamp values of the 
+     * AISPacket object as well as the text provided at method invocation
      *
      * @param text
      * @return
@@ -844,6 +880,7 @@ public final class AISPacket {
     }
 
     /**
+     * Generates a String representation of the AISPacket with its prepended TagBlock String as already defined
      *
      * @param rawPacket
      * @param tb
@@ -862,6 +899,8 @@ public final class AISPacket {
     }
 
     /**
+     * Returns the AIS message fragmentation count as defined in the original non-decoded AIS Packet String
+     * This count indicates how many related AIS packets the complete AIS message is composed of
      *
      * @return
      */
@@ -870,6 +909,8 @@ public final class AISPacket {
     }
 
     /**
+     * Returns the AIS message fragmentation number as defined in the original non-decoded AIS Packet String
+     * This number indicates the position of this fragment in the fully assembled AIS message
      *
      * @return
      */
@@ -878,7 +919,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * This returns the value of the locally distinct "talker" sending this and other AIS messages so that they can easily be grouped by source
+     * 
      * @return
      */
     public final int getSequentialMessageId() {
@@ -886,7 +928,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Returns the letter representation of the Radio frequency on which this AIS packet was broadcast
+     * 
      * @return
      */
     public final char getRadioChannelCode() {
@@ -894,7 +937,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Returns the actual numeric frequency (as a double) indicated by the _radioChannelCode (see {@link #getRadioChannelCode()})
+     * 
      * @return
      */
     public final double getRadioChannelFrequencyInMhz() {
@@ -913,22 +957,25 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Returns the contents of the non-decoded binary string as a byte []
+     * 
      * @return
      */
-    public final byte[] getBinaryString() {
+    public final byte[] getBinaryStringAsByteArray() {
         return _binaryString;
     }
 
     /**
-     *
+     * Returns the body of the AIS Packet as a byte []
+     * 
      * @return
      */
-    public final byte[] getPacketBody() {
+    public final byte[] getPacketBodyAsByteArray() {
         return _packetBody;
     }
 
     /**
+     * Returns the parsed count of fill bits from the AIS packet String
      *
      * @return
      */
@@ -937,7 +984,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Returns the parsed or generated checksum from the AIS packet
+     * 
      * @return
      */
     public final byte[] getChecksum() {
@@ -945,7 +993,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Returns the time at which this AISPacket object was instantiated
+     * 
      * @return
      */
     public final long getTimeReceived() {
@@ -953,6 +1002,7 @@ public final class AISPacket {
     }
     
     /**
+     * Returns the time at which this AISPacket object was instantiated for the specified ZoneOffset
      * 
      * @param offset
      * @return 
@@ -962,6 +1012,7 @@ public final class AISPacket {
     }
     
     /**
+     * Returns the time at which this AISPacket object was instantiated for the specified ZoneId
      * 
      * @param zone
      * @return 
@@ -971,6 +1022,7 @@ public final class AISPacket {
     }
 
     /**
+     * Returns the time at which this AISPacket object was presumably sent based on the timestamp contained within the TagBlock
      * 
      * @return 
      */
@@ -982,6 +1034,7 @@ public final class AISPacket {
     }
 
     /**
+     * Returns the source of the AISPacket as a byte []
      *
      * @return
      */
@@ -990,6 +1043,7 @@ public final class AISPacket {
     }
 
     /**
+     * Sets the source of the AISPacket to the provided byte [] value
      *
      * @param source
      */
@@ -998,6 +1052,7 @@ public final class AISPacket {
     }
 
     /**
+     * Truncates the provided StringBuilder object based on the index returned by {@link #getPacketTruncIndex( StringBuilder sb )} 
      *
      * @param sb
      * @return
@@ -1056,6 +1111,7 @@ public final class AISPacket {
     }
 
     /**
+     * Combines two or more AISPacket objects into a single non-decoded AIS message and returns the results as a byte []
      *
      * @param packets
      * @return
@@ -1065,7 +1121,7 @@ public final class AISPacket {
         if( packets.length == 1 ) {
             if( !packets[0].isParsed() )
                 packets[0].process();
-            return packets[0].getBinaryString();
+            return packets[0].getBinaryStringAsByteArray();
         }
 
         byte[] compositeMsg = null;
@@ -1080,11 +1136,11 @@ public final class AISPacket {
                 packet.process();
             
             if( compositeMsg == null ) {
-                compositeMsg = packet.getBinaryString();
+                compositeMsg = packet.getBinaryStringAsByteArray();
             } else {
-                byte[] temp = new byte[compositeMsg.length + packet.getBinaryString().length];
+                byte[] temp = new byte[compositeMsg.length + packet.getBinaryStringAsByteArray().length];
                 System.arraycopy( compositeMsg, 0, temp, 0, compositeMsg.length );
-                System.arraycopy( packet.getBinaryString(), 0, temp, compositeMsg.length, packet.getBinaryString().length );
+                System.arraycopy( packet.getBinaryStringAsByteArray(), 0, temp, compositeMsg.length, packet.getBinaryStringAsByteArray().length );
                 compositeMsg = temp;
             }
         }
@@ -1093,7 +1149,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * An override of Object.equals()
+     * 
      * @param o
      * @return
      */
@@ -1115,6 +1172,7 @@ public final class AISPacket {
     }
 
     /**
+     * An override of Object.hashCode()
      *
      * @return
      */
@@ -1127,7 +1185,8 @@ public final class AISPacket {
     }
 
     /**
-     *
+     * Returns a HashMap representation of the AISPacket fields
+     * 
      * @return
      */
     public final HashMap<String, Object> toMap() {
@@ -1151,6 +1210,7 @@ public final class AISPacket {
     }
 
     /**
+     * An object representation of an AISPacket preamble
      *
      */
     public static class Preamble {
@@ -1174,30 +1234,42 @@ public final class AISPacket {
         }
 
         /**
-         *
+         * Populates the fields of this Preamble object based on the parsing of it's rawPreamble byte [] and returns this Preamble object
+         * 
          * @return
          */
         public Preamble parse() {
-            return parse( AISPacket.bArray2Str( rawPreamble ) );
+            return parse( this, AISPacket.bArray2Str( rawPreamble ) );
         }
 
         /**
-         *
+         * Returns a Preamble object based on the parsing of the provided raw preamble byte []
+         * 
          * @param rawPreamble
          * @return
          */
         public static Preamble parse( byte[] rawPreamble ) {
             return parse( AISPacket.bArray2Str( rawPreamble ) );
         }
-
+        
         /**
-         *
+         * Returns a Preamble object based on the parsing of the provided raw preamble String
+         * 
          * @param rawPreamble
          * @return
          */
         public static Preamble parse( String rawPreamble ) {
-            Preamble p = new Preamble( str2bArray( rawPreamble ) );
-
+            return parse( new Preamble( AISPacket.str2bArray( rawPreamble ) ), rawPreamble );
+        }
+        
+        /**
+         * Parses the provided rawPreamble String and populates the fields of the provided Preamble object before returning it
+         * 
+         * @param p
+         * @param rawPreamble
+         * @return 
+         */
+        public static Preamble parse( Preamble p, String rawPreamble ) {
             if( LOG.isDebugEnabled() )
                 LOG.debug( "Parsing {}", rawPreamble );
             Matcher m = PREAMBLE_PATTERN.matcher( rawPreamble );
