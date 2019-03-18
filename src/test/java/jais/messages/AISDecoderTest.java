@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -798,9 +798,9 @@ public class AISDecoderTest {
     public void testImoValidation() {
         LOG.info( "*** testImoValidation()" );
         LOG.info( "\tNumber:" );
-        Assert.assertTrue( AISMessageBase.isValidImo( 9074729 ) );
+        Assert.assertTrue( AISMessage.isValidImo( 9074729 ) );
         LOG.info( "\tString:" );
-        Assert.assertTrue( AISMessageBase.isValidImo( "IMO 9074729" ) );
+        Assert.assertTrue( AISMessage.isValidImo( "IMO 9074729" ) );
     }
 
     /**

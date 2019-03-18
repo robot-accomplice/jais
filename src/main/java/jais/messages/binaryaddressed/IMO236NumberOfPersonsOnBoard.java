@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,7 @@ public class IMO236NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
                 case PERSONS:
                     _persons = AISMessageDecoder.decodeUnsignedInt( _bits,
                             field.getStartBit(), field.getEndBit() );
+                    break;
                 default:
                     LOG.warn( "Ignoring field: {}", field.name() );
             }

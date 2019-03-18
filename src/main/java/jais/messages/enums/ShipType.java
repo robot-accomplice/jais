@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,61 +102,40 @@ public enum ShipType {
     MEDICAL_TRANSPORT( 58, "Medical Transport" ),
     NON_COMBATANT_SHIP( 59, "Non-combatant ship according to RR Resolution No. 18" ),
     PASSENGER( 60, "Passenger - all" ),
-    PASSENGER_HAZARDOUS_CATEGORY_A( 61,
-            "Passenger - Hazardous Logger A" ),
-    PASSENGER_HAZARDOUS_CATEGORY_B( 62,
-            "Passenger - Hazardous Logger A" ),
-    PASSENGER_HAZARDOUS_CATEGORY_C( 63,
-            "Passenger - Hazardous Logger A" ),
-    PASSENGER_HAZARDOUS_CATEGORY_D( 64,
-            "Passenger - Hazardous Logger A" ),
-    PASSENGER_RESERVED_65( 65,
-            "Passenger - Reserved for future use" ),
-    PASSENGER_RESERVED_66( 66,
-            "Passenger - Reserved for future use" ),
-    PASSENGER_RESERVED_67( 67,
-            "Passenger - Reserved for future use" ),
-    PASSENGER_RESERVED_68( 68,
-            "Passenger - Reserved for future use" ),
-    PASSENGER_NO_INFO( 69,
-            "Passenger - No additional information" ),
+    PASSENGER_HAZARDOUS_CATEGORY_A( 61, "Passenger - Hazardous Logger A" ),
+    PASSENGER_HAZARDOUS_CATEGORY_B( 62, "Passenger - Hazardous Logger A" ),
+    PASSENGER_HAZARDOUS_CATEGORY_C( 63, "Passenger - Hazardous Logger A" ),
+    PASSENGER_HAZARDOUS_CATEGORY_D( 64, "Passenger - Hazardous Logger A" ),
+    PASSENGER_RESERVED_65( 65, "Passenger - Reserved for future use" ),
+    PASSENGER_RESERVED_66( 66, "Passenger - Reserved for future use" ),
+    PASSENGER_RESERVED_67( 67, "Passenger - Reserved for future use" ),
+    PASSENGER_RESERVED_68( 68, "Passenger - Reserved for future use" ),
+    PASSENGER_NO_INFO( 69, "Passenger - No additional information" ),
     CARGO( 70, "Cargo - all" ),
-    CARGO_HAZARDOUS_CATEGORY_A( 71,
-            "Cargo - Hazardous Logger A" ),
-    CARGO_HAZARDOUS_CATEGORY_B( 72,
-            "Cargo - Hazardous Logger B" ),
-    CARGO_HAZARDOUS_CATEGORY_C( 73,
-            "Cargo - Hazardous Logger C" ),
-    CARGO_HAZARDOUS_CATEGORY_D( 74,
-            "Cargo - Hazardous Logger D" ),
+    CARGO_HAZARDOUS_CATEGORY_A( 71, "Cargo - Hazardous Logger A" ),
+    CARGO_HAZARDOUS_CATEGORY_B( 72, "Cargo - Hazardous Logger B" ),
+    CARGO_HAZARDOUS_CATEGORY_C( 73, "Cargo - Hazardous Logger C" ),
+    CARGO_HAZARDOUS_CATEGORY_D( 74, "Cargo - Hazardous Logger D" ),
     CARGO_RESERVED_75( 75, "Cargo - Reserved for future use" ),
     CARGO_RESERVED_76( 76, "Cargo - Reserved for future use" ),
     CARGO_RESERVED_77( 77, "Cargo - Reserved for future use" ),
     CARGO_RESERVED_78( 78, "Cargo - Reserved for future use" ),
     CARGO_NO_INFO( 79, "Cargo - No additional information" ),
     TANKER( 80, "Tanker - all" ),
-    TANKER_HAZARDOUS_CATEGORY_A( 81, 
-            "Tanker - Hazardous Logger A" ),
-    TANKER_HAZARDOUS_CATEGORY_B( 82, 
-            "Tanker - Hazardous Logger B" ),
-    TANKER_HAZARDOUS_CATEGORY_C( 83, 
-            "Tanker - Hazardous Logger C" ),
-    TANKER_HAZARDOUS_CATEGORY_D( 84, 
-            "Tanker - Hazardous Logger D" ),
+    TANKER_HAZARDOUS_CATEGORY_A( 81, "Tanker - Hazardous Logger A" ),
+    TANKER_HAZARDOUS_CATEGORY_B( 82, "Tanker - Hazardous Logger B" ),
+    TANKER_HAZARDOUS_CATEGORY_C( 83, "Tanker - Hazardous Logger C" ),
+    TANKER_HAZARDOUS_CATEGORY_D( 84, "Tanker - Hazardous Logger D" ),
     TANKER_RESERVED_85( 85, "Tanker - Reserved for future use" ),
     TANKER_RESERVED_86( 86, "Tanker - Reserved for future use" ),
     TANKER_RESERVED_87( 87, "Tanker - Reserved for future use" ),
     TANKER_RESERVED_88( 88, "Tanker - Reserved for future use" ),
     TANKER_NO_INFO( 89, "Tanker - No additional information" ),
     OTHER( 90, "Other - all" ),
-    OTHER_HAZARDOUS_CATEGORY_A( 91, 
-            "Other - Hazardous Logger A" ),
-    OTHER_HAZARDOUS_CATEGORY_B( 92, 
-            "Other - Hazardous Logger B" ),
-    OTHER_HAZARDOUS_CATEGORY_C( 93, 
-            "Other - Hazardous Logger C" ),
-    OTHER_HAZARDOUS_CATEGORY_D( 94, 
-            "Other - Hazardous Logger D" ),
+    OTHER_HAZARDOUS_CATEGORY_A( 91, "Other - Hazardous Logger A" ),
+    OTHER_HAZARDOUS_CATEGORY_B( 92, "Other - Hazardous Logger B" ),
+    OTHER_HAZARDOUS_CATEGORY_C( 93, "Other - Hazardous Logger C" ),
+    OTHER_HAZARDOUS_CATEGORY_D( 94, "Other - Hazardous Logger D" ),
     OTHER_RESERVED_95( 95, "Other - Reserved for future use" ),
     OTHER_RESERVED_96( 96, "Other - Reserved for future use" ),
     OTHER_RESERVED_97( 97, "Other - Reserved for future use" ),
@@ -355,15 +334,10 @@ public enum ShipType {
      * @return 
      */
     public static ShipType getForCode( int code ) {
-       ShipType st = null;
-       
        for( ShipType type : ShipType.values() ) {
-           if( type.getCode() == code ) {
-               st = type;
-               break;
-           }
+           if( type.getCode() == code ) return type;
        }
        
-       return st;
+       return null;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Jonathan Machen {@literal <jon.machen@robotaccomplice.com>}.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,10 @@ public class AISMessageEncoder {
      * @param startAt 
      */
     public static void encodeInt( int value, BitSet bits, int startAt ) {
+        int startBit = startAt;
         while( value != 0 ) {
-            if( value % 2L != 0 ) bits.set( startAt );
-            ++startAt;
+            if( value % 2L != 0 ) bits.set( startBit );
+            ++startBit;
             value = value >>> 1;
         }
     }

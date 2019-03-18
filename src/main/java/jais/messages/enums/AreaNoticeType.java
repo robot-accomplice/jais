@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.messages.enums;
 
 /**
@@ -93,15 +92,10 @@ public enum AreaNoticeType {
      * @return 
      */
     public static AreaNoticeType getForCode( int code ) {
-       AreaNoticeType t = null;
-       
        for( AreaNoticeType type : AreaNoticeType.values() ) {
-           if( type.getCode() == code ) {
-               t = type;
-               break;
-           }
+           if( type.getCode() == code ) return type;
        }
        
-       return t;
+       return null;
     }
 }

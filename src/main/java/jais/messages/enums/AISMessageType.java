@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.messages.enums;
 
+import jais.messages.AISMessage;
 import jais.messages.MultipleSlotBinaryMessage;
 import jais.messages.UTCDateResponse;
 import jais.messages.BinaryAcknowledge;
@@ -152,13 +152,13 @@ public enum AISMessageType {
      */
     private final int _id;
     private final String _description;
-    private final Class _messageClass;
+    private final Class<? extends AISMessage> _messageClass;
     
     /**
      * 
      * @param description 
      */
-    AISMessageType( int id, String description, Class messageClass ) {
+    AISMessageType( int id, String description, Class<? extends AISMessage> messageClass ) {
         _id = id;
         _description = description;
         _messageClass = messageClass;
@@ -184,7 +184,7 @@ public enum AISMessageType {
      * 
      * @return 
      */
-    public Class<?> getMessageClass() {
+    public Class<? extends AISMessage> getMessageClass() {
         return _messageClass;
     }
     
@@ -211,7 +211,7 @@ public enum AISMessageType {
      * @param messageClass
      * @return 
      */
-    public static AISMessageType fetchByMessageClass( Class messageClass ) {
+    public static AISMessageType fetchByMessageClass( Class<? extends AISMessage> messageClass ) {
         AISMessageType foundType = null;
         
         for( AISMessageType type : AISMessageType.values() ) {

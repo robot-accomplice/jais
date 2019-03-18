@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Jonathan Machen.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public final class TagBlock {
     
     /**
      * 
-     * @return 
+     * @return boolean indicating whether or not this tagblock has already been parsed
      */
     public final boolean isParsed() {
         return _parsed;
@@ -81,14 +81,15 @@ public final class TagBlock {
     
     /**
      * 
+     * @param parsed boolean indicating whether or not this tagblock has already been parsed
      */
-    public final void setParsed() {
-        _parsed = true;
+    public final void setParsed(boolean parsed) {
+        _parsed = parsed;
     }
     
     /**
      *
-     * @return
+     * @return byte [] containing the raw, unprocessed tagblock
      */
     public final byte [] getRawTagBlock() {
         return rawTagBlock;
@@ -96,7 +97,7 @@ public final class TagBlock {
 
     /**
      *
-     * @param rawTagBlock
+     * @param rawTagBlock byte [] containing the raw, unprocessed tagblock
      */
     public final void setRawTagBlock( byte [] rawTagBlock ) {
         this.rawTagBlock = rawTagBlock;
@@ -104,7 +105,7 @@ public final class TagBlock {
 
     /**
      *
-     * @return
+     * @return 
      */
     public final byte [] getChecksum() {
         return checksum;
@@ -367,7 +368,7 @@ public final class TagBlock {
             tb.setSource( source );
         }
         
-        tb.setParsed();
+        tb.setParsed(true);
         tb.setRawTagBlock( AISPacket.str2bArray( tb.toString() ) );
         
         return tb;
@@ -399,45 +400,31 @@ public final class TagBlock {
         StringBuilder tbs = new StringBuilder();
 
         if( this.sentenceGrouping != null && this.sentenceGrouping.length != 0 ) {
-            if( tbs.length() > 1 ) {
-                tbs.append( "," );
-            }
+            if( tbs.length() > 1 ) tbs.append( "," );
             tbs.append( "g:" ).append( AISPacket.bArray2Str( this.sentenceGrouping ) );
         }
         if( this.lineCount > 0 ) {
-            if( tbs.length() > 1 ) {
-                tbs.append( "," );
-            }
+            if( tbs.length() > 1 ) tbs.append( "," );
             tbs.append( "n:" ).append( this.lineCount );
         }
         if( this.source != null && this.source.length != 0 ) {
-            if( tbs.length() > 1 ) {
-                tbs.append( "," );
-            }
+            if( tbs.length() > 1 ) tbs.append( "," );
             tbs.append( "s:" ).append( AISPacket.bArray2Str( this.source ) );
         }
         if( this.timestamp > 0 ) {
-            if( tbs.length() > 1 ) {
-                tbs.append( "," );
-            }
+            if( tbs.length() > 1 ) tbs.append( "," );
             tbs.append( "c:" ).append( this.timestamp );
         }
         if( this.destination != null && this.destination.length != 0 ) {
-            if( tbs.length() > 1 ) {
-                tbs.append( "," );
-            }
+            if( tbs.length() > 1 ) tbs.append( "," );
             tbs.append( "d:" ).append( AISPacket.bArray2Str( this.destination ) );
         }
         if( this.relativeTime > 0 ) {
-            if( tbs.length() > 1 ) {
-                tbs.append( "," );
-            }
+            if( tbs.length() > 1 )  tbs.append( "," );
             tbs.append( "r:" ).append( this.relativeTime );
         }
         if( this.textStr != null && this.textStr.length != 0 ) {
-            if( tbs.length() > 1 ) {
-                tbs.append( "," );
-            }
+            if( tbs.length() > 1 )  tbs.append( "," );
             tbs.append( "t" ).append( AISPacket.bArray2Str( this.textStr ) );
         }
 

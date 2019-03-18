@@ -709,10 +709,8 @@ public class Vessel implements Cloneable {
          */
         @Override
         public boolean equals( Object o ) {
-            if( o == null )
-                return false;
-            if( !( o instanceof Identifier ) )
-                return false;
+            if( o == null ) return false;
+            if( !( o instanceof Identifier ) ) return false;
             Identifier id = ( Identifier )o;
             if( id._mmsi != _mmsi ) return false;
             return id._source.equals( _source );

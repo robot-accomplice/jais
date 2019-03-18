@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,70 @@ import jais.messages.enums.MMSIType;
 import java.time.ZoneOffset;
 import org.locationtech.spatial4j.shape.Point;
 import java.time.ZonedDateTime;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Jonathan Machen
  */
 public interface AISMessage {
+
+    Logger LOG = LogManager.getLogger(AISMessage.class);
+    
+    /**
+     *
+     * @param imo
+     * @return
+     */
+    public static boolean isValidImo( String imo ) {
+        if( imo.toLowerCase().startsWith( "imo" ) ) return isValidImo( Long.parseLong( imo.substring( 4 ) ) );
+
+        return isValidImo( Long.parseLong( imo ) );
+    }
+
+    /**
+     *
+     * @param imo
+     * @return
+     */
+    public static boolean isValidImo( long imo ) {
+        LOG.info( "Validating IMO: {}", imo );
+
+        boolean valid = ( Long.toString( imo ).length() == 7 );
+
+        if( valid ) {
+            int d = 0;
+            Integer[] digits = new Integer[7];
+            for( char c : Long.toString( imo ).toCharArray() ) {
+                digits[d] = Integer.valueOf( "" + c );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Digit at position: {} is {}", d, digits[d] );
+                d++;
+            }
+
+            digits[0] *= 7;
+            digits[1] *= 6;
+            digits[2] *= 5;
+            digits[3] *= 4;
+            digits[4] *= 3;
+            digits[5] *= 2;
+
+            int sum = 0;
+
+            for( int i = 0; i < 6; i++ ) {
+                sum += digits[i];
+            }
+
+            if( LOG.isDebugEnabled() ) LOG.debug( "Sum of products is : {}", sum );
+
+            valid = ( sum % 10 == digits[6] );
+
+            LOG.info( "Modulus of sum divided by 10 is: {} vs {}",
+                    sum % 10, digits[6] );
+        }
+
+        return valid;
+    }
     
     /**
      * 

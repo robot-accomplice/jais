@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class AISMessageFactory {
             if( mType.isPresent() ) {
                 if( LOG.isDebugEnabled() ) LOG.debug( "Creating a new {} instance.", mType.get().getDescription() );
 
-                AISMessage message = null;
+                AISMessage message;
                 switch( mType.get() ) {
                     case POSITION_REPORT_CLASS_A:
                         message = new PositionReportClassA( source, packets );
@@ -149,10 +149,7 @@ public class AISMessageFactory {
                         return Optional.empty();
                 }
 
-                if( message != null ) {
-                    // decode message
-                    message.decode();
-                }
+                if( message != null ) message.decode(); // decode message
                 
                 return Optional.of( message );
             } else {
@@ -193,9 +190,7 @@ public class AISMessageFactory {
     public static Optional<AISMessage> create( String source, boolean strict, String... packetStrings ) throws AISException {
         AISPacket[] packets = new AISPacket[packetStrings.length];
 
-        for( int i = 0; i < packetStrings.length; i++ ) {
-            packets[i] = new AISPacket( packetStrings[i], source );
-        }
+        for( int i = 0; i < packetStrings.length; i++ ) packets[i] = new AISPacket( packetStrings[i], source );
 
         return create( source, strict, packets );
     }

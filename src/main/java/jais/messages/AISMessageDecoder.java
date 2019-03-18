@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package jais.messages;
 
 import jais.AISPacket;
@@ -98,7 +99,6 @@ public class AISMessageDecoder {
         if( LOG.isDebugEnabled() ) LOG.debug( "8 bit char array is {} bytes long.", msgChars.length );
 
         BitSet bits = new BitSet( 6 * msgChars.length );
-        //boolean out[] = new boolean[6 * in.length];
         if( LOG.isDebugEnabled() ) LOG.debug( "6 bit boolean array is {} bits long.", bits.size() );
 
         int bIndex = 0;
@@ -130,9 +130,9 @@ public class AISMessageDecoder {
      * @throws jais.exceptions.InvalidAISCharacterException
      */
     private static int encodedToSixBitInt( char c ) throws InvalidAISCharacterException {
-        if( c <= CHAR_RANGE_A_MAX && c >= CHAR_RANGE_A_MIN ) {  // is this character within the first range?
+        if( c <= CHAR_RANGE_A_MAX && c >= CHAR_RANGE_A_MIN ) {  // is this character within the 1st allowable range?
             return c - CHAR_RANGE_A_MIN;
-        } else if( c <= CHAR_RANGE_B_MAX && c >= CHAR_RANGE_B_MIN ) {   // is this character within the second range?
+        } else if( c <= CHAR_RANGE_B_MAX && c >= CHAR_RANGE_B_MIN ) {   // is this character within the 2nd allowable range?
             return c - CHAR_RANGE_B_MIN + ( CHAR_RANGE_A_MAX - CHAR_RANGE_A_MIN + 1 );
         } else {
             throw new InvalidAISCharacterException( "Character \'" + c
@@ -157,12 +157,8 @@ public class AISMessageDecoder {
 
         int binPosValue = 1;
         for( int i = endBit; i >= startBit; i-- ) {
-            if( bits.get( i ) ) {
-                rval += binPosValue;
-            }
-
-            binPosValue += binPosValue; // double binPosValue to produce valid 
-            // binary position value as per binary math
+            if( bits.get( i ) )  rval += binPosValue;
+            binPosValue += binPosValue; // double binPosValue to produce valid binary position value as per binary math
         }
 
         return rval;
@@ -176,10 +172,9 @@ public class AISMessageDecoder {
      * @return
      * @throws AISException
      */
-    public static float decodeDraught( BitSet b, int startBit, int endBit )
-            throws AISException {
+    public static float decodeDraught( BitSet b, int startBit, int endBit ) throws AISException {
         int intVal = decodeUnsignedInt( b, startBit, endBit );
-        return ( ( float ) intVal ) / 10.f;
+        return intVal / 10.f;
     }
 
     /**
@@ -199,9 +194,7 @@ public class AISMessageDecoder {
         if( negative ) {
             int binPosValue = 1;
             for( int i = endBit; i >= startBit; i-- ) {
-                if( !bits.get( i ) ) {
-                    intValue += binPosValue;
-                }
+                if( !bits.get( i ) ) intValue += binPosValue;
 
                 // double binPosValue to produce valid 
                 // binary position value as per binary math
@@ -225,7 +218,7 @@ public class AISMessageDecoder {
         int rval = c;
 
         if( c < 0 || c > 63 ) {
-            throw new AISException( "sixBitIntToAscii: illegal input for 6-bit conversion: " + c );
+            throw new AISException( "sixBitIntToAscii: Invalid input for 6-bit conversion: " + c );
         } else if( c < 32 ) {
             rval += 64;
         }
@@ -272,9 +265,7 @@ public class AISMessageDecoder {
      */
     public static Optional<AISMessageType> decodeMessageType( BitSet bits ) throws AISException {
 
-        if( bits.size() < AISFieldMap.TYPE.getEndBit() ) {
-            throw new AISException( "BitSet is too short: " + bits.size() );
-        }
+        if( bits.size() < AISFieldMap.TYPE.getEndBit() ) throw new AISException( "BitSet is too short: " + bits.size() );
         
         if( LOG.isDebugEnabled() ) {
             LOG.debug( "BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(),
@@ -283,9 +274,7 @@ public class AISMessageDecoder {
         
         int typeId = decodeUnsignedInt( bits, AISFieldMap.TYPE.getStartBit(), AISFieldMap.TYPE.getEndBit() );
 
-        if( typeId == 0 || AISMessageType.fetchById( typeId ) == null ) {
-            return Optional.empty();
-        }
+        if( typeId == 0 || AISMessageType.fetchById( typeId ) == null ) return Optional.empty();
         
         return Optional.of( AISMessageType.fetchById( typeId ) );
     }
@@ -298,20 +287,15 @@ public class AISMessageDecoder {
      * @return
      * @throws AISException
      */
-    public static float decodeLatitude( BitSet b, int startBit, int endBit )
-            throws AISException {
-        float lat;
-
+    public static float decodeLatitude( BitSet b, int startBit, int endBit ) throws AISException {
         int i = decodeSignedInt( b, startBit, endBit );
 
         switch( i ) {
             case 0x3412140:
                 throw new AISException( "Latitude unavailable." );
             default:
-                lat = ( float ) ( ( ( double )i ) / ( 60f * 10000f ) );
+                return ( float ) ( ( ( double )i ) / ( 60f * 10000f ) );
         }
-
-        return lat;
     }
 
     /**
@@ -324,18 +308,14 @@ public class AISMessageDecoder {
      */
     public static float decodeLongitude( BitSet b, int startBit, int endBit )
             throws AISException {
-        float lon;
-
         int i = decodeSignedInt( b, startBit, endBit );
 
         switch( i ) {
             case 0x6791AC0:
                 throw new AISException( "Longitude unavailable." );
             default:
-                lon = ( float ) ( ( ( double ) i ) / ( 60f * 10000f ) );
+                return ( float ) ( ( ( double ) i ) / ( 60f * 10000f ) );
         }
-
-        return lon;
     }
 
     /**
@@ -348,14 +328,9 @@ public class AISMessageDecoder {
      */
     public static float decodeTurn( BitSet bits, int startBit, int endBit )
             throws AISException {
-        float turn;
-
         int i = decodeSignedInt( bits, startBit, endBit );
 
-        turn = ( ( float ) i ) / 4.733f;
-        turn = turn * turn;
-
-        return turn;
+        return (i / 4.733f) * (i/4.733f);
     }
 
     /**
@@ -367,28 +342,20 @@ public class AISMessageDecoder {
      * @throws AISException
      */
     public static float decodeSpeed( BitSet bits, int startBit, int endBit ) throws AISException {
-        float speed;
-
         int i = decodeUnsignedInt( bits, startBit, endBit );
 
-        if( ( i < 0 ) || ( i > 1023 ) ) {
-            throw new AISException( "getSpeedOverGround: invalid value: " + i );
-        }
+        if( ( i < 0 ) || ( i > 1023 ) ) throw new AISException( "getSpeedOverGround: invalid value: " + i );
 
         switch( i ) {
             case 1023:
                 // speed unavailable
                 if( LOG.isInfoEnabled() ) LOG.info( "getSpeedOverGround: unavailable: {}", i );
-                speed = -1f;
-                break;
+                return -1f;
             case 1022:
-                speed = 102.2f;
-                break;
+                return 102.2f;
             default:
-                speed = ( ( float ) i ) / 10.f;
+                return i / 10.f;
         }
-
-        return speed;
     }
 
     /**
@@ -401,22 +368,16 @@ public class AISMessageDecoder {
      */
     public static float decodeCourse( BitSet bits, int startBit, int endBit )
             throws AISException {
-        float course;
-
         int i = decodeUnsignedInt( bits, startBit, endBit );
 
-        if( ( i < 0 ) || ( i > 3600 ) ) {
-            throw new AISException( "decodeCourse: invalid value: " + i );
-        }
+        if( ( i < 0 ) || ( i > 3600 ) ) throw new AISException( "decodeCourse: invalid value: " + i );
 
         switch( i ) {
             case 3600:
                 throw new AISException( "Course unavailable" );
             default:
-                course = ( ( float ) i ) / 10f;
+                return i / 10f;
         }
-
-        return course;
     }
 
     /**
@@ -432,18 +393,14 @@ public class AISMessageDecoder {
             if( LOG.isTraceEnabled() ) LOG.trace( "Decoding bit {} through bit {} of {} element BitSet", startBit, endBit, bits.size() );
             CharBuffer cb = CharBuffer.allocate( ( ( ( endBit - startBit ) / 6 ) + 1 ) );
 
-            if( endBit > bits.size() ) {
-                endBit = bits.size();
-            }
+            int stopBit = ( endBit > bits.size() ) ? bits.size() : endBit;
 
             // we need to walk forward through every set of six bits without traveling past the endBit
-            for( int sb = startBit; sb <= endBit; sb += 6 ) {
+            for( int sb = startBit; sb <= stopBit; sb += 6 ) {
                 int binPosVal = 1;    // binary position value
                 int charVal = 0;      // current binary position value
-                for( int s = ( sb + 5 ); s >= sb && s <= endBit; s-- ) {
-                    if( bits.get( s ) ) {
-                        charVal += binPosVal; // sum bits to arrive at int char value
-                    }
+                for( int s = ( sb + 5 ); s >= sb && s <= stopBit; s-- ) {
+                    if( bits.get( s ) ) charVal += binPosVal; // sum bits to arrive at int char value
                     binPosVal += binPosVal; // doubling consistent with binary math
                 }
 

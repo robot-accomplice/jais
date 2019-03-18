@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,15 +95,10 @@ public enum NavaidType {
      * @return 
      */
     public static NavaidType getForCode( int code ) {
-        NavaidType type = null;
-        
         for( NavaidType t : NavaidType.values() ) {
-            if( t.getCode() == code ) {
-                type = t;
-                break;
-            }
+            if( t.getCode() == code ) return t;
         }
         
-        return type;
+        return null;
     }
 }

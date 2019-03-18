@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package jais;
 
 import jais.exceptions.AISException;
@@ -41,7 +42,7 @@ import org.apache.logging.log4j.Logger;
  */
 public final class AISPacket {
 
-    private final static Logger LOG = LogManager.getLogger( AISPacket.class );
+    private final static Logger LOG = LogManager.getLogger(AISPacket.class);
 
     // reserved characters
     private final static char ENCAP_START = '!';
@@ -96,8 +97,7 @@ public final class AISPacket {
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( byte[] rawPacket, byte[] source ) throws AISPacketException {
-        if( LOG.isTraceEnabled() )
-            LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", rawPacket, source );
+        if( LOG.isTraceEnabled() ) LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", rawPacket, source );
         _rawPacket = trim( rawPacket );
         _source = trim( source );
     }
@@ -120,13 +120,10 @@ public final class AISPacket {
      * @throws jais.exceptions.AISPacketException
      */
     public AISPacket( String rawPacket, String source ) throws AISPacketException {
-        if( LOG.isTraceEnabled() )
-            LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", rawPacket, source );
+        if( LOG.isTraceEnabled() ) LOG.trace( "Constructor instantiated with: \"{}\", \"{}\"", rawPacket, source );
         _rawPacket = str2bArray( rawPacket );
-        if( source != null )
-            _source = str2bArray( source );
-        else
-            _source = str2bArray( DEFAULT_SOURCE );
+        if( source != null ) _source = str2bArray( source );
+        else _source = str2bArray( DEFAULT_SOURCE );
     }
 
     /**
@@ -145,8 +142,7 @@ public final class AISPacket {
             LOG.warn( "_packetParts[0] is null" );
             return false;
         } else {
-            if( LOG.isTraceEnabled() )
-                LOG.trace( "Creating preamble object from {}", bArray2Str( _packetParts[0] ) );
+            if( LOG.isTraceEnabled() ) LOG.trace( "Creating preamble object from {}", bArray2Str( _packetParts[0] ) );
             return validatePreamble( Preamble.parse( _packetParts[0] ) );
         }
     }
@@ -175,36 +171,28 @@ public final class AISPacket {
      *
      * @return
      */
-    public final Preamble getPreamble() {
-        return _preamble;
-    }
+    public final Preamble getPreamble() { return _preamble; }
     
     /**
      * Determines whether or not a TagBlock was parsed from this AISPacket
      * 
      * @return 
      */
-    public boolean hasTagBlock() {
-        return ( _tagBlock != null );
-    }
+    public boolean hasTagBlock() { return ( _tagBlock != null ); }
 
     /**
      * Returns the TagBlock parsed from this AISPacket
      * 
      * @return
      */
-    public final TagBlock getTagBlock() {
-        return _tagBlock;
-    }
+    public final TagBlock getTagBlock() { return _tagBlock; }
 
     /**
      * Validates the contents of the packet and breaks it into its constituent parts
      * 
      * @return @throws AISPacketException
      */
-    public final AISPacket process() throws AISPacketException {
-        return process( false );
-    }
+    public final AISPacket process() throws AISPacketException { return process( false ); }
 
     /**
      * Validates the contents of the packet and breaks it into its constituent parts
@@ -216,14 +204,11 @@ public final class AISPacket {
     public final AISPacket process( boolean addTagBlock ) throws AISPacketException {
         String rawPacket;
 
-        if( _rawPacket == null ) {
-            throw new AISPacketException( "Raw packet is null" );
-        } else if( _rawPacket.length == 0 ) {
-            throw new AISPacketException( "Raw packet is empty" );
-        } else {
+        if( _rawPacket == null ) throw new AISPacketException( "Raw packet is null" );
+        else if( _rawPacket.length == 0 ) throw new AISPacketException( "Raw packet is empty" );
+        else {
             rawPacket = bArray2Str( trim( _rawPacket ) );
-            if( LOG.isDebugEnabled() )
-                LOG.debug( "Processing new raw packet: {}", rawPacket );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Processing new raw packet: {}", rawPacket );
         }
 
         Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher( rawPacket );
@@ -233,50 +218,36 @@ public final class AISPacket {
                 if( _source == null || _source.length == 0 ) {
                     _tagBlock = TagBlock.parse( m.group( 0 ) );
                     _source = _tagBlock.getSource();
-                } else {
-                    _tagBlock = TagBlock.parse( m.group( 0 ), _source );
-                }
+                } else _tagBlock = TagBlock.parse( m.group( 0 ), _source );
             } catch( Throwable t ) {
-                if( LOG.isDebugEnabled() )
-                    LOG.debug( "Unable to parse TagBlock from {}", m.group( 0 ) );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Unable to parse TagBlock from {}", m.group( 0 ) );
             }
 
             _packetBody = str2bArray( rawPacket.substring( m.end() ) );
         } else if( addTagBlock ) {
-            if( _source == null || _source.length == 0 ) {
-                _tagBlock = TagBlock.build( null );
-            } else {
-                _tagBlock = TagBlock.build( _source );
-            }
+            if( _source == null || _source.length == 0 ) _tagBlock = TagBlock.build( null );
+            else _tagBlock = TagBlock.build( _source );
             _packetBody = _rawPacket;
         } else {
-            if( LOG.isDebugEnabled() )
-                LOG.debug( "No TagBlock found and addTagBlock is false" );
+            if( LOG.isDebugEnabled() ) LOG.debug( "No TagBlock found and addTagBlock is false" );
             _packetBody = _rawPacket;
         }
 
-        if( LOG.isDebugEnabled() )
-            LOG.debug( "_packetBody = \"{}\"", bArray2Str( _packetBody ) );
+        if( LOG.isDebugEnabled() ) LOG.debug( "_packetBody = \"{}\"", bArray2Str( _packetBody ) );
 
-        if( _packetParts == null ) {
-            _packetParts = AISPacket.fastSplit( _packetBody, FIELD_DELIMITER );
-        }
+        if( _packetParts == null ) _packetParts = AISPacket.fastSplit( _packetBody, FIELD_DELIMITER );
 
-        if( _packetParts == null || _packetParts.length < 6 ) {
+        if( _packetParts == null || _packetParts.length < 6 ) 
             throw new AISPacketException( "Raw packet contains no message (inadequate number of comma-separated values)." );
-        }
 
         try {
             switch( _packetParts.length ) {
                 case 10:
-                    if( LOG.isDebugEnabled() )
-                        LOG.debug( "Unrecognized field at position 10: {}", bArray2Str( _packetParts[9] ) );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Unrecognized field at position 10: {}", bArray2Str( _packetParts[9] ) );
                 case 9:
-                    if( LOG.isDebugEnabled() )
-                        LOG.debug( "Unrecognized field at position  9: {}", bArray2Str( _packetParts[8] ) );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Unrecognized field at position  9: {}", bArray2Str( _packetParts[8] ) );
                 case 8:
-                    if( LOG.isDebugEnabled() )
-                        LOG.debug( "Unrecognized field at position  8: {}", bArray2Str( _packetParts[7] ) );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Unrecognized field at position  8: {}", bArray2Str( _packetParts[7] ) );
                 case 7:
                     try {
                         if( _packetParts[6] != null && _packetParts[6].length > 0 ) {
@@ -285,21 +256,15 @@ public final class AISPacket {
                             if( csIndex != -1 ) {
                                 _fillBits = Integer.parseInt( substring( checksum, 0, csIndex ) );
                                 _checksum = trim( Arrays.copyOfRange( checksum, csIndex + 1, checksum.length ) );
-                            } else {
-                                if( LOG.isDebugEnabled() )
-                                    LOG.debug( "Packet is missing checksum!" );
-                            }
+                            } else if( LOG.isDebugEnabled() ) LOG.debug( "Packet is missing checksum!" );
                         }
                     } catch( NumberFormatException nfe ) {
                         if( LOG.isDebugEnabled() )
                             LOG.debug( "Failed to set fill bits and/or checksum due to NumberFormatException: {}", nfe.getMessage() );
                     }
                 case 6:
-                    if( _packetParts[5] == null ) {
-                        throw new AISPacketException( "Raw message is null." );
-                    } else if( _packetParts[5].length == 0 ) {
-                        throw new AISPacketException( "Raw message is empty." );
-                    }
+                    if( _packetParts[5] == null ) throw new AISPacketException( "Raw message is null." );
+                    else if( _packetParts[5].length == 0 ) throw new AISPacketException( "Raw message is empty." );
                     _binaryString = _packetParts[5]; // only the binary string
                 case 5:
                     if( _packetParts[4] != null && _packetParts[4].length > 0 )
@@ -331,14 +296,10 @@ public final class AISPacket {
                     }
                 case 1:
                     int index = indexOf( _packetParts[0], AISPacket.ENCAP_START );
-                    if( index == -1 )
-                        index = indexOf( _packetParts[0], AISPacket.PARAM_START );
+                    if( index == -1 ) index = indexOf( _packetParts[0], AISPacket.PARAM_START );
 
-                    if( index != -1 ) {
-                        _type = Arrays.copyOfRange( _packetParts[0], index, _packetParts[0].length );
-                    } else {
-                        throw new AISPacketException( "Packet has an unrecognizable preamble" );
-                    }
+                    if( index != -1 ) _type = Arrays.copyOfRange( _packetParts[0], index, _packetParts[0].length );
+                    else throw new AISPacketException( "Packet has an unrecognizable preamble" );
                     break;
                 default:
                     throw new AISPacketException( "Packet is corrupt and has no message body." );
@@ -456,29 +417,23 @@ public final class AISPacket {
         char[] chars = bArray2cArray( bytes, cs );
 
         for( int i = chars.length - 1; i > -1; i-- ) {
-            if( LOG.isTraceEnabled() )
-                LOG.trace( "Character at position {} is {}", i, chars[i] );
+            if( LOG.isTraceEnabled() ) LOG.trace( "Character at position {} is {}", i, chars[i] );
 
             switch( chars[i] ) {
                 case '\n':
-                    if( LOG.isTraceEnabled() )
-                        LOG.trace( "Found newline" );
+                    if( LOG.isTraceEnabled() ) LOG.trace( "Found newline" );
                     break;
                 case '\r':
-                    if( LOG.isTraceEnabled() )
-                        LOG.trace( "Found carriage return" );
+                    if( LOG.isTraceEnabled() ) LOG.trace( "Found carriage return" );
                     break;
                 case '\t':
-                    if( LOG.isTraceEnabled() )
-                        LOG.trace( "Found tab" );
+                    if( LOG.isTraceEnabled() ) LOG.trace( "Found tab" );
                     break;
                 case ' ':
-                    if( LOG.isTraceEnabled() )
-                        LOG.trace( "Found space" );
+                    if( LOG.isTraceEnabled() ) LOG.trace( "Found space" );
                     break;
                 default:
-                    if( LOG.isTraceEnabled() )
-                        LOG.trace( "Found non-whitespace character {} at position {}", chars[i], i );
+                    if( LOG.isTraceEnabled() ) LOG.trace( "Found non-whitespace character {} at position {}", chars[i], i );
                     return Arrays.copyOfRange( bytes, 0, i + 1 );  // because the "to" value in Arrays.copyOfRange is EXclusive
             }
         }
@@ -506,8 +461,7 @@ public final class AISPacket {
      * @throws jais.exceptions.AISException
      */
     public static int getInt( byte[] bytes ) throws AISException {
-        if( bytes.length < 4 )
-            throw new AISException( "The byte array is too short to represent an int" );
+        if( bytes.length < 4 ) throw new AISException( "The byte array is too short to represent an int" );
         return ByteBuffer.wrap( bytes ).getInt();
     }
 
@@ -521,9 +475,7 @@ public final class AISPacket {
     public static int indexOf( byte[] ba, char c ) {
         char[] chars = DEFAULT_CHARSET.decode( ByteBuffer.wrap( ba ) ).array();
         for( int i = 0; i < chars.length; i++ ) {
-            if( chars[i] == c ) {
-                return i;
-            }
+            if( chars[i] == c )  return i;
         }
 
         return -1;
@@ -548,9 +500,7 @@ public final class AISPacket {
     public final boolean isValid() {
         try {
             // so we don't throw NPEs over the failure to split the raw String
-            if( _packetParts == null ) {
-                process();
-            }
+            if( _packetParts == null )  process();
 
             // validate preamble
             if( _packetBody.length > 82 ) {
@@ -575,8 +525,7 @@ public final class AISPacket {
                     // is this character within an accepted range?
                     if( !( ( c <= AISMessageDecoder.CHAR_RANGE_A_MAX && c >= AISMessageDecoder.CHAR_RANGE_A_MIN )
                             || ( c <= AISMessageDecoder.CHAR_RANGE_B_MAX && c >= AISMessageDecoder.CHAR_RANGE_B_MIN ) ) ) {
-                        if( LOG.isDebugEnabled() )
-                            LOG.debug( "Packet contains an invalid character: {}", c );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Packet contains an invalid character: {}", c );
                         return false;
                     }
                 }
@@ -587,20 +536,17 @@ public final class AISPacket {
                 if( csIndex > 0 ) {
                     // validate checksum
                     if( !validateChecksum( _packetBody, _checksum ) ) {
-                        if( LOG.isDebugEnabled() )
-                            LOG.debug( "Packet failed checksum validation." );
+                        if( LOG.isDebugEnabled() ) LOG.debug( "Packet failed checksum validation." );
                         return false;
                     }
                 } else {
-                    if( LOG.isDebugEnabled() )
-                        LOG.debug( "Packet is missing fillbits and/or checksum." );
+                    if( LOG.isDebugEnabled() ) LOG.debug( "Packet is missing fillbits and/or checksum." );
                     return false;
                 }
             }
         } catch( AISPacketException ape ) {
             // do nothing
-            if( LOG.isDebugEnabled() )
-                LOG.debug( "Packet validation faied: {}", ape.getMessage(), ape );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Packet validation faied: {}", ape.getMessage(), ape );
             return false;
         }
 
@@ -614,17 +560,13 @@ public final class AISPacket {
      * @return
      */
     private static int generateChecksum( char[] source ) {
-        if( LOG.isDebugEnabled() )
-            LOG.debug( "Generating checksum for String \"{}\"", new String( source ) );
+        if( LOG.isDebugEnabled() ) LOG.debug( "Generating checksum for String \"{}\"", new String( source ) );
 
         int crc = 0;
 
-        for( char aSource : source ) {
-            crc ^= aSource;
-        }
+        for( char aSource : source )  crc ^= aSource;
 
-        if( LOG.isDebugEnabled() )
-            LOG.debug( "Generated CRC = {}(int)/{}(hex)", crc, Integer.toHexString( crc ) );
+        if( LOG.isDebugEnabled() ) LOG.debug( "Generated CRC = {}(int)/{}(hex)", crc, Integer.toHexString( crc ) );
 
         return crc;
     }
@@ -654,9 +596,7 @@ public final class AISPacket {
     private static int getChecksum( String data ) {
         int index = data.indexOf( String.valueOf( CHECKSUM_DELIMITER ) );
         if( index > -1 ) {
-            if( LOG.isDebugEnabled() )
-                LOG.debug( "Found * at {}", index );
-        
+            if( LOG.isDebugEnabled() ) LOG.debug( "Found * at {}", index );
             return getChecksum( data, 1, data.indexOf( ( String.valueOf( CHECKSUM_DELIMITER ) ) ) );
         } else {
             LOG.debug( "Index was {}", index );
@@ -683,8 +623,7 @@ public final class AISPacket {
      * @return
      */
     public static int getChecksum( String genString, int startFrom, int endAt ) {
-        if( endAt <= startFrom || endAt > genString.length() )
-            return -1;
+        if( endAt <= startFrom || endAt > genString.length() ) return -1;
 
         return AISPacket.generateChecksum( genString.substring( startFrom, endAt ).toCharArray() );
     }
@@ -704,11 +643,9 @@ public final class AISPacket {
 
         try {
             calcChecksum = getChecksum( trimmed );
-            if( LOG.isDebugEnabled() )
-                LOG.debug( "Generated checksum {}", calcChecksum );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Generated checksum {}", calcChecksum );
         } catch( NumberFormatException nfe ) {
-            if( LOG.isDebugEnabled() )
-                LOG.debug( "Cannot produce a checksum from  \"{}\"", bArray2Str( trimmed ) );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Cannot produce a checksum from  \"{}\"", bArray2Str( trimmed ) );
             return false;
         }
 
@@ -734,12 +671,12 @@ public final class AISPacket {
      * @return
      */
     private static String createPacketStringFromBinaryString( String rawData ) {
-        rawData = "!AIVDM,1,1,,A," + rawData + ",0*";
-        LOG.debug( "Packet before checksum: {}", rawData );
-        rawData += Integer.toHexString( AISPacket.getChecksum( rawData ) );
-        LOG.debug( "Packet after checksum: {}", rawData );
+        String packetString = "!AIVDM,1,1,,A," + rawData + ",0*";
+        LOG.debug( "Packet before checksum: {}", packetString );
+        rawData += Integer.toHexString( AISPacket.getChecksum( packetString ) );
+        LOG.debug( "Packet after checksum: {}", packetString );
 
-        return rawData;
+        return packetString;
     }
 
     /**
@@ -751,8 +688,7 @@ public final class AISPacket {
      * @throws jais.exceptions.AISPacketException
      */
     public static AISPacket createFromBinaryString( String rawData, String source ) throws AISPacketException {
-        if( source == null )
-            source = "UNKNOWN";
+        if( source == null ) source = "UNKNOWN";
         return new AISPacket( createPacketStringFromBinaryString( rawData ), source );
     }
 
@@ -774,16 +710,12 @@ public final class AISPacket {
      * @return
      */
     private static byte[][] fastSplit( byte[] s, char delimiter ) {
-        if( s == null ) {
-            return null;
-        }
+        if( s == null ) return null;
 
         int count = 1;
 
         for( byte value : s ) {
-            if( value == delimiter ) {
-                count++;
-            }
+            if( value == delimiter )  count++;
         }
 
         byte[][] array = new byte[count][];
@@ -792,9 +724,7 @@ public final class AISPacket {
         int b = 0;
 
         for( int i = 0; i < count; i++ ) {
-            while( b < s.length && s[b] != delimiter ) {
-                b++;
-            }
+            while( b < s.length && s[b] != delimiter ) b++;
 
             array[i] = Arrays.copyOfRange( s, a + 1, b );
             a = b;
@@ -812,16 +742,12 @@ public final class AISPacket {
      * @return
      */
     public static String[] fastSplit( String s, char delimiter ) {
-        if( s == null ) {
-            return null;
-        }
+        if( s == null ) return null;
 
         int count = 1;
 
         for( int i = 0; i < s.length(); i++ ) {
-            if( s.charAt( i ) == delimiter ) {
-                count++;
-            }
+            if( s.charAt( i ) == delimiter ) count++;
         }
 
         String[] array = new String[count];
@@ -830,9 +756,7 @@ public final class AISPacket {
         int b = 0;
 
         for( int i = 0; i < count; i++ ) {
-            while( b < s.length() && s.charAt( b ) != delimiter ) {
-                b++;
-            }
+            while( b < s.length() && s.charAt( b ) != delimiter ) b++;
 
             array[i] = s.substring( a + 1, b );
             a = b;
@@ -847,9 +771,7 @@ public final class AISPacket {
      *
      * @return
      */
-    public final byte[] getRawPacket() {
-        return _rawPacket;
-    }
+    public final byte[] getRawPacket() { return _rawPacket; }
 
     /**
      * Generates a String representation of the AISPacket with a prepended TagBlock String which contains only 
@@ -894,9 +816,7 @@ public final class AISPacket {
      *
      * @return
      */
-    public final byte[] getType() {
-        return _type;
-    }
+    public final byte[] getType() { return _type; }
 
     /**
      * Returns the AIS message fragmentation count as defined in the original non-decoded AIS Packet String
@@ -904,9 +824,7 @@ public final class AISPacket {
      *
      * @return
      */
-    public final int getFragmentCount() {
-        return _fragmentCount;
-    }
+    public final int getFragmentCount() { return _fragmentCount; }
 
     /**
      * Returns the AIS message fragmentation number as defined in the original non-decoded AIS Packet String
@@ -914,27 +832,21 @@ public final class AISPacket {
      *
      * @return
      */
-    public final int getFragmentNumber() {
-        return _fragmentNumber;
-    }
+    public final int getFragmentNumber() { return _fragmentNumber; }
 
     /**
      * This returns the value of the locally distinct "talker" sending this and other AIS messages so that they can easily be grouped by source
      * 
      * @return
      */
-    public final int getSequentialMessageId() {
-        return _sequentialMessageId;
-    }
+    public final int getSequentialMessageId() { return _sequentialMessageId; }
 
     /**
      * Returns the letter representation of the Radio frequency on which this AIS packet was broadcast
      * 
      * @return
      */
-    public final char getRadioChannelCode() {
-        return _radioChannelCode;
-    }
+    public final char getRadioChannelCode() { return _radioChannelCode; }
 
     /**
      * Returns the actual numeric frequency (as a double) indicated by the _radioChannelCode (see {@link #getRadioChannelCode()})
@@ -942,18 +854,14 @@ public final class AISPacket {
      * @return
      */
     public final double getRadioChannelFrequencyInMhz() {
-        double frequency = 0;
-
         switch( _radioChannelCode ) {
             case 'a':
-                frequency = CHANNEL_A_FREQUENCY_IN_MHZ;
-                break;
+                return CHANNEL_A_FREQUENCY_IN_MHZ;
             case 'b':
-                frequency = CHANNEL_B_FREQUENCY_IN_MHZ;
-                break;
+                return CHANNEL_B_FREQUENCY_IN_MHZ;
         }
 
-        return frequency;
+        return 0d;
     }
 
     /**
@@ -961,45 +869,35 @@ public final class AISPacket {
      * 
      * @return
      */
-    public final byte[] getBinaryStringAsByteArray() {
-        return _binaryString;
-    }
+    public final byte[] getBinaryStringAsByteArray() { return _binaryString; }
 
     /**
      * Returns the body of the AIS Packet as a byte []
      * 
      * @return
      */
-    public final byte[] getPacketBodyAsByteArray() {
-        return _packetBody;
-    }
+    public final byte[] getPacketBodyAsByteArray() { return _packetBody; }
 
     /**
      * Returns the parsed count of fill bits from the AIS packet String
      *
      * @return
      */
-    public final int getFillBits() {
-        return _fillBits;
-    }
+    public final int getFillBits() { return _fillBits; }
 
     /**
      * Returns the parsed or generated checksum from the AIS packet
      * 
      * @return
      */
-    public final byte[] getChecksum() {
-        return _checksum;
-    }
+    public final byte[] getChecksum() { return _checksum; }
 
     /**
      * Returns the time at which this AISPacket object was instantiated
      * 
      * @return
      */
-    public final long getTimeReceived() {
-        return _timeReceived;
-    }
+    public final long getTimeReceived() { return _timeReceived; }
     
     /**
      * Returns the time at which this AISPacket object was instantiated for the specified ZoneOffset
@@ -1027,9 +925,7 @@ public final class AISPacket {
      * @return 
      */
     public final long getTimeSent() {
-        if( hasTagBlock() ) {
-            return _tagBlock.getTimestamp();
-        }
+        if( hasTagBlock() ) return _tagBlock.getTimestamp();
         return 0;
     }
 
@@ -1038,18 +934,14 @@ public final class AISPacket {
      *
      * @return
      */
-    public final byte[] getSource() {
-        return _source;
-    }
+    public final byte[] getSource() { return _source; }
 
     /**
      * Sets the source of the AISPacket to the provided byte [] value
      *
      * @param source
      */
-    public final void setSource( byte[] source ) {
-        _source = source;
-    }
+    public final void setSource( byte[] source ) { _source = source; }
 
     /**
      * Truncates the provided StringBuilder object based on the index returned by {@link #getPacketTruncIndex( StringBuilder sb )} 
@@ -1062,8 +954,7 @@ public final class AISPacket {
         String substring = null;
 
         if( truncIndex != -1 ) {
-            if( LOG.isDebugEnabled() )
-                LOG.debug( "Truncating: {}", sb );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Truncating: {}", sb );
             substring = sb.substring( 0, truncIndex );
         }
 
@@ -1078,34 +969,27 @@ public final class AISPacket {
     private static int getPacketTruncIndex( StringBuilder sb ) {
         int truncIndex = 0;
 
-        if( LOG.isDebugEnabled() )
-            LOG.debug( "Evaluating \"{}\" for truncation point.", sb );
+        if( LOG.isDebugEnabled() ) LOG.debug( "Evaluating \"{}\" for truncation point.", sb );
 
         Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( sb.toString() );
         if( m.find() ) {
             if( sb.indexOf( "\n" ) > -1 ) {
-                if( LOG.isDebugEnabled() )
-                    LOG.debug( "String is terminated by a newline" );
+                if( LOG.isDebugEnabled() ) LOG.debug( "String is terminated by a newline" );
                 truncIndex = sb.indexOf( "\n" );
             } else if( sb.indexOf( "\r" ) > -1 ) {
-                if( LOG.isDebugEnabled() )
-                    LOG.debug( "String is terminated by a carriage return" );
+                if( LOG.isDebugEnabled() ) LOG.debug( "String is terminated by a carriage return" );
                 truncIndex = sb.indexOf( "\r" );
             } else if( m.find() ) {
                 truncIndex = sb.indexOf( m.group( 0 ), 1 );
-                if( LOG.isDebugEnabled() )
-                    LOG.debug( "Truncating based on preamble" );
-                if( LOG.isDebugEnabled() )
-                    LOG.debug( "Matched string for index is: \"{}\"", m.group( 0 ) );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Truncating based on preamble" );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Matched string for index is: \"{}\"", m.group( 0 ) );
             } else {
-                if( LOG.isDebugEnabled() )
-                    LOG.debug( "Line should not be truncated." );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Line should not be truncated." );
                 truncIndex = -1;
             }
         }
 
-        if( LOG.isDebugEnabled() )
-            LOG.debug( "Truncation index set to {}", truncIndex );
+        if( LOG.isDebugEnabled() ) LOG.debug( "Truncation index set to {}", truncIndex );
 
         return truncIndex;
     }
@@ -1119,15 +1003,13 @@ public final class AISPacket {
      */
     public static byte[] concatenate( AISPacket... packets ) throws AISException {
         if( packets.length == 1 ) {
-            if( !packets[0].isParsed() )
-                packets[0].process();
+            if( !packets[0].isParsed() ) packets[0].process();
             return packets[0].getBinaryStringAsByteArray();
         }
 
         byte[] compositeMsg = null;
 
-        if( LOG.isDebugEnabled() )
-            LOG.debug( "Concatenating {} packets.", packets.length );
+        if( LOG.isDebugEnabled() ) LOG.debug( "Concatenating {} packets.", packets.length );
         for( AISPacket packet : packets ) {
             if( packet == null ) {
                 if( LOG.isWarnEnabled() ) LOG.warn( "Skipping null packet in {} length array of packets.", packets.length );
@@ -1135,9 +1017,8 @@ public final class AISPacket {
             } else if( !packet.isParsed() )
                 packet.process();
             
-            if( compositeMsg == null ) {
-                compositeMsg = packet.getBinaryStringAsByteArray();
-            } else {
+            if( compositeMsg == null ) compositeMsg = packet.getBinaryStringAsByteArray();
+            else {
                 byte[] temp = new byte[compositeMsg.length + packet.getBinaryStringAsByteArray().length];
                 System.arraycopy( compositeMsg, 0, temp, 0, compositeMsg.length );
                 System.arraycopy( packet.getBinaryStringAsByteArray(), 0, temp, compositeMsg.length, packet.getBinaryStringAsByteArray().length );
@@ -1164,9 +1045,7 @@ public final class AISPacket {
         
         boolean equals = Arrays.equals( p.getRawPacket(), _rawPacket );
         
-        if( p.getSource() != null && _source != null ) {
-            equals &= Arrays.equals( p.getSource(), _source );
-        }
+        if( p.getSource() != null && _source != null ) equals &= Arrays.equals( p.getSource(), _source );
 
         return equals;
     }
@@ -1229,18 +1108,14 @@ public final class AISPacket {
          *
          * @param rawPreamble
          */
-        public Preamble( byte[] rawPreamble ) {
-            this.rawPreamble = rawPreamble;
-        }
+        public Preamble( byte[] rawPreamble ) { this.rawPreamble = rawPreamble; }
 
         /**
          * Populates the fields of this Preamble object based on the parsing of it's rawPreamble byte [] and returns this Preamble object
          * 
          * @return
          */
-        public Preamble parse() {
-            return parse( this, AISPacket.bArray2Str( rawPreamble ) );
-        }
+        public Preamble parse() { return parse( this, AISPacket.bArray2Str( rawPreamble ) ); }
 
         /**
          * Returns a Preamble object based on the parsing of the provided raw preamble byte []
@@ -1248,9 +1123,7 @@ public final class AISPacket {
          * @param rawPreamble
          * @return
          */
-        public static Preamble parse( byte[] rawPreamble ) {
-            return parse( AISPacket.bArray2Str( rawPreamble ) );
-        }
+        public static Preamble parse( byte[] rawPreamble ) { return parse( AISPacket.bArray2Str( rawPreamble ) ); }
         
         /**
          * Returns a Preamble object based on the parsing of the provided raw preamble String
@@ -1270,23 +1143,20 @@ public final class AISPacket {
          * @return 
          */
         public static Preamble parse( Preamble p, String rawPreamble ) {
-            if( LOG.isDebugEnabled() )
-                LOG.debug( "Parsing {}", rawPreamble );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Parsing {}", rawPreamble );
             Matcher m = PREAMBLE_PATTERN.matcher( rawPreamble );
             if( m.find() ) {
                 String parsed = m.group( 0 );
                 p.parsed = AISPacket.str2bArray( parsed );
-                if( LOG.isDebugEnabled() )
-                    LOG.debug( "Found {} matcher groups: {}=({})({})({})({})", m.groupCount(), m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ), m.group( 5 ) );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Found {} matcher groups: {}=({})({})({})({})", m.groupCount(), 
+                        m.group(), m.group( 1 ), m.group( 2 ), m.group( 4 ), m.group( 5 ) );
                 p.firstChar = m.group( 1 ).charAt( 0 );
 
-                if( p.firstChar == '!' ) {
-                    p.isEncapsulated = true;
-                } else if( m.group( 1 ).equals( "$" ) ) {
-                    p.isEncapsulated = false;
-                } else {
-                    if( LOG.isDebugEnabled() )
-                        LOG.info( "Unrecognized starting character in address field: {}", m.group( 1 ) );
+                if( p.firstChar == '!' ) p.isEncapsulated = true;
+                else if( m.group( 1 ).equals( "$" ) ) p.isEncapsulated = false;
+                else {
+                    if( LOG.isDebugEnabled() ) LOG.info( "Unrecognized starting character in address field: {}", 
+                            m.group( 1 ) );
                     p.isEncapsulated = false;
                 }
 
@@ -1305,7 +1175,8 @@ public final class AISPacket {
                 p.isQuery = m.group( 5 ).equals( "Q" );
             } else {
                 if( LOG.isDebugEnabled() )
-                    LOG.warn( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE );
+                    LOG.warn( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, 
+                            PREAMBLE );
             }
 
             return p;

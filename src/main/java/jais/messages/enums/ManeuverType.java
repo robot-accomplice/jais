@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,16 +61,11 @@ public enum ManeuverType {
      * @return 
      */
     public static ManeuverType getForCode( int code ) {
-        ManeuverType mType = null;
-        
         for( ManeuverType type : ManeuverType.values() ) {
-            if( type.getCode() == code ) {
-                mType = type;
-                break;
-            }
+            if( type.getCode() == code ) return type;
         }
         
-        return mType;
+        return null;
     }
     
 }

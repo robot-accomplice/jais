@@ -75,15 +75,10 @@ public enum NavigationStatus {
      * @return 
      */
     public static NavigationStatus getForCode( int code ) {
-        NavigationStatus navStatus = null;
-
         for( NavigationStatus ns : NavigationStatus.values() ) {
-            if( ns.getCode() == code ) {
-                navStatus = ns;
-                break;
-            }
+            if( ns.getCode() == code ) return ns;
         }
             
-        return navStatus;
+        return null;
     }
 }

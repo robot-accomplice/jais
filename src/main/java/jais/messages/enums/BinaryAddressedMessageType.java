@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.messages.enums;
 
+import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.binaryaddressed.IMO236TidalWindow;
 import jais.messages.binaryaddressed.IMO236NumberOfPersonsOnBoard;
 import jais.messages.binaryaddressed.IMO289NumberOfPersonsOnBoard;
@@ -67,7 +67,7 @@ public enum BinaryAddressedMessageType {
     private final int _dac;
     private final int _fid;
     private final int _length;
-    private final Class _msgClass;
+    private final Class<? extends BinaryAddressedMessageBase> _msgClass;
     private final IMOType _source;
     private final String _description;
     
@@ -77,7 +77,7 @@ public enum BinaryAddressedMessageType {
      * @param fid
      * @param description 
      */
-    BinaryAddressedMessageType( int dac, int fid, int length, Class msgClass, 
+    BinaryAddressedMessageType( int dac, int fid, int length, Class<? extends BinaryAddressedMessageBase> msgClass, 
             IMOType source, String description ) {
         _dac = dac;
         _fid = fid;
@@ -115,7 +115,7 @@ public enum BinaryAddressedMessageType {
      * 
      * @return 
      */
-    public Class<?> getMsgClass() {
+    public Class<? extends BinaryAddressedMessageBase> getMsgClass() {
         return _msgClass;
     }
     
@@ -143,16 +143,13 @@ public enum BinaryAddressedMessageType {
      * @return 
      */
     public static BinaryAddressedMessageType fetch( int dac, int fid, int length ) {
-       BinaryAddressedMessageType bamt = null;
-       
        for( BinaryAddressedMessageType type : BinaryAddressedMessageType.values() ) {
            if( type.getDac() == dac && type.getFid() == fid && 
                    ( type.getLength() == length || type.getLength() == -1 ) ) {
-               bamt = type;
-               break;
+               return type;
            }
        }
        
-       return bamt;
+       return null;
     }
 }

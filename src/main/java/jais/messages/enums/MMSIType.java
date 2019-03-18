@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -281,19 +281,13 @@ public enum MMSIType {
      * @return 
      */
     public static MMSIType forCode( int regionCode ) {
-        MMSIType mt = UNKNOWN;
-        
         for( MMSIType type : MMSIType.values() ) {
             for( int code : type.getCodes() ) {
-                if( code == regionCode ) {
-                    mt = type;
-                    break;
-                }
+                if( code == regionCode ) return type;
             }
-            if( mt != UNKNOWN ) break;
         }        
         
-        return mt;
+        return UNKNOWN;
     }
     
     /**
@@ -302,15 +296,13 @@ public enum MMSIType {
      * @return 
      */
     public static MMSIType forMMSI( int mmsi ) {
-        MMSIType mt = UNKNOWN;
-        
         if( isValidMMSI( mmsi ) ) {
             String regionString = Integer.toString( mmsi ).substring( 0, 3 );
             int regionCode = Integer.parseInt( regionString ); // grab the first three digits of the MMSI
-            mt = forCode( regionCode );
+            return forCode( regionCode );
         }
         
-        return mt;        
+        return UNKNOWN;        
     }
     
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,15 +67,10 @@ public enum MarpolAnnexIType {
      * @return 
      */
     public static MarpolAnnexIType getForCode( int code ) {
-       MarpolAnnexIType t = null;
-       
        for( MarpolAnnexIType type : MarpolAnnexIType.values() ) {
-           if( type.getCode() == code ) {
-               t = type;
-               break;
-           }
+           if( type.getCode() == code ) return type;
        }
        
-       return t;
+       return null;
     }
 }
