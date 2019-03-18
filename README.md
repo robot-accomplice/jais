@@ -1,2 +1,2 @@
 # JAIS
-A Java AIS decoding library
+A Java [AIS](https://en.wikipedia.org/wiki/Automatic_identification_system) decoding library
