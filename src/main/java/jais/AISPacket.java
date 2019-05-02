@@ -670,13 +670,23 @@ public final class AISPacket {
      * @param rawData
      * @return
      */
-    private static String createPacketStringFromBinaryString( String rawData ) {
+    public static String createPacketStringFromBinaryString( String rawData ) {
         String packetString = "!AIVDM,1,1,,A," + rawData + ",0*";
         LOG.debug( "Packet before checksum: {}", packetString );
-        rawData += Integer.toHexString( AISPacket.getChecksum( packetString ) );
+        packetString += Integer.toHexString( AISPacket.getChecksum( packetString ) );
         LOG.debug( "Packet after checksum: {}", packetString );
 
         return packetString;
+    }
+    
+    /**
+     * 
+     * @param rawData
+     * @return
+     * @throws AISPacketException 
+     */
+    public static AISPacket createFromBinaryString(String rawData) throws AISPacketException {
+        return createFromBinaryString(rawData, null);
     }
 
     /**
