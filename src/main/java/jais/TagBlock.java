@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
  * An object representing the TagBlock section of an AIS packet.  A "tagblock" is a comma separated collection of fields that appear before the 
  * message preamble (see example below) and provide a spec compliant way of providing metadata about the AIS packet that travels with the packet.  
  * Supported fields include:  
- *      
+ *
  *      t - timestamp        : in c unix time and represented as a positive integer 
  *      d - destination      : a string of 15 characters or less indicating a destination
  *      g - sentence grouping: a numeric string used to indicate when messages are associated and their proper message order
@@ -34,17 +34,19 @@ import org.apache.logging.log4j.Logger;
  *      r - relative time    : a positive integer representing the relative time differential
  *      s - source id        : a string of 15 characters or less representing the message source
  *      t - text string      : a text string of 15 characters or less containing any data the sender cares to include
- * 
+ *
  * Example:
+ *
+ * \g:1-2-73874,n:157036,s:r003669945,c:1241544035,t:*4A\!AIVDM,1,1,,B,15N4cJ`005Jrek0H@9n`DW5608EP,0*13
  * 
- *      \g:1-2-73874,n:157036,s:r003669945,c:1241544035,t:*4A\!AIVDM,1,1,,B,15N4cJ`005Jrek0H@9n`DW5608EP,0*13
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public final class TagBlock {
-    
+
     public final static Logger LOG = LogManager.getLogger( TagBlock.class );
     public final static String TAGBLOCK_STRING = "\\\\(([cdgnrst]{1}\\:[A-Za-z0-9\\\\-]+\\,?)+)\\*([A-Za-z0-9]{2})\\\\";
     public final static Pattern TAGBLOCK_PATTERN = Pattern.compile( TAGBLOCK_STRING );
-    
+
     boolean _parsed;
 
     byte [] rawTagBlock;
@@ -70,296 +72,235 @@ public final class TagBlock {
      */
     public TagBlock() {
     }
-    
+
     /**
-     * 
+     *
      * @return boolean indicating whether or not this tagblock has already been parsed
      */
-    public final boolean isParsed() {
-        return _parsed;
-    }
-    
+    public final boolean isParsed() { return _parsed; }
+
     /**
-     * 
+     *
      * @param parsed boolean indicating whether or not this tagblock has already been parsed
      */
-    public final void setParsed(boolean parsed) {
-        _parsed = parsed;
-    }
-    
+    public final void setParsed( boolean parsed ) { _parsed = parsed; }
+
     /**
      *
      * @return byte [] containing the raw, unprocessed tagblock
      */
-    public final byte [] getRawTagBlock() {
-        return rawTagBlock;
-    }
+    public final byte [] getRawTagBlock() { return rawTagBlock; }
 
     /**
      *
      * @param rawTagBlock byte [] containing the raw, unprocessed tagblock
      */
-    public final void setRawTagBlock( byte [] rawTagBlock ) {
-        this.rawTagBlock = rawTagBlock;
-    }
+    public final void setRawTagBlock( byte [] rawTagBlock ) { this.rawTagBlock = rawTagBlock; }
 
     /**
      *
-     * @return 
+     * @return
      */
-    public final byte [] getChecksum() {
-        return checksum;
-    }
+    public final byte [] getChecksum() { return checksum; }
 
     /**
      *
      * @param checksum
      */
-    public final void setChecksum( byte [] checksum ) {
-        this.checksum = checksum;
-    }
+    public final void setChecksum( byte [] checksum ) { this.checksum = checksum; }
 
     /**
      *
      * @return
      */
-    public final long getTimestamp() {
-        return timestamp;
-    }
+    public final long getTimestamp() { return timestamp; }
 
     /**
      *
      * @param timestamp
      */
-    public final void setTimestamp( long timestamp ) {
-        this.timestamp = timestamp;
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    public final boolean hasTimestamp() {
-        return ( this.timestamp > 0 );
-    }
+    public final void setTimestamp( long timestamp ) { this.timestamp = timestamp; }
 
     /**
      *
      * @return
      */
-    public final byte [] getDestination() {
-        return destination;
-    }
-    
+    public final boolean hasTimestamp() { return ( this.timestamp > 0 ); }
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
-    public final boolean hasDestination() {
-        return ( this.destination != null );
-    }
+    public final byte[] getDestination() { return destination; }
+
+    /**
+     *
+     * @return
+     */
+    public final boolean hasDestination() { return ( this.destination != null ); }
 
     /**
      *
      * @param destination
      */
-    public final void setDestination( byte [] destination ) {
-        this.destination = destination;
-    }
+    public final void setDestination( byte [] destination ) { this.destination = destination; }
 
     /**
      *
      * @return
      */
-    public final byte [] getSentenceGrouping() {
-        return sentenceGrouping;
-    }
+    public final byte[] getSentenceGrouping() { return sentenceGrouping; }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
-    public final boolean hasSentenceGrouping() {
-        return ( this.sentenceGrouping != null );
-    }
+    public final boolean hasSentenceGrouping() { return ( this.sentenceGrouping != null ); }
 
     /**
      *
      * @param sentenceGrouping
      */
-    public final void setSentenceGrouping( byte [] sentenceGrouping ) {
-        this.sentenceGrouping = sentenceGrouping;
-    }
+    public final void setSentenceGrouping( byte[] sentenceGrouping ) { this.sentenceGrouping = sentenceGrouping; }
 
     /**
      *
      * @return
      */
-    public final int getLineCount() {
-        return lineCount;
-    }
+    public final int getLineCount() { return lineCount; }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
-    public final boolean hasLineCount() {
-        return ( this.lineCount != 0 );
-    }
+    public final boolean hasLineCount() { return ( this.lineCount != 0 ); }
 
     /**
      *
      * @param lineCount
      */
-    public final void setLineCount( int lineCount ) {
-        this.lineCount = lineCount;
-    }
+    public final void setLineCount( int lineCount ) { this.lineCount = lineCount; }
 
     /**
      *
      * @return
      */
-    public final long getRelativeTime() {
-        return relativeTime;
-    }
+    public final long getRelativeTime() { return relativeTime; }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
-    public final boolean hasRelativeTime() {
-        return ( this.relativeTime > 0 );
-    }
+    public final boolean hasRelativeTime() { return ( this.relativeTime > 0 ); }
 
     /**
      *
      * @param relativeTime
      */
-    public final void setRelativeTime( long relativeTime ) {
-        this.relativeTime = relativeTime;
-    }
+    public final void setRelativeTime( long relativeTime ) { this.relativeTime = relativeTime; }
 
     /**
      *
      * @return
      */
-    public final byte [] getSource() {
-        return source;
-    }
+    public final byte[] getSource() { return source; }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
-    public final boolean hasSource() {
-        return ( this.source != null );
-    }
+    public final boolean hasSource() { return ( this.source != null ); }
 
     /**
      *
      * @param source
      */
-    public void setSource( byte [] source ) {
-        this.source = source;
-    }
+    public void setSource( byte[] source ) { this.source = source; }
 
     /**
      *
      * @return
      */
-    public final byte [] getTextStr() {
-        return textStr;
-    }
+    public final byte[] getTextStr() { return textStr; }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
-    public final boolean hasTextStr() {
-        return ( this.textStr != null );
-    }
+    public final boolean hasTextStr() { return ( this.textStr != null ); }
 
     /**
      *
      * @param textStr
      */
-    public final void setTextStr( byte [] textStr ) {
-        this.textStr = textStr;
-    }
-    
+    public final void setTextStr( byte[] textStr ) { this.textStr = textStr; }
+
     /**
-     * 
+     *
      * @param source
-     * @return 
+     * @return
      */
     public static TagBlock build( byte [] source ) {
         if( source.length > 15 ) {
             source = Arrays.copyOfRange( source, 0, 15 );
-            LOG.warn( "Truncating oversized source from {} to {}" );
+            LOG.debug( "Truncating oversized source from {} to {}" );
         }
-        
+
         TagBlock tb = new TagBlock();
         tb.setSource( source );
         tb.setTimestamp( ZonedDateTime.now( ZoneOffset.UTC ).toEpochSecond() );
-        
+
         return tb;
     }
-    
+
     /**
      * Ignore source (or lack there of) in original TagBlock in favor of the provided source value
-     * 
+     *
      * @param rawTagBlock
      * @param source
-     * @return 
+     * @return
      */
     public static TagBlock parse( String rawTagBlock, byte [] source ) {
-        if( LOG.isInfoEnabled() ) LOG.info( "Parsing {}", rawTagBlock );
+        LOG.debug( "Parsing {}", rawTagBlock );
         TagBlock tb = new TagBlock();
 
         // substring starts at 1 to remove leading \
         for( String part : AISPacket.fastSplit( rawTagBlock.substring( 1, rawTagBlock.indexOf( "*" ) ) ) ) {
             if( LOG.isInfoEnabled() ) LOG.info( "Processing: {}", part );
             String[] tag = AISPacket.fastSplit( part, ':' );
-
+ 
             switch( tag[0] ) {
                 case "c":
                     tb.setTimestamp( Long.parseLong( tag[1] ) );
                     break;
                 case "d":
-                    if( tag[1].length() > 15 ) {
-                        LOG.warn( "Length of destination String \"{}\" exceeds 15 character limit",tag[1] );
-                    }
+                    if( tag[1].length() > 15 ) LOG.warn( "Length of destination String \"{}\" exceeds 15 character limit", tag[1] );
+
                     tb.setDestination( AISPacket.str2bArray( tag[1] ) );
                     break;
                 case "g":
-                    if( tag[1].length() > 15 ) {
-                        LOG.warn( "Length of sentence grouping String \"{}\" exceeds 15 character limit",tag[1] );
-                    }
+                    if( tag[1].length() > 15 ) LOG.warn( "Length of sentence grouping String \"{}\" exceeds 15 character limit", tag[1] );
                     tb.setSentenceGrouping( AISPacket.str2bArray( tag[1] ) );
                     break;
                 case "n":
-                    tb.setLineCount( Integer.parseInt( tag[1] ) );
+                    tb.setLineCount(Integer.parseInt( tag[1] ) );
                     break;
                 case "r":
                     tb.setRelativeTime( Long.parseLong( tag[1] ) );
                     break;
                 case "s":
                     if( source == null ) {
-                        if( tag[1].length() > 15 ) {
-                            LOG.warn( "Length of source String \"{}\" exceeds 15 character limit", tag[1] );
-                        }
+                        if( tag[1].length() > 15 ) LOG.warn( "Length of source String \"{}\" exceeds 15 character limit", tag[1] );
                         source = AISPacket.str2bArray( tag[1] );
                     }
                     break;
                 case "t":
                     tb.setTextStr( AISPacket.str2bArray( tag[1] ) );
-                        if( tag[1].length() > 15 ) {
-                            LOG.warn( "Length of text String \"{}\" exceeds 15 character limit", tag[1] );
-                        }
+                    if( tag[1].length() > 15 ) LOG.warn( "Length of text String \"{}\" exceeds 15 character limit", tag[1] );
                     break;
             }
         }
-        
+
         if( source != null ) {
             if( source.length > 15 ) {
                 source = Arrays.copyOfRange( source, 0, 15 );
@@ -367,10 +308,10 @@ public final class TagBlock {
             }
             tb.setSource( source );
         }
-        
-        tb.setParsed(true);
+
+        tb.setParsed( true );
         tb.setRawTagBlock( AISPacket.str2bArray( tb.toString() ) );
-        
+
         return tb;
     }
 
@@ -379,10 +320,8 @@ public final class TagBlock {
      * @param rawTagBlock
      * @return
      */
-    public static TagBlock parse( String rawTagBlock ) {
-        return parse( rawTagBlock, null );
-    }
-    
+    public static TagBlock parse( String rawTagBlock ) { return parse( rawTagBlock, null ); }
+
     /**
      *
      * @return
@@ -428,10 +367,8 @@ public final class TagBlock {
             tbs.append( "t" ).append( AISPacket.bArray2Str( this.textStr ) );
         }
 
-        tbs = new StringBuilder( "\\" )
-                .append( tbs ).append( "*" )
-                .append( AISPacket.getChecksum( tbs.toString(), 0, tbs.length() ) ).append( "\\" );
-        
+        tbs = new StringBuilder( "\\" ).append( tbs ).append( "*" ).append( AISPacket.getChecksum( tbs.toString(), 0, tbs.length() ) ).append( "\\" );
+
         // add checksum and close
         this.rawTagBlock = AISPacket.str2bArray( tbs.toString() );
 
