@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.messages;
 
 import jais.AISPacket;
@@ -36,7 +35,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public abstract class AISMessageBase implements AISMessage {
 
@@ -47,7 +46,7 @@ public abstract class AISMessageBase implements AISMessage {
     private int _repeat; // bits 6-7
 
     protected final static SpatialContext CTX = SpatialContext.GEO;
-    
+
     private byte [] _source = AISPacket.str2bArray( "UNKNOWN" );
     final AISPacket[] _packets;
     private byte [] _compositeMsg;
@@ -57,20 +56,20 @@ public abstract class AISMessageBase implements AISMessage {
     private final Map<String, Object> _decodedFieldMap = new HashMap<>();
 
     /**
-     * 
+     *
      * @param source
-     * @param packets 
+     * @param packets
      */
     AISMessageBase( String source, AISPacket... packets ) {
         if( source != null ) _source = AISPacket.str2bArray( source );
         _packets = packets;
     }
-    
+
     /**
-     * 
+     *
      * @param source
      * @param messageType
-     * @param packets 
+     * @param packets
      */
     AISMessageBase( String source, AISMessageType messageType, AISPacket... packets ) {
         if( source != null ) _source = AISPacket.str2bArray( source );
@@ -84,35 +83,13 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder( "AISMessage:{messageType:" );
 
-        sb.append( "AISMessage:{messageType:" ).append( _messageType.name() );
-
-        sb.append( ",packets:[" );
-        for( AISPacket packet : _packets ) {
-            sb.append( packet.toString() );
-        }
+        sb.append( _messageType.name() ).append( ",packets:[" );
+        for( AISPacket packet : _packets ) sb.append( packet.toString() );
         sb.append( "]," ).append( "}" );
 
         return sb.toString();
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    @Override
-    public String getSource() {
-        return AISPacket.bArray2Str( _source );
-    }
-    
-    /**
-     * 
-     * @param source 
-     */
-    @Override
-    public void setSource( String source ) {
-        _source = AISPacket.str2bArray( source );
     }
 
     /**
@@ -120,26 +97,34 @@ public abstract class AISMessageBase implements AISMessage {
      * @return
      */
     @Override
-    public ZonedDateTime getTimeReceived( ZoneOffset offset ) {
-        return _packets[0].getTimeReceived( offset );
-    }
-    
+    public String getSource() { return AISPacket.bArray2Str( _source ); }
+
     /**
-     * 
-     * @return 
+     *
+     * @param source
      */
     @Override
-    public long getTimeReceived() {
-        return _packets[0].getTimeReceived();
-    }
-    
+    public void setSource( String source ) { _source = AISPacket.str2bArray( source ); }
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
-    public long getTimeSent() {
-        return _packets[0].getTimeSent();
-    }
+    @Override
+    public ZonedDateTime getTimeReceived( ZoneOffset offset ) { return _packets[0].getTimeReceived( offset ); }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public long getTimeReceived() { return _packets[0].getTimeReceived(); }
+
+    /**
+     *
+     * @return
+     */
+    public long getTimeSent() { return _packets[0].getTimeSent(); }
 
     /**
      * Type of AIS message pulled from bits 0 - 6
@@ -147,45 +132,35 @@ public abstract class AISMessageBase implements AISMessage {
      * @return
      */
     @Override
-    public AISMessageType getType() {
-        return _messageType;
-    }
+    public AISMessageType getType() { return _messageType; }
 
     /**
      *
      * @param type
      */
     @Override
-    public void setType( AISMessageType type ) {
-        _messageType = type;
-    }
+    public void setType( AISMessageType type ) { _messageType = type; }
 
     /**
      *
      * @return
      */
     @Override
-    public AISPacket[] getPackets() {
-        return _packets;
-    }
+    public AISPacket[] getPackets() { return _packets; }
 
     /**
      *
      * @return
      */
     @Override
-    public int getMmsi() {
-        return _mmsi;
-    }
+    public int getMmsi() { return _mmsi; }
 
     /**
      *
      * @return
      */
     @Override
-    public boolean hasValidMmsi() {
-        return isValidMmsi( _mmsi );
-    }
+    public boolean hasValidMmsi() { return isValidMmsi( _mmsi ); }
 
     /**
      *
@@ -195,13 +170,10 @@ public abstract class AISMessageBase implements AISMessage {
     private static boolean isValidMmsi( long mmsi ) {
         boolean valid = ( ( mmsi < 800000000 ) && ( mmsi > 199999999 ) );
 
-        if( !valid ) {
-            LOG.warn( "MMSI: {} is not valid!", mmsi );
-        }
+        if( !valid ) LOG.warn( "MMSI: {} is not valid!", mmsi );
 
         return valid;
     }
-
 
     /**
      *
@@ -209,9 +181,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public MMSIType getMMSIType() {
-        if( _mmsiType == null || _mmsiType == MMSIType.UNKNOWN ) {
-            _mmsiType = MMSIType.forMMSI( _mmsi );
-        }
+        if( _mmsiType == null || _mmsiType == MMSIType.UNKNOWN ) _mmsiType = MMSIType.forMMSI( _mmsi );
 
         return _mmsiType;
     }
@@ -220,64 +190,50 @@ public abstract class AISMessageBase implements AISMessage {
      *
      * @return
      */
-    public String getCountryOfOrigin() {
-        return getMMSIType().name();
-    }
+    public String getCountryOfOrigin() { return getMMSIType().name(); }
 
     /**
      *
      * @return
      */
     @Override
-    public int getRepeat() {
-        return _repeat;
-    }
+    public int getRepeat() { return _repeat; }
 
     /**
      *
      * @return
      */
     @Override
-    public boolean hasSubType() {
-        return false;
-    }
+    public boolean hasSubType() { return false; }
 
     /**
      *
      * @return @throws jais.exceptions.AISException
      */
     @Override
-    public AISMessage getSubTypeInstance() throws AISException {
-        return this;
-    }
+    public AISMessage getSubTypeInstance() throws AISException { return this; }
 
     /**
      *
      * @return
      */
     @Override
-    public FieldMap[] getFieldMap() {
-        return AISFieldMap.values();
-    }
+    public FieldMap[] getFieldMap() { return AISFieldMap.values(); }
 
     /**
      *
      * @return
      */
     @Override
-    public boolean hasPosition() {
-        return false;
-    }
+    public boolean hasPosition() { return false; }
 
     /**
      *
      * @return
      */
     @Override
-    public Point getPosition() {
-        return _position;
-    }
-    
+    public Point getPosition() { return _position; }
+
     /**
      *
      * @throws AISException
@@ -299,20 +255,18 @@ public abstract class AISMessageBase implements AISMessage {
                     }
                     break;
                 case REPEAT:
-                    _repeat = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _repeat = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
                 case MMSI:
-                    _mmsi = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    _mmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
             }
         }
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     @Override
     public int hashCode() {
@@ -322,25 +276,18 @@ public abstract class AISMessageBase implements AISMessage {
     }
 
     /**
-     * 
+     *
      * @param obj
-     * @return 
+     * @return
      */
     @Override
-    public boolean equals( Object obj ) {
-        if( obj == null ) {
-            return false;
-        }
-        if( this == obj ) {
-            return true;
-        }
-        if( getClass() != obj.getClass() ) {
-            return false;
-        }
-        final AISMessageBase other = ( AISMessageBase ) obj;
-        if( !Arrays.equals( this._source, other._source ) ) {
-            return false;
-        }
+    public boolean equals(Object obj) {
+        if( obj == null ) return false;
+        if( this == obj ) return true;
+        if( getClass() != obj.getClass() ) return false;
+        final AISMessageBase other = ( AISMessageBase )obj;
+        if( !Arrays.equals( this._source, other._source ) ) return false;
+        
         return Arrays.equals( this._compositeMsg, other._compositeMsg );
     }
 
@@ -371,17 +318,13 @@ public abstract class AISMessageBase implements AISMessage {
          * @return
          */
         @Override
-        public int getStartBit() {
-            return _startBit;
-        }
+        public int getStartBit() { return _startBit; }
 
         /**
          *
          * @return
          */
         @Override
-        public int getEndBit() {
-            return _endBit;
-        }
+        public int getEndBit() { return _endBit; }
     }
 }
