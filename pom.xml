@@ -130,7 +130,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>jais.Decoder</mainClass>
+                            <mainClass>jais.Application</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
