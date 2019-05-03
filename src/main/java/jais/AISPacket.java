@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais;
 
 import jais.exceptions.AISException;
@@ -35,10 +34,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import java.util.Objects;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public final class AISPacket {
 
@@ -81,7 +81,7 @@ public final class AISPacket {
 
     /**
      * Constructor
-     * 
+     *
      * @param rawPacket A byte [] composed of the characters from the original non-decoded String representing a complete or partial AIS message
      * @throws jais.exceptions.AISPacketException
      */
@@ -104,7 +104,7 @@ public final class AISPacket {
 
     /**
      * Constructor
-     * 
+     *
      * @param rawPacket The original 6 bit encoded String representing a complete or partial AIS message
      * @throws jais.exceptions.AISPacketException
      */
@@ -114,7 +114,7 @@ public final class AISPacket {
 
     /**
      * Constructor
-     * 
+     *
      * @param rawPacket The original 6 bit encoded String representing a complete or partial AIS message
      * @param source The named source of this AIS packet
      * @throws jais.exceptions.AISPacketException
@@ -128,18 +128,18 @@ public final class AISPacket {
 
     /**
      * Validates the AIS packet preamble against a regular expression constant
-     * 
+     *
      * @return
      */
     private boolean validatePreamble() {
         if( _packetParts == null ) {
-            LOG.warn( "_packetParts is null" );
+            LOG.debug( "_packetParts is null" );
             return false;
         } else if( _packetParts.length == 0 ) {
-            LOG.warn( "_packetParts has zero members" );
+            LOG.debug( "_packetParts has zero members" );
             return false;
         } else if( _packetParts[0] == null ) {
-            LOG.warn( "_packetParts[0] is null" );
+            LOG.debug( "_packetParts[0] is null" );
             return false;
         } else {
             if( LOG.isTraceEnabled() ) LOG.trace( "Creating preamble object from {}", bArray2Str( _packetParts[0] ) );
@@ -149,7 +149,7 @@ public final class AISPacket {
 
     /**
      * Validates that the provided Preamble object is non-null and does not contain null fields
-     * 
+     *
      * @param p the Preamble object to evaluate for validity
      * @return
      */
@@ -172,24 +172,24 @@ public final class AISPacket {
      * @return
      */
     public final Preamble getPreamble() { return _preamble; }
-    
+
     /**
      * Determines whether or not a TagBlock was parsed from this AISPacket
-     * 
-     * @return 
+     *
+     * @return
      */
     public boolean hasTagBlock() { return ( _tagBlock != null ); }
 
     /**
      * Returns the TagBlock parsed from this AISPacket
-     * 
+     *
      * @return
      */
     public final TagBlock getTagBlock() { return _tagBlock; }
 
     /**
      * Validates the contents of the packet and breaks it into its constituent parts
-     * 
+     *
      * @return @throws AISPacketException
      */
     public final AISPacket process() throws AISPacketException { return process( false ); }
@@ -314,45 +314,37 @@ public final class AISPacket {
 
     /**
      * Uses the DEFAULT_CHARSET of StandardCharsets.US_ASCII
-     * 
+     *
      * @param bytes the byte [] to decode into a String
      * @return
      */
-    public static String bArray2Str( byte[] bytes ) {
-        return bArray2Str( bytes, DEFAULT_CHARSET );
-    }
+    public static String bArray2Str( byte[] bytes ) { return bArray2Str( bytes, DEFAULT_CHARSET ); }
 
     /**
      * Decodes a byte [] into a String using the provided Charset
-     * 
+     *
      * @param bytes the byte[] to decode into a String
      * @param cs the Charset that should be used to perform the decode operation
      * @return
      */
-    public static String bArray2Str( byte[] bytes, Charset cs ) {
-        return new String( bArray2cArray( bytes, cs ) );
-    }
+    public static String bArray2Str( byte[] bytes, Charset cs ) { return new String( bArray2cArray( bytes, cs ) ); }
 
     /**
      * Encodes a String into a byte [] using the default Charset (US_ASCII)
-     * 
+     *
      * @param string the String to encode into a byte [] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
      * @return
      */
-    public static byte[] str2bArray( String string ) {
-        return str2bArray( string, DEFAULT_CHARSET );
-    }
+    public static byte[] str2bArray( String string ) { return str2bArray( string, DEFAULT_CHARSET ); }
 
     /**
-     * Encodes a String into a byte array using the provided Charset 
+     * Encodes a String into a byte array using the provided Charset
      *
      * @param s the String to encode into a byte []
      * @param cs the Charset that should be used to perform the encode operation
      * @return
      */
-    public static byte[] str2bArray( String s, Charset cs ) {
-        return cs.encode( s ).array();
-    }
+    public static byte[] str2bArray( String s, Charset cs ) { return cs.encode( s ).array(); }
 
     /**
      * Decodes a byte [] into a char [] using the default character set (US_ASCII)
@@ -360,9 +352,7 @@ public final class AISPacket {
      * @param bytes the byte [] to decode into a char [] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
      * @return
      */
-    public static char[] bArray2cArray( byte[] bytes ) {
-        return bArray2cArray( bytes, DEFAULT_CHARSET );
-    }
+    public static char[] bArray2cArray( byte[] bytes ) { return bArray2cArray( bytes, DEFAULT_CHARSET ); }
 
     /**
      * Decodes a byte [] into a char [] using the provided Charset
@@ -371,44 +361,36 @@ public final class AISPacket {
      * @param cs the Charset that should be used to perform the decode operation
      * @return
      */
-    public static char[] bArray2cArray( byte[] bytes, Charset cs ) {
-        return cs.decode( ByteBuffer.wrap( bytes ) ).array();
-    }
+    public static char[] bArray2cArray( byte[] bytes, Charset cs ) { return cs.decode( ByteBuffer.wrap( bytes ) ).array(); }
 
     /**
      * Encodes a char [] into a byte [] using the provided Charset
-     * 
+     *
      * @param ca the char[] to encode into a byte[]
      * @param cs the Charset that should be used to perform the encode operation
      * @return
      */
-    public static byte[] cArray2bArray( char[] ca, Charset cs ) {
-        return cs.encode( CharBuffer.wrap( ca ) ).array();
-    }
+    public static byte[] cArray2bArray( char[] ca, Charset cs ) { return cs.encode( CharBuffer.wrap( ca ) ).array(); }
 
     /**
      * Encodes a char [] into a byte [] using the default Charset (US_ASCII)
-     * 
+     *
      * @param ca the char[] to encode into a byte[] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
      * @return
      */
-    public static byte[] cArray2bArray( char[] ca ) {
-        return cArray2bArray( ca, DEFAULT_CHARSET );
-    }
+    public static byte[] cArray2bArray( char[] ca ) { return cArray2bArray( ca, DEFAULT_CHARSET ); }
 
     /**
      * Performs a String.trim()-like operation on a byte[] using the StandardCharsets.US_ASCII Charset
-     * 
+     *
      * @param bytes the byte[] to be trimmed
      * @return
      */
-    public static byte[] trim( byte[] bytes ) {
-        return trim( bytes, DEFAULT_CHARSET );
-    }
+    public static byte[] trim( byte[] bytes ) { return trim( bytes, DEFAULT_CHARSET ); }
 
     /**
      * Performs a String.trim()-like operation on a byte[] using the specified Charset
-     * 
+     *
      * @param bytes the byte[] to be trimmed
      * @param cs the Charset to use in the conversion of the byte[] into a char[]
      * @return
@@ -443,7 +425,7 @@ public final class AISPacket {
 
     /**
      * Constructs a String object from a subset of a byte []
-     * 
+     *
      * @param bytes
      * @param start
      * @param end
@@ -455,7 +437,7 @@ public final class AISPacket {
 
     /**
      * Attempts to convert a byte [] into an int
-     * 
+     *
      * @param bytes
      * @return
      * @throws jais.exceptions.AISException
@@ -467,28 +449,24 @@ public final class AISPacket {
 
     /**
      * Returns the index of the first occurrence of char c in byte [] ba or -1 if the char is not present
-     * 
+     *
      * @param ba
      * @param c
      * @return
      */
     public static int indexOf( byte[] ba, char c ) {
         char[] chars = DEFAULT_CHARSET.decode( ByteBuffer.wrap( ba ) ).array();
-        for( int i = 0; i < chars.length; i++ ) {
-            if( chars[i] == c )  return i;
-        }
+        for( int i = 0; i < chars.length; i++ ) if( chars[i] == c ) return i;
 
         return -1;
     }
 
     /**
      * Returns a boolean representing the parse state of the AISPacket object
-     * 
+     *
      * @return
      */
-    public final boolean isParsed() {
-        return _parsed;
-    }
+    public final boolean isParsed() { return _parsed; }
 
     /**
      * Checks the validity of the current AIS packet by analyzing the length of its String representation, the number of comma separated fields it
@@ -500,24 +478,22 @@ public final class AISPacket {
     public final boolean isValid() {
         try {
             // so we don't throw NPEs over the failure to split the raw String
-            if( _packetParts == null )  process();
+            if (_packetParts == null) process();
 
             // validate preamble
-            if( _packetBody.length > 82 ) {
-                if( LOG.isDebugEnabled() )
-                    LOG.debug( "Packet body exceeds maximum allowable size (82 characters)! {}", bArray2Str( _packetBody ) );
+            if (_packetBody.length > 82) {
+                if (LOG.isDebugEnabled())
+                    LOG.debug("Packet body exceeds maximum allowable size (82 characters)! {}", bArray2Str(_packetBody));
                 return false;
             } else if( _packetParts.length == 0 ) {
-                if( LOG.isDebugEnabled() )
-                    LOG.debug( "Packet is empty!" );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Packet is empty!" );
                 return false;
-            } else if( _packetParts.length != 7 ) {   // validate csv length
-                if( LOG.isDebugEnabled() )
-                    LOG.debug( "Packet does not have the valid number (7) of comma separated values. {}", bArray2Str( _packetBody ) );
+            } else if (_packetParts.length != 7) {   // validate csv length
+                if (LOG.isDebugEnabled())
+                    LOG.debug("Packet does not have the valid number (7) of comma separated values. {}", bArray2Str(_packetBody));
                 return false;
             } else if( !validatePreamble() ) {
-                if( LOG.isDebugEnabled() )
-                    LOG.debug( "Packet has an invalid preamble: {}", bArray2Str( _packetParts[0] ) );
+                if( LOG.isDebugEnabled() ) LOG.debug( "Packet has an invalid preamble: {}", bArray2Str( _packetParts[0] ) );
                 return false;
             } else {
                 // check for bad characters in binary string
@@ -555,7 +531,7 @@ public final class AISPacket {
 
     /**
      * Attempts to generate a valid checksum based on the provided char []
-     * 
+     *
      * @param source
      * @return
      */
@@ -563,10 +539,9 @@ public final class AISPacket {
         if( LOG.isDebugEnabled() ) LOG.debug( "Generating checksum for String \"{}\"", new String( source ) );
 
         int crc = 0;
+        for ( char aSource : source )  crc ^= aSource;
 
-        for( char aSource : source )  crc ^= aSource;
-
-        if( LOG.isDebugEnabled() ) LOG.debug( "Generated CRC = {}(int)/{}(hex)", crc, Integer.toHexString( crc ) );
+        if ( LOG.isDebugEnabled() ) LOG.debug( "Generated CRC = {}(int)/{}(hex)", crc, Integer.toHexString( crc ) );
 
         return crc;
     }
@@ -581,7 +556,7 @@ public final class AISPacket {
         String hexString = Integer.toHexString( generateChecksum( sourceString.toCharArray() ) );
 
         hexString = ( hexString.length() == 1 ) ? "0" + hexString : hexString;
-        
+
         LOG.debug( "Produced hex string {} from sourceString {}", hexString, sourceString );
 
         return hexString;
@@ -589,7 +564,7 @@ public final class AISPacket {
 
     /**
      * Attempts to extract a checksum from the provided String
-     * 
+     *
      * @param data
      * @return
      */
@@ -630,7 +605,7 @@ public final class AISPacket {
 
     /**
      * Validates the provided checksum (byte [] packetChecksum) by generating a new checksum for byte [] data and comparing them
-     * 
+     *
      * @param data
      * @param packetChecksum
      * @return
@@ -678,20 +653,20 @@ public final class AISPacket {
 
         return packetString;
     }
-    
+
     /**
-     * 
+     *
      * @param rawData
      * @return
-     * @throws AISPacketException 
+     * @throws AISPacketException
      */
     public static AISPacket createFromBinaryString(String rawData) throws AISPacketException {
         return createFromBinaryString(rawData, null);
     }
 
     /**
-     * Generates an AISPacket object from a raw 6-bit encoded String and 
-     * 
+     * Generates an AISPacket object from a raw 6-bit encoded String and
+     *
      * @param rawData The binary encoded String
      * @param source A string representing the source from which this packet emanated
      * @return
@@ -708,9 +683,7 @@ public final class AISPacket {
      * @param s
      * @return
      */
-    public static String[] fastSplit( String s ) {
-        return fastSplit( s, ',' );
-    }
+    public static String[] fastSplit( String s ) { return fastSplit( s, ',' ); }
 
     /**
      * An alternative to String.split() (which is a memory hog and performance donkey at scale)
@@ -723,10 +696,7 @@ public final class AISPacket {
         if( s == null ) return null;
 
         int count = 1;
-
-        for( byte value : s ) {
-            if( value == delimiter )  count++;
-        }
+        for( byte value : s ) if ( value == delimiter ) count++;
 
         byte[][] array = new byte[count][];
 
@@ -755,10 +725,8 @@ public final class AISPacket {
         if( s == null ) return null;
 
         int count = 1;
-
-        for( int i = 0; i < s.length(); i++ ) {
-            if( s.charAt( i ) == delimiter ) count++;
-        }
+        
+        for( int i = 0; i < s.length(); i++ ) if ( s.charAt( i ) == delimiter ) count++;
 
         String[] array = new String[count];
 
@@ -846,29 +814,27 @@ public final class AISPacket {
 
     /**
      * This returns the value of the locally distinct "talker" sending this and other AIS messages so that they can easily be grouped by source
-     * 
+     *
      * @return
      */
     public final int getSequentialMessageId() { return _sequentialMessageId; }
 
     /**
      * Returns the letter representation of the Radio frequency on which this AIS packet was broadcast
-     * 
+     *
      * @return
      */
     public final char getRadioChannelCode() { return _radioChannelCode; }
 
     /**
      * Returns the actual numeric frequency (as a double) indicated by the _radioChannelCode (see {@link #getRadioChannelCode()})
-     * 
+     *
      * @return
      */
     public final double getRadioChannelFrequencyInMhz() {
         switch( _radioChannelCode ) {
-            case 'a':
-                return CHANNEL_A_FREQUENCY_IN_MHZ;
-            case 'b':
-                return CHANNEL_B_FREQUENCY_IN_MHZ;
+            case 'a': return CHANNEL_A_FREQUENCY_IN_MHZ;
+            case 'b': return CHANNEL_B_FREQUENCY_IN_MHZ;
         }
 
         return 0d;
@@ -876,14 +842,14 @@ public final class AISPacket {
 
     /**
      * Returns the contents of the non-decoded binary string as a byte []
-     * 
+     *
      * @return
      */
     public final byte[] getBinaryStringAsByteArray() { return _binaryString; }
 
     /**
      * Returns the body of the AIS Packet as a byte []
-     * 
+     *
      * @return
      */
     public final byte[] getPacketBodyAsByteArray() { return _packetBody; }
@@ -897,33 +863,33 @@ public final class AISPacket {
 
     /**
      * Returns the parsed or generated checksum from the AIS packet
-     * 
+     *
      * @return
      */
     public final byte[] getChecksum() { return _checksum; }
 
     /**
      * Returns the time at which this AISPacket object was instantiated
-     * 
+     *
      * @return
      */
     public final long getTimeReceived() { return _timeReceived; }
-    
+
     /**
      * Returns the time at which this AISPacket object was instantiated for the specified ZoneOffset
-     * 
+     *
      * @param offset
-     * @return 
+     * @return
      */
     public final ZonedDateTime getTimeReceived( ZoneOffset offset ) {
         return ZonedDateTime.ofInstant( Instant.ofEpochMilli( _timeReceived ), offset );
     }
-    
+
     /**
      * Returns the time at which this AISPacket object was instantiated for the specified ZoneId
-     * 
+     *
      * @param zone
-     * @return 
+     * @return
      */
     public final ZonedDateTime getTimeReceived( ZoneId zone ) {
         return ZonedDateTime.ofInstant( Instant.ofEpochMilli( _timeReceived ), zone );
@@ -931,8 +897,8 @@ public final class AISPacket {
 
     /**
      * Returns the time at which this AISPacket object was presumably sent based on the timestamp contained within the TagBlock
-     * 
-     * @return 
+     *
+     * @return
      */
     public final long getTimeSent() {
         if( hasTagBlock() ) return _tagBlock.getTimestamp();
@@ -1024,9 +990,8 @@ public final class AISPacket {
             if( packet == null ) {
                 if( LOG.isWarnEnabled() ) LOG.warn( "Skipping null packet in {} length array of packets.", packets.length );
                 continue;
-            } else if( !packet.isParsed() )
-                packet.process();
-            
+            } else if ( !packet.isParsed() ) packet.process();
+
             if( compositeMsg == null ) compositeMsg = packet.getBinaryStringAsByteArray();
             else {
                 byte[] temp = new byte[compositeMsg.length + packet.getBinaryStringAsByteArray().length];
@@ -1041,7 +1006,7 @@ public final class AISPacket {
 
     /**
      * An override of Object.equals()
-     * 
+     *
      * @param o
      * @return
      */
@@ -1050,14 +1015,10 @@ public final class AISPacket {
         if( o == null ) return false;
         if( !( o instanceof AISPacket ) ) return false;
 
-        AISPacket p = ( AISPacket ) o;
-        if( p.getRawPacket() == null ) return false;
-        
-        boolean equals = Arrays.equals( p.getRawPacket(), _rawPacket );
-        
-        if( p.getSource() != null && _source != null ) equals &= Arrays.equals( p.getSource(), _source );
+        AISPacket that = ( AISPacket ) o;
+        if( that.getRawPacket() == null ) return false;
 
-        return equals;
+        return ( Arrays.equals( that.getRawPacket(), _rawPacket ) && Objects.equals( that.getSource(), _source )) ;
     }
 
     /**
@@ -1075,7 +1036,7 @@ public final class AISPacket {
 
     /**
      * Returns a HashMap representation of the AISPacket fields
-     * 
+     *
      * @return
      */
     public final HashMap<String, Object> toMap() {
@@ -1122,35 +1083,33 @@ public final class AISPacket {
 
         /**
          * Populates the fields of this Preamble object based on the parsing of it's rawPreamble byte [] and returns this Preamble object
-         * 
+         *
          * @return
          */
         public Preamble parse() { return parse( this, AISPacket.bArray2Str( rawPreamble ) ); }
 
         /**
          * Returns a Preamble object based on the parsing of the provided raw preamble byte []
-         * 
+         *
          * @param rawPreamble
          * @return
          */
         public static Preamble parse( byte[] rawPreamble ) { return parse( AISPacket.bArray2Str( rawPreamble ) ); }
-        
+
         /**
          * Returns a Preamble object based on the parsing of the provided raw preamble String
-         * 
+         *
          * @param rawPreamble
          * @return
          */
-        public static Preamble parse( String rawPreamble ) {
-            return parse( new Preamble( AISPacket.str2bArray( rawPreamble ) ), rawPreamble );
-        }
-        
+        public static Preamble parse( String rawPreamble ) { return parse( new Preamble( AISPacket.str2bArray( rawPreamble ) ), rawPreamble ); }
+
         /**
          * Parses the provided rawPreamble String and populates the fields of the provided Preamble object before returning it
-         * 
+         *
          * @param p
          * @param rawPreamble
-         * @return 
+         * @return
          */
         public static Preamble parse( Preamble p, String rawPreamble ) {
             if( LOG.isDebugEnabled() ) LOG.debug( "Parsing {}", rawPreamble );
@@ -1163,10 +1122,9 @@ public final class AISPacket {
                 p.firstChar = m.group( 1 ).charAt( 0 );
 
                 if( p.firstChar == '!' ) p.isEncapsulated = true;
-                else if( m.group( 1 ).equals( "$" ) ) p.isEncapsulated = false;
+                else if( m.group( 1 ).equals( "$" ) )  p.isEncapsulated = false;
                 else {
-                    if( LOG.isDebugEnabled() ) LOG.info( "Unrecognized starting character in address field: {}", 
-                            m.group( 1 ) );
+                    if( LOG.isDebugEnabled() ) LOG.info( "Unrecognized starting character in address field: {}", m.group( 1 ) );
                     p.isEncapsulated = false;
                 }
 
@@ -1177,16 +1135,14 @@ public final class AISPacket {
                     p.talker = Talkers.valueOf( m.group( 2 ).toUpperCase() );
                 } else {
                     p.talker = null;
-                    if( LOG.isDebugEnabled() )
-                        LOG.info( "Unrecognized/invalid talker type: {}", m.group( 2 ) );
+                    if( LOG.isDebugEnabled() )  LOG.info( "Unrecognized/invalid talker type: {}", m.group( 2 ) );
                 }
 
-                p.format = str2bArray( m.group( 4 ) );
-                p.isQuery = m.group( 5 ).equals( "Q" );
+                p.format = str2bArray(m.group(4));
+                p.isQuery = m.group(5).equals("Q");
             } else {
                 if( LOG.isDebugEnabled() )
-                    LOG.warn( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, 
-                            PREAMBLE );
+                    LOG.warn( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE );
             }
 
             return p;
