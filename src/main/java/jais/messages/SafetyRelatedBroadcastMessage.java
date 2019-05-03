@@ -23,7 +23,7 @@ import jais.messages.enums.FieldMap;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class SafetyRelatedBroadcastMessage extends AISMessageBase {
     

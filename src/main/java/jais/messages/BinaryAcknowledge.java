@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class BinaryAcknowledge extends AISMessageBase {
 

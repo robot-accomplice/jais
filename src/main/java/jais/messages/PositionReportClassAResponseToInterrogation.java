@@ -22,7 +22,7 @@ import jais.AISPacket;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class PositionReportClassAResponseToInterrogation extends PositionReportBase {
 
