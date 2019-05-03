@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais;
 
 import jais.AISPacket.Preamble;
@@ -38,11 +37,14 @@ import org.apache.logging.log4j.Logger;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class ConsoleController implements Initializable {
-    
+
     static final Logger LOG = LogManager.getLogger( ConsoleController.class );
+    
+    private final static String BORDER_DOUBLE = "====================================================";
+    private final static String BORDER_SINGLE = "---------------------------------------------";
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -52,83 +54,80 @@ public class ConsoleController implements Initializable {
 
     @FXML
     private TextArea outputArea;
-    
+
     @FXML
     private TextArea inputArea;
-    
+
     @FXML
     private Button decodeButton;
-    
+
     @FXML
     private Button clearButton;
-    
+
     /**
-     * 
-     * @param event 
+     *
+     * @param event
      */
     @FXML
     private void handleDecodeAction( ActionEvent event ) {
         String inText = inputArea.getText();  // retrieve input
         inputArea.clear();  // clear the field
-        
+
         try {
-            appendLineToOutput( "****************************************************" );
+            appendLineToOutput( BORDER_DOUBLE );
             appendLineToOutput( "Processing:\n" + inText );
-            
+
             if( inText == null || inText.isEmpty() ) throw new Exception( "Null Input" );
-            
+
             String [] packetStrings = inText.split( "\n" );
             AISPacket [] packets = new AISPacket[ packetStrings.length ];
             for( int i = 0; i < packetStrings.length; i++ ) {
-                AISPacket packet = ( AISPacket.validatePreamble( packetStrings[i] ) ) ? 
-                        new AISPacket( packetStrings[i] ) : 
-                        AISPacket.createFromBinaryString( packetStrings[i], null );
-                    packet.process();
-                    appendLineToOutput( "---------------------------------------------" );
+                AISPacket packet = ( AISPacket.validatePreamble( packetStrings[i] ) )
+                        ? new AISPacket( packetStrings[i] ) 
+                        : AISPacket.createFromBinaryString( packetStrings[i], null );
+                packet.process();
+                appendLineToOutput( BORDER_SINGLE );
                 TagBlock tb = packet.getTagBlock();
-                if( tb != null ) {
+                if (tb != null) {
                     appendLineToOutput( "TagBlock: " + AISPacket.bArray2Str( tb.rawTagBlock ) );
-                    appendLineToOutput( "---------------------------------------------" );
+                    appendLineToOutput( BORDER_SINGLE );
                     appendLineToOutput( "\tsource           : " + AISPacket.bArray2Str( tb.getSource() ) );
                     appendLineToOutput( "\tdestination      : " + ( ( tb.destination == null ) ? "null" : AISPacket.bArray2Str( tb.destination ) ) );
                     appendLineToOutput( "\ttimestamp        : " + tb.getTimestamp() );
                     appendLineToOutput( "\trelative time    : " + tb.getRelativeTime() );
-                    appendLineToOutput( "\tsentence grouping: " + ( ( tb.sentenceGrouping == null ) ? "null" : AISPacket.bArray2Str( tb.sentenceGrouping) ) );
-                    appendLineToOutput( "\tline count       : " + tb.getLineCount() );
+                    appendLineToOutput( "\tsentence grouping: " + ( ( tb.sentenceGrouping == null ) ? "null" : AISPacket.bArray2Str( tb.sentenceGrouping ) ) );
+                    appendLineToOutput( "\tline count       : " + tb.getLineCount());
                     appendLineToOutput( "\ttext string      : " + ( ( tb.textStr == null ) ? "null" : AISPacket.bArray2Str( tb.textStr ) ) );
                 } else {
                     appendLineToOutput( "TagBlock: " );
-                    appendLineToOutput( "---------------------------------------------" );
+                    appendLineToOutput( BORDER_SINGLE );
                     appendLineToOutput( "\t- none -" );
                 }
                 Preamble pre = Preamble.parse( packet.getRawPacket() );
-                appendLineToOutput( "---------------------------------------------" );
+                appendLineToOutput( BORDER_SINGLE );
                 appendLineToOutput( "Preamble: " + AISPacket.bArray2Str( pre.parsed ) );
-                appendLineToOutput( "---------------------------------------------" );
+                appendLineToOutput( BORDER_SINGLE );
                 appendLineToOutput( "\tformat       : " + AISPacket.bArray2Str( pre.format ) );
                 appendLineToOutput( "\tencapsulated : " + pre.isEncapsulated );
                 appendLineToOutput( "\tproprietary  : " + pre.isProprietary );
                 appendLineToOutput( "\tquery        : " + pre.isQuery );
                 appendLineToOutput( "\ttalker       : " + pre.talker.description );
-                if( pre.manufacturer == null ) {
-                    appendLineToOutput( "\tmanufacturer : null" );
-                } else {
-                    appendLineToOutput( "\tmanufacturer : " + pre.manufacturer.fullName );
-                }
+                if( pre.manufacturer == null ) appendLineToOutput( "\tmanufacturer : null" );
+                else appendLineToOutput( "\tmanufacturer : " + pre.manufacturer.fullName );
                 appendLineToOutput( "\tvalid packet: " + packet.isValid() );
                 packets[i] = packet;
             }
-            appendLineToOutput( "---------------------------------------------" );
-            
+            appendLineToOutput( BORDER_SINGLE );
+
             Optional<AISMessage> msgOpt = AISMessageFactory.create( "CONSOLE", false, packets );
-            if( msgOpt.isPresent() ) {
+            if (msgOpt.isPresent()) {
                 AISMessage msg = msgOpt.get();
                 // from AISMessageBase
                 appendLineToOutput( "Type   : " + msg.getType() );
                 appendLineToOutput( "Repeat : " + msg.getRepeat() );
                 appendLineToOutput( "MMSI   : " + msg.getMmsi() + ( ( msg.hasValidMmsi() ) ? " (VALID)" : " (INVALID)" ) );
-                appendLineToOutput( "---------------------------------------------" );
-                
+                appendLineToOutput( BORDER_SINGLE );
+
                 MMSIType type = MMSIType.forMMSI( msg.getMmsi() );
                 appendLineToOutput( "MMSI Src: " + ( type != null ? type.name() : "INVALID" ) );
 
@@ -170,8 +169,7 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput( "Turn     : " + prb.getTurn() );
                         break;
                     case STATIC_AND_VOYAGE_RELATED_DATA:
-                        StaticAndVoyageRelatedData savrd =
-                                ( StaticAndVoyageRelatedData ) msg;
+                        StaticAndVoyageRelatedData savrd = ( StaticAndVoyageRelatedData ) msg;
 
                         appendLineToOutput( "AIS Version  : " + savrd.getVersion() );
                         appendLineToOutput( "IMO Number   : " + savrd.getImo() );
@@ -192,9 +190,8 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput( "DTE Ready    : " + savrd.dteReady() );
                         break;
                     case STANDARD_CLASS_B_CS_POSITION_REPORT:
-                        StandardClassBCSPositionReport scbpr = 
-                                ( StandardClassBCSPositionReport )msg;
-                        
+                        StandardClassBCSPositionReport scbpr = ( StandardClassBCSPositionReport ) msg;
+
                         appendLineToOutput( "Course   : " + scbpr.getCourse() );
                         appendLineToOutput( "Heading  : " + scbpr.getHeading() );
                         appendLineToOutput( "Latitude : " + scbpr.getLat() );
@@ -204,9 +201,8 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput( "Speed    : " + scbpr.getSpeed() );
                         break;
                     case EXTENDED_CLASS_B_CS_POSITION_REPORT:
-                        ExtendedClassBCSPositionReport ecbpr = 
-                                ( ExtendedClassBCSPositionReport )msg;
-                        
+                        ExtendedClassBCSPositionReport ecbpr = ( ExtendedClassBCSPositionReport ) msg;
+
                         appendLineToOutput( "Assigned    : " + ecbpr.getAssigned() );
                         appendLineToOutput( "Course      : " + ecbpr.getCourse() );
                         appendLineToOutput( "Heading     : " + ecbpr.getHeading() );
@@ -234,33 +230,28 @@ public class ConsoleController implements Initializable {
             LOG.error( "Unable to decode packet: \"{}\": {}", inText, e.getMessage() );
             if( LOG.isTraceEnabled() ) LOG.trace( "StackTrace:", e );
         } finally {
-            appendLineToOutput( "****************************************************" );
+            appendLineToOutput( BORDER_DOUBLE );
         }
     }
-    
+
     /**
-     * 
-     * @param s 
+     *
+     * @param s
      */
-    private void appendLineToOutput( String s ) {
-        outputArea.appendText( s + "\n" );
-    }
-    
+    private void appendLineToOutput( String s ) { outputArea.appendText( s + "\n" ); }
+
     /**
-     * 
-     * @param event 
+     *
+     * @param event
      */
     @FXML
-    private void handleClearAction( ActionEvent event ) {
-        outputArea.clear();
-    }
-    
+    private void handleClearAction(ActionEvent event) { outputArea.clear(); }
+
     /**
-     * 
+     *
      * @param url
-     * @param rb 
+     * @param rb
      */
     @Override
-    public void initialize( URL url, ResourceBundle rb ) {
-    }    
+    public void initialize(URL url, ResourceBundle rb) { /*nothing to do */ }
 }
