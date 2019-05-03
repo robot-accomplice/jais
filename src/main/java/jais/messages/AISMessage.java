@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.messages;
 
 import jais.AISPacket;
@@ -29,12 +28,12 @@ import org.apache.logging.log4j.Logger;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public interface AISMessage {
 
     Logger LOG = LogManager.getLogger(AISMessage.class);
-    
+
     /**
      *
      * @param imo
@@ -42,8 +41,7 @@ public interface AISMessage {
      */
     public static boolean isValidImo( String imo ) {
         if( imo.toLowerCase().startsWith( "imo" ) ) return isValidImo( Long.parseLong( imo.substring( 4 ) ) );
-
-        return isValidImo( Long.parseLong( imo ) );
+        return isValidImo(Long.parseLong( imo ) );
     }
 
     /**
@@ -73,123 +71,118 @@ public interface AISMessage {
             digits[5] *= 2;
 
             int sum = 0;
-
-            for( int i = 0; i < 6; i++ ) {
-                sum += digits[i];
-            }
-
+            for( int i = 0; i < 6; i++ ) sum += digits[i];
             if( LOG.isDebugEnabled() ) LOG.debug( "Sum of products is : {}", sum );
 
             valid = ( sum % 10 == digits[6] );
 
-            LOG.info( "Modulus of sum divided by 10 is: {} vs {}",
-                    sum % 10, digits[6] );
+            LOG.info( "Modulus of sum divided by 10 is: {} vs {}", sum % 10, digits[6] );
         }
 
         return valid;
     }
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     String getSource();
-    
+
     /**
-     * 
-     * @param source 
+     *
+     * @param source
      */
     void setSource( String source );
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     AISPacket [] getPackets();
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     AISMessageType getType();
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     FieldMap [] getFieldMap();
-    
+
     /**
-     * 
+     *
      * @param offset
-     * @return 
+     * @return
      */
     ZonedDateTime getTimeReceived( ZoneOffset offset );
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     long getTimeReceived();
 
     /**
-     * 
-     * @param mType 
+     *
+     * @param mType
      */
     void setType( AISMessageType mType );
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     int getRepeat();
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     int getMmsi();
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     MMSIType getMMSIType();
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     boolean hasValidMmsi();
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     boolean hasPosition();
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     Point getPosition();
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     boolean hasSubType();
-    
+
     /**
-     * 
+     *
      * @return 
      * @throws jais.exceptions.AISException 
      */
     AISMessage getSubTypeInstance() throws AISException;
-    
+
     /**
-     * 
-     * @throws jais.exceptions.AISException 
+     *
+     * @throws jais.exceptions.AISException
      */
     void decode() throws AISException;
 
@@ -201,36 +194,32 @@ public interface AISMessage {
         TYPE( 0, 5 ),
         REPEAT( 6, 7 ),
         MMSI( 8, 37 );
-        
+
         private final int _startBit;
         private final int _endBit;
 
         /**
-         * 
+         *
          * @param startBit
-         * @param endBit 
+         * @param endBit
          */
         AISFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
             _endBit = endBit;
         }
-        
-        /**
-         * 
-         * @return 
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
 
         /**
-         * 
-         * @return 
+         *
+         * @return
          */
         @Override
-        public int getEndBit() {
-            return _endBit;
-        }
+        public int getStartBit() { return _startBit; }
+
+        /**
+         *
+         * @return
+         */
+        @Override
+        public int getEndBit() { return _endBit; }
     }
 }
