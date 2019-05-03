@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais;
 
 import java.io.IOException;
@@ -26,7 +25,7 @@ import org.apache.logging.log4j.LogManager;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class Console extends Application {
 
@@ -50,10 +49,10 @@ public class Console extends Application {
             System.exit( 1 );
         }
     }
-    
+
     /**
-     * 
-     * @param args 
+     *
+     * @param args
      */
     public static void draw( String [] args ) {
         Console.launch( args );
