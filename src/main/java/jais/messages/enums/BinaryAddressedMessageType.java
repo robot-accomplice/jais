@@ -29,7 +29,7 @@ import jais.messages.binaryaddressed.IMO289ClearanceTimeToEnterPort;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public enum BinaryAddressedMessageType {
     

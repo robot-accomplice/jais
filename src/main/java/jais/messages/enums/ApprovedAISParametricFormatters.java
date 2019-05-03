@@ -17,7 +17,7 @@ package jais.messages.enums;
 
 /**
  *
- * @author jmachen
+ * Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public enum ApprovedAISParametricFormatters {
     

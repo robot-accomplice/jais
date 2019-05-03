@@ -18,7 +18,7 @@ package jais.messages.binarybroadcast.environmental;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class PlaceHolder {
     

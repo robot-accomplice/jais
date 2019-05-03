@@ -17,7 +17,7 @@ package jais.messages.enums;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public enum TransmitMode {
     

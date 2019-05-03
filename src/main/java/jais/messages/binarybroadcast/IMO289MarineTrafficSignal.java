@@ -22,7 +22,7 @@ import jais.messages.enums.BinaryBroadcastMessageType;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class IMO289MarineTrafficSignal extends BinaryBroadcastMessage {
 
