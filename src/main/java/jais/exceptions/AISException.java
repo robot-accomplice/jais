@@ -13,39 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.exceptions;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class AISException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-        /**
-     * 
-     * @param message 
-     */
-    public AISException( String message ) {
-        super( message );
-    }
-    
     /**
-     * 
+     *
      * @param message
-     * @param t 
      */
-    public AISException( String message, Throwable t ) {
-        super( message, t );
-    }
-    
+    public AISException(String message) { super(message); }
+
     /**
-     * 
-     * @param t 
+     *
+     * @param message
+     * @param t
      */
-    public AISException( Throwable t ) {
-        super( t );
-    }
+    public AISException(String message, Throwable t) { super(message, t); }
+
+    /**
+     *
+     * @param t
+     */
+    public AISException(Throwable t) { super(t); }
 }
