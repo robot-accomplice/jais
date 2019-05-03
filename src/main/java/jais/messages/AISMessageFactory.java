@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,12 @@ import org.apache.logging.log4j.Logger;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class AISMessageFactory {
 
     private final static Logger LOG = LogManager.getLogger( AISMessageFactory.class );
-    
+
     /**
      *
      * @param source
@@ -44,7 +44,7 @@ public class AISMessageFactory {
         try {
             if( packets == null || packets.length < 1 ) throw new AISException( "Packets array is empty!" ); 
             if( LOG.isDebugEnabled() ) LOG.debug( "Decoding message from {} packet(s). Strict is set to {}", packets.length, strict );
-            
+
             byte [] compositeBytes;
             if( packets.length == 1 ) {
                 if( !packets[0].isParsed() ) packets[0].process();
@@ -52,11 +52,11 @@ public class AISMessageFactory {
             } else {
                 compositeBytes = AISPacket.concatenate( packets );
             }
-            
+
             compositeMsg = AISPacket.bArray2Str( compositeBytes );
-            
+
             if( LOG.isDebugEnabled() ) LOG.debug( "Composite message is: {}", compositeMsg );
-            
+
             // we need the message type in order to invoke the reflective constructor
             Optional<AISMessageType> mType = AISMessageDecoder.decodeMessageType( compositeMsg );
 
