@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.exceptions;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class InvalidAISCharacterException extends AISException {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 
-     * @param message 
-     */
-    public InvalidAISCharacterException( String message ) {
-       super( message );
-    }
-    
-    /**
-     * 
+     *
      * @param message
-     * @param t 
+     */
+    public InvalidAISCharacterException( String message ) { super( message ); }
+
+    /**
+     *
+     * @param message
+     * @param t
      */
     public InvalidAISCharacterException( String message, Throwable t ) {
         super( message, t );
