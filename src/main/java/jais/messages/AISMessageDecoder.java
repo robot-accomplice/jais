@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 Jonathan Machen <jonathan.machen@robotaccomplice.com>.
+ * Copyright 2016-2019 Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package jais.messages;
 
 import jais.AISPacket;
@@ -31,7 +30,7 @@ import org.apache.logging.log4j.LogManager;
 
 /**
  *
- * @author Jonathan Machen
+ * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class AISMessageDecoder {
 
@@ -47,10 +46,8 @@ public class AISMessageDecoder {
      * @param rawMessage
      * @return
      */
-    public static BitSet byteArrayToBitSet( byte [] rawMessage ) {
-        return byteArrayToBitSet( rawMessage, AISPacket.DEFAULT_CHARSET );
-    }
-    
+    public static BitSet byteArrayToBitSet( byte [] rawMessage ) { return byteArrayToBitSet( rawMessage, AISPacket.DEFAULT_CHARSET ); }
+
     /**
      *
      * @param rawMessage
@@ -58,7 +55,7 @@ public class AISMessageDecoder {
      * @return
      */
     public static BitSet byteArrayToBitSet( byte [] rawMessage, Charset charset ) {
-        
+
         char [] msgChars = charset.decode( ByteBuffer.wrap( rawMessage ) ).array();
 
         if( LOG.isDebugEnabled() ) LOG.debug( "8 bit char array is {} bytes long.", rawMessage.length );
@@ -76,9 +73,7 @@ public class AISMessageDecoder {
                     bits.clear();
                     break;
                 } else {
-                    for( int bPos = 5; bPos >= 0; bPos-- ) {
-                        bits.set( bIndex++, 0 < ( oc & ( 1 << bPos ) ) );
-                    }
+                    for( int bPos = 5; bPos >= 0; bPos-- ) bits.set( bIndex++, 0 < ( oc & ( 1 << bPos ) ) );
                 }
             } catch( InvalidAISCharacterException iace ) {
                 LOG.info( "Encountered an invalid character (possible message padding?) : {}", iace.getMessage() );
@@ -110,9 +105,7 @@ public class AISMessageDecoder {
                     bits.clear();
                     break;
                 } else {
-                    for( int bPos = 5; bPos >= 0; bPos-- ) {
-                        bits.set( bIndex++, 0 < ( oc & ( 1 << bPos ) ) );
-                    }
+                    for( int bPos = 5; bPos >= 0; bPos-- ) bits.set( bIndex++, 0 < ( oc & ( 1 << bPos ) ) );
                 }
             } catch( InvalidAISCharacterException iace ) {
                 if( LOG.isDebugEnabled() ) LOG.debug( "Encountered an invalid character (possible message padding?) : {}", iace.getMessage() );
@@ -130,14 +123,9 @@ public class AISMessageDecoder {
      * @throws jais.exceptions.InvalidAISCharacterException
      */
     private static int encodedToSixBitInt( char c ) throws InvalidAISCharacterException {
-        if( c <= CHAR_RANGE_A_MAX && c >= CHAR_RANGE_A_MIN ) {  // is this character within the 1st allowable range?
-            return c - CHAR_RANGE_A_MIN;
-        } else if( c <= CHAR_RANGE_B_MAX && c >= CHAR_RANGE_B_MIN ) {   // is this character within the 2nd allowable range?
-            return c - CHAR_RANGE_B_MIN + ( CHAR_RANGE_A_MAX - CHAR_RANGE_A_MIN + 1 );
-        } else {
-            throw new InvalidAISCharacterException( "Character \'" + c
-                    + "\' is outside of either of the acceptable ranges." );
-        }
+        if( c <= CHAR_RANGE_A_MAX && c >= CHAR_RANGE_A_MIN ) return c - CHAR_RANGE_A_MIN;
+        else if( c <= CHAR_RANGE_B_MAX && c >= CHAR_RANGE_B_MIN ) return c - CHAR_RANGE_B_MIN + ( CHAR_RANGE_A_MAX - CHAR_RANGE_A_MIN + 1 );
+        else throw new InvalidAISCharacterException( "Character \'" + c + "\' is outside of either of the acceptable ranges." );
     }
 
     /**
@@ -151,13 +139,11 @@ public class AISMessageDecoder {
     public static int decodeUnsignedInt( BitSet bits, int startBit, int endBit ) throws AISException {
         int rval = 0;
 
-        if( endBit > bits.size() ) {
-            throw new AISException( "DecodeInt: position " + endBit + " exceeds input array length " + bits.size() );
-        }
+        if( endBit > bits.size() ) throw new AISException( "DecodeInt: position " + endBit + " exceeds input array length " + bits.size() );
 
         int binPosValue = 1;
         for( int i = endBit; i >= startBit; i-- ) {
-            if( bits.get( i ) )  rval += binPosValue;
+            if( bits.get( i ) ) rval += binPosValue;
             binPosValue += binPosValue; // double binPosValue to produce valid binary position value as per binary math
         }
 
@@ -200,10 +186,8 @@ public class AISMessageDecoder {
                 // binary position value as per binary math
                 binPosValue += binPosValue;
             }
-            intValue = -( intValue + 1 );   // correct for dropped bit and add negative
-        } else {
-            intValue = decodeUnsignedInt( bits, ( startBit + 1 ), endBit );
-        }
+            intValue = -( intValue + 1 ); // correct for dropped bit and add negative
+        } else intValue = decodeUnsignedInt( bits, ( startBit + 1 ), endBit );
 
         return intValue;
     }
@@ -217,13 +201,10 @@ public class AISMessageDecoder {
     private static char sixBitIntToAscii( int c ) throws AISException {
         int rval = c;
 
-        if( c < 0 || c > 63 ) {
-            throw new AISException( "sixBitIntToAscii: Invalid input for 6-bit conversion: " + c );
-        } else if( c < 32 ) {
-            rval += 64;
-        }
+        if( c < 0 || c > 63 ) throw new AISException( "sixBitIntToAscii: Invalid input for 6-bit conversion: " + c );
+        else if( c < 32 ) rval += 64;
 
-        return ( char ) rval;
+        return ( char )rval;
     }
 
     /**
@@ -246,12 +227,12 @@ public class AISMessageDecoder {
     public static Optional<AISMessageType> decodeMessageType( String rawMessage ) throws AISException {
         return decodeMessageType( stringToBitSet( rawMessage ) );
     }
-    
+
     /**
-     * 
+     *
      * @param rawMessage
      * @return
-     * @throws AISException 
+     * @throws AISException
      */
     public static Optional<AISMessageType> decodeMessageType( byte [] rawMessage ) throws AISException {
         return decodeMessageType( byteArrayToBitSet( rawMessage ) );
@@ -266,16 +247,14 @@ public class AISMessageDecoder {
     public static Optional<AISMessageType> decodeMessageType( BitSet bits ) throws AISException {
 
         if( bits.size() < AISFieldMap.TYPE.getEndBit() ) throw new AISException( "BitSet is too short: " + bits.size() );
-        
-        if( LOG.isDebugEnabled() ) {
-            LOG.debug( "BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(),
-                AISFieldMap.TYPE.getStartBit(), AISFieldMap.TYPE.getEndBit() );
-        }
-        
+
+        if( LOG.isDebugEnabled() ) LOG.debug( "BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(),
+                    AISFieldMap.TYPE.getStartBit(), AISFieldMap.TYPE.getEndBit() );
+
         int typeId = decodeUnsignedInt( bits, AISFieldMap.TYPE.getStartBit(), AISFieldMap.TYPE.getEndBit() );
 
         if( typeId == 0 || AISMessageType.fetchById( typeId ) == null ) return Optional.empty();
-        
+
         return Optional.of( AISMessageType.fetchById( typeId ) );
     }
 
@@ -290,11 +269,9 @@ public class AISMessageDecoder {
     public static float decodeLatitude( BitSet b, int startBit, int endBit ) throws AISException {
         int i = decodeSignedInt( b, startBit, endBit );
 
-        switch( i ) {
-            case 0x3412140:
-                throw new AISException( "Latitude unavailable." );
-            default:
-                return ( float ) ( ( ( double )i ) / ( 60f * 10000f ) );
+        switch ( i ) {
+            case 0x3412140: throw new AISException( "Latitude unavailable." );
+            default: return ( float ) ( ( ( double ) i ) / ( 60f * 10000f ) );
         }
     }
 
@@ -306,15 +283,12 @@ public class AISMessageDecoder {
      * @return
      * @throws AISException
      */
-    public static float decodeLongitude( BitSet b, int startBit, int endBit )
-            throws AISException {
+    public static float decodeLongitude( BitSet b, int startBit, int endBit ) throws AISException {
         int i = decodeSignedInt( b, startBit, endBit );
 
         switch( i ) {
-            case 0x6791AC0:
-                throw new AISException( "Longitude unavailable." );
-            default:
-                return ( float ) ( ( ( double ) i ) / ( 60f * 10000f ) );
+            case 0x6791AC0: throw new AISException( "Longitude unavailable." );
+            default: return ( float ) ( ( ( double ) i ) / ( 60f * 10000f ) );
         }
     }
 
@@ -326,11 +300,10 @@ public class AISMessageDecoder {
      * @return
      * @throws AISException
      */
-    public static float decodeTurn( BitSet bits, int startBit, int endBit )
-            throws AISException {
-        int i = decodeSignedInt( bits, startBit, endBit );
+    public static float decodeTurn( BitSet bits, int startBit, int endBit ) throws AISException {
+        int i = decodeSignedInt(bits, startBit, endBit);
 
-        return (i / 4.733f) * (i/4.733f);
+        return ( i / 4.733f ) * ( i / 4.733f );
     }
 
     /**
@@ -366,31 +339,29 @@ public class AISMessageDecoder {
      * @return
      * @throws AISException
      */
-    public static float decodeCourse( BitSet bits, int startBit, int endBit )
-            throws AISException {
+    public static float decodeCourse( BitSet bits, int startBit, int endBit ) throws AISException {
         int i = decodeUnsignedInt( bits, startBit, endBit );
 
         if( ( i < 0 ) || ( i > 3600 ) ) throw new AISException( "decodeCourse: invalid value: " + i );
 
         switch( i ) {
-            case 3600:
-                throw new AISException( "Course unavailable" );
-            default:
-                return i / 10f;
+            case 3600: throw new AISException( "Course unavailable" );
+            default: return i / 10f;
         }
     }
 
     /**
-     * 
+     *
      * @param bits
      * @param startBit
      * @param endBit
      * @return
-     * @throws AISException 
+     * @throws AISException
      */
     public static String decodeToString( BitSet bits, int startBit, int endBit ) throws AISException {
         try {
             if( LOG.isTraceEnabled() ) LOG.trace( "Decoding bit {} through bit {} of {} element BitSet", startBit, endBit, bits.size() );
+
             CharBuffer cb = CharBuffer.allocate( ( ( ( endBit - startBit ) / 6 ) + 1 ) );
 
             int stopBit = ( endBit > bits.size() ) ? bits.size() : endBit;
