@@ -16,9 +16,10 @@
 package jais;
 
 import jais.exceptions.AISException;
+import jais.exceptions.AISPacketException;
+import jais.exceptions.AISPacketParseException;
 import jais.messages.enums.Manufacturers;
 import jais.messages.enums.Talkers;
-import jais.exceptions.AISPacketException;
 import jais.messages.AISMessageDecoder;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -131,7 +132,7 @@ public final class AISPacket {
      *
      * @return
      */
-    private boolean validatePreamble() {
+    private boolean validatePreamble() throws AISPacketParseException {
         if( _packetParts == null ) {
             LOG.debug( "_packetParts is null" );
             return false;
@@ -161,8 +162,9 @@ public final class AISPacket {
      * Validates the AIS packet preamble against a regular expression constant
      * @param preambleStr the preamble String to evaluate for validity
      * @return
+     * @throws AISPacketParseException
      */
-    public static boolean validatePreamble( String preambleStr ) {
+    public static boolean validatePreamble( String preambleStr ) throws AISPacketParseException {
         return validatePreamble( Preamble.parse( preambleStr ) );
     }
 
@@ -476,32 +478,43 @@ public final class AISPacket {
      * @return
      */
     public final boolean isValid() {
+        StringBuilder packetErrors = new StringBuilder();
+        boolean valid = true;
         try {
             // so we don't throw NPEs over the failure to split the raw String
             if (_packetParts == null) process();
 
-            // validate preamble
-            if (_packetBody.length > 82) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Packet body exceeds maximum allowable size (82 characters)! {}", bArray2Str(_packetBody));
-                return false;
-            } else if( _packetParts.length == 0 ) {
-                if( LOG.isDebugEnabled() ) LOG.debug( "Packet is empty!" );
-                return false;
-            } else if (_packetParts.length != 7) {   // validate csv length
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Packet does not have the valid number (7) of comma separated values. {}", bArray2Str(_packetBody));
-                return false;
-            } else if( !validatePreamble() ) {
-                if( LOG.isDebugEnabled() ) LOG.debug( "Packet has an invalid preamble: {}", bArray2Str( _packetParts[0] ) );
-                return false;
-            } else {
+            if( LOG.isDebugEnabled() ) LOG.debug( "Validating packetBody: {}", AISPacket.bArray2Str( _packetBody ) );
+            
+// validate preamble
+            if( _packetBody.length > 82 ) {
+                packetErrors.append( "Packet body exceeds maximum allowable size (82 characters).\n" );
+                if( LOG.isDebugEnabled() ) return false;
+                valid &= false;
+            }
+            if( _packetParts.length == 0 ) {
+                if( LOG.isDebugEnabled() ) return false;
+                packetErrors.append( "Unable to split packet by comma.\n" );
+                valid &= false;
+            }
+            if( _packetParts.length != 7 ) {   // validate csv length
+                packetErrors.append( "Packet does not have the valid number (7) of comma separated values.\n" );
+                if( LOG.isDebugEnabled() ) return false;
+                valid &= false;
+            }
+            if( !validatePreamble() ) {
+                packetErrors.append( "Packet has an invalid preamble.\n" );
+                if( LOG.isDebugEnabled() ) return false;
+                valid &= false;
+            }
+            
+            if( valid ){
                 // check for bad characters in binary string
                 for( char c : bArray2cArray( _packetParts[5] ) ) {
                     // is this character within an accepted range?
                     if( !( ( c <= AISMessageDecoder.CHAR_RANGE_A_MAX && c >= AISMessageDecoder.CHAR_RANGE_A_MIN )
                             || ( c <= AISMessageDecoder.CHAR_RANGE_B_MAX && c >= AISMessageDecoder.CHAR_RANGE_B_MIN ) ) ) {
-                        if( LOG.isDebugEnabled() ) LOG.debug( "Packet contains an invalid character: {}", c );
+                        LOG.fatal( "Packet contains an invalid character: {}", c );
                         return false;
                     }
                 }
@@ -512,11 +525,11 @@ public final class AISPacket {
                 if( csIndex > 0 ) {
                     // validate checksum
                     if( !validateChecksum( _packetBody, _checksum ) ) {
-                        if( LOG.isDebugEnabled() ) LOG.debug( "Packet failed checksum validation." );
+                        LOG.fatal( "Packet failed checksum validation." );
                         return false;
                     }
                 } else {
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Packet is missing fillbits and/or checksum." );
+                    LOG.fatal( "Packet is missing fillbits and/or checksum." );
                     return false;
                 }
             }
@@ -524,9 +537,12 @@ public final class AISPacket {
             // do nothing
             if( LOG.isDebugEnabled() ) LOG.debug( "Packet validation faied: {}", ape.getMessage(), ape );
             return false;
+        } finally {
+            if( !LOG.isDebugEnabled() && !valid ) LOG.debug( "Invalid Packet: {} {}", packetErrors, _rawPacket );
         }
+        
 
-        return true;
+        return valid;
     }
 
     /**
@@ -918,20 +934,30 @@ public final class AISPacket {
      * @param source
      */
     public final void setSource( byte[] source ) { _source = source; }
+    
+    /**
+     * Truncates the provided StringBuilder object based on the index returned by {@link #getPacketTruncIndex( StringBuilder sb )} 
+     * 
+     * @param sb
+     * @return 
+     */
+    public static String truncatePacket( StringBuilder sb ) {
+        return truncatePacket( sb.toString() );
+    }
 
     /**
      * Truncates the provided StringBuilder object based on the index returned by {@link #getPacketTruncIndex( StringBuilder sb )} 
      *
-     * @param sb
+     * @param s
      * @return
      */
-    public static String truncatePacket( StringBuilder sb ) {
-        int truncIndex = AISPacket.getPacketTruncIndex( sb );
+    public static String truncatePacket( String s ) {
+        int truncIndex = AISPacket.getPacketTruncIndex( s );
         String substring = null;
 
         if( truncIndex != -1 ) {
-            if( LOG.isDebugEnabled() ) LOG.debug( "Truncating: {}", sb );
-            substring = sb.substring( 0, truncIndex );
+            if( LOG.isDebugEnabled() ) LOG.debug( "Truncating: {}", s );
+            substring = s.substring( 0, truncIndex );
         }
 
         return substring;
@@ -942,21 +968,25 @@ public final class AISPacket {
      * @param sb
      * @return
      */
-    private static int getPacketTruncIndex( StringBuilder sb ) {
+    private static int getPacketTruncIndex( String s ) {
         int truncIndex = 0;
 
-        if( LOG.isDebugEnabled() ) LOG.debug( "Evaluating \"{}\" for truncation point.", sb );
+        if( LOG.isDebugEnabled() ) LOG.debug( "Evaluating \"{}\" for truncation point.", s );
 
-        Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( sb.toString() );
+//        String [] sansTagBlock = s.split( "\\\\!" );
+//        
+//        Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( ( sansTagBlock.length > 1) ? sansTagBlock[1] : sansTagBlock[0] );
+        
+        Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( s );
         if( m.find() ) {
-            if( sb.indexOf( "\n" ) > -1 ) {
+            if( s.contains("\n") ) {
                 if( LOG.isDebugEnabled() ) LOG.debug( "String is terminated by a newline" );
-                truncIndex = sb.indexOf( "\n" );
-            } else if( sb.indexOf( "\r" ) > -1 ) {
+                truncIndex = s.indexOf( "\n" );
+            } else if( s.contains("\r") ) {
                 if( LOG.isDebugEnabled() ) LOG.debug( "String is terminated by a carriage return" );
-                truncIndex = sb.indexOf( "\r" );
+                truncIndex = s.indexOf( "\r" );
             } else if( m.find() ) {
-                truncIndex = sb.indexOf( m.group( 0 ), 1 );
+                truncIndex = s.indexOf( m.group( 0 ), 1 );
                 if( LOG.isDebugEnabled() ) LOG.debug( "Truncating based on preamble" );
                 if( LOG.isDebugEnabled() ) LOG.debug( "Matched string for index is: \"{}\"", m.group( 0 ) );
             } else {
@@ -1086,7 +1116,7 @@ public final class AISPacket {
          *
          * @return
          */
-        public Preamble parse() { return parse( this, AISPacket.bArray2Str( rawPreamble ) ); }
+        public Preamble parse() throws AISPacketParseException { return parse( this, AISPacket.bArray2Str( rawPreamble ) ); }
 
         /**
          * Returns a Preamble object based on the parsing of the provided raw preamble byte []
@@ -1094,7 +1124,7 @@ public final class AISPacket {
          * @param rawPreamble
          * @return
          */
-        public static Preamble parse( byte[] rawPreamble ) { return parse( AISPacket.bArray2Str( rawPreamble ) ); }
+        public static Preamble parse( byte[] rawPreamble ) throws AISPacketParseException { return parse( AISPacket.bArray2Str( rawPreamble ) ); }
 
         /**
          * Returns a Preamble object based on the parsing of the provided raw preamble String
@@ -1102,7 +1132,7 @@ public final class AISPacket {
          * @param rawPreamble
          * @return
          */
-        public static Preamble parse( String rawPreamble ) { return parse( new Preamble( AISPacket.str2bArray( rawPreamble ) ), rawPreamble ); }
+        public static Preamble parse( String rawPreamble ) throws AISPacketParseException { return parse( new Preamble( AISPacket.str2bArray( rawPreamble ) ), rawPreamble ); }
 
         /**
          * Parses the provided rawPreamble String and populates the fields of the provided Preamble object before returning it
@@ -1110,8 +1140,9 @@ public final class AISPacket {
          * @param p
          * @param rawPreamble
          * @return
+         * @throws AISPacketParseException
          */
-        public static Preamble parse( Preamble p, String rawPreamble ) {
+        public static Preamble parse( Preamble p, String rawPreamble ) throws AISPacketParseException {
             if( LOG.isDebugEnabled() ) LOG.debug( "Parsing {}", rawPreamble );
             Matcher m = PREAMBLE_PATTERN.matcher( rawPreamble );
             if( m.find() ) {
@@ -1124,7 +1155,7 @@ public final class AISPacket {
                 if( p.firstChar == '!' ) p.isEncapsulated = true;
                 else if( m.group( 1 ).equals( "$" ) )  p.isEncapsulated = false;
                 else {
-                    if( LOG.isDebugEnabled() ) LOG.info( "Unrecognized starting character in address field: {}", m.group( 1 ) );
+                    LOG.debug( "Unrecognized starting character in address field: {}", m.group( 1 ) );
                     p.isEncapsulated = false;
                 }
 
@@ -1135,14 +1166,13 @@ public final class AISPacket {
                     p.talker = Talkers.valueOf( m.group( 2 ).toUpperCase() );
                 } else {
                     p.talker = null;
-                    if( LOG.isDebugEnabled() )  LOG.info( "Unrecognized/invalid talker type: {}", m.group( 2 ) );
+                    LOG.debug( "Unrecognized/invalid talker type: {}", m.group( 2 ) );
                 }
 
                 p.format = str2bArray(m.group(4));
                 p.isQuery = m.group(5).equals("Q");
             } else {
-                if( LOG.isDebugEnabled() )
-                    LOG.warn( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE );
+                LOG.debug( "Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE );
             }
 
             return p;
