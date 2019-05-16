@@ -1115,6 +1115,7 @@ public final class AISPacket {
          * Populates the fields of this Preamble object based on the parsing of it's rawPreamble byte [] and returns this Preamble object
          *
          * @return
+         * @throws jais.exceptions.AISPacketParseException
          */
         public Preamble parse() throws AISPacketParseException { return parse( this, AISPacket.bArray2Str( rawPreamble ) ); }
 
@@ -1123,6 +1124,7 @@ public final class AISPacket {
          *
          * @param rawPreamble
          * @return
+         * @throws jais.exceptions.AISPacketParseException
          */
         public static Preamble parse( byte[] rawPreamble ) throws AISPacketParseException { return parse( AISPacket.bArray2Str( rawPreamble ) ); }
 
@@ -1131,6 +1133,7 @@ public final class AISPacket {
          *
          * @param rawPreamble
          * @return
+         * @throws jais.exceptions.AISPacketParseException
          */
         public static Preamble parse( String rawPreamble ) throws AISPacketParseException { return parse( new Preamble( AISPacket.str2bArray( rawPreamble ) ), rawPreamble ); }
 
