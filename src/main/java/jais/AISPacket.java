@@ -130,7 +130,7 @@ public final class AISPacket {
     /**
      * Validates the AIS packet preamble against a regular expression constant
      *
-     * @return
+     * @return a boolean indicating whether or not the preamble is valid
      */
     private boolean validatePreamble() throws AISPacketParseException {
         if( _packetParts == null ) {
@@ -152,7 +152,7 @@ public final class AISPacket {
      * Validates that the provided Preamble object is non-null and does not contain null fields
      *
      * @param p the Preamble object to evaluate for validity
-     * @return
+     * @return a boolean indicating whether or not the preamble is valid
      */
     private static boolean validatePreamble( Preamble p ) {
         return ( ( p != null ) && ( p.talker != null ) && ( p.format != null ) );
@@ -161,7 +161,7 @@ public final class AISPacket {
     /**
      * Validates the AIS packet preamble against a regular expression constant
      * @param preambleStr the preamble String to evaluate for validity
-     * @return
+     * @return a boolean indicating whether or not the preamble is valid
      * @throws AISPacketParseException
      */
     public static boolean validatePreamble( String preambleStr ) throws AISPacketParseException {
@@ -170,22 +170,23 @@ public final class AISPacket {
 
     /**
      * Fetch the preamble (e.g. !AISVDM)
-     *
-     * @return
+     * @see jais.AISPacket.Preamble
+     * @return a Preamble object
      */
     public final Preamble getPreamble() { return _preamble; }
 
     /**
-     * Determines whether or not a TagBlock was parsed from this AISPacket
+     * Determines whether or not a TagBlock was parsed from this AISPacket 
+     * @see jais.TagBlock
      *
-     * @return
+     * @return a boolean representing whether or not this packet has a TagBlock
      */
     public boolean hasTagBlock() { return ( _tagBlock != null ); }
 
     /**
      * Returns the TagBlock parsed from this AISPacket
-     *
-     * @return
+     * @see jais.TagBlock
+     * @return the TagBlock for this AISPacket
      */
     public final TagBlock getTagBlock() { return _tagBlock; }
 
@@ -197,9 +198,11 @@ public final class AISPacket {
     public final AISPacket process() throws AISPacketException { return process( false ); }
 
     /**
-     * Validates the contents of the packet and breaks it into its constituent parts
-     *
-     * @param addTagBlock boolean flag indicating whether or not a TagBlock should be prepended to the packet
+     * Validates the contents of the packet and breaks it into its constituent parts, optionally generates a TagBlock
+     * for the resulting AISPacket @see jais.TagBlock
+     * 
+     * @param addTagBlock boolean flag indicating whether or not a TagBlock should be pre-pended to the packet
+     * @see jais.TagBlock
      * @return
      * @throws jais.exceptions.AISPacketException
      */
@@ -315,10 +318,10 @@ public final class AISPacket {
     }
 
     /**
-     * Uses the DEFAULT_CHARSET of StandardCharsets.US_ASCII
+     * Uses the DEFAULT_CHARSET of StandardCharsets.US_ASCII to decode a byte [] into a String
      *
      * @param bytes the byte [] to decode into a String
-     * @return
+     * @return the String decoded from the provided byte array
      */
     public static String bArray2Str( byte[] bytes ) { return bArray2Str( bytes, DEFAULT_CHARSET ); }
 
@@ -327,7 +330,7 @@ public final class AISPacket {
      *
      * @param bytes the byte[] to decode into a String
      * @param cs the Charset that should be used to perform the decode operation
-     * @return
+     * @return the String decoded from the provided byte []
      */
     public static String bArray2Str( byte[] bytes, Charset cs ) { return new String( bArray2cArray( bytes, cs ) ); }
 
@@ -335,7 +338,7 @@ public final class AISPacket {
      * Encodes a String into a byte [] using the default Charset (US_ASCII)
      *
      * @param string the String to encode into a byte [] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
-     * @return
+     * @return the byte [] encoded from the provided String
      */
     public static byte[] str2bArray( String string ) { return str2bArray( string, DEFAULT_CHARSET ); }
 
@@ -344,7 +347,7 @@ public final class AISPacket {
      *
      * @param s the String to encode into a byte []
      * @param cs the Charset that should be used to perform the encode operation
-     * @return
+     * @return the byte [] encoded from the provided String, using the provided Charset
      */
     public static byte[] str2bArray( String s, Charset cs ) { return cs.encode( s ).array(); }
 
@@ -352,7 +355,7 @@ public final class AISPacket {
      * Decodes a byte [] into a char [] using the default character set (US_ASCII)
      *
      * @param bytes the byte [] to decode into a char [] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
-     * @return
+     * @return the char [] decoded from the provided byte []
      */
     public static char[] bArray2cArray( byte[] bytes ) { return bArray2cArray( bytes, DEFAULT_CHARSET ); }
 
@@ -361,7 +364,7 @@ public final class AISPacket {
      *
      * @param bytes the byte [] to decode into a char []
      * @param cs the Charset that should be used to perform the decode operation
-     * @return
+     * @return the char [] decoded from the provided byte [] using the provided Charset
      */
     public static char[] bArray2cArray( byte[] bytes, Charset cs ) { return cs.decode( ByteBuffer.wrap( bytes ) ).array(); }
 
@@ -370,7 +373,7 @@ public final class AISPacket {
      *
      * @param ca the char[] to encode into a byte[]
      * @param cs the Charset that should be used to perform the encode operation
-     * @return
+     * @return the encoded byte [] from the provide char [] using the provided Charset
      */
     public static byte[] cArray2bArray( char[] ca, Charset cs ) { return cs.encode( CharBuffer.wrap( ca ) ).array(); }
 
@@ -378,7 +381,7 @@ public final class AISPacket {
      * Encodes a char [] into a byte [] using the default Charset (US_ASCII)
      *
      * @param ca the char[] to encode into a byte[] using the DEFAULT_CHARSET of StandardCharsets.US_ASCII
-     * @return
+     * @return the encoded byte [] from the provide char [] using the provided Charset
      */
     public static byte[] cArray2bArray( char[] ca ) { return cArray2bArray( ca, DEFAULT_CHARSET ); }
 
@@ -386,7 +389,7 @@ public final class AISPacket {
      * Performs a String.trim()-like operation on a byte[] using the StandardCharsets.US_ASCII Charset
      *
      * @param bytes the byte[] to be trimmed
-     * @return
+     * @return the trimmed byte []
      */
     public static byte[] trim( byte[] bytes ) { return trim( bytes, DEFAULT_CHARSET ); }
 
@@ -395,7 +398,7 @@ public final class AISPacket {
      *
      * @param bytes the byte[] to be trimmed
      * @param cs the Charset to use in the conversion of the byte[] into a char[]
-     * @return
+     * @return the trimmed byte []
      */
     public static byte[] trim( byte[] bytes, Charset cs ) {
         char[] chars = bArray2cArray( bytes, cs );
@@ -431,7 +434,7 @@ public final class AISPacket {
      * @param bytes
      * @param start
      * @param end
-     * @return
+     * @return the substring decoded from the byte [] contained within the provided start index and end index of the provided byte array
      */
     public static String substring( byte[] bytes, int start, int end ) {
         return bArray2Str( Arrays.copyOfRange( bytes, start, end ) );
@@ -441,7 +444,7 @@ public final class AISPacket {
      * Attempts to convert a byte [] into an int
      *
      * @param bytes
-     * @return
+     * @return an int representation of the provided byte []
      * @throws jais.exceptions.AISException
      */
     public static int getInt( byte[] bytes ) throws AISException {
@@ -454,7 +457,7 @@ public final class AISPacket {
      *
      * @param ba
      * @param c
-     * @return
+     * @return the first index of the provided char in the provided byte [] or -1 if the char does not exist within this byte []
      */
     public static int indexOf( byte[] ba, char c ) {
         char[] chars = DEFAULT_CHARSET.decode( ByteBuffer.wrap( ba ) ).array();
@@ -464,9 +467,9 @@ public final class AISPacket {
     }
 
     /**
-     * Returns a boolean representing the parse state of the AISPacket object
+     * Returns a boolean indicating whether this AISPacket object has been parsed
      *
-     * @return
+     * @return a boolean representing the parse state of this AISPacket object
      */
     public final boolean isParsed() { return _parsed; }
 
@@ -475,7 +478,7 @@ public final class AISPacket {
      * contains, whether or not it has a valid preamble, whether or not it contains any invalid characters, and whether or not it has a valid
      * checksum
      *
-     * @return
+     * @return a boolean value representing the validity of this AISPacket
      */
     public final boolean isValid() {
         StringBuilder packetErrors = new StringBuilder();
@@ -486,7 +489,7 @@ public final class AISPacket {
 
             if( LOG.isDebugEnabled() ) LOG.debug( "Validating packetBody: {}", AISPacket.bArray2Str( _packetBody ) );
             
-// validate preamble
+            // validate preamble
             if( _packetBody.length > 82 ) {
                 packetErrors.append( "Packet body exceeds maximum allowable size (82 characters).\n" );
                 if( LOG.isDebugEnabled() ) return false;
@@ -546,10 +549,10 @@ public final class AISPacket {
     }
 
     /**
-     * Attempts to generate a valid checksum based on the provided char []
+     * Generates a valid checksum based on the provided char []
      *
-     * @param source
-     * @return
+     * @param source the source char [] for which you wish to generate a checksum
+     * @return a generated int checksum for the provided char []
      */
     private static int generateChecksum( char[] source ) {
         if( LOG.isDebugEnabled() ) LOG.debug( "Generating checksum for String \"{}\"", new String( source ) );
@@ -563,10 +566,10 @@ public final class AISPacket {
     }
 
     /**
-     * Attempts to generate a valid checksum based on the provided String
+     * Generates a valid checksum based on the provided String
      *
-     * @param sourceString
-     * @return
+     * @param sourceString the source String fro which you wish to generate a checksum
+     * @return a generated int checksum for the provided String
      */
     public static String generateChecksumString( String sourceString ) {
         String hexString = Integer.toHexString( generateChecksum( sourceString.toCharArray() ) );
@@ -579,10 +582,10 @@ public final class AISPacket {
     }
 
     /**
-     * Attempts to extract a checksum from the provided String
+     * Attempts to parse a checksum from the provided String and generates a new one if the parsing operation is unsuccessful
      *
-     * @param data
-     * @return
+     * @param data the AIS packet string for which you wish to parse the checksum
+     * @return the int checksum for the provided string
      */
     private static int getChecksum( String data ) {
         int index = data.indexOf( String.valueOf( CHECKSUM_DELIMITER ) );
@@ -596,21 +599,21 @@ public final class AISPacket {
     }
 
     /**
-     * Attempts to generate a checksum for the provided byte []
+     * Generates a checksum for the provided byte []
      *
-     * @param bytes
-     * @return
+     * @param bytes the byte [] from which you wish to extract a checksum
+     * @return the int checksum for the provided byte []
      */
     private static int getChecksum( byte[] bytes ) {
         return AISPacket.generateChecksum( bArray2cArray( Arrays.copyOfRange( bytes, 1, indexOf( bytes, CHECKSUM_DELIMITER ) ) ) );
     }
 
     /**
-     * Attempts to generate a checksum for the substring of String genString (based on int startFrom and int endAt indices)
+     * Generates a checksum for the substring (based on int startFrom and int endAt indices) of String genString 
      *
-     * @param genString
-     * @param startFrom
-     * @param endAt
+     * @param genString the String for which you wish to generate a checksum
+     * @param startFrom the int start index of the substring
+     * @param endAt the int end index of the substring
      * @return
      */
     public static int getChecksum( String genString, int startFrom, int endAt ) {
@@ -622,8 +625,8 @@ public final class AISPacket {
     /**
      * Validates the provided checksum (byte [] packetChecksum) by generating a new checksum for byte [] data and comparing them
      *
-     * @param data
-     * @param packetChecksum
+     * @param data the byte [] to which the provided packetChecksum should apply
+     * @param packetChecksum a byte [] representation of the checksum to be validated
      * @return
      */
     private static boolean validateChecksum( byte[] data, byte[] packetChecksum ) {
@@ -656,10 +659,10 @@ public final class AISPacket {
     }
 
     /**
-     * This is a utility message that enables binary decoding even when the binary string is all we have
+     * A utility method that enables binary decoding even when the binary string is all we have
      *
-     * @param rawData
-     * @return
+     * @param rawData the binary String from an AIS packet String which has no prefix or suffix
+     * @return a generated String representation of a complete AIS packet (with prefix, suffix, checksum, etc)
      */
     public static String createPacketStringFromBinaryString( String rawData ) {
         String packetString = "!AIVDM,1,1,,A," + rawData + ",0*";
@@ -671,21 +674,23 @@ public final class AISPacket {
     }
 
     /**
-     *
-     * @param rawData
-     * @return
-     * @throws AISPacketException
+     * A utility method that creates an AISPacket object based solely on the 6-bit encoded String from an AIS packet
+     * String
+     * 
+     * @param rawData The binary encoded String
+     * @return an AISPacket object based on the provided binary string
+     * @throws jais.exceptions.AISPacketException 
      */
     public static AISPacket createFromBinaryString(String rawData) throws AISPacketException {
         return createFromBinaryString(rawData, null);
     }
 
     /**
-     * Generates an AISPacket object from a raw 6-bit encoded String and
+     * Generates an AISPacket object from a raw 6-bit encoded String and a String representing the data source
      *
      * @param rawData The binary encoded String
-     * @param source A string representing the source from which this packet emanated
-     * @return
+     * @param source A string representing the source from which this packet originated
+     * @return an AISPacket object based on the provided binary string
      * @throws jais.exceptions.AISPacketException
      */
     public static AISPacket createFromBinaryString( String rawData, String source ) throws AISPacketException {
@@ -696,23 +701,23 @@ public final class AISPacket {
     /**
      * Splits the provided String by commas
      *
-     * @param s
-     * @return
+     * @param toSplit The String we wish to split
+     * @return a String [] containing the split elements of the source String
      */
-    public static String[] fastSplit( String s ) { return fastSplit( s, ',' ); }
+    public static String[] fastSplit( String toSplit ) { return fastSplit( toSplit, ',' ); }
 
     /**
      * An alternative to String.split() (which is a memory hog and performance donkey at scale)
      *
-     * @param s
-     * @param delimiter
-     * @return
+     * @param toSplit the byte [] you wish you to subdivide
+     * @param delimiter the char that will be the basis for splitting
+     * @return a byte [][] containing the segmentation of the provided byte [] based on the provided delimiter
      */
-    private static byte[][] fastSplit( byte[] s, char delimiter ) {
-        if( s == null ) return null;
+    private static byte[][] fastSplit( byte[] toSplit, char delimiter ) {
+        if( toSplit == null ) return null;
 
         int count = 1;
-        for( byte value : s ) if ( value == delimiter ) count++;
+        for( byte value : toSplit ) if ( value == delimiter ) count++;
 
         byte[][] array = new byte[count][];
 
@@ -720,9 +725,9 @@ public final class AISPacket {
         int b = 0;
 
         for( int i = 0; i < count; i++ ) {
-            while( b < s.length && s[b] != delimiter ) b++;
+            while( b < toSplit.length && toSplit[b] != delimiter ) b++;
 
-            array[i] = Arrays.copyOfRange( s, a + 1, b );
+            array[i] = Arrays.copyOfRange( toSplit, a + 1, b );
             a = b;
             b++;
         }
@@ -733,16 +738,16 @@ public final class AISPacket {
     /**
      * An alternative to String.split() (which is a memory hog and performance donkey at scale)
      *
-     * @param s
-     * @param delimiter
-     * @return
+     * @param toSplit the String you wish to subdivide
+     * @param delimiter the char that will be the basis of the subdivision
+     * @return a String [] containing the segmented version of the provided String based on the provided char delimiter
      */
-    public static String[] fastSplit( String s, char delimiter ) {
-        if( s == null ) return null;
+    public static String[] fastSplit( String toSplit, char delimiter ) {
+        if( toSplit == null ) return null;
 
         int count = 1;
         
-        for( int i = 0; i < s.length(); i++ ) if ( s.charAt( i ) == delimiter ) count++;
+        for( int i = 0; i < toSplit.length(); i++ ) if ( toSplit.charAt( i ) == delimiter ) count++;
 
         String[] array = new String[count];
 
@@ -750,9 +755,9 @@ public final class AISPacket {
         int b = 0;
 
         for( int i = 0; i < count; i++ ) {
-            while( b < s.length() && s.charAt( b ) != delimiter ) b++;
+            while( b < toSplit.length() && toSplit.charAt( b ) != delimiter ) b++;
 
-            array[i] = s.substring( a + 1, b );
+            array[i] = toSplit.substring( a + 1, b );
             a = b;
             b++;
         }
@@ -763,15 +768,15 @@ public final class AISPacket {
     /**
      * Returns the unparsed, non-decoded raw AISPacket contents as a byte []
      *
-     * @return
+     * @return the byte [] containing the raw, non-decoded AISPacket data
      */
     public final byte[] getRawPacket() { return _rawPacket; }
 
     /**
-     * Generates a String representation of the AISPacket with a prepended TagBlock String which contains only 
+     * Generates a String representation of the AISPacket with a pre-pended TagBlock String which contains only 
      * the source and time stamp values of the AISPacket object
      *
-     * @return
+     * @return a String representation of the AISPacket with a pre-pended TagBlock String
      */
     public final String generateTagBlockPacketString() {
         TagBlock tb = new TagBlock();
@@ -781,7 +786,7 @@ public final class AISPacket {
     }
 
     /**
-     * Generates a String representation of the AISPacket with a prepended TagBlock String containing the source and time stamp values of the 
+     * Generates a String representation of the AISPacket with a pre-pended TagBlock String containing the source and time stamp values of the 
      * AISPacket object as well as the text provided at method invocation
      *
      * @param text
@@ -796,7 +801,7 @@ public final class AISPacket {
     }
 
     /**
-     * Generates a String representation of the AISPacket with its prepended TagBlock String as already defined
+     * Generates a String representation of the AISPacket with its pre-pended TagBlock String as already defined
      *
      * @param rawPacket
      * @param tb
@@ -1022,11 +1027,12 @@ public final class AISPacket {
                 continue;
             } else if ( !packet.isParsed() ) packet.process();
 
-            if( compositeMsg == null ) compositeMsg = packet.getBinaryStringAsByteArray();
+            byte [] bytes = packet.getBinaryStringAsByteArray();
+            if( compositeMsg == null ) compositeMsg = bytes;
             else {
-                byte[] temp = new byte[compositeMsg.length + packet.getBinaryStringAsByteArray().length];
+                byte[] temp = new byte[compositeMsg.length + bytes.length];
                 System.arraycopy( compositeMsg, 0, temp, 0, compositeMsg.length );
-                System.arraycopy( packet.getBinaryStringAsByteArray(), 0, temp, compositeMsg.length, packet.getBinaryStringAsByteArray().length );
+                System.arraycopy( bytes, 0, temp, compositeMsg.length, bytes.length );
                 compositeMsg = temp;
             }
         }
