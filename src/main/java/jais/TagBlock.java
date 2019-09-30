@@ -68,68 +68,67 @@ public final class TagBlock {
     byte [] textStr;
 
     /**
-     *
+     * No argument constructor
      */
-    public TagBlock() {
-    }
+    public TagBlock() { }
 
     /**
-     *
+     * Indicates whether or not this TagBlock's text has already been parsed
      * @return boolean indicating whether or not this tagblock has already been parsed
      */
     public final boolean isParsed() { return _parsed; }
 
     /**
-     *
+     * Sets the parsed flag for this TagBlock
      * @param parsed boolean indicating whether or not this tagblock has already been parsed
      */
     public final void setParsed( boolean parsed ) { _parsed = parsed; }
 
     /**
-     *
+     * Retrieves the raw TagBlock data as a byte []
      * @return byte [] containing the raw, unprocessed tagblock
      */
     public final byte [] getRawTagBlock() { return rawTagBlock; }
 
     /**
-     *
+     * Sets the raw byte [] content of the TagBlock
      * @param rawTagBlock byte [] containing the raw, unprocessed tagblock
      */
     public final void setRawTagBlock( byte [] rawTagBlock ) { this.rawTagBlock = rawTagBlock; }
 
     /**
-     *
-     * @return
+     * Returns a byte [] containing the checksum of this TagBlock
+     * @return a byte [] representation of this TagBlock's checksum
      */
     public final byte [] getChecksum() { return checksum; }
 
     /**
-     *
-     * @param checksum
+     * Sets the byte [] checksum value of this TagBlock
+     * @param checksum the byte [] checksum value of this TagBlock
      */
     public final void setChecksum( byte [] checksum ) { this.checksum = checksum; }
 
     /**
-     *
-     * @return
+     * Returns this TagBlock's timestamp as a long value
+     * @return a long representing the timestamp of this TagBlock
      */
     public final long getTimestamp() { return timestamp; }
 
     /**
-     *
-     * @param timestamp
+     * Sets the timestamp of this TagBlock
+     * @param timestamp a long representation of a timestamp
      */
     public final void setTimestamp( long timestamp ) { this.timestamp = timestamp; }
 
     /**
-     *
-     * @return
+     * Returns a boolean indicating whether or not this Tagblock includes a timestamp
+     * @return a boolean indicating whether or not this TagBlock includes a timestamp
      */
     public final boolean hasTimestamp() { return ( this.timestamp > 0 ); }
 
     /**
-     *
-     * @return
+     * Returns a byte [] containing this TagBlock's destination value
+     * @return a byte [] containing the destination
      */
     public final byte[] getDestination() { return destination; }
 
@@ -236,8 +235,9 @@ public final class TagBlock {
     public final void setTextStr( byte[] textStr ) { this.textStr = textStr; }
 
     /**
+     * Creates a new TagBlock object based on a current timestamp and the provided "source" value
      *
-     * @param source
+     * @param source a byte [] representing the tagBlock to create
      * @return
      */
     public static TagBlock build( byte [] source ) {
@@ -254,11 +254,13 @@ public final class TagBlock {
     }
 
     /**
-     * Ignore source (or lack there of) in original TagBlock in favor of the provided source value
+     * Parses the given String and builds a TagBlock object out of it.  If the source parameter is not null this 
+     * method will ignore the source embedded in the rawTagBlock parameter (or lack there of) in favor of the provided 
+     * source value.
      *
-     * @param rawTagBlock
-     * @param source
-     * @return
+     * @param rawTagBlock a String containing the unparsed TagBlock data
+     * @param source a byte [] representation of the packet's source
+     * @return a new TagBlock object based on the parsing of the provided String and source information
      */
     public static TagBlock parse( String rawTagBlock, byte [] source ) {
         LOG.debug( "Parsing {}", rawTagBlock );
@@ -317,14 +319,14 @@ public final class TagBlock {
 
     /**
      *
-     * @param rawTagBlock
+     * @param rawTagBlock parses the provided String and returns a TagBlock object
      * @return
      */
     public static TagBlock parse( String rawTagBlock ) { return parse( rawTagBlock, null ); }
 
     /**
      *
-     * @return
+     * @return the AIS formatted String representation of this object
      */
     @Override
     public final String toString() {
