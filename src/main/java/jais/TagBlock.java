@@ -133,104 +133,104 @@ public final class TagBlock {
     public final byte[] getDestination() { return destination; }
 
     /**
-     *
-     * @return
+     * Returns true if there is destination data in this TagBlock
+     * @return a boolean indicating whether or not this TagBlock contains a destination
      */
     public final boolean hasDestination() { return ( this.destination != null ); }
 
     /**
-     *
-     * @param destination
+     * Sets destination data in this TagBlock
+     * @param destination a byte array containing the destination
      */
     public final void setDestination( byte [] destination ) { this.destination = destination; }
 
     /**
-     *
-     * @return
+     * Get the sentence grouping value of this TagBlock in byte array format
+     * @return the sentence grouping value of this TagBlock in byte array format
      */
     public final byte[] getSentenceGrouping() { return sentenceGrouping; }
 
     /**
-     *
-     * @return
+     * Returns true if we have a sentence grouping value
+     * @return a boolean indicating whether or not the TagBlock contains sentence grouping data
      */
     public final boolean hasSentenceGrouping() { return ( this.sentenceGrouping != null ); }
 
     /**
-     *
-     * @param sentenceGrouping
+     * Sets the sentence grouping data in byte array form
+     * @param sentenceGrouping the sentence grouping data in byte array form
      */
     public final void setSentenceGrouping( byte[] sentenceGrouping ) { this.sentenceGrouping = sentenceGrouping; }
 
     /**
-     *
-     * @return
+     * gets the number of lines from this TagBlock
+     * @return an int representing the line count for this TagBlock
      */
     public final int getLineCount() { return lineCount; }
 
     /**
-     *
-     * @return
+     * Returns true if there is a line count value in this TagBlock
+     * @return a boolean indicating whether or not there is a line count value in this TagBlock
      */
     public final boolean hasLineCount() { return ( this.lineCount != 0 ); }
 
     /**
-     *
-     * @param lineCount
+     * Sets the line count value of this TagBlock
+     * @param lineCount the line count value in int form
      */
     public final void setLineCount( int lineCount ) { this.lineCount = lineCount; }
 
     /**
-     *
-     * @return
+     * Retrieves the relative time from this TagBlock
+     * @return the relative time
      */
     public final long getRelativeTime() { return relativeTime; }
 
     /**
-     *
-     * @return
+     * Returns true if there is a relative time value for this TagBlock
+     * @return a boolean indicating whether or not this TagBlock contains a relative time value
      */
     public final boolean hasRelativeTime() { return ( this.relativeTime > 0 ); }
 
     /**
-     *
-     * @param relativeTime
+     * Sets the relative time from the TagBlock
+     * @param relativeTime The relative time in long format
      */
     public final void setRelativeTime( long relativeTime ) { this.relativeTime = relativeTime; }
 
     /**
-     *
-     * @return
+     * Returns the source as a byte array
+     * @return the source as a byte array
      */
     public final byte[] getSource() { return source; }
 
     /**
-     *
-     * @return
+     * Returns true if there is source data in the TagBlock
+     * @return a boolean indicating whether or not the TagBlock contains source data
      */
     public final boolean hasSource() { return ( this.source != null ); }
 
     /**
-     *
-     * @param source
+     * Sets the source data
+     * @param source the source data in the form of a byte array
      */
     public void setSource( byte[] source ) { this.source = source; }
 
     /**
-     *
-     * @return
+     * Returns any text Strings stored in the TagBlock
+     * @return The text string in byte array format
      */
     public final byte[] getTextStr() { return textStr; }
 
     /**
-     *
-     * @return
+     * Returns true if there is text string data in the TagBlock
+     * @return a boolean indicating whether or not the TagBlock contains text string data
      */
     public final boolean hasTextStr() { return ( this.textStr != null ); }
 
     /**
-     *
-     * @param textStr
+     * Sets the text string
+     * @param textStr the text string in byte array format
      */
     public final void setTextStr( byte[] textStr ) { this.textStr = textStr; }
 
@@ -238,7 +238,7 @@ public final class TagBlock {
      * Creates a new TagBlock object based on a current timestamp and the provided "source" value
      *
      * @param source a byte [] representing the tagBlock to create
-     * @return
+     * @return a newly created TagBlock object based on the current timestamp and the provided source value
      */
     public static TagBlock build( byte [] source ) {
         if( source.length > 15 ) {
@@ -320,7 +320,7 @@ public final class TagBlock {
     /**
      *
      * @param rawTagBlock parses the provided String and returns a TagBlock object
-     * @return
+     * @return a TagBlock based on parsing of the incoming String
      */
     public static TagBlock parse( String rawTagBlock ) { return parse( rawTagBlock, null ); }
 

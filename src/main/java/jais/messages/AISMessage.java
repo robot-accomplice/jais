@@ -35,9 +35,9 @@ public interface AISMessage {
     Logger LOG = LogManager.getLogger(AISMessage.class);
 
     /**
-     *
-     * @param imo
-     * @return
+     * Determines whether or not this is a valid IMO according to NMEA standards
+     * @param imo the IMO (in String form) of the originating vessel
+     * @return a boolean indicating whether or not the provided IMO is valid
      */
     public static boolean isValidImo( String imo ) {
         if( imo.toLowerCase().startsWith( "imo" ) ) return isValidImo( Long.parseLong( imo.substring( 4 ) ) );
@@ -45,9 +45,9 @@ public interface AISMessage {
     }
 
     /**
-     *
-     * @param imo
-     * @return
+     * Determines whether or not this is a valid IMO according to NMEA standards
+     * @param imo the IMO (in long form) of the originating vessel
+     * @return a boolean indicating whether or not the provided IMO is valid
      */
     public static boolean isValidImo( long imo ) {
         LOG.info( "Validating IMO: {}", imo );
@@ -84,105 +84,104 @@ public interface AISMessage {
 
     /**
      *
-     * @return
+     * @return a String containing the source of the message
      */
     String getSource();
 
     /**
      *
-     * @param source
+     * @param source a String containing the source of the message
      */
     void setSource( String source );
 
     /**
      *
-     * @return
+     * @return the array of packets from which this message was composed
      */
     AISPacket [] getPackets();
 
     /**
      *
-     * @return
+     * @return type AISMessageType of the message
      */
     AISMessageType getType();
 
     /**
      *
-     * @return
+     * @return The map of fields for this message type
      */
     FieldMap [] getFieldMap();
 
     /**
-     *
-     * @param offset
-     * @return
+     * @param offset the timezone offset for which we want the time received to be returned
+     * @return a ZonedDateTime object generated using the time received and provided ZoneOffset
      */
     ZonedDateTime getTimeReceived( ZoneOffset offset );
 
     /**
      *
-     * @return
+     * @return the time received in its unaltered long value
      */
     long getTimeReceived();
 
     /**
      *
-     * @param mType
+     * @param mType the AISMessageType of this message
      */
     void setType( AISMessageType mType );
 
     /**
      *
-     * @return
+     * @return the "repeat" value of the message
      */
     int getRepeat();
 
     /**
      *
-     * @return
+     * @return the MMSI of the vessel that sent this message
      */
     int getMmsi();
 
     /**
      *
-     * @return
+     * @return the type of MMSI
      */
     MMSIType getMMSIType();
 
     /**
      *
-     * @return
+     * @return a boolean indicating whether or not the MMSI is valid
      */
     boolean hasValidMmsi();
 
     /**
      *
-     * @return
+     * @return a boolean indicating whether or not this message contains positional data
      */
     boolean hasPosition();
 
     /**
      *
-     * @return
+     * @return the position as a Point
      */
     Point getPosition();
 
     /**
      *
-     * @return
+     * @return whether or not there is a sub type for the current message
      */
     boolean hasSubType();
 
     /**
      *
-     * @return 
-     * @throws jais.exceptions.AISException 
+     * @return A properly typed instance of AISMessage given the message content
+     * @throws AISException if we are unable to determine the subtype instance (usually because of a decoding or parsing error)
      */
     AISMessage getSubTypeInstance() throws AISException;
 
     /**
-     *
-     * @throws jais.exceptions.AISException
+     * Decodes this message
+     * @throws AISException if decoding fails
      */
     void decode() throws AISException;
 
@@ -210,14 +209,14 @@ public interface AISMessage {
 
         /**
          *
-         * @return
+         * @return an int indicating at which bit this field starts
          */
         @Override
         public int getStartBit() { return _startBit; }
 
         /**
          *
-         * @return
+         * @return an int indicating at which bit this field ends
          */
         @Override
         public int getEndBit() { return _endBit; }

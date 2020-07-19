@@ -57,8 +57,8 @@ public abstract class AISMessageBase implements AISMessage {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source the message source
+     * @param packets the array of packets used to compose this message
      */
     AISMessageBase( String source, AISPacket... packets ) {
         if( source != null ) _source = AISPacket.str2bArray( source );
@@ -67,9 +67,9 @@ public abstract class AISMessageBase implements AISMessage {
 
     /**
      *
-     * @param source
-     * @param messageType
-     * @param packets
+     * @param source the message source
+     * @param messageType the specific type of message we are dealing with
+     * @param packets the array of packets used to compose this message
      */
     AISMessageBase( String source, AISMessageType messageType, AISPacket... packets ) {
         if( source != null ) _source = AISPacket.str2bArray( source );
@@ -79,7 +79,7 @@ public abstract class AISMessageBase implements AISMessage {
 
     /**
      *
-     * @return
+     * @return this message converted into a String
      */
     @Override
     public String toString() {
@@ -94,78 +94,78 @@ public abstract class AISMessageBase implements AISMessage {
 
     /**
      *
-     * @return
+     * @return The source value
      */
     @Override
     public String getSource() { return AISPacket.bArray2Str( _source ); }
 
     /**
      *
-     * @param source
+     * @param source the source value
      */
     @Override
     public void setSource( String source ) { _source = AISPacket.str2bArray( source ); }
 
     /**
      *
-     * @return
+     * @return the time received
      */
     @Override
     public ZonedDateTime getTimeReceived( ZoneOffset offset ) { return _packets[0].getTimeReceived( offset ); }
 
     /**
      *
-     * @return
+     * @return the time received
      */
     @Override
     public long getTimeReceived() { return _packets[0].getTimeReceived(); }
 
     /**
      *
-     * @return
+     * @return the time the message was sent
      */
     public long getTimeSent() { return _packets[0].getTimeSent(); }
 
     /**
      * Type of AIS message pulled from bits 0 - 6
      *
-     * @return
+     * @return the specific message type
      */
     @Override
     public AISMessageType getType() { return _messageType; }
 
     /**
      *
-     * @param type
+     * @param type the specific message type
      */
     @Override
     public void setType( AISMessageType type ) { _messageType = type; }
 
     /**
      *
-     * @return
+     * @return the array of packets with which this message was composed
      */
     @Override
     public AISPacket[] getPackets() { return _packets; }
 
     /**
      *
-     * @return
+     * @return the MMSI as an int
      */
     @Override
     public int getMmsi() { return _mmsi; }
 
     /**
      *
-     * @return
+     * @return a boolean indicating whether or not the MMSI is valid
      */
     @Override
     public boolean hasValidMmsi() { return isValidMmsi( _mmsi ); }
 
     /**
      *
-     * @param mmsi
-     * @return
+     * @param mmsi the MMSI
+     * @return a boolean indicating whether or not the MMSI is valid
      */
     private static boolean isValidMmsi( long mmsi ) {
         boolean valid = ( ( mmsi < 800000000 ) && ( mmsi > 199999999 ) );
@@ -177,7 +177,7 @@ public abstract class AISMessageBase implements AISMessage {
 
     /**
      *
-     * @return
+     * @return the type of the MMSI
      */
     @Override
     public MMSIType getMMSIType() {
@@ -188,55 +188,56 @@ public abstract class AISMessageBase implements AISMessage {
 
     /**
      *
-     * @return
+     * @return the MMSI's country of origin
      */
     public String getCountryOfOrigin() { return getMMSIType().name(); }
 
     /**
      *
-     * @return
+     * @return the repeat value of the message
      */
     @Override
     public int getRepeat() { return _repeat; }
 
     /**
      *
-     * @return
+     * @return a boolean indicating whether or not there is a sybtype for this message
      */
     @Override
     public boolean hasSubType() { return false; }
 
     /**
      *
-     * @return @throws jais.exceptions.AISException
+     * @return an instance of AISMessage based on the correct subtype of the current message
+     * @throws AISException if an overridden version of this method is unable to create a subtype instance for any reason
      */
     @Override
     public AISMessage getSubTypeInstance() throws AISException { return this; }
 
     /**
      *
-     * @return
+     * @return the FieldMap array for the current concrete instance of a message
      */
     @Override
     public FieldMap[] getFieldMap() { return AISFieldMap.values(); }
 
     /**
      *
-     * @return
+     * @return a boolean indicating whether or not this message contains positional data
      */
     @Override
     public boolean hasPosition() { return false; }
 
     /**
      *
-     * @return
+     * @return the positional data for this message
      */
     @Override
     public Point getPosition() { return _position; }
 
     /**
      *
-     * @throws AISException
+     * @throws AISException if we are unable to decode the message
      */
     @Override
     public void decode() throws AISException {
@@ -251,7 +252,7 @@ public abstract class AISMessageBase implements AISMessage {
                 case TYPE:
                     if( _decodedFieldMap.get( "message_type" ) == null ) {
                         Optional<AISMessageType> mType = AISMessageDecoder.decodeMessageType( _bits );
-                        if( mType.isPresent() ) _messageType = mType.get();
+                        mType.ifPresent(aisMessageType -> _messageType = aisMessageType);
                     }
                     break;
                 case REPEAT:
@@ -266,7 +267,7 @@ public abstract class AISMessageBase implements AISMessage {
 
     /**
      *
-     * @return
+     * @return the calculated hashcode for this object
      */
     @Override
     public int hashCode() {
@@ -277,8 +278,8 @@ public abstract class AISMessageBase implements AISMessage {
 
     /**
      *
-     * @param obj
-     * @return
+     * @param obj the object to which we wish to compare our current object
+     * @return true if the objects are the same
      */
     @Override
     public boolean equals(Object obj) {
@@ -305,8 +306,8 @@ public abstract class AISMessageBase implements AISMessage {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the starting bit for this field
+         * @param endBit the ending bit for this field
          */
         AISFieldMap( int startBit, int endBit ) {
             _startBit = startBit;
@@ -315,14 +316,14 @@ public abstract class AISMessageBase implements AISMessage {
 
         /**
          *
-         * @return
+         * @return the starting bit for this field
          */
         @Override
         public int getStartBit() { return _startBit; }
 
         /**
          *
-         * @return
+         * @return the ending bit for this field
          */
         @Override
         public int getEndBit() { return _endBit; }

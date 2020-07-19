@@ -44,8 +44,8 @@ public class Application {
 
     /**
      *
-     * @param inputFilePath
-     * @param outputFilePath
+     * @param inputFilePath the path to the file containing the AIS packets we wish to decode
+     * @param outputFilePath the path to the file we should create with the decoded messages
      */
     private static void decodeFile(String inputFilePath, String outputFilePath) throws IOException {
         Path in = Paths.get(inputFilePath);
@@ -83,7 +83,7 @@ public class Application {
     }
 
     /**
-     *
+     * @param errorMsg any specific error message that may have led us here
      */
     private static void showUsage(String errorMsg) {
         if (errorMsg != null && !errorMsg.isEmpty()) {
@@ -95,8 +95,8 @@ public class Application {
 
     /**
      *
-     * @param args
-     * @return
+     * @param args the commandline arguments to parse
+     * @return a CommandLine object representing the parsed data
      */
     private static CommandLine parseCmd(String[] args) {
         CommandLine cmd = null;
@@ -122,8 +122,8 @@ public class Application {
 
     /**
      *
-     * @param args
-     * @throws java.io.IOException
+     * @param args the arguments passed to the program when it was run
+     * @throws IOException if we were provided with invalid or unusable file location data
      */
     public static void main(String[] args) throws IOException {
         CommandLine cmd = parseCmd(args);
@@ -146,6 +146,7 @@ public class Application {
 
         /**
          * opens file for creation and adds header line
+         * @param path the path at which we should open a new file
          */
         public static void initFile(Path path) throws IOException {
             LOG.info("Initiating file at " + path.toString());
@@ -154,9 +155,9 @@ public class Application {
         }
 
         /**
-         *
-         * @param message
-         * @throws IOException
+         * @param path the path to the file where we will write the message
+         * @param message the AISMessage we will write to the file
+         * @throws IOException if we are unable to write to the file for any reason
          */
         public static void writeln(Path path, AISMessage message) throws IOException {
             StringBuilder msgSb = new StringBuilder();

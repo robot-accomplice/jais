@@ -34,7 +34,7 @@ public class Console extends Application {
 
     /**
      *
-     * @param stage
+     * @param stage the JavaFX staging area for our interface
      */
     @Override
     public void start( Stage stage ) {
@@ -52,7 +52,7 @@ public class Console extends Application {
 
     /**
      *
-     * @param args
+     * @param args the commandline arguments provided for launching our console
      */
     public static void draw( String [] args ) {
         Console.launch( args );

@@ -32,148 +32,134 @@ public class AISMessageFactory {
 
     /**
      *
-     * @param source
-     * @param strict
-     * @param packets
-     * @return
-     * @throws jais.exceptions.AISException
+     * @param source the source of this message
+     * @param strict whether we want to strictly enforce NMEA rules (such as MMSI validity) when creating a message from the provided AISPackets
+     * @param packets the AISPackets from which we will compose our AISMessage
+     * @return An Optional which may contain our decoded AISMessage
+     * @throws AISException if decoding fails or AISPacket array is empty
      */
     public static Optional<AISMessage> create( String source, boolean strict, AISPacket... packets ) throws AISException {
-        String compositeMsg = null;
+        if( packets == null || packets.length < 1 ) throw new AISException( "Packets array is empty!" );
+        LOG.debug( "Decoding message from {} packet(s). Strict is set to {}", packets.length, strict );
 
-        try {
-            if( packets == null || packets.length < 1 ) throw new AISException( "Packets array is empty!" ); 
-            if( LOG.isDebugEnabled() ) LOG.debug( "Decoding message from {} packet(s). Strict is set to {}", packets.length, strict );
-
-            byte [] compositeBytes;
-            if( packets.length == 1 ) {
-                if( !packets[0].isParsed() ) packets[0].process();
-                compositeBytes = packets[0].getBinaryStringAsByteArray();
-            } else {
-                compositeBytes = AISPacket.concatenate( packets );
-            }
-
-            compositeMsg = AISPacket.bArray2Str( compositeBytes );
-
-            if( LOG.isDebugEnabled() ) LOG.debug( "Composite message is: {}", compositeMsg );
-
-            // we need the message type in order to invoke the reflective constructor
-            Optional<AISMessageType> mType = AISMessageDecoder.decodeMessageType( compositeMsg );
-
-            if( mType.isPresent() ) {
-                if( LOG.isDebugEnabled() ) LOG.debug( "Creating a new {} instance.", mType.get().getDescription() );
-
-                AISMessage message;
-                switch( mType.get() ) {
-                    case POSITION_REPORT_CLASS_A:
-                        message = new PositionReportClassA( source, packets );
-                        break;
-                    case POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE:
-                        message = new PositionReportClassAAssignedSchedule( source, packets );
-                        break;
-                    case POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION:
-                        message = new PositionReportClassAResponseToInterrogation( source, packets );
-                        break;
-                    case BASE_STATION_REPORT:
-                        message = new BaseStationReport( source, packets );
-                        break;
-                    case STATIC_AND_VOYAGE_RELATED_DATA:
-                        message = new StaticAndVoyageRelatedData( source, packets );
-                        break;
-                    case BINARY_ACKNOWLEDGE:
-                        message = new BinaryAcknowledge( source, packets );
-                        break;
-                    case STANDARD_SAR_AIRCRAFT_POSITION_REPORT:
-                        message = new StandardSARAircraftPositionReport( source, packets );
-                        break;
-                    case UTC_AND_DATE_INQUIRY:
-                        message = new UTCDateInquiry( source, packets );
-                        break;
-                    case UTC_AND_DATE_RESPONSE:
-                        message = new UTCDateResponse( source, packets );
-                        break;
-                    case ADDRESSED_SAFETY_RELATED_MESSAGE:
-                        message = new AddressedSafetyRelatedMessage( source, packets );
-                        break;
-                    case SAFETY_RELATED_ACKNOWLEDGEMENT:
-                        message = new SafetyRelatedAcknowledgement( source, packets );
-                        break;
-                    case SAFETY_RELATED_BROADCAST_MESSAGE:
-                        message = new SafetyRelatedBroadcastMessage( source, packets );
-                        break;
-                    case INTERROGATION:
-                        message = new Interrogation( source, packets );
-                        break;
-                    case ASSIGNMENT_MODE_COMMAND:
-                        message = new AssignmentModeCommand( source, packets );
-                        break;
-                    case DGNSS_BROADCAST_BINARY_MESSAGE:
-                        message = new DGNSSBroadcastBinaryMessage( source, packets );
-                        break;
-                    case STANDARD_CLASS_B_CS_POSITION_REPORT:
-                        message = new StandardClassBCSPositionReport( source, packets );
-                        break;
-                    case EXTENDED_CLASS_B_CS_POSITION_REPORT:
-                        message = new ExtendedClassBCSPositionReport( source, packets );
-                        break;
-                    case DATA_LINK_MANAGEMENT_MESSAGE:
-                        message = new DataLinkManagementMessage( source, packets );
-                        break;
-                    case AID_TO_NAVIGATION_REPORT:
-                        message = new AidToNavigationReport( source, packets );
-                        break;
-                    case CHANNEL_MANAGEMENT:
-                        message = new ChannelManagement( source, packets );
-                        break;
-                    case GROUP_ASSIGNMENT_COMMAND:
-                        message = new GroupAssignmentCommand( source, packets );
-                        break;
-                    case STATIC_DATA_REPORT:
-                        message = new StaticDataReport( source, packets );
-                        break;
-                    case SINGLE_SLOT_BINARY_MESSAGE:
-                        message = new SingleSlotBinaryMessage( source, packets );
-                        break;
-                    case MULTIPLE_SLOT_BINARY_MESSAGE:
-                        message = new MultipleSlotBinaryMessage( source, packets );
-                        break;
-                    case POSITION_REPORT_FOR_LONG_RANGE_APPLICATIONS:
-                        message = new LongRangeAISBroadcastMessage( source, packets );
-                        break;
-                    case BINARY_BROADCAST_MESSAGE:
-                        message = new BinaryBroadcastMessage( source, packets );
-                        break;
-                    default:
-                        if( LOG.isWarnEnabled() ) LOG.warn( "{} - Unknown or invalid message type:  ", source, mType.get() );
-                        if( LOG.isDebugEnabled() ) LOG.debug( "{} - AIS Packet String: \"{}\"", compositeMsg );
-                        return Optional.empty();
-                }
-
-                if( message != null ) message.decode(); // decode message
-                
-                return Optional.of( message );
-            } else {
-                throw new AISException( "MessageType is null for message String: " + compositeMsg );
-            }
-        } catch( AISException t ) {
-            // repackage any and all throwables as AISExceptions
-            if( strict ) {
-                throw new AISException( "Failed to create a valid AISMessage from packet \"" + compositeMsg + "\" : " + t.getMessage(), t );
-            } else {
-                LOG.warn( "Incomplete AISMessage created from packet \"{}\" : {}", compositeMsg, t.getMessage() );
-                if( LOG.isTraceEnabled() ) LOG.trace( "Decode Failure: {}", t.getMessage(), t );
-            }
+        byte [] compositeBytes;
+        if( packets.length == 1 ) {
+            if( !packets[0].isParsed() ) packets[0].process();
+            compositeBytes = packets[0].getBinaryStringAsByteArray();
+        } else {
+            compositeBytes = AISPacket.concatenate( packets );
         }
 
-        return Optional.empty();
+        String compositeMsg = AISPacket.bArray2Str( compositeBytes );
+
+        if( LOG.isDebugEnabled() ) LOG.debug( "Composite message is: {}", compositeMsg );
+
+        // we need the message type in order to invoke the reflective constructor
+        Optional<AISMessageType> mType = AISMessageDecoder.decodeMessageType( compositeMsg );
+
+        if( mType.isPresent() ) {
+            if( LOG.isDebugEnabled() ) LOG.debug( "Creating a new {} instance.", mType.get().getDescription() );
+
+            AISMessage message;
+            switch( mType.get() ) {
+                case POSITION_REPORT_CLASS_A:
+                    message = new PositionReportClassA( source, packets );
+                    break;
+                case POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE:
+                    message = new PositionReportClassAAssignedSchedule( source, packets );
+                    break;
+                case POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION:
+                    message = new PositionReportClassAResponseToInterrogation( source, packets );
+                    break;
+                case BASE_STATION_REPORT:
+                    message = new BaseStationReport( source, packets );
+                    break;
+                case STATIC_AND_VOYAGE_RELATED_DATA:
+                    message = new StaticAndVoyageRelatedData( source, packets );
+                    break;
+                case BINARY_ACKNOWLEDGE:
+                    message = new BinaryAcknowledge( source, packets );
+                    break;
+                case STANDARD_SAR_AIRCRAFT_POSITION_REPORT:
+                    message = new StandardSARAircraftPositionReport( source, packets );
+                    break;
+                case UTC_AND_DATE_INQUIRY:
+                    message = new UTCDateInquiry( source, packets );
+                    break;
+                case UTC_AND_DATE_RESPONSE:
+                    message = new UTCDateResponse( source, packets );
+                    break;
+                case ADDRESSED_SAFETY_RELATED_MESSAGE:
+                    message = new AddressedSafetyRelatedMessage( source, packets );
+                    break;
+                case SAFETY_RELATED_ACKNOWLEDGEMENT:
+                    message = new SafetyRelatedAcknowledgement( source, packets );
+                    break;
+                case SAFETY_RELATED_BROADCAST_MESSAGE:
+                    message = new SafetyRelatedBroadcastMessage( source, packets );
+                    break;
+                case INTERROGATION:
+                    message = new Interrogation( source, packets );
+                    break;
+                case ASSIGNMENT_MODE_COMMAND:
+                    message = new AssignmentModeCommand( source, packets );
+                    break;
+                case DGNSS_BROADCAST_BINARY_MESSAGE:
+                    message = new DGNSSBroadcastBinaryMessage( source, packets );
+                    break;
+                case STANDARD_CLASS_B_CS_POSITION_REPORT:
+                    message = new StandardClassBCSPositionReport( source, packets );
+                    break;
+                case EXTENDED_CLASS_B_CS_POSITION_REPORT:
+                    message = new ExtendedClassBCSPositionReport( source, packets );
+                    break;
+                case DATA_LINK_MANAGEMENT_MESSAGE:
+                    message = new DataLinkManagementMessage( source, packets );
+                    break;
+                case AID_TO_NAVIGATION_REPORT:
+                    message = new AidToNavigationReport( source, packets );
+                    break;
+                case CHANNEL_MANAGEMENT:
+                    message = new ChannelManagement( source, packets );
+                    break;
+                case GROUP_ASSIGNMENT_COMMAND:
+                    message = new GroupAssignmentCommand( source, packets );
+                    break;
+                case STATIC_DATA_REPORT:
+                    message = new StaticDataReport( source, packets );
+                    break;
+                case SINGLE_SLOT_BINARY_MESSAGE:
+                    message = new SingleSlotBinaryMessage( source, packets );
+                    break;
+                case MULTIPLE_SLOT_BINARY_MESSAGE:
+                    message = new MultipleSlotBinaryMessage( source, packets );
+                    break;
+                case POSITION_REPORT_FOR_LONG_RANGE_APPLICATIONS:
+                    message = new LongRangeAISBroadcastMessage( source, packets );
+                    break;
+                case BINARY_BROADCAST_MESSAGE:
+                    message = new BinaryBroadcastMessage( source, packets );
+                    break;
+                default:
+                    if( LOG.isWarnEnabled() ) LOG.warn( "{} - Unknown or invalid message type:  {}", source, mType.get() );
+                    LOG.debug( "{} - AIS Packet String: \"{}\"", source, compositeMsg );
+                    return Optional.empty();
+            }
+
+            message.decode(); // decode message
+
+            return Optional.of( message );
+        } else {
+            throw new AISException( "MessageType is null for message String: " + compositeMsg );
+        }
     }
 
     /**
      *
-     * @param source
-     * @param packets
-     * @return
-     * @throws jais.exceptions.AISException
+     * @param source the source of the message
+     * @param packets the AISPackets from which we will compose the message
+     * @return An Optional which may contain the decoded AISMessage
+     * @throws AISException if decoding fails
      */
     public static Optional<AISMessage> create( String source, AISPacket... packets ) throws AISException {
         return create( source, true, packets );
@@ -181,11 +167,11 @@ public class AISMessageFactory {
 
     /**
      *
-     * @param source
-     * @param strict
-     * @param packetStrings
-     * @return
-     * @throws AISException
+     * @param source the source of the message
+     * @param strict whether we want to strictly enforce NMEA rules (such as MMSI validity) when creating a message from the provided AISPackets
+     * @param packetStrings the array of packet strings from which we will compose our AISMessage
+     * @return An Optional which may contain the decoded AISMessage
+     * @throws AISException if decoding fails
      */
     public static Optional<AISMessage> create( String source, boolean strict, String... packetStrings ) throws AISException {
         AISPacket[] packets = new AISPacket[packetStrings.length];
