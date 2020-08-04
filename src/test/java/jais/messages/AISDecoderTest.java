@@ -163,20 +163,16 @@ public class AISDecoderTest {
         LOG.info( "*** testPacketValidation()" );
         for( String packetStr : TEST_PACKETS ) {
             LOG.debug( "Validating packet: {}", packetStr );
-            try {
-                String truncStr = AISPacket.truncatePacket( packetStr );
-                LOG.debug( "AISPacket.truncatePacket() produced: \"{}\" from \"{}\"", truncStr, packetStr );
-                if( truncStr != null && !truncStr.isEmpty() ) 
-                    Assert.assertTrue( "Packet string is invalid:\n" + truncStr, new AISPacket( truncStr ).isValid() );
-                else {
-                    AISPacket packet = new AISPacket(packetStr);
+            String truncStr = AISPacket.truncatePacket( packetStr );
+            LOG.debug( "AISPacket.truncatePacket() produced: \"{}\" from \"{}\"", truncStr, packetStr );
+            if( truncStr != null && !truncStr.isEmpty() )
+                Assert.assertTrue( "Packet string is invalid:\n" + truncStr, new AISPacket( truncStr ).isValid() );
+            else {
+                AISPacket packet = new AISPacket(packetStr);
 
-                    Assert.assertNotNull("AISPacket from String is null: " + packetStr, packet);
-                    Assert.assertTrue( "Truncated packet is null or empty and original packetStr is invalid: " 
-                            + packetStr, packet.isValid() );
-                }
-            } catch( AISPacketException t ) {
-                LOG.info("FAILED: {} for packet '{}'", t.getMessage(), packetStr, t );
+                Assert.assertNotNull("AISPacket from String is null: " + packetStr, packet);
+                Assert.assertTrue( "Truncated packet is null or empty and original packetStr is invalid: "
+                        + packetStr, packet.isValid() );
             }
         }
         LOG.info( "Packet validation test successful!" );
@@ -185,7 +181,7 @@ public class AISDecoderTest {
     /**
      * Tests basic AIS decoding
      *
-     * @throws jais.exceptions.AISException
+     * @throws AISException
      */
     @Test
     public void testPacketDecoding() throws AISException {
