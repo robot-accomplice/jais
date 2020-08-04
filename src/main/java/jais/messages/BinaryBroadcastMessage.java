@@ -128,6 +128,14 @@ public class BinaryBroadcastMessage extends AISMessageBase {
                     if( _bits.length() > field.getStartBit() )
                         _data = _bits.get( field.getStartBit(), _bits.size() - 1 );
                     break;
+                case DESTINATION_MMSI:
+                    break;
+                case RETRANSMIT:
+                    break;
+                case SEQUENCE_NUMBER:
+                    break;
+                case SPARE:
+                    break;
             }
         }
     }

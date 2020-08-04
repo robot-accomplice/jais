@@ -79,6 +79,10 @@ public class UTCDateInquiry extends AISMessageBase {
                     if( _bits.size() >= field.getStartBit() )
                         _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
+                case SPARE1:
+                    break;
+                case SPARE2:
+                    break;
             }
         }
     }

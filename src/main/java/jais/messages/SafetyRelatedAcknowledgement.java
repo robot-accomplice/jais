@@ -122,6 +122,16 @@ public class SafetyRelatedAcknowledgement extends AISMessageBase {
                     if( _bits.size() >= field.getStartBit() )
                             _mmsi4 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
+                case SPARE1:
+                    break;
+                case SPARE2:
+                    break;
+                case SPARE3:
+                    break;
+                case SPARE4:
+                    break;
+                case SPARE5:
+                    break;
             }
         }
     }

@@ -175,7 +175,7 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
             try {
                 if( LOG.isDebugEnabled() ) LOG.debug( "Creating a new {} instance.", _subType.getDescription() );
 
-                Constructor con = _subType.getMsgClass().getDeclaredConstructor( AISPacket[].class );
+                Constructor<? extends BinaryAddressedMessageBase> con = _subType.getMsgClass().getDeclaredConstructor( AISPacket[].class );
                 con.setAccessible( true );
 
                 if( _packets.length == 1 ) {
@@ -227,6 +227,10 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
                 case FID:
                     if( _bits.size() >= field.getStartBit() )
                         _fid = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    break;
+                case DATA:
+                    break;
+                case SPARE:
                     break;
             }
         }

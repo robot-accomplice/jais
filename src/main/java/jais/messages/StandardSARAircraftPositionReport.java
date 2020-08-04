@@ -231,6 +231,10 @@ public class StandardSARAircraftPositionReport extends AISMessageBase {
                     if( _bits.size() >= field.getStartBit() )
                         _radio = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
                     break;
+                case REGIONAL:
+                    break;
+                case SPARE:
+                    break;
             }
         }
     }

@@ -102,6 +102,8 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
                 case TEXT:
                     _text = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), _bits.size() - 1 );
                     break;
+                case SPARE:
+                    break;
             }
         }
     }
