@@ -26,6 +26,5 @@
     <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:win:11.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:11.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:win:11.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains:annotations:1.1.02" level="project" />
   </component>
 </module>
