@@ -40,14 +40,14 @@
             <name>Jonathan Machen</name>
             <email>jonathan.machen@robotaccomplice.com</email>
             <organization>Robot Accomplice</organization>
-            <organizationUrl>https://github.com/vermicious/jais</organizationUrl>
+            <organizationUrl>https://gitlab.com/robot_accomplice/jais</organizationUrl>
         </developer>
     </developers>
     
     <scm>
-        <connection>scm:git:git://github.com/vermicious/jais.git</connection>
-        <developerConnection>scm:git:ssh://github.com:vermicious/jais.git</developerConnection>
-        <url>http://github.com/vermicious/jais</url>
+        <connection>scm:git:git://gitlab.com/robot_accomplice/jais.git</connection>
+        <developerConnection>scm:git:ssh://gitlab.com:robot_accomplice/jais.git</developerConnection>
+        <url>https://gitlab.com/robot_accomplice/jais</url>
     </scm>
     
     <properties>
