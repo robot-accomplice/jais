@@ -26,7 +26,7 @@
 
     <name>JAIS</name>
     <description>Java AIS decoding library</description>
-    <url>https://github.com/vermicious/jais</url>
+    <url>https://gitlab.com/robot_accomplice/jais</url>
 
     <licenses>
         <license>
