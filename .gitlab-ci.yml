@@ -1,0 +1,16 @@
+image: maven
+
+stages:          # List of stages for jobs, and their order of execution
+  - test
+  - build
+
+unit-test-job:
+  stage: test
+  script:
+    - echo "Running unit tests..."
+    - mvn clean test
+
+package:
+  stage: build
+  script:
+    - mvn package
