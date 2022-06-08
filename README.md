@@ -1,6 +1,8 @@
 # JAIS
 A Java [AIS](https://en.wikipedia.org/wiki/Automatic_identification_system) decoding library
 
+JAIS can also be executed like a binary enabling ad hoc decoding:
+
 usage: java -jar <JAIS jar name> [options]
  -b,--batch           Run in "batch" mode.  Console mode (the default)
                       provides a JFX interface for decoding one or more
