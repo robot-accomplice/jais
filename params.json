@@ -1,0 +1,6 @@
+{
+  "name": "JAIS",
+  "tagline": "A Java AIS decoding/encoding library",
+  "body": "### Coming Soon\r\n- Refactoring to minimize external dependencies (particularly as they relate to licensing deviations from Apache 2)\r\n- Full NMEA 0183 4.10 spec implementation\r\n- Message encoding for the creation of NMEA 0183 compliant messages\r\n\r\n### Authors and Contributors\r\nJonathan Machen (@vermicious and @jmachen)",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
