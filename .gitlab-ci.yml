@@ -1,6 +1,6 @@
 image: maven
 
-stages:          # List of stages for jobs, and their order of execution
+stages: # List of stages for jobs, and their order of execution
   - test
   - build
   - publish
@@ -18,13 +18,14 @@ package:
 
 pages:
   stage: publish
-  only: 
+  only:
     - master
   image: ruby:2.7
   script:
     - gem install bundler
     - bundle install
     - bundle exec jekyll build -d public
+    - cp -R target/apidocs public
   artifacts:
     paths:
       - public
