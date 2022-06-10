@@ -3,6 +3,7 @@ image: maven
 stages:          # List of stages for jobs, and their order of execution
   - test
   - build
+  - publish
 
 unit-test-job:
   stage: test
@@ -14,3 +15,16 @@ package:
   stage: build
   script:
     - mvn package
+
+pages:
+  stage: publish
+  only: 
+    - master
+  image: ruby:2.7
+  script:
+    - gem install bundler
+    - bundle install
+    - bundle exec jekyll build -d public
+  artifacts:
+    paths:
+      - public
