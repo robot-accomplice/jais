@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class AssignmentModeCommand extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( AssignmentModeCommand.class );
+    private final static Logger LOG = LogManager.getLogger(AssignmentModeCommand.class);
 
     private int _mmsi1;
     private int _offset1;
@@ -40,26 +40,26 @@ public class AssignmentModeCommand extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source  String denoting the source of the packet
+     * @param packets AISPacket[] from which the message is composed
      */
-    public AssignmentModeCommand( String source, AISPacket... packets ) {
-        super( source, packets );
+    public AssignmentModeCommand(String source, AISPacket... packets) {
+        super(source, packets);
     }
 
     /**
      *
-     * @param source
-     * @param type
-     * @param packets
+     * @param source  String denoting the source of the packet
+     * @param type    AISMessageType
+     * @param packets AISPacket[] from which the message is composed
      */
-    public AssignmentModeCommand( String source, AISMessageType type, AISPacket... packets ) {
-        super( source, type, packets );
+    public AssignmentModeCommand(String source, AISMessageType type, AISPacket... packets) {
+        super(source, type, packets);
     }
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getSourceMmsi() {
         return super.getMmsi();
@@ -67,7 +67,7 @@ public class AssignmentModeCommand extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getMmsi1() {
         return _mmsi1;
@@ -75,7 +75,7 @@ public class AssignmentModeCommand extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getOffset1() {
         return _offset1;
@@ -83,7 +83,7 @@ public class AssignmentModeCommand extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getIncrement1() {
         return _increment1;
@@ -91,7 +91,7 @@ public class AssignmentModeCommand extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getMmsi2() {
         return _mmsi2;
@@ -99,7 +99,7 @@ public class AssignmentModeCommand extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getOffset2() {
         return _offset2;
@@ -107,47 +107,50 @@ public class AssignmentModeCommand extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getIncrement2() {
         return _increment2;
     }
 
     /**
-     * @throws AISException
+     * @throws AISException if any part of the decoding process fails
      */
     @Override
     public final void decode() throws AISException {
         super.decode();
 
-        for( AssignmentModeCommandFieldMap field : AssignmentModeCommandFieldMap.values() ) {
-            switch( field ) {
+        for (AssignmentModeCommandFieldMap field : AssignmentModeCommandFieldMap.values()) {
+            switch (field) {
                 case MMSI1:
-                    if( _bits.size() >= field.getStartBit() )
-                        _mmsi1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _mmsi1 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case OFFSET1:
-                    if( _bits.size() >= field.getStartBit() )
-                        _offset1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _offset1 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case INCREMENT1:
-                    if( _bits.size() >= field.getStartBit() )
-                        _increment1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _increment1 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(),
+                                field.getEndBit());
                     break;
                 case MMSI2:
-                    if( _bits.size() >= field.getStartBit() )
-                        _mmsi2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _mmsi2 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case OFFSET2:
-                    if( _bits.size() >= field.getStartBit() )
-                        _offset2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _offset2 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case INCREMENT2:
-                    if( _bits.size() >= field.getStartBit() )
-                        _increment2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _increment2 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(),
+                                field.getEndBit());
                     break;
                 default:
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
+                    if (LOG.isDebugEnabled())
+                        LOG.debug("Ignoring field: {}", field.name());
             }
         }
     }
@@ -157,30 +160,30 @@ public class AssignmentModeCommand extends AISMessageBase {
      */
     private enum AssignmentModeCommandFieldMap implements FieldMap {
 
-        SPARE( 38, 39 ),
-        MMSI1( 40, 69 ),
-        OFFSET1( 70, 81 ),
-        INCREMENT1( 82, 91 ),
-        MMSI2( 92, 121 ),
-        OFFSET2( 122, 133 ),
-        INCREMENT2( 134, 143 );
+        SPARE(38, 39),
+        MMSI1(40, 69),
+        OFFSET1(70, 81),
+        INCREMENT1(82, 91),
+        MMSI2(92, 121),
+        OFFSET2(122, 133),
+        INCREMENT2(134, 143);
 
         private final int _startBit;
         private final int _endBit;
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit int
+         * @param endBit   int
          */
-        AssignmentModeCommandFieldMap( int startBit, int endBit ) {
+        AssignmentModeCommandFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }
 
         /**
          *
-         * @return
+         * @return int
          */
         @Override
         public int getStartBit() {
@@ -189,7 +192,7 @@ public class AssignmentModeCommand extends AISMessageBase {
 
         /**
          *
-         * @return
+         * @return int
          */
         @Override
         public int getEndBit() {

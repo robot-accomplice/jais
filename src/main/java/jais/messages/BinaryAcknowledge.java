@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class BinaryAcknowledge extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( BinaryAddressedMessageBase.class );
+    private final static Logger LOG = LogManager.getLogger(BinaryAddressedMessageBase.class);
 
     private int _mmsi1;
     private int _mmsi2;
@@ -38,27 +38,26 @@ public class BinaryAcknowledge extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
-     * @throws jais.exceptions.AISException
+     * @param source  String denoting the source of the packet
+     * @param packets AISPacket[] from which the message is composed
      */
-    public BinaryAcknowledge( String source, AISPacket... packets ) throws AISException {
-        super( source, packets );
+    public BinaryAcknowledge(String source, AISPacket... packets) {
+        super(source, packets);
     }
 
     /**
      *
-     * @param source
-     * @param messageType
-     * @param packets
+     * @param source  String denoting the source of the packet
+     * @param type    AISMessageType
+     * @param packets AISPacket[] from which the message is composed
      */
-    public BinaryAcknowledge( String source, AISMessageType messageType, AISPacket... packets ) {
-        super( source, messageType, packets );
+    public BinaryAcknowledge(String source, AISMessageType type, AISPacket... packets) {
+        super(source, type, packets);
     }
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getSourceMmsi() {
         return super.getMmsi();
@@ -66,7 +65,7 @@ public class BinaryAcknowledge extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getMmsi1() {
         return _mmsi1;
@@ -74,7 +73,7 @@ public class BinaryAcknowledge extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getMmsi2() {
         return _mmsi2;
@@ -82,7 +81,7 @@ public class BinaryAcknowledge extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getMmsi3() {
         return _mmsi3;
@@ -90,7 +89,7 @@ public class BinaryAcknowledge extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getMmsi4() {
         return _mmsi4;
@@ -98,32 +97,33 @@ public class BinaryAcknowledge extends AISMessageBase {
 
     /**
      *
-     * @throws jais.exceptions.AISException
+     * @throws jais.exceptions.AISException if we fail to decode the message
      */
     @Override
     public final void decode() throws AISException {
         super.decode();
 
-        for( BinaryAcknowledgeFieldMap field : BinaryAcknowledgeFieldMap.values() ) {
-            switch( field ) {
+        for (BinaryAcknowledgeFieldMap field : BinaryAcknowledgeFieldMap.values()) {
+            switch (field) {
                 case MMSI1:
-                    if( _bits.size() >= field.getStartBit() )
-                        _mmsi1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _mmsi1 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case MMSI2:
-                    if( _bits.size() >= field.getStartBit() )
-                        _mmsi2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _mmsi2 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case MMSI3:
-                    if( _bits.size() >= field.getStartBit() )
-                        _mmsi3 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _mmsi3 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case MMSI4:
-                    if( _bits.size() >= field.getStartBit() )
-                        _mmsi4 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _mmsi4 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 default:
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
+                    if (LOG.isDebugEnabled())
+                        LOG.debug("Ignoring field: {}", field.name());
             }
         }
     }
@@ -133,33 +133,33 @@ public class BinaryAcknowledge extends AISMessageBase {
      */
     private enum BinaryAcknowledgeFieldMap implements FieldMap {
 
-        SPARE1( 38, 39 ),
-        MMSI1( 40, 69 ),
+        SPARE1(38, 39),
+        MMSI1(40, 69),
         // optional
-        SPARE2( 70, 71 ),
-        MMSI2( 72, 101 ),
-        SPARE3( 102, 103 ),
-        MMSI3( 104, 133 ),
-        SPARE4( 134, 135 ),
-        MMSI4( 136, 165 ),
-        SPARE5( 166, 167 );
+        SPARE2(70, 71),
+        MMSI2(72, 101),
+        SPARE3(102, 103),
+        MMSI3(104, 133),
+        SPARE4(134, 135),
+        MMSI4(136, 165),
+        SPARE5(166, 167);
 
         private final int _startBit;
         private final int _endBit;
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit int
+         * @param endBit   int
          */
-        BinaryAcknowledgeFieldMap( int startBit, int endBit ) {
+        BinaryAcknowledgeFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }
 
         /**
          *
-         * @return
+         * @return int
          */
         @Override
         public int getStartBit() {
@@ -168,7 +168,7 @@ public class BinaryAcknowledge extends AISMessageBase {
 
         /**
          *
-         * @return
+         * @return int
          */
         @Override
         public int getEndBit() {

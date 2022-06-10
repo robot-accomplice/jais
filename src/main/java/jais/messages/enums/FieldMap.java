@@ -21,16 +21,16 @@ package jais.messages.enums;
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public interface FieldMap {
-    
+
     /**
      * 
-     * @return 
+     * @return int
      */
     int getStartBit();
-    
+
     /**
      * 
-     * @return 
+     * @return int
      */
     int getEndBit();
 }

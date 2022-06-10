@@ -22,8 +22,6 @@ import jais.messages.enums.AISMessageType;
 import jais.messages.enums.BinaryBroadcastMessageType;
 import jais.messages.enums.FieldMap;
 import java.util.BitSet;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -31,34 +29,32 @@ import org.apache.logging.log4j.Logger;
  */
 public class BinaryBroadcastMessage extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger(BinaryBroadcastMessage.class );
-
     private int _dac; // designated area code
     private int _fid; // functional id
     private BitSet _data;
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source  String denoting the source of the packet
+     * @param packets AISPacket[] from which the message is composed
      */
-    public BinaryBroadcastMessage( String source, AISPacket... packets ) {
-        super( source, packets );
+    public BinaryBroadcastMessage(String source, AISPacket... packets) {
+        super(source, packets);
     }
 
     /**
      *
-     * @param source
-     * @param messageType
-     * @param packets
+     * @param source  String denoting the source of the packet
+     * @param type    AISMessageType
+     * @param packets AISPacket[] from which the message is composed
      */
-    public BinaryBroadcastMessage( String source, AISMessageType messageType, AISPacket... packets ) {
-        super( source, messageType, packets );
+    public BinaryBroadcastMessage(String source, AISMessageType type, AISPacket... packets) {
+        super(source, type, packets);
     }
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getSourceMmsi() {
         return super.getMmsi();
@@ -66,15 +62,7 @@ public class BinaryBroadcastMessage extends AISMessageBase {
 
     /**
      *
-     * @return
-     */
-    public static Logger getLOG() {
-        return LOG;
-    }
-
-    /**
-     *
-     * @return
+     * @return int
      */
     public int getDac() {
         return _dac;
@@ -82,7 +70,7 @@ public class BinaryBroadcastMessage extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getFid() {
         return _fid;
@@ -90,15 +78,15 @@ public class BinaryBroadcastMessage extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return BitSet
      */
     public BitSet getData() {
         return _data;
     }
-    
+
     /**
      * 
-     * @return 
+     * @return BinaryBroadcastMessageType
      */
     public BinaryBroadcastMessageType getSubType() {
         return BinaryBroadcastMessageType.UNKNOWN;
@@ -106,27 +94,27 @@ public class BinaryBroadcastMessage extends AISMessageBase {
 
     /**
      *
-     * @throws jais.exceptions.AISException
+     * @throws jais.exceptions.AISException if we are unable to decode the message
      */
     @Override
     public void decode() throws AISException {
         super.decode();
 
-        for( BinaryBroadcastMessageBaseFieldMap field : BinaryBroadcastMessageBaseFieldMap.values() ) {
-            switch( field ) {
+        for (BinaryBroadcastMessageBaseFieldMap field : BinaryBroadcastMessageBaseFieldMap.values()) {
+            switch (field) {
                 case DAC:
-                    if( _bits.size() >= field.getStartBit() )
-                        _dac = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _dac = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case FID:
-                    if( _bits.size() >= field.getStartBit() )
-                        _fid = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _fid = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DATA:
-                    // store the undecoded portion of the BitSet in the data 
+                    // store the undecoded portion of the BitSet in the data
                     // field for later decoding by subtype
-                    if( _bits.length() > field.getStartBit() )
-                        _data = _bits.get( field.getStartBit(), _bits.size() - 1 );
+                    if (_bits.length() > field.getStartBit())
+                        _data = _bits.get(field.getStartBit(), _bits.size() - 1);
                     break;
                 case DESTINATION_MMSI:
                     break;
@@ -145,13 +133,13 @@ public class BinaryBroadcastMessage extends AISMessageBase {
      */
     private enum BinaryBroadcastMessageBaseFieldMap implements FieldMap {
 
-        SEQUENCE_NUMBER( 38, 39 ),
-        DESTINATION_MMSI( 40, 69 ),
-        RETRANSMIT( 70, 70 ),
-        SPARE( 71, 71 ),
-        DAC( 72, 81 ), // designated area code
-        FID( 82, 87 ), // Functional ID
-        DATA( 88, -1 ) // -1 means from startBit to end of bitArray
+        SEQUENCE_NUMBER(38, 39),
+        DESTINATION_MMSI(40, 69),
+        RETRANSMIT(70, 70),
+        SPARE(71, 71),
+        DAC(72, 81), // designated area code
+        FID(82, 87), // Functional ID
+        DATA(88, -1) // -1 means from startBit to end of bitArray
         ;
 
         private final int _startBit;
@@ -159,17 +147,17 @@ public class BinaryBroadcastMessage extends AISMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit int
+         * @param endBit   int
          */
-        BinaryBroadcastMessageBaseFieldMap( int startBit, int endBit ) {
+        BinaryBroadcastMessageBaseFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }
 
         /**
          *
-         * @return
+         * @return int
          */
         @Override
         public int getStartBit() {
@@ -178,7 +166,7 @@ public class BinaryBroadcastMessage extends AISMessageBase {
 
         /**
          *
-         * @return
+         * @return int
          */
         @Override
         public int getEndBit() {

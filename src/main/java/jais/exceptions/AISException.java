@@ -25,20 +25,26 @@ public class AISException extends Exception {
 
     /**
      *
-     * @param message
+     * @param message String
      */
-    public AISException(String message) { super(message); }
+    public AISException(String message) {
+        super(message);
+    }
 
     /**
      *
-     * @param message
-     * @param t
+     * @param message String
+     * @param t       Throwable
      */
-    public AISException(String message, Throwable t) { super(message, t); }
+    public AISException(String message, Throwable t) {
+        super(message, t);
+    }
 
     /**
      *
-     * @param t
+     * @param t Throwable
      */
-    public AISException(Throwable t) { super(t); }
+    public AISException(Throwable t) {
+        super(t);
+    }
 }

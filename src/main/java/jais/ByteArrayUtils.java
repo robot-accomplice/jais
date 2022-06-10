@@ -190,7 +190,7 @@ public final class ByteArrayUtils {
      *
      * @param bytes the byte array we want to convert to an int
      * @return an int representation of the provided byte []
-     * @throws AISException if the byte array is too short
+     * @throws InvalidParameterException if the byte array is too short
      */
     public final static int getInt(byte[] bytes) throws InvalidParameterException {
         if (bytes.length < 4)
@@ -199,7 +199,7 @@ public final class ByteArrayUtils {
     }
 
     /**
-     * Returns the index of the first occurrence of char c in byte [] ba or -1 if
+     * Returns the index of the first occurrence of char c in byte [] ba or -1
      * the char is not present
      *
      * @param ba the byte array we want to search

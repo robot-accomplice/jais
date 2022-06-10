@@ -32,34 +32,41 @@ import org.apache.logging.log4j.Logger;
  */
 public interface AISMessage {
 
+    /**
+     * Logger
+     */
     Logger LOG = LogManager.getLogger(AISMessage.class);
 
     /**
      * Determines whether or not this is a valid IMO according to NMEA standards
+     * 
      * @param imo the IMO (in String form) of the originating vessel
      * @return a boolean indicating whether or not the provided IMO is valid
      */
-    public static boolean isValidImo( String imo ) {
-        if( imo.toLowerCase().startsWith( "imo" ) ) return isValidImo( Long.parseLong( imo.substring( 4 ) ) );
-        return isValidImo(Long.parseLong( imo ) );
+    public static boolean isValidImo(String imo) {
+        if (imo.toLowerCase().startsWith("imo"))
+            return isValidImo(Long.parseLong(imo.substring(4)));
+        return isValidImo(Long.parseLong(imo));
     }
 
     /**
      * Determines whether or not this is a valid IMO according to NMEA standards
+     * 
      * @param imo the IMO (in long form) of the originating vessel
      * @return a boolean indicating whether or not the provided IMO is valid
      */
-    public static boolean isValidImo( long imo ) {
-        LOG.info( "Validating IMO: {}", imo );
+    public static boolean isValidImo(long imo) {
+        LOG.info("Validating IMO: {}", imo);
 
-        boolean valid = ( Long.toString( imo ).length() == 7 );
+        boolean valid = (Long.toString(imo).length() == 7);
 
-        if( valid ) {
+        if (valid) {
             int d = 0;
             Integer[] digits = new Integer[7];
-            for( char c : Long.toString( imo ).toCharArray() ) {
-                digits[d] = Integer.valueOf( "" + c );
-                if( LOG.isDebugEnabled() ) LOG.debug( "Digit at position: {} is {}", d, digits[d] );
+            for (char c : Long.toString(imo).toCharArray()) {
+                digits[d] = Integer.valueOf("" + c);
+                if (LOG.isDebugEnabled())
+                    LOG.debug("Digit at position: {} is {}", d, digits[d]);
                 d++;
             }
 
@@ -71,12 +78,14 @@ public interface AISMessage {
             digits[5] *= 2;
 
             int sum = 0;
-            for( int i = 0; i < 6; i++ ) sum += digits[i];
-            if( LOG.isDebugEnabled() ) LOG.debug( "Sum of products is : {}", sum );
+            for (int i = 0; i < 6; i++)
+                sum += digits[i];
+            if (LOG.isDebugEnabled())
+                LOG.debug("Sum of products is : {}", sum);
 
-            valid = ( sum % 10 == digits[6] );
+            valid = (sum % 10 == digits[6]);
 
-            LOG.info( "Modulus of sum divided by 10 is: {} vs {}", sum % 10, digits[6] );
+            LOG.info("Modulus of sum divided by 10 is: {} vs {}", sum % 10, digits[6]);
         }
 
         return valid;
@@ -92,13 +101,13 @@ public interface AISMessage {
      *
      * @param source a String containing the source of the message
      */
-    void setSource( String source );
+    void setSource(String source);
 
     /**
      *
      * @return the array of packets from which this message was composed
      */
-    AISPacket [] getPackets();
+    AISPacket[] getPackets();
 
     /**
      *
@@ -110,13 +119,15 @@ public interface AISMessage {
      *
      * @return The map of fields for this message type
      */
-    FieldMap [] getFieldMap();
+    FieldMap[] getFieldMap();
 
     /**
-     * @param offset the timezone offset for which we want the time received to be returned
-     * @return a ZonedDateTime object generated using the time received and provided ZoneOffset
+     * @param offset the timezone offset for which we want the time received to be
+     *               returned
+     * @return a ZonedDateTime object generated using the time received and provided
+     *         ZoneOffset
      */
-    ZonedDateTime getTimeReceived( ZoneOffset offset );
+    ZonedDateTime getTimeReceived(ZoneOffset offset);
 
     /**
      *
@@ -128,7 +139,7 @@ public interface AISMessage {
      *
      * @param mType the AISMessageType of this message
      */
-    void setType( AISMessageType mType );
+    void setType(AISMessageType mType);
 
     /**
      *
@@ -156,7 +167,8 @@ public interface AISMessage {
 
     /**
      *
-     * @return a boolean indicating whether or not this message contains positional data
+     * @return a boolean indicating whether or not this message contains positional
+     *         data
      */
     boolean hasPosition();
 
@@ -175,12 +187,14 @@ public interface AISMessage {
     /**
      *
      * @return A properly typed instance of AISMessage given the message content
-     * @throws AISException if we are unable to determine the subtype instance (usually because of a decoding or parsing error)
+     * @throws AISException if we are unable to determine the subtype instance
+     *                      (usually because of a decoding or parsing error)
      */
     AISMessage getSubTypeInstance() throws AISException;
 
     /**
      * Decodes this message
+     * 
      * @throws AISException if decoding fails
      */
     void decode() throws AISException;
@@ -190,35 +204,39 @@ public interface AISMessage {
      */
     enum AISFieldMap implements FieldMap {
 
-        TYPE( 0, 5 ),
-        REPEAT( 6, 7 ),
-        MMSI( 8, 37 );
+        TYPE(0, 5),
+        REPEAT(6, 7),
+        MMSI(8, 37);
 
         private final int _startBit;
         private final int _endBit;
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit int
+         * @param endBit   int
          */
-        AISFieldMap( int startBit, int endBit ) {
+        AISFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }
 
         /**
          *
-         * @return an int indicating at which bit this field starts
+         * @return int indicating at which bit this field starts
          */
         @Override
-        public int getStartBit() { return _startBit; }
+        public int getStartBit() {
+            return _startBit;
+        }
 
         /**
          *
-         * @return an int indicating at which bit this field ends
+         * @return int indicating at which bit this field ends
          */
         @Override
-        public int getEndBit() { return _endBit; }
+        public int getEndBit() {
+            return _endBit;
+        }
     }
 }

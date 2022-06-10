@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class BaseStationReport extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( BaseStationReport.class );
+    private final static Logger LOG = LogManager.getLogger(BaseStationReport.class);
 
     private int _year;
     private int _month;
@@ -47,26 +47,26 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source  String denoting the source of the packet
+     * @param packets AISPacket[] from which the message is composed
      */
-    public BaseStationReport( String source, AISPacket... packets ) {
-        super( source, packets );
+    public BaseStationReport(String source, AISPacket... packets) {
+        super(source, packets);
     }
 
     /**
      *
-     * @param source
-     * @param type
-     * @param packets
+     * @param source  String denoting the source of the packet
+     * @param type    AISMessageType
+     * @param packets AISPacket[] from which the message is composed
      */
-    public BaseStationReport( String source, AISMessageType type, AISPacket... packets ) {
-        super( source, type, packets );
+    public BaseStationReport(String source, AISMessageType type, AISPacket... packets) {
+        super(source, type, packets);
     }
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getYear() {
         return _year;
@@ -74,7 +74,7 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getMonth() {
         return _month;
@@ -82,7 +82,7 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getDay() {
         return _day;
@@ -90,7 +90,7 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getHour() {
         return _hour;
@@ -98,7 +98,7 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getMinute() {
         return _minute;
@@ -106,7 +106,7 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getSecond() {
         return _second;
@@ -114,7 +114,7 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return boolean
      */
     public boolean isAccurate() {
         return _accurate;
@@ -122,7 +122,7 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return float
      */
     public float getLon() {
         return _lon;
@@ -130,7 +130,7 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return float
      */
     public float getLat() {
         return _lat;
@@ -138,7 +138,7 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return EPFDFixType
      */
     public EPFDFixType getEpfd() {
         return _epfd;
@@ -146,7 +146,7 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return boolean
      */
     public boolean usingRaim() {
         return _raim;
@@ -154,7 +154,7 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return int
      */
     public int getRadio() {
         return _radio;
@@ -162,7 +162,7 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return boolean
      */
     @Override
     public boolean hasPosition() {
@@ -171,78 +171,80 @@ public class BaseStationReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return Point
      */
     @Override
     public Point getPosition() {
-        if( _position == null ) {
-            _position = CTX.getShapeFactory().pointXY( _lon, _lat );
+        if (_position == null) {
+            _position = CTX.getShapeFactory().pointXY(_lon, _lat);
         }
 
         return _position;
     }
 
     /**
-     * @throws AISException
+     * @throws AISException if decoding fails
      */
     @Override
     public final void decode() throws AISException {
         super.decode();
 
-        for( BaseReportFieldMap field : BaseReportFieldMap.values() ) {
-            switch( field ) {
+        for (BaseReportFieldMap field : BaseReportFieldMap.values()) {
+            switch (field) {
                 case YEAR:
-                    if( _bits.size() >= field.getStartBit() )
-                        _year = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _year = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case MONTH:
-                    if( _bits.size() >= field.getStartBit() )
-                        _month = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _month = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DAY:
-                    if( _bits.size() >= field.getStartBit() )
-                        _day = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _day = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case HOUR:
-                    if( _bits.size() >= field.getStartBit() )
-                        _hour = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _hour = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                 case MINUTE:
-                    if( _bits.size() >= field.getStartBit() )
-                        _minute = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _minute = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SECOND:
-                    if( _bits.size() >= field.getStartBit() )
-                        _second = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _second = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case ACCURACY:
-                    if( _bits.size() >= field.getStartBit() )
-                        _accurate = _bits.get( field.getStartBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _accurate = _bits.get(field.getStartBit());
                     break;
                 case LON:
-                    if( _bits.size() >= field.getStartBit() )
-                        _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _lon = AISMessageDecoder.decodeLongitude(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case LAT:
-                    if( _bits.size() >= field.getStartBit() )
-                        _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _lat = AISMessageDecoder.decodeLatitude(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case EPFD:
-                    if( _bits.size() >= field.getStartBit() ) {
-                        int epfdCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                        _epfd = EPFDFixType.getForCode( epfdCode );
+                    if (_bits.size() >= field.getStartBit()) {
+                        int epfdCode = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(),
+                                field.getEndBit());
+                        _epfd = EPFDFixType.getForCode(epfdCode);
                     }
                     break;
                 case RAIM:
-                    if( _bits.size() >= field.getStartBit() )
-                        _raim = _bits.get( field.getStartBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _raim = _bits.get(field.getStartBit());
                     break;
                 case RADIO:
-                    if( _bits.size() >= field.getStartBit() )
-                        _radio = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _radio = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 default:
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Encountered unhandled field type of : {}",
-                            field );
+                    if (LOG.isDebugEnabled())
+                        LOG.debug("Encountered unhandled field type of : {}",
+                                field);
             }
         }
     }
@@ -252,36 +254,36 @@ public class BaseStationReport extends AISMessageBase {
      */
     private enum BaseReportFieldMap implements FieldMap {
 
-        YEAR( 38, 51 ),
-        MONTH( 52, 55 ),
-        DAY( 56, 60 ),
-        HOUR( 61, 65 ),
-        MINUTE( 66, 71 ),
-        SECOND( 72, 77 ),
-        ACCURACY( 78, 78 ),
-        LON( 79, 106 ),
-        LAT( 107, 133 ),
-        EPFD( 134, 137 ),
-        SPARE( 138, 147 ),
-        RAIM( 148, 148 ),
-        RADIO( 149, 167 );
+        YEAR(38, 51),
+        MONTH(52, 55),
+        DAY(56, 60),
+        HOUR(61, 65),
+        MINUTE(66, 71),
+        SECOND(72, 77),
+        ACCURACY(78, 78),
+        LON(79, 106),
+        LAT(107, 133),
+        EPFD(134, 137),
+        SPARE(138, 147),
+        RAIM(148, 148),
+        RADIO(149, 167);
 
         private final int _startBit;
         private final int _endBit;
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit int
+         * @param endBit   int
          */
-        BaseReportFieldMap( int startBit, int endBit ) {
+        BaseReportFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }
 
         /**
          *
-         * @return
+         * @return int
          */
         @Override
         public int getStartBit() {
@@ -290,7 +292,7 @@ public class BaseStationReport extends AISMessageBase {
 
         /**
          *
-         * @return
+         * @return int
          */
         @Override
         public int getEndBit() {

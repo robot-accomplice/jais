@@ -25,14 +25,18 @@ public class AISPacketException extends AISException {
 
     /**
      *
-     * @param message
+     * @param message String
      */
-    public AISPacketException(String message) { super(message); }
+    public AISPacketException(String message) {
+        super(message);
+    }
 
     /**
      *
-     * @param message
-     * @param t
+     * @param message String
+     * @param t       Throwable
      */
-    public AISPacketException(String message, Throwable t) { super(message, t); }
+    public AISPacketException(String message, Throwable t) {
+        super(message, t);
+    }
 }

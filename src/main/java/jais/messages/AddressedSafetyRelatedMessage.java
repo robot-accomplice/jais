@@ -26,34 +26,34 @@ import jais.messages.enums.FieldMap;
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class AddressedSafetyRelatedMessage extends AISMessageBase {
-    
+
     private int _destMmsi;
     private boolean _retransmit;
     private String _text;
-    
+
     /**
      * 
-     * @param source
-     * @param packets 
-     * @throws jais.exceptions.AISException 
+     * @param source  String denoting the source of the packet
+     * @param packets AISPacket[] from which the message is composed
+     * @throws jais.exceptions.AISException if decoding is unsuccessful
      */
-    public AddressedSafetyRelatedMessage( String source, AISPacket... packets ) throws AISException {
-        super( source, packets );
-    }
-    
-    /**
-     * 
-     * @param source
-     * @param messageType
-     * @param packets 
-     */
-    public AddressedSafetyRelatedMessage( String source, AISMessageType messageType, AISPacket... packets ) {
-        super( source, messageType, packets );
+    public AddressedSafetyRelatedMessage(String source, AISPacket... packets) throws AISException {
+        super(source, packets);
     }
 
     /**
      * 
-     * @return 
+     * @param source      String denoting the source of the packet
+     * @param messageType AISMessageType
+     * @param packets     AISPacket[] from which the message is composed
+     */
+    public AddressedSafetyRelatedMessage(String source, AISMessageType messageType, AISPacket... packets) {
+        super(source, messageType, packets);
+    }
+
+    /**
+     * 
+     * @return int source MMSI value
      */
     public int getSourceMmsi() {
         return super.getMmsi();
@@ -61,7 +61,7 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
 
     /**
      * 
-     * @return 
+     * @return int destination MMSI value
      */
     public int getDestMmsi() {
         return _destMmsi;
@@ -69,7 +69,7 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
 
     /**
      * 
-     * @return 
+     * @return boolean representing whether the message is a retransmit
      */
     public boolean isRetransmit() {
         return _retransmit;
@@ -77,63 +77,63 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
 
     /**
      * 
-     * @return 
+     * @return String representing the text of the message
      */
     public String getText() {
         return _text;
     }
-    
+
     /**
      * 
-     * @throws AISException 
+     * @throws AISException if any part of the AIS message decoding fails
      */
     @Override
     public final void decode() throws AISException {
         super.decode();
 
-        for( AddressedSafetyRelatedMessageFieldMap field : AddressedSafetyRelatedMessageFieldMap.values() ) {
-            switch( field ) {
+        for (AddressedSafetyRelatedMessageFieldMap field : AddressedSafetyRelatedMessageFieldMap.values()) {
+            switch (field) {
                 case DEST_MMSI:
-                    _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    _destMmsi = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case RETRANSMIT:
-                    _retransmit = _bits.get( field.getStartBit() );
+                    _retransmit = _bits.get(field.getStartBit());
                     break;
                 case TEXT:
-                    _text = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), _bits.size() - 1 );
+                    _text = AISMessageDecoder.decodeToString(_bits, field.getStartBit(), _bits.size() - 1);
                     break;
                 case SPARE:
                     break;
             }
         }
     }
-    
+
     /**
      * 
      */
     private enum AddressedSafetyRelatedMessageFieldMap implements FieldMap {
-        
-        DEST_MMSI( 40, 69 ),
-        RETRANSMIT( 70, 70 ),
-        SPARE( 71, 71 ),
-        TEXT( 72, -1 );
-        
+
+        DEST_MMSI(40, 69),
+        RETRANSMIT(70, 70),
+        SPARE(71, 71),
+        TEXT(72, -1);
+
         private final int _startBit;
         private final int _endBit;
-        
+
         /**
          * 
          * @param startBit
-         * @param endBit 
+         * @param endBit
          */
-        AddressedSafetyRelatedMessageFieldMap( int startBit, int endBit ) {
+        AddressedSafetyRelatedMessageFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }
 
         /**
          * 
-         * @return 
+         * @return
          */
         @Override
         public int getStartBit() {
@@ -142,7 +142,7 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
 
         /**
          * 
-         * @return 
+         * @return
          */
         @Override
         public int getEndBit() {

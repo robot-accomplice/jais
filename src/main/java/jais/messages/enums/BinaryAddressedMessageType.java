@@ -32,53 +32,53 @@ import jais.messages.binaryaddressed.IMO289ClearanceTimeToEnterPort;
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public enum BinaryAddressedMessageType {
-    
-    DANGEROUS_CARGO_INDICATION_DEPRECATED( 1, 12, -1, 
+
+    DANGEROUS_CARGO_INDICATION_DEPRECATED(1, 12, -1,
             IMO236DangerousCargoIndication.class, IMOType.IMO236,
-            "Dangerous cargo indication (deprecated)" ),
-    TIDAL_WINDOW_DEPRECATED( 1, 14, -1, 
+            "Dangerous cargo indication (deprecated)"),
+    TIDAL_WINDOW_DEPRECATED(1, 14, -1,
             IMO236TidalWindow.class, IMOType.IMO236,
-            "Tidal window (deprecated)" ), // 190 - 376
-    NUMBER_OF_PERSONS_ON_BOARD_DEPRECATED( 1, 16, 72, 
+            "Tidal window (deprecated)"), // 190 - 376
+    NUMBER_OF_PERSONS_ON_BOARD_DEPRECATED(1, 16, 72,
             IMO236NumberOfPersonsOnBoard.class, IMOType.IMO236,
-            "Number of persons on board (deprecated)" ),
-    NUMBER_OF_PERSONS_ON_BOARD( 1, 16, 136, 
-            IMO289NumberOfPersonsOnBoard.class, IMOType.IMO289, 
-            "Number of persons on board" ),
-    CLEARANCE_TIME_TO_ENTER_PORT( 1, 18, -1, 
-            IMO289ClearanceTimeToEnterPort.class, IMOType.IMO289, 
-            "Clearance time to enter port" ),
-    AREA_NOTICE( 1, 23, -1, 
-            IMO289AreaNotice.class, IMOType.IMO289, 
-            "Area notice (addressed)" ),
-    DANGEROUS_CARGO_INDICATION( 1, 25, -1, 
-            IMO289DangerousCargoIndication.class, IMOType.IMO289, 
-            "Dangerous Cargo indication" ),
-    ROUTE_INFORMATION( 1, 28, -1, 
-            IMO289RouteInformation.class, IMOType.IMO289, 
-            "Route info addressed" ),
-    TEXT_DESCRIPTION( 1, 30, -1, 
-            IMO289TextDescription.class, IMOType.IMO289, 
-            "Text description addressed" ),
-    TIDAL_WINDOW( 1, 32, -1, 
-            IMO289TidalWindow.class, IMOType.IMO289, 
-            "Tidal Window" );
-    
+            "Number of persons on board (deprecated)"),
+    NUMBER_OF_PERSONS_ON_BOARD(1, 16, 136,
+            IMO289NumberOfPersonsOnBoard.class, IMOType.IMO289,
+            "Number of persons on board"),
+    CLEARANCE_TIME_TO_ENTER_PORT(1, 18, -1,
+            IMO289ClearanceTimeToEnterPort.class, IMOType.IMO289,
+            "Clearance time to enter port"),
+    AREA_NOTICE(1, 23, -1,
+            IMO289AreaNotice.class, IMOType.IMO289,
+            "Area notice (addressed)"),
+    DANGEROUS_CARGO_INDICATION(1, 25, -1,
+            IMO289DangerousCargoIndication.class, IMOType.IMO289,
+            "Dangerous Cargo indication"),
+    ROUTE_INFORMATION(1, 28, -1,
+            IMO289RouteInformation.class, IMOType.IMO289,
+            "Route info addressed"),
+    TEXT_DESCRIPTION(1, 30, -1,
+            IMO289TextDescription.class, IMOType.IMO289,
+            "Text description addressed"),
+    TIDAL_WINDOW(1, 32, -1,
+            IMO289TidalWindow.class, IMOType.IMO289,
+            "Tidal Window");
+
     private final int _dac;
     private final int _fid;
     private final int _length;
     private final Class<? extends BinaryAddressedMessageBase> _msgClass;
     private final IMOType _source;
     private final String _description;
-    
+
     /**
      * 
-     * @param dac
-     * @param fid
-     * @param description 
+     * @param dac         int
+     * @param fid         int
+     * @param description Class that extends BinaryAddressedMessageBase
      */
-    BinaryAddressedMessageType( int dac, int fid, int length, Class<? extends BinaryAddressedMessageBase> msgClass, 
-            IMOType source, String description ) {
+    BinaryAddressedMessageType(int dac, int fid, int length, Class<? extends BinaryAddressedMessageBase> msgClass,
+            IMOType source, String description) {
         _dac = dac;
         _fid = fid;
         _length = length;
@@ -86,70 +86,70 @@ public enum BinaryAddressedMessageType {
         _source = source;
         _description = description;
     }
-    
+
     /**
      * 
-     * @return 
+     * @return int
      */
     public int getDac() {
         return _dac;
     }
-    
+
     /**
      * 
-     * @return 
+     * @return int
      */
     public int getFid() {
         return _fid;
     }
-    
+
     /**
      * 
-     * @return 
+     * @return int
      */
     public int getLength() {
         return _length;
     }
-    
+
     /**
      * 
-     * @return 
+     * @return Class that extends BinaryAddressedMessageBase
      */
     public Class<? extends BinaryAddressedMessageBase> getMsgClass() {
         return _msgClass;
     }
-    
+
     /**
      * 
-     * @return 
+     * @return IMOType
      */
     public IMOType getSource() {
         return _source;
     }
-    
+
     /**
      * 
-     * @return 
+     * @return String
      */
     public String getDescription() {
         return _description;
     }
-    
+
     /**
      * 
-     * @param dac
-     * @param fid
-     * @param length
-     * @return 
+     * @param dac    int
+     * @param fid    int
+     * @param length int
+     * @return BinaryAddressedMessageType
      */
-    public static BinaryAddressedMessageType fetch( int dac, int fid, int length ) {
-       for( BinaryAddressedMessageType type : BinaryAddressedMessageType.values() ) {
-           if( type.getDac() == dac && type.getFid() == fid && 
-                   ( type.getLength() == length || type.getLength() == -1 ) ) {
-               return type;
-           }
-       }
-       
-       return null;
+    public static BinaryAddressedMessageType fetch(int dac, int fid, int length) {
+        for (BinaryAddressedMessageType type : BinaryAddressedMessageType.values()) {
+            if (type.getDac() == dac && type.getFid() == fid &&
+                    (type.getLength() == length || type.getLength() == -1)) {
+                return type;
+            }
+        }
+
+        return null;
     }
 }

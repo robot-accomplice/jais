@@ -82,7 +82,7 @@ public final class AISPacket {
     /**
      * Constructor
      *
-     * @param rawPacket A byte [] composed of the characters from the original
+     * @param rawPacket byte[] composed of the characters from the original
      *                  non-decoded String representing a complete or partial AIS
      *                  message
      */
@@ -93,10 +93,10 @@ public final class AISPacket {
     /**
      * Constructor
      *
-     * @param rawPacket A byte [] composed of the characters from the original
+     * @param rawPacket byte[] composed of the characters from the original
      *                  non-decoded String representing a complete or partial AIS
      *                  message
-     * @param source    The named source of the AIS packet
+     * @param source    byte[] for the named source of the AIS packet
      */
     public AISPacket(byte[] rawPacket, byte[] source) {
         if (LOG.isTraceEnabled())
@@ -108,7 +108,8 @@ public final class AISPacket {
     /**
      * Constructor
      *
-     * @param rawPacket The original 6 bit encoded String representing a complete or
+     * @param rawPacket String representing the original 6 bit encoded String
+     *                  representing a complete or
      *                  partial AIS message
      */
     public AISPacket(String rawPacket) {
@@ -118,9 +119,10 @@ public final class AISPacket {
     /**
      * Constructor
      *
-     * @param rawPacket The original 6 bit encoded String representing a complete or
+     * @param rawPacket String representing the original 6 bit encoded String
+     *                  representing a complete or
      *                  partial AIS message
-     * @param source    The named source of this AIS packet
+     * @param source    String representing the named source of this AIS packet
      */
     public AISPacket(String rawPacket, String source) {
         if (LOG.isTraceEnabled())
@@ -135,7 +137,7 @@ public final class AISPacket {
     /**
      * Validates the AIS packet preamble against a regular expression constant
      *
-     * @return a boolean indicating whether or not the preamble is valid
+     * @return boolean indicating whether or not the preamble is valid
      */
     private boolean validatePreamble() throws AISPacketParseException {
         if (_packetParts == null) {
@@ -158,8 +160,8 @@ public final class AISPacket {
      * Validates that the provided Preamble object is non-null and does not contain
      * null fields
      *
-     * @param p the Preamble object to evaluate for validity
-     * @return a boolean indicating whether or not the preamble is valid
+     * @param p Preamble object to evaluate for validity
+     * @return boolean indicating whether or not the preamble is valid
      */
     private static boolean validatePreamble(Preamble p) {
         return ((p != null) && (p.talker != null) && (p.format != null));
@@ -168,8 +170,8 @@ public final class AISPacket {
     /**
      * Validates the AIS packet preamble against a regular expression constant
      * 
-     * @param preambleStr the preamble String to evaluate for validity
-     * @return a boolean indicating whether or not the preamble is valid
+     * @param preambleStr String preamble to evaluate for validity
+     * @return boolean indicating whether or not the preamble is valid
      * @throws AISPacketParseException If we are unable to parse the preamble
      */
     public static boolean validatePreamble(String preambleStr) throws AISPacketParseException {
@@ -180,7 +182,7 @@ public final class AISPacket {
      * Fetch the preamble (e.g. !AISVDM)
      * 
      * @see jais.AISPacket.Preamble
-     * @return a Preamble object
+     * @return Preamble object
      */
     public final Preamble getPreamble() {
         return _preamble;
@@ -191,7 +193,7 @@ public final class AISPacket {
      * 
      * @see jais.TagBlock
      *
-     * @return a boolean representing whether or not this packet has a TagBlock
+     * @return boolean representing whether or not this packet has a TagBlock
      */
     public boolean hasTagBlock() {
         return (_tagBlock != null);
@@ -201,7 +203,7 @@ public final class AISPacket {
      * Returns the TagBlock parsed from this AISPacket
      * 
      * @see jais.TagBlock
-     * @return the TagBlock for this AISPacket
+     * @return TagBlock for this AISPacket
      */
     public final TagBlock getTagBlock() {
         return _tagBlock;
@@ -210,7 +212,7 @@ public final class AISPacket {
     /**
      * Validates the contents of the packet and breaks it into its constituent parts
      *
-     * @return @throws AISPacketException
+     * @return @throws AISPacketException if processing fails
      */
     public final AISPacket process() throws AISPacketException {
         return process(false);

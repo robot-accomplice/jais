@@ -20,19 +20,23 @@ package jais.exceptions;
  * @author Jonatham Machen {@literal <jonathan.machen@robotaccomplice.com}
  */
 public class AISPacketParseException extends AISPacketException {
-    
+
     private static final long serialVersionUID = 1L;
 
     /**
      *
-     * @param message
+     * @param message String
      */
-    public AISPacketParseException(String message) { super(message); }
+    public AISPacketParseException(String message) {
+        super(message);
+    }
 
     /**
      *
-     * @param message
-     * @param t
+     * @param message String
+     * @param t       Throwable
      */
-    public AISPacketParseException(String message, Throwable t) { super(message, t); }
+    public AISPacketParseException(String message, Throwable t) {
+        super(message, t);
+    }
 }
