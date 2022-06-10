@@ -21,16 +21,12 @@ import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import org.locationtech.spatial4j.shape.Point;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class StandardSARAircraftPositionReport extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger( StandardSARAircraftPositionReport.class );
 
     private int _alt;
     private int _speed;
@@ -50,9 +46,9 @@ public class StandardSARAircraftPositionReport extends AISMessageBase {
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public StandardSARAircraftPositionReport( String source, AISPacket... packets )
+    public StandardSARAircraftPositionReport(String source, AISPacket... packets)
             throws AISException {
-        super( source, packets );
+        super(source, packets);
     }
 
     /**
@@ -61,9 +57,9 @@ public class StandardSARAircraftPositionReport extends AISMessageBase {
      * @param messageType
      * @param packets
      */
-    public StandardSARAircraftPositionReport( String source, AISMessageType messageType,
-            AISPacket... packets ) {
-        super( source, messageType, packets );
+    public StandardSARAircraftPositionReport(String source, AISMessageType messageType,
+            AISPacket... packets) {
+        super(source, messageType, packets);
     }
 
     /**
@@ -81,8 +77,8 @@ public class StandardSARAircraftPositionReport extends AISMessageBase {
      */
     @Override
     public Point getPosition() {
-        if( _position == null ) {
-            _position = CTX.getShapeFactory().pointXY( _lat, _lon );
+        if (_position == null) {
+            _position = CTX.getShapeFactory().pointXY(_lat, _lon);
         }
 
         return _position;
@@ -184,52 +180,51 @@ public class StandardSARAircraftPositionReport extends AISMessageBase {
     public final void decode() throws AISException {
         super.decode();
 
-        for( SSARAircraftPositionReportFieldMap field
-                : SSARAircraftPositionReportFieldMap.values() ) {
-            switch( field ) {
+        for (SSARAircraftPositionReportFieldMap field : SSARAircraftPositionReportFieldMap.values()) {
+            switch (field) {
                 case ALT:
-                    if( _bits.size() >= field.getStartBit() )
-                        _alt = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _alt = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SPEED:
-                    if( _bits.size() >= field.getStartBit() )
-                        _speed = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _speed = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case ACCURACY:
-                    if( _bits.size() >= field.getStartBit() )
-                        _accurate = _bits.get( field.getStartBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _accurate = _bits.get(field.getStartBit());
                     break;
                 case LON:
-                    if( _bits.size() >= field.getStartBit() )
-                        _lon = AISMessageDecoder.decodeSignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _lon = AISMessageDecoder.decodeSignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case LAT:
-                    if( _bits.size() >= field.getStartBit() )
-                        _lat = AISMessageDecoder.decodeSignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _lat = AISMessageDecoder.decodeSignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case COURSE:
-                    if( _bits.size() >= field.getStartBit() )
-                        _course = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _course = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SECOND:
-                    if( _bits.size() >= field.getStartBit() )
-                        _second = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _second = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DTE:
-                    if( _bits.size() >= field.getStartBit() )
-                        _dte = _bits.get( field.getStartBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _dte = _bits.get(field.getStartBit());
                     break;
                 case ASSIGNED:
-                    if( _bits.size() >= field.getStartBit() )
-                        _assigned = _bits.get( field.getStartBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _assigned = _bits.get(field.getStartBit());
                     break;
                 case RAIM:
-                    if( _bits.size() >= field.getStartBit() )
-                        _raim = _bits.get( field.getStartBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _raim = _bits.get(field.getStartBit());
                     break;
                 case RADIO:
-                    if( _bits.size() >= field.getStartBit() )
-                        _radio = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _radio = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case REGIONAL:
                     break;
@@ -244,19 +239,19 @@ public class StandardSARAircraftPositionReport extends AISMessageBase {
      */
     private enum SSARAircraftPositionReportFieldMap implements FieldMap {
 
-        ALT( 38, 49 ),
-        SPEED( 50, 59 ),
-        ACCURACY( 60, 60 ),
-        LON( 61, 88 ),
-        LAT( 89, 115 ),
-        COURSE( 116, 127 ),
-        SECOND( 128, 133 ),
-        REGIONAL( 134, 141 ), // reserved
-        DTE( 142, 142 ),
-        SPARE( 143, 145 ),
-        ASSIGNED( 146, 146 ),
-        RAIM( 147, 147 ),
-        RADIO( 148, 167 );
+        ALT(38, 49),
+        SPEED(50, 59),
+        ACCURACY(60, 60),
+        LON(61, 88),
+        LAT(89, 115),
+        COURSE(116, 127),
+        SECOND(128, 133),
+        REGIONAL(134, 141), // reserved
+        DTE(142, 142),
+        SPARE(143, 145),
+        ASSIGNED(146, 146),
+        RAIM(147, 147),
+        RADIO(148, 167);
 
         private final int _startBit;
         private final int _endBit;
@@ -264,9 +259,9 @@ public class StandardSARAircraftPositionReport extends AISMessageBase {
         /**
          *
          * @param startBit
-         * @param endBit '
+         * @param endBit   '
          */
-        SSARAircraftPositionReportFieldMap( int startBit, int endBit ) {
+        SSARAircraftPositionReportFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }

@@ -20,16 +20,12 @@ import jais.AISPacket;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class SafetyRelatedAcknowledgement extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger( SafetyRelatedAcknowledgement.class );
 
     private int _mmsi1;
     private int _mmsi2;
@@ -42,8 +38,8 @@ public class SafetyRelatedAcknowledgement extends AISMessageBase {
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public SafetyRelatedAcknowledgement( String source, AISPacket... packets ) throws AISException {
-        super( source, packets );
+    public SafetyRelatedAcknowledgement(String source, AISPacket... packets) throws AISException {
+        super(source, packets);
     }
 
     /**
@@ -52,8 +48,8 @@ public class SafetyRelatedAcknowledgement extends AISMessageBase {
      * @param messageType
      * @param packets
      */
-    public SafetyRelatedAcknowledgement( String source, AISMessageType messageType, AISPacket... packets ) {
-        super( source, messageType, packets );
+    public SafetyRelatedAcknowledgement(String source, AISMessageType messageType, AISPacket... packets) {
+        super(source, messageType, packets);
     }
 
     /**
@@ -104,23 +100,23 @@ public class SafetyRelatedAcknowledgement extends AISMessageBase {
     public final void decode() throws AISException {
         super.decode();
 
-        for( SafetyRelatedAcknowledgeFieldMap field : SafetyRelatedAcknowledgeFieldMap.values() ) {
-            switch( field ) {
+        for (SafetyRelatedAcknowledgeFieldMap field : SafetyRelatedAcknowledgeFieldMap.values()) {
+            switch (field) {
                 case MMSI1:
-                    if( _bits.size() >= field.getStartBit() )
-                            _mmsi1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _mmsi1 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case MMSI2:
-                    if( _bits.size() >= field.getStartBit() )
-                            _mmsi2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _mmsi2 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case MMSI3:
-                    if( _bits.size() >= field.getStartBit() )
-                            _mmsi3 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _mmsi3 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case MMSI4:
-                    if( _bits.size() >= field.getStartBit() )
-                            _mmsi4 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_bits.size() >= field.getStartBit())
+                        _mmsi4 = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SPARE1:
                     break;
@@ -141,15 +137,15 @@ public class SafetyRelatedAcknowledgement extends AISMessageBase {
      */
     private enum SafetyRelatedAcknowledgeFieldMap implements FieldMap {
 
-        SPARE1( 38, 39 ),
-        MMSI1( 40, 69 ),
-        SPARE2( 70, 71 ),
-        MMSI2( 62, 101 ),
-        SPARE3( 102, 103 ),
-        MMSI3( 104, 133 ),
-        SPARE4( 134, 135 ),
-        MMSI4( 136, 165 ),
-        SPARE5( 166, 167 );
+        SPARE1(38, 39),
+        MMSI1(40, 69),
+        SPARE2(70, 71),
+        MMSI2(62, 101),
+        SPARE3(102, 103),
+        MMSI3(104, 133),
+        SPARE4(134, 135),
+        MMSI4(136, 165),
+        SPARE5(166, 167);
 
         private final int _startBit;
         private final int _endBit;
@@ -159,7 +155,7 @@ public class SafetyRelatedAcknowledgement extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        SafetyRelatedAcknowledgeFieldMap( int startBit, int endBit ) {
+        SafetyRelatedAcknowledgeFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }
