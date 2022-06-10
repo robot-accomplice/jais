@@ -30,14 +30,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * An aggregate representation of a vessel based on PositionReport and StaticAndVoyageRelatedData messages
+ * An aggregate representation of a vessel based on PositionReport and
+ * StaticAndVoyageRelatedData messages
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class Vessel implements Cloneable {
 
-    private final static Logger LOG = LogManager.getLogger( Vessel.class );
-    private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm" ).withZone( ZoneOffset.UTC.normalized() );
+    private final static Logger LOG = LogManager.getLogger(Vessel.class);
+    private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
+            .withZone(ZoneOffset.UTC.normalized());
 
     private Identifier _id;
     private int _version;
@@ -70,7 +72,7 @@ public class Vessel implements Cloneable {
     private boolean _raim = false;
     private int _repeat = 0;
     private int _radio;
-    private ZonedDateTime _eta = ZonedDateTime.parse( "1970/01/01 00:00", ETA_FORMATTER );
+    private ZonedDateTime _eta = ZonedDateTime.parse("1970/01/01 00:00", ETA_FORMATTER);
     private long _currentMessageTimestamp;
     private long _currentPositionTimestamp;
     private long _previousPositionTimestamp;
@@ -81,8 +83,8 @@ public class Vessel implements Cloneable {
      *
      * @param report a valid StandardClassBCSPositionReport
      */
-    public Vessel( StandardClassBCSPositionReport report ) {
-        _id = new Identifier( report.getMmsi(), report.getSource() );
+    public Vessel(StandardClassBCSPositionReport report) {
+        _id = new Identifier(report.getMmsi(), report.getSource());
         _currentMessageTimestamp = report.getTimeReceived();
         _currentPositionTimestamp = report.getTimeReceived();
         _course = report.getCourse();
@@ -94,7 +96,8 @@ public class Vessel implements Cloneable {
         _speed = report.getSpeed();
         _timeSent = report.getTimeSent();
 
-        if( LOG.isDebugEnabled() ) LOG.debug( "New Vessel from StandardClassBCSPositionReport:\n{}", toString() );
+        if (LOG.isDebugEnabled())
+            LOG.debug("New Vessel from StandardClassBCSPositionReport:\n{}", toString());
     }
 
     /**
@@ -102,8 +105,8 @@ public class Vessel implements Cloneable {
      *
      * @param report a valid ExtendedClassBCSPositionReport
      */
-    public Vessel( ExtendedClassBCSPositionReport report ) {
-        _id = new Identifier( report.getMmsi(), report.getSource() );
+    public Vessel(ExtendedClassBCSPositionReport report) {
+        _id = new Identifier(report.getMmsi(), report.getSource());
         _currentMessageTimestamp = report.getTimeReceived();
         _currentPositionTimestamp = report.getTimeReceived();
         _course = report.getCourse();
@@ -117,21 +120,23 @@ public class Vessel implements Cloneable {
         _toPort = report.getToPort();
         _toStarboard = report.getToStarboard();
         _second = report.getSecond();
-        _shipname = AISPacket.str2bArray( report.getShipName() );
+        _shipname = ByteArrayUtils.str2bArray(report.getShipName());
         _shiptype = report.getShipType();
         _timeSent = report.getTimeSent();
 
-        if( LOG.isDebugEnabled() ) LOG.debug( "New Vessel from ExtendedClassBCSPositionReport:\n{}", toString() );
+        if (LOG.isDebugEnabled())
+            LOG.debug("New Vessel from ExtendedClassBCSPositionReport:\n{}", toString());
     }
 
     /**
-     * Creates a new Vessel object based on a concrete class that extends PositionReportBase
+     * Creates a new Vessel object based on a concrete class that extends
+     * PositionReportBase
      *
-     * @param <T> a concrete class that extends PositionReportBase
+     * @param <T>    a concrete class that extends PositionReportBase
      * @param report an instance of a concrete class that extends PositionReportBase
      */
-    public <T extends PositionReportBase> Vessel( T report ) {
-        _id = new Identifier( report.getMmsi(), report.getSource() );
+    public <T extends PositionReportBase> Vessel(T report) {
+        _id = new Identifier(report.getMmsi(), report.getSource());
         _currentMessageTimestamp = report.getTimeReceived();
         _currentPositionTimestamp = report.getTimeReceived();
         _course = report.getCourse();
@@ -149,7 +154,8 @@ public class Vessel implements Cloneable {
         _raim = report.isRaim();
         _timeSent = report.getTimeSent();
 
-        if( LOG.isDebugEnabled() ) LOG.debug( "New Vessel from PositionReportBase:\n{}", toString() );
+        if (LOG.isDebugEnabled())
+            LOG.debug("New Vessel from PositionReportBase:\n{}", toString());
     }
 
     /**
@@ -157,14 +163,14 @@ public class Vessel implements Cloneable {
      *
      * @param savrd
      */
-    public Vessel( StaticAndVoyageRelatedData savrd ) {
-        _id = new Identifier( savrd.getMmsi(), savrd.getSource() );
+    public Vessel(StaticAndVoyageRelatedData savrd) {
+        _id = new Identifier(savrd.getMmsi(), savrd.getSource());
         _currentMessageTimestamp = savrd.getTimeReceived();
         _imo = savrd.getImo();
         _shiptype = savrd.getShiptype();
-        _shipname = ( savrd.getShipname() == null ) ? null : AISPacket.str2bArray( savrd.getShipname() );
-        _callsign = ( savrd.getCallsign() == null ) ? null : AISPacket.str2bArray( savrd.getCallsign() );
-        _destination = ( savrd.getDestination() == null ) ? null : AISPacket.str2bArray( savrd.getDestination() );
+        _shipname = (savrd.getShipname() == null) ? null : ByteArrayUtils.str2bArray(savrd.getShipname());
+        _callsign = (savrd.getCallsign() == null) ? null : ByteArrayUtils.str2bArray(savrd.getCallsign());
+        _destination = (savrd.getDestination() == null) ? null : ByteArrayUtils.str2bArray(savrd.getDestination());
         _draught = savrd.getDraught();
         _eta = savrd.getETA();
         _epfd = savrd.getEpfd();
@@ -180,16 +186,18 @@ public class Vessel implements Cloneable {
         _version = savrd.getVersion();
         _timeSent = savrd.getTimeSent();
 
-        if ( LOG.isDebugEnabled() ) LOG.debug( "New Vessel from StaticAndVoyageRelatedData:\n{}", toString() );
+        if (LOG.isDebugEnabled())
+            LOG.debug("New Vessel from StaticAndVoyageRelatedData:\n{}", toString());
     }
 
     /**
-     * Updates the current instance of Vessel based on the fields contained within a concrete extension of PositionReportBase
+     * Updates the current instance of Vessel based on the fields contained within a
+     * concrete extension of PositionReportBase
      *
-     * @param <T> a concrete class that extends PositionReportBase
+     * @param <T>    a concrete class that extends PositionReportBase
      * @param report an instance of a concrete class that extends PositionReportBase
      */
-    public <T extends PositionReportBase> void addUpdatePositionReport( T report ) {
+    public <T extends PositionReportBase> void addUpdatePositionReport(T report) {
         _currentMessageTimestamp = report.getTimeReceived();
         _previousPositionTimestamp = _currentMessageTimestamp;
         _currentPositionTimestamp = report.getTimeReceived();
@@ -208,20 +216,22 @@ public class Vessel implements Cloneable {
         _raim = report.isRaim();
         _timeSent = report.getTimeSent();
 
-        if( LOG.isDebugEnabled() ) LOG.debug( "Vessel updated with PositionReportBase:\n{}", toString() );
+        if (LOG.isDebugEnabled())
+            LOG.debug("Vessel updated with PositionReportBase:\n{}", toString());
     }
 
     /**
-     * Updates the current instance of Vessel based on the fields contained within an instance of StaticAndVoyageRelatedData
+     * Updates the current instance of Vessel based on the fields contained within
+     * an instance of StaticAndVoyageRelatedData
      *
      * @param savrd
      */
-    public void addUpdateStaticReport( StaticAndVoyageRelatedData savrd ) {
+    public void addUpdateStaticReport(StaticAndVoyageRelatedData savrd) {
         _imo = savrd.getImo();
         _shiptype = savrd.getShiptype();
-        _shipname = ( savrd.getShipname() == null ) ? null : AISPacket.str2bArray( savrd.getShipname() );
-        _callsign = ( savrd.getCallsign() == null ) ? null : AISPacket.str2bArray( savrd.getCallsign() );
-        _destination = ( savrd.getDestination() == null ) ? null : AISPacket.str2bArray( savrd.getDestination() );
+        _shipname = (savrd.getShipname() == null) ? null : ByteArrayUtils.str2bArray(savrd.getShipname());
+        _callsign = (savrd.getCallsign() == null) ? null : ByteArrayUtils.str2bArray(savrd.getCallsign());
+        _destination = (savrd.getDestination() == null) ? null : ByteArrayUtils.str2bArray(savrd.getDestination());
         _draught = savrd.getDraught();
         _eta = savrd.getETA();
         _epfd = savrd.getEpfd();
@@ -237,7 +247,8 @@ public class Vessel implements Cloneable {
         _version = savrd.getVersion();
         _timeSent = savrd.getTimeSent();
 
-        if( LOG.isDebugEnabled() ) LOG.debug( "Vessel updated with StaticAndVoyageRelatedData:\n{}", toString() );
+        if (LOG.isDebugEnabled())
+            LOG.debug("Vessel updated with StaticAndVoyageRelatedData:\n{}", toString());
     }
 
     /**
@@ -248,9 +259,10 @@ public class Vessel implements Cloneable {
      */
     @Override
     public Vessel clone() throws CloneNotSupportedException {
-        if ( LOG.isDebugEnabled() ) LOG.debug( "Cloning Vessel:\n{}", toString() );
+        if (LOG.isDebugEnabled())
+            LOG.debug("Cloning Vessel:\n{}", toString());
 
-        Vessel clone = ( Vessel ) super.clone();
+        Vessel clone = (Vessel) super.clone();
 
         clone._id = _id;
         clone._accurate = _accurate;
@@ -296,206 +308,319 @@ public class Vessel implements Cloneable {
      *
      * @return Vessel.Identifier for this instance of Vessel
      */
-    public Identifier getId() { return _id; }
+    public Identifier getId() {
+        return _id;
+    }
 
     /**
-     * @return the version value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the version value of whatever StaticAndVoyageRelatedData message may
+     *         have been used to populate this object
      */
-    public int getVersion() { return _version; }
+    public int getVersion() {
+        return _version;
+    }
 
     /**
-     * @return the IMO value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the IMO value of whatever StaticAndVoyageRelatedData message may have
+     *         been used to populate this object
      */
-    public int getImo() { return _imo; }
+    public int getImo() {
+        return _imo;
+    }
 
     /**
-     * @return the callsign value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the callsign value of whatever StaticAndVoyageRelatedData message may
+     *         have been used to populate this object
      */
-    public String getCallsign() { return ( _callsign == null ) ? null : AISPacket.bArray2Str( _callsign ); }
+    public String getCallsign() {
+        return (_callsign == null) ? null : ByteArrayUtils.bArray2Str(_callsign);
+    }
 
     /**
-     * @return the ship name value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the ship name value of whatever StaticAndVoyageRelatedData message
+     *         may have been used to populate this object
      */
-    public String getShipname() { return ( _shipname == null ) ? null : AISPacket.bArray2Str( _shipname ); }
+    public String getShipname() {
+        return (_shipname == null) ? null : ByteArrayUtils.bArray2Str(_shipname);
+    }
 
     /**
-     * @return the destination value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the destination value of whatever StaticAndVoyageRelatedData message
+     *         may have been used to populate this object
      */
-    public String getDestination() { return ( _destination == null ) ? null : AISPacket.bArray2Str( _destination ); }
+    public String getDestination() {
+        return (_destination == null) ? null : ByteArrayUtils.bArray2Str(_destination);
+    }
 
     /**
-     * @return the ship type value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the ship type value of whatever StaticAndVoyageRelatedData message
+     *         may have been used to populate this object
      */
-    public ShipType getShiptype() { return _shiptype; }
+    public ShipType getShiptype() {
+        return _shiptype;
+    }
 
     /**
-     * @return the toBow value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the toBow value of whatever StaticAndVoyageRelatedData message may
+     *         have been used to populate this object
      */
-    public int getToBow() { return _toBow; }
+    public int getToBow() {
+        return _toBow;
+    }
 
     /**
-     * @return the toStern value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the toStern value of whatever StaticAndVoyageRelatedData message may
+     *         have been used to populate this object
      */
-    public int getToStern() { return _toStern; }
+    public int getToStern() {
+        return _toStern;
+    }
 
     /**
-     * @return the toPort value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the toPort value of whatever StaticAndVoyageRelatedData message may
+     *         have been used to populate this object
      */
-    public int getToPort() { return _toPort; }
+    public int getToPort() {
+        return _toPort;
+    }
 
     /**
-     * @return the toStarboard value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the toStarboard value of whatever StaticAndVoyageRelatedData message
+     *         may have been used to populate this object
      */
-    public int getToStarboard() { return _toStarboard; }
+    public int getToStarboard() {
+        return _toStarboard;
+    }
 
     /**
-     * @return the EPFD value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the EPFD value of whatever StaticAndVoyageRelatedData message may
+     *         have been used to populate this object
      */
-    public EPFDFixType getEpfd() { return _epfd; }
+    public EPFDFixType getEpfd() {
+        return _epfd;
+    }
 
     /**
-     * @return the month value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the month value of whatever StaticAndVoyageRelatedData message may
+     *         have been used to populate this object
      */
-    public int getMonth() { return _month; }
+    public int getMonth() {
+        return _month;
+    }
 
     /**
-     * @return the day value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the day value of whatever StaticAndVoyageRelatedData message may have
+     *         been used to populate this object
      */
-    public int getDay() { return _day; }
+    public int getDay() {
+        return _day;
+    }
 
     /**
-     * @return the hour value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the hour value of whatever StaticAndVoyageRelatedData message may
+     *         have been used to populate this object
      */
-    public int getHour() { return _hour; }
+    public int getHour() {
+        return _hour;
+    }
 
     /**
-     * @return the minute value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the minute value of whatever StaticAndVoyageRelatedData message may
+     *         have been used to populate this object
      */
-    public int getMinute() { return _minute; }
+    public int getMinute() {
+        return _minute;
+    }
 
     /**
-     * @return the draught value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the draught value of whatever StaticAndVoyageRelatedData message may
+     *         have been used to populate this object
      */
-    public float getDraught() { return _draught; }
+    public float getDraught() {
+        return _draught;
+    }
 
     /**
-     * @return the DTE value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the DTE value of whatever StaticAndVoyageRelatedData message may have
+     *         been used to populate this object
      */
-    public boolean isDte() { return _dte; }
+    public boolean isDte() {
+        return _dte;
+    }
 
     /**
-     * @return the IMO value of whatever StaticAndVoyageRelatedData message may have been used to populate this object
+     * @return the IMO value of whatever StaticAndVoyageRelatedData message may have
+     *         been used to populate this object
      */
-    public NavigationStatus getStatus() { return _status; }
+    public NavigationStatus getStatus() {
+        return _status;
+    }
 
     /**
-     * @return the turn value of whatever PositionReport message may have been used to populate this object
+     * @return the turn value of whatever PositionReport message may have been used
+     *         to populate this object
      */
-    public float getTurn() { return _turn; }
+    public float getTurn() {
+        return _turn;
+    }
 
     /**
-     * @return the speed value of whatever PositionReport message may have been used to populate this object
+     * @return the speed value of whatever PositionReport message may have been used
+     *         to populate this object
      */
-    public float getSpeed() { return _speed; }
+    public float getSpeed() {
+        return _speed;
+    }
 
     /**
      *
      * @param speed
      */
-    public void setSpeed( float speed ) { _speed = speed; }
+    public void setSpeed(float speed) {
+        _speed = speed;
+    }
 
     /**
-     * @return the accuracy value of whatever PositionReport message may have been used to populate this object
+     * @return the accuracy value of whatever PositionReport message may have been
+     *         used to populate this object
      */
-    public boolean isAccurate() { return _accurate; }
+    public boolean isAccurate() {
+        return _accurate;
+    }
 
     /**
-     * @return the longitude value of whatever PositionReport message may have been used to populate this object
+     * @return the longitude value of whatever PositionReport message may have been
+     *         used to populate this object
      */
-    public float getLon() { return _lon; }
+    public float getLon() {
+        return _lon;
+    }
 
     /**
      * @param lon
      */
-    public void setLon( float lon ) { _lon = lon; }
+    public void setLon(float lon) {
+        _lon = lon;
+    }
 
     /**
-     * @return the latitude value of whatever PositionReport message may have been used to populate this object
+     * @return the latitude value of whatever PositionReport message may have been
+     *         used to populate this object
      */
-    public float getLat() { return _lat; }
+    public float getLat() {
+        return _lat;
+    }
 
     /**
      *
      * @param lat
      */
-    public void setLat( float lat ) { _lat = lat; }
+    public void setLat(float lat) {
+        _lat = lat;
+    }
 
     /**
-     * @return the course value of whatever PositionReport message may have been used to populate this object
+     * @return the course value of whatever PositionReport message may have been
+     *         used to populate this object
      */
-    public float getCourse() { return _course; }
+    public float getCourse() {
+        return _course;
+    }
 
     /**
      *
      * @param course
      */
-    public void setCourse( float course ) { _course = course; }
+    public void setCourse(float course) {
+        _course = course;
+    }
 
     /**
-     * @return the heading value of whatever PositionReport message may have been used to populate this object
+     * @return the heading value of whatever PositionReport message may have been
+     *         used to populate this object
      */
-    public int getHeading() { return _heading; }
+    public int getHeading() {
+        return _heading;
+    }
 
     /**
-     * @return the second value of whatever PositionReport message may have been used to populate this object
+     * @return the second value of whatever PositionReport message may have been
+     *         used to populate this object
      */
-    public int getSecond() { return _second; }
+    public int getSecond() {
+        return _second;
+    }
 
     /**
-     * @return the maneuver value of whatever PositionReport message may have been used to populate this object
+     * @return the maneuver value of whatever PositionReport message may have been
+     *         used to populate this object
      */
-    public ManeuverType getManeuver() { return _maneuver; }
+    public ManeuverType getManeuver() {
+        return _maneuver;
+    }
 
     /**
-     * @return the RAIM value of whatever PositionReport message may have been used to populate this object
+     * @return the RAIM value of whatever PositionReport message may have been used
+     *         to populate this object
      */
-    public boolean isRaim() { return _raim; }
+    public boolean isRaim() {
+        return _raim;
+    }
 
     /**
-     * @return the repeat value of whatever PositionReport message may have been used to populate this object
+     * @return the repeat value of whatever PositionReport message may have been
+     *         used to populate this object
      */
-    public int getRepeat() { return _repeat; }
+    public int getRepeat() {
+        return _repeat;
+    }
 
     /**
-     * @return the radio value of whatever PositionReport message may have been used to populate this object
+     * @return the radio value of whatever PositionReport message may have been used
+     *         to populate this object
      */
-    public int getRadio() { return _radio; }
+    public int getRadio() {
+        return _radio;
+    }
 
     /**
-     * @return the ETA value of whatever PositionReport message may have been used to populate this object
+     * @return the ETA value of whatever PositionReport message may have been used
+     *         to populate this object
      */
-    public ZonedDateTime getEta() { return _eta; }
+    public ZonedDateTime getEta() {
+        return _eta;
+    }
 
     /**
      * @return the timestamp of the most recent update to this Vessel object
      */
-    public long getCurrentMessageTimestamp() { return _currentMessageTimestamp; }
+    public long getCurrentMessageTimestamp() {
+        return _currentMessageTimestamp;
+    }
 
     /**
-     * @return the timestamp of the most recent position update for this Vessel object
+     * @return the timestamp of the most recent position update for this Vessel
+     *         object
      */
-    public long getCurrentPositionTimestamp() { return _currentPositionTimestamp; }
+    public long getCurrentPositionTimestamp() {
+        return _currentPositionTimestamp;
+    }
 
     /**
-     * @return the timestamp of the most recent position update prior to the most current position update for this Vessel object
+     * @return the timestamp of the most recent position update prior to the most
+     *         current position update for this Vessel object
      */
-    public long getPreviousPositionTimestamp() { return _previousPositionTimestamp; }
+    public long getPreviousPositionTimestamp() {
+        return _previousPositionTimestamp;
+    }
 
     /**
      *
      * @return
      */
-    public long getTimeSent() { return _timeSent; }
+    public long getTimeSent() {
+        return _timeSent;
+    }
 
     /**
      * @return the hash code for this Object
@@ -509,69 +634,76 @@ public class Vessel implements Cloneable {
 
     /**
      * @param obj
-     * @return a boolean representing whether the provided object matches this object
+     * @return a boolean representing whether the provided object matches this
+     *         object
      */
     @Override
-    public boolean equals( Object obj ) {
-        if( obj == null ) return false;
-        if( getClass() != obj.getClass() ) return false;
-        final Vessel other = ( Vessel ) obj;
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Vessel other = (Vessel) obj;
 
-        return ( _id.equals( other.getId() ) );
+        return (_id.equals(other.getId()));
     }
 
     /**
-     * A local implementation of toString() which encapsulates all of the object member fields in an approximate JSON format
+     * A local implementation of toString() which encapsulates all of the object
+     * member fields in an approximate JSON format
+     * 
      * @return
      */
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append( "{ " );
-        sb.append( "id : { mmsi : " ).append( getId().getMmsi() ).append( ", source : \"" ).append( getId().getSource() ).append( " }" );
-        sb.append( ", version : " ).append( getVersion() );
-        sb.append( ", imo : " ).append( getImo() );
-        sb.append( ", callsign : \"" ).append( getCallsign() ).append( "\"" );
-        sb.append( ", shipname : \"" ).append( getShipname() ).append( "\"" );
-        sb.append( ", shiptype : \"" ).append( getShiptype() ).append( "\"" );
-        sb.append( ", toBow : " ).append( getToBow() );
-        sb.append( ", toPort : " ).append( getToPort() );
-        sb.append( ", toStern : " ).append( getToStern() );
-        sb.append( ", toStarboard : " ).append( getToStarboard() );
-        sb.append( ", epfd : " ).append( getEpfd() );
-        sb.append( ", month : " ).append( getMonth() );
-        sb.append( ", day : " ).append( getDay() );
-        sb.append( ", hour : " ).append( getHour() );
-        sb.append( ", minute : " ).append( getMinute() );
-        sb.append( ", second : " ).append( getSecond() );
-        sb.append( ", draught : " ).append( getDraught() );
-        sb.append( ", destination : " ).append( getDestination() );
-        sb.append( ", dte : " ).append( isDte() );
-        sb.append( ", status : " ).append( getStatus() );
-        sb.append( ", turn : " ).append( getTurn() );
-        sb.append( ", speed : " ).append( getSpeed() );
-        sb.append( ", accurate : " ).append( isAccurate() );
-        sb.append( ", lon : " ).append( getLon() );
-        sb.append( ", lat : " ).append( getLat() );
-        sb.append( ", course : " ).append( getCourse() );
-        sb.append( ", heading : " ).append( getHeading() );
-        sb.append( ", maneuver : " ).append( getManeuver() );
-        sb.append( ", raim : " ).append( isRaim() );
-        sb.append( ", repeat : " ).append( getRepeat() );
-        sb.append( ", radio : " ).append( getRadio() );
-        sb.append( ", eta : " ).append( getEta() );
-        sb.append( ", currentMessageTimestamp : " ).append( getCurrentMessageTimestamp() );
-        sb.append( ", currentPositionTimestamp : " ).append( getCurrentPositionTimestamp() );
-        sb.append( ", previousPositionTimestamp : " ).append( getPreviousPositionTimestamp() );
-        sb.append( ", timeSent : " ).append( _timeSent );
-        sb.append( "}" );
+        sb.append("{ ");
+        sb.append("id : { mmsi : ").append(getId().getMmsi()).append(", source : \"").append(getId().getSource())
+                .append(" }");
+        sb.append(", version : ").append(getVersion());
+        sb.append(", imo : ").append(getImo());
+        sb.append(", callsign : \"").append(getCallsign()).append("\"");
+        sb.append(", shipname : \"").append(getShipname()).append("\"");
+        sb.append(", shiptype : \"").append(getShiptype()).append("\"");
+        sb.append(", toBow : ").append(getToBow());
+        sb.append(", toPort : ").append(getToPort());
+        sb.append(", toStern : ").append(getToStern());
+        sb.append(", toStarboard : ").append(getToStarboard());
+        sb.append(", epfd : ").append(getEpfd());
+        sb.append(", month : ").append(getMonth());
+        sb.append(", day : ").append(getDay());
+        sb.append(", hour : ").append(getHour());
+        sb.append(", minute : ").append(getMinute());
+        sb.append(", second : ").append(getSecond());
+        sb.append(", draught : ").append(getDraught());
+        sb.append(", destination : ").append(getDestination());
+        sb.append(", dte : ").append(isDte());
+        sb.append(", status : ").append(getStatus());
+        sb.append(", turn : ").append(getTurn());
+        sb.append(", speed : ").append(getSpeed());
+        sb.append(", accurate : ").append(isAccurate());
+        sb.append(", lon : ").append(getLon());
+        sb.append(", lat : ").append(getLat());
+        sb.append(", course : ").append(getCourse());
+        sb.append(", heading : ").append(getHeading());
+        sb.append(", maneuver : ").append(getManeuver());
+        sb.append(", raim : ").append(isRaim());
+        sb.append(", repeat : ").append(getRepeat());
+        sb.append(", radio : ").append(getRadio());
+        sb.append(", eta : ").append(getEta());
+        sb.append(", currentMessageTimestamp : ").append(getCurrentMessageTimestamp());
+        sb.append(", currentPositionTimestamp : ").append(getCurrentPositionTimestamp());
+        sb.append(", previousPositionTimestamp : ").append(getPreviousPositionTimestamp());
+        sb.append(", timeSent : ").append(_timeSent);
+        sb.append("}");
 
         return sb.toString();
     }
 
     /**
-     * A unique vessel identifier based on a combination of the vessel MMSI and the provided data source
+     * A unique vessel identifier based on a combination of the vessel MMSI and the
+     * provided data source
      */
     public static class Identifier {
 
@@ -583,7 +715,7 @@ public class Vessel implements Cloneable {
          * @param mmsi
          * @param source
          */
-        public Identifier( int mmsi, String source ) {
+        public Identifier(int mmsi, String source) {
             _mmsi = mmsi;
             _source = source;
         }
@@ -592,13 +724,17 @@ public class Vessel implements Cloneable {
          *
          * @return
          */
-        public int getMmsi() { return _mmsi; }
+        public int getMmsi() {
+            return _mmsi;
+        }
 
         /**
          *
          * @return
          */
-        public String getSource() { return _source; }
+        public String getSource() {
+            return _source;
+        }
 
         /**
          *
@@ -606,12 +742,15 @@ public class Vessel implements Cloneable {
          * @return
          */
         @Override
-        public boolean equals( Object o ) {
-            if( o == null ) return false;
-            if( !( o instanceof Identifier ) ) return false;
-            Identifier id = ( Identifier )o;
-            if( id._mmsi != _mmsi ) return false;
-            return id._source.equals( _source );
+        public boolean equals(Object o) {
+            if (o == null)
+                return false;
+            if (!(o instanceof Identifier))
+                return false;
+            Identifier id = (Identifier) o;
+            if (id._mmsi != _mmsi)
+                return false;
+            return id._source.equals(_source);
         }
 
         /**
