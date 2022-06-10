@@ -41,8 +41,8 @@ import org.apache.logging.log4j.Logger;
  */
 public class ConsoleController implements Initializable {
 
-    static final Logger LOG = LogManager.getLogger( ConsoleController.class );
-    
+    static final Logger LOG = LogManager.getLogger(ConsoleController.class);
+
     private final static String BORDER_DOUBLE = "====================================================";
     private final static String BORDER_SINGLE = "---------------------------------------------";
 
@@ -69,168 +69,180 @@ public class ConsoleController implements Initializable {
      * @param event
      */
     @FXML
-    private void handleDecodeAction( ActionEvent event ) {
-        String inText = inputArea.getText();  // retrieve input
-        inputArea.clear();  // clear the field
+    private void handleDecodeAction(ActionEvent event) {
+        String inText = inputArea.getText(); // retrieve input
+        inputArea.clear(); // clear the field
 
         try {
-            appendLineToOutput( BORDER_DOUBLE );
-            appendLineToOutput( "Processing:\n" + inText );
+            appendLineToOutput(BORDER_DOUBLE);
+            appendLineToOutput("Processing:\n" + inText);
 
-            if( inText == null || inText.isEmpty() ) throw new Exception( "Null Input" );
+            if (inText == null || inText.isEmpty())
+                throw new Exception("Null Input");
 
-            String [] packetStrings = inText.split( "\n" );
-            AISPacket [] packets = new AISPacket[ packetStrings.length ];
-            for( int i = 0; i < packetStrings.length; i++ ) {
-                AISPacket packet = ( AISPacket.validatePreamble( packetStrings[i] ) )
-                        ? new AISPacket( packetStrings[i] ) 
-                        : AISPacket.createFromBinaryString( packetStrings[i], null );
+            String[] packetStrings = inText.split("\n");
+            AISPacket[] packets = new AISPacket[packetStrings.length];
+            for (int i = 0; i < packetStrings.length; i++) {
+                AISPacket packet = (AISPacket.validatePreamble(packetStrings[i]))
+                        ? new AISPacket(packetStrings[i])
+                        : AISPacket.createFromBinaryString(packetStrings[i], null);
                 packet.process();
-                appendLineToOutput( BORDER_SINGLE );
+                appendLineToOutput(BORDER_SINGLE);
                 TagBlock tb = packet.getTagBlock();
                 if (tb != null) {
-                    appendLineToOutput( "TagBlock: " + AISPacket.bArray2Str( tb.rawTagBlock ) );
-                    appendLineToOutput( BORDER_SINGLE );
-                    appendLineToOutput( "\tsource           : " + AISPacket.bArray2Str( tb.getSource() ) );
-                    appendLineToOutput( "\tdestination      : " + ( ( tb.destination == null ) ? "null" : AISPacket.bArray2Str( tb.destination ) ) );
-                    appendLineToOutput( "\ttimestamp        : " + tb.getTimestamp() );
-                    appendLineToOutput( "\trelative time    : " + tb.getRelativeTime() );
-                    appendLineToOutput( "\tsentence grouping: " + ( ( tb.sentenceGrouping == null ) ? "null" : AISPacket.bArray2Str( tb.sentenceGrouping ) ) );
-                    appendLineToOutput( "\tline count       : " + tb.getLineCount());
-                    appendLineToOutput( "\ttext string      : " + ( ( tb.textStr == null ) ? "null" : AISPacket.bArray2Str( tb.textStr ) ) );
+                    appendLineToOutput("TagBlock: " + ByteArrayUtils.bArray2Str(tb.rawTagBlock));
+                    appendLineToOutput(BORDER_SINGLE);
+                    appendLineToOutput("\tsource           : " + ByteArrayUtils.bArray2Str(tb.getSource()));
+                    appendLineToOutput("\tdestination      : " + ((tb.destination == null) ? "null"
+                            : ByteArrayUtils
+                                    .bArray2Str(tb.destination)));
+                    appendLineToOutput("\ttimestamp        : " + tb.getTimestamp());
+                    appendLineToOutput("\trelative time    : " + tb.getRelativeTime());
+                    appendLineToOutput("\tsentence grouping: " + ((tb.sentenceGrouping == null) ? "null"
+                            : ByteArrayUtils
+                                    .bArray2Str(tb.sentenceGrouping)));
+                    appendLineToOutput("\tline count       : " + tb.getLineCount());
+                    appendLineToOutput("\ttext string      : " + ((tb.textStr == null) ? "null"
+                            : ByteArrayUtils
+                                    .bArray2Str(tb.textStr)));
                 } else {
-                    appendLineToOutput( "TagBlock: " );
-                    appendLineToOutput( BORDER_SINGLE );
-                    appendLineToOutput( "\t- none -" );
+                    appendLineToOutput("TagBlock: ");
+                    appendLineToOutput(BORDER_SINGLE);
+                    appendLineToOutput("\t- none -");
                 }
-                Preamble pre = Preamble.parse( packet.getRawPacket() );
-                appendLineToOutput( BORDER_SINGLE );
-                appendLineToOutput( "Preamble: " + AISPacket.bArray2Str( pre.parsed ) );
-                appendLineToOutput( BORDER_SINGLE );
-                appendLineToOutput( "\tformat       : " + AISPacket.bArray2Str( pre.format ) );
-                appendLineToOutput( "\tencapsulated : " + pre.isEncapsulated );
-                appendLineToOutput( "\tproprietary  : " + pre.isProprietary );
-                appendLineToOutput( "\tquery        : " + pre.isQuery );
-                appendLineToOutput( "\ttalker       : " + pre.talker.description );
-                if( pre.manufacturer == null ) appendLineToOutput( "\tmanufacturer : null" );
-                else appendLineToOutput( "\tmanufacturer : " + pre.manufacturer.fullName );
-                appendLineToOutput( "\tvalid packet: " + packet.isValid() );
+                Preamble pre = Preamble.parse(packet.getRawPacket());
+                appendLineToOutput(BORDER_SINGLE);
+                appendLineToOutput("Preamble: " + ByteArrayUtils.bArray2Str(pre.parsed));
+                appendLineToOutput(BORDER_SINGLE);
+                appendLineToOutput("\tformat       : " + ByteArrayUtils.bArray2Str(pre.format));
+                appendLineToOutput("\tencapsulated : " + pre.isEncapsulated);
+                appendLineToOutput("\tproprietary  : " + pre.isProprietary);
+                appendLineToOutput("\tquery        : " + pre.isQuery);
+                appendLineToOutput("\ttalker       : " + pre.talker.description);
+                if (pre.manufacturer == null)
+                    appendLineToOutput("\tmanufacturer : null");
+                else
+                    appendLineToOutput("\tmanufacturer : " + pre.manufacturer.fullName);
+                appendLineToOutput("\tvalid packet: " + packet.isValid());
                 packets[i] = packet;
             }
-            appendLineToOutput( BORDER_SINGLE );
+            appendLineToOutput(BORDER_SINGLE);
 
-            Optional<AISMessage> msgOpt = AISMessageFactory.create( "CONSOLE", false, packets );
+            Optional<AISMessage> msgOpt = AISMessageFactory.create("CONSOLE", false, packets);
             if (msgOpt.isPresent()) {
                 AISMessage msg = msgOpt.get();
                 // from AISMessageBase
-                appendLineToOutput( "Type   : " + msg.getType() );
-                appendLineToOutput( "Repeat : " + msg.getRepeat() );
-                appendLineToOutput( "MMSI   : " + msg.getMmsi() + ( ( msg.hasValidMmsi() ) ? " (VALID)" : " (INVALID)" ) );
-                appendLineToOutput( BORDER_SINGLE );
+                appendLineToOutput("Type   : " + msg.getType());
+                appendLineToOutput("Repeat : " + msg.getRepeat());
+                appendLineToOutput("MMSI   : " + msg.getMmsi() + ((msg.hasValidMmsi()) ? " (VALID)" : " (INVALID)"));
+                appendLineToOutput(BORDER_SINGLE);
 
-                MMSIType type = MMSIType.forMMSI( msg.getMmsi() );
-                appendLineToOutput( "MMSI Src: " + ( type != null ? type.name() : "INVALID" ) );
+                MMSIType type = MMSIType.forMMSI(msg.getMmsi());
+                appendLineToOutput("MMSI Src: " + (type != null ? type.name() : "INVALID"));
 
-                switch( msg.getType() ) {
+                switch (msg.getType()) {
                     case BASE_STATION_REPORT:
-                        BaseStationReport bsr = ( BaseStationReport ) msg;
+                        BaseStationReport bsr = (BaseStationReport) msg;
 
-                        appendLineToOutput( "Year     : " + bsr.getYear() );
-                        appendLineToOutput( "Month    : " + bsr.getMonth() );
-                        appendLineToOutput( "Day      : " + bsr.getDay() );
-                        appendLineToOutput( "Hour     : " + bsr.getHour() );
-                        appendLineToOutput( "Minute   : " + bsr.getMinute() );
-                        appendLineToOutput( "Second   : " + bsr.getSecond() );
-                        appendLineToOutput( "EPFD     : " + bsr.getEpfd() );
-                        appendLineToOutput( "Lat      : " + bsr.getLat() );
-                        appendLineToOutput( "Lon      : " + bsr.getLon() );
-                        appendLineToOutput( "Position : " + bsr.getPosition() );
-                        appendLineToOutput( "Radio    : " + bsr.getRadio() );
+                        appendLineToOutput("Year     : " + bsr.getYear());
+                        appendLineToOutput("Month    : " + bsr.getMonth());
+                        appendLineToOutput("Day      : " + bsr.getDay());
+                        appendLineToOutput("Hour     : " + bsr.getHour());
+                        appendLineToOutput("Minute   : " + bsr.getMinute());
+                        appendLineToOutput("Second   : " + bsr.getSecond());
+                        appendLineToOutput("EPFD     : " + bsr.getEpfd());
+                        appendLineToOutput("Lat      : " + bsr.getLat());
+                        appendLineToOutput("Lon      : " + bsr.getLon());
+                        appendLineToOutput("Position : " + bsr.getPosition());
+                        appendLineToOutput("Radio    : " + bsr.getRadio());
                         break;
                     case POSITION_REPORT_CLASS_A:
                     case POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE:
                     case POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION:
-                        PositionReportBase prb = ( PositionReportBase ) msg;
+                        PositionReportBase prb = (PositionReportBase) msg;
 
                         // from PositionReportBase
-                        appendLineToOutput( "Accuracy : " + prb.isAccurate() );
-                        appendLineToOutput( "Course   : " + prb.getCourse() );
-                        appendLineToOutput( "Heading  : " + prb.getHeading() );
-                        appendLineToOutput( "Latitude : " + prb.getLat() );
-                        appendLineToOutput( "Longitude: " + prb.getLon() );
-                        appendLineToOutput( "Maneuver : " + prb.getManeuver() );
-                        if( prb.isPositionValid() ) appendLineToOutput( "Position : " + prb.getPosition() );
-                        else appendLineToOutput( "Position : INVALID" );
-                        appendLineToOutput( "Radio    : " + prb.getRadio() );
-                        appendLineToOutput( "RAIM     : " + prb.isRaim() );
-                        appendLineToOutput( "Second   : " + prb.getSecond() );
-                        appendLineToOutput( "Speed    : " + prb.getSpeed() );
-                        appendLineToOutput( "Status   : " + prb.getStatus() );
-                        appendLineToOutput( "Turn     : " + prb.getTurn() );
+                        appendLineToOutput("Accuracy : " + prb.isAccurate());
+                        appendLineToOutput("Course   : " + prb.getCourse());
+                        appendLineToOutput("Heading  : " + prb.getHeading());
+                        appendLineToOutput("Latitude : " + prb.getLat());
+                        appendLineToOutput("Longitude: " + prb.getLon());
+                        appendLineToOutput("Maneuver : " + prb.getManeuver());
+                        if (prb.isPositionValid())
+                            appendLineToOutput("Position : " + prb.getPosition());
+                        else
+                            appendLineToOutput("Position : INVALID");
+                        appendLineToOutput("Radio    : " + prb.getRadio());
+                        appendLineToOutput("RAIM     : " + prb.isRaim());
+                        appendLineToOutput("Second   : " + prb.getSecond());
+                        appendLineToOutput("Speed    : " + prb.getSpeed());
+                        appendLineToOutput("Status   : " + prb.getStatus());
+                        appendLineToOutput("Turn     : " + prb.getTurn());
                         break;
                     case STATIC_AND_VOYAGE_RELATED_DATA:
-                        StaticAndVoyageRelatedData savrd = ( StaticAndVoyageRelatedData ) msg;
+                        StaticAndVoyageRelatedData savrd = (StaticAndVoyageRelatedData) msg;
 
-                        appendLineToOutput( "AIS Version  : " + savrd.getVersion() );
-                        appendLineToOutput( "IMO Number   : " + savrd.getImo() );
-                        appendLineToOutput( "Call Sign    : " + savrd.getCallsign() );
-                        appendLineToOutput( "Ship Name    : " + savrd.getShipname() );
-                        appendLineToOutput( "Ship Type    : " + savrd.getShiptype() );
-                        appendLineToOutput( "To Bow       : " + savrd.getToBow() );
-                        appendLineToOutput( "To Stern     : " + savrd.getToStern() );
-                        appendLineToOutput( "To Port      : " + savrd.getToPort() );
-                        appendLineToOutput( "To Starboard : " + savrd.getToStarboard() );
-                        appendLineToOutput( "EPFD Fix Type: " + savrd.getEpfd() );
-                        appendLineToOutput( "ETA Month    : " + savrd.getMonth() );
-                        appendLineToOutput( "ETA Day      : " + savrd.getDay() );
-                        appendLineToOutput( "ETA Hour     : " + savrd.getHour() );
-                        appendLineToOutput( "ETA Minute   : " + savrd.getMinute() );
-                        appendLineToOutput( "Draught      : " + savrd.getDraught() );
-                        appendLineToOutput( "Destination  : " + savrd.getDestination() );
-                        appendLineToOutput( "DTE Ready    : " + savrd.dteReady() );
+                        appendLineToOutput("AIS Version  : " + savrd.getVersion());
+                        appendLineToOutput("IMO Number   : " + savrd.getImo());
+                        appendLineToOutput("Call Sign    : " + savrd.getCallsign());
+                        appendLineToOutput("Ship Name    : " + savrd.getShipname());
+                        appendLineToOutput("Ship Type    : " + savrd.getShiptype());
+                        appendLineToOutput("To Bow       : " + savrd.getToBow());
+                        appendLineToOutput("To Stern     : " + savrd.getToStern());
+                        appendLineToOutput("To Port      : " + savrd.getToPort());
+                        appendLineToOutput("To Starboard : " + savrd.getToStarboard());
+                        appendLineToOutput("EPFD Fix Type: " + savrd.getEpfd());
+                        appendLineToOutput("ETA Month    : " + savrd.getMonth());
+                        appendLineToOutput("ETA Day      : " + savrd.getDay());
+                        appendLineToOutput("ETA Hour     : " + savrd.getHour());
+                        appendLineToOutput("ETA Minute   : " + savrd.getMinute());
+                        appendLineToOutput("Draught      : " + savrd.getDraught());
+                        appendLineToOutput("Destination  : " + savrd.getDestination());
+                        appendLineToOutput("DTE Ready    : " + savrd.dteReady());
                         break;
                     case STANDARD_CLASS_B_CS_POSITION_REPORT:
-                        StandardClassBCSPositionReport scbpr = ( StandardClassBCSPositionReport ) msg;
+                        StandardClassBCSPositionReport scbpr = (StandardClassBCSPositionReport) msg;
 
-                        appendLineToOutput( "Course   : " + scbpr.getCourse() );
-                        appendLineToOutput( "Heading  : " + scbpr.getHeading() );
-                        appendLineToOutput( "Latitude : " + scbpr.getLat() );
-                        appendLineToOutput( "Longitude: " + scbpr.getLon() );
-                        appendLineToOutput( "Radio    : " + scbpr.getRadio() );
-                        appendLineToOutput( "Second   : " + scbpr.getSecond() );
-                        appendLineToOutput( "Speed    : " + scbpr.getSpeed() );
+                        appendLineToOutput("Course   : " + scbpr.getCourse());
+                        appendLineToOutput("Heading  : " + scbpr.getHeading());
+                        appendLineToOutput("Latitude : " + scbpr.getLat());
+                        appendLineToOutput("Longitude: " + scbpr.getLon());
+                        appendLineToOutput("Radio    : " + scbpr.getRadio());
+                        appendLineToOutput("Second   : " + scbpr.getSecond());
+                        appendLineToOutput("Speed    : " + scbpr.getSpeed());
                         break;
                     case EXTENDED_CLASS_B_CS_POSITION_REPORT:
-                        ExtendedClassBCSPositionReport ecbpr = ( ExtendedClassBCSPositionReport ) msg;
+                        ExtendedClassBCSPositionReport ecbpr = (ExtendedClassBCSPositionReport) msg;
 
-                        appendLineToOutput( "Assigned    : " + ecbpr.getAssigned() );
-                        appendLineToOutput( "Course      : " + ecbpr.getCourse() );
-                        appendLineToOutput( "Heading     : " + ecbpr.getHeading() );
-                        appendLineToOutput( "Latitude    : " + ecbpr.getLat() );
-                        appendLineToOutput( "Longitude   : " + ecbpr.getLon() );
-                        appendLineToOutput( "Second      : " + ecbpr.getSecond() );
-                        appendLineToOutput( "Speed       : " + ecbpr.getSpeed() );
-                        appendLineToOutput( "EPFD        : " + ecbpr.getEpfd().name() );
-                        appendLineToOutput( "Ship Type   : " + ecbpr.getShipType().name() );
-                        appendLineToOutput( "To Bow      : " + ecbpr.getToBow() );
-                        appendLineToOutput( "To Stern    : " + ecbpr.getToStern() );
-                        appendLineToOutput( "To Port     : " + ecbpr.getToPort() );
-                        appendLineToOutput( "To Starboard: " + ecbpr.getToStarboard() );
+                        appendLineToOutput("Assigned    : " + ecbpr.getAssigned());
+                        appendLineToOutput("Course      : " + ecbpr.getCourse());
+                        appendLineToOutput("Heading     : " + ecbpr.getHeading());
+                        appendLineToOutput("Latitude    : " + ecbpr.getLat());
+                        appendLineToOutput("Longitude   : " + ecbpr.getLon());
+                        appendLineToOutput("Second      : " + ecbpr.getSecond());
+                        appendLineToOutput("Speed       : " + ecbpr.getSpeed());
+                        appendLineToOutput("EPFD        : " + ecbpr.getEpfd().name());
+                        appendLineToOutput("Ship Type   : " + ecbpr.getShipType().name());
+                        appendLineToOutput("To Bow      : " + ecbpr.getToBow());
+                        appendLineToOutput("To Stern    : " + ecbpr.getToStern());
+                        appendLineToOutput("To Port     : " + ecbpr.getToPort());
+                        appendLineToOutput("To Starboard: " + ecbpr.getToStarboard());
                         break;
                     default:
-                        appendLineToOutput( "Not breaking out fields of " + msg.getType().getDescription() );
+                        appendLineToOutput("Not breaking out fields of " + msg.getType().getDescription());
                 }
             } else {
-                appendLineToOutput( "AISMessageFactory returned a null message!" );
-                LOG.warn( "AISMessageFactory returned a null message!" );
+                appendLineToOutput("AISMessageFactory returned a null message!");
+                LOG.warn("AISMessageFactory returned a null message!");
             }
-        } catch( Exception e ) {
-            appendLineToOutput( "Unable to decode packet: \"" + inText + "\": " + e.getMessage() );
-            appendLineToOutput( "StackTrace:\n" + e );
-            LOG.error( "Unable to decode packet: \"{}\": {}", inText, e.getMessage() );
-            if( LOG.isTraceEnabled() ) LOG.trace( "StackTrace:", e );
+        } catch (Exception e) {
+            appendLineToOutput("Unable to decode packet: \"" + inText + "\": " + e.getMessage());
+            appendLineToOutput("StackTrace:\n" + e);
+            LOG.error("Unable to decode packet: \"{}\": {}", inText, e.getMessage());
+            if (LOG.isTraceEnabled())
+                LOG.trace("StackTrace:", e);
         } finally {
-            appendLineToOutput( BORDER_DOUBLE );
+            appendLineToOutput(BORDER_DOUBLE);
         }
     }
 
@@ -238,14 +250,18 @@ public class ConsoleController implements Initializable {
      *
      * @param s
      */
-    private void appendLineToOutput( String s ) { outputArea.appendText( s + "\n" ); }
+    private void appendLineToOutput(String s) {
+        outputArea.appendText(s + "\n");
+    }
 
     /**
      *
      * @param event
      */
     @FXML
-    private void handleClearAction(ActionEvent event) { outputArea.clear(); }
+    private void handleClearAction(ActionEvent event) {
+        outputArea.clear();
+    }
 
     /**
      *
@@ -253,5 +269,6 @@ public class ConsoleController implements Initializable {
      * @param rb
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) { /*nothing to do */ }
+    public void initialize(URL url, ResourceBundle rb) {
+        /* nothing to do */ }
 }

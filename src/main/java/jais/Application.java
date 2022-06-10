@@ -44,8 +44,10 @@ public class Application {
 
     /**
      *
-     * @param inputFilePath the path to the file containing the AIS packets we wish to decode
-     * @param outputFilePath the path to the file we should create with the decoded messages
+     * @param inputFilePath  the path to the file containing the AIS packets we wish
+     *                       to decode
+     * @param outputFilePath the path to the file we should create with the decoded
+     *                       messages
      */
     private static void decodeFile(String inputFilePath, String outputFilePath) throws IOException {
         Path in = Paths.get(inputFilePath);
@@ -65,7 +67,8 @@ public class Application {
                 System.out.println("READ: " + s);
                 try {
                     AISPacket packet = (AISPacket.validatePreamble(s))
-                            ? new AISPacket(s, inputFilePath) : AISPacket.createFromBinaryString(s, inputFilePath);
+                            ? new AISPacket(s, inputFilePath)
+                            : AISPacket.createFromBinaryString(s, inputFilePath);
                     Optional<AISMessage> msg = AISMessageFactory.create(inputFilePath, packet);
                     if (msg.isPresent()) {
                         try {
@@ -102,14 +105,17 @@ public class Application {
         CommandLine cmd = null;
 
         OPTIONS.addOption("h", "help", false, "Show this usage screen");
-        OPTIONS.addOption("b", "batch", false, "Run in \"batch\" mode.  Console mode (the default) provides a JFX interface for"
-                + " decoding one or more (manually entered) AIS strings at a time.  Whereas batch mode (requires -i/--infile &"
-                + " -o/--outile switches) decodes a user specified plain text file of newline separated AIS packets and outputs"
-                + " each decoded message to a new line of comma separated values to a user specified output file location.");
-        OPTIONS.addOption("i", "infile", true, "The path to a plain text file consisting of newline separated AIS message"
-                + " strings (e.g. !AIVDM,1,1,,B,15N9W:0P00ISR5hA7<A8:OvT0498,0*2F) to be decoded.");
-        OPTIONS.addOption("o", "outfile", true, "The path to a target file location for decoded messages in CSV format (decoded"
-                + " messages are separated by newline, fields within a message are separated by commas).");
+        OPTIONS.addOption("b", "batch", false,
+                "Run in \"batch\" mode.  Console mode (the default) provides a JFX interface for"
+                        + " decoding one or more (manually entered) AIS strings at a time.  Whereas batch mode (requires -i/--infile &"
+                        + " -o/--outile switches) decodes a user specified plain text file of newline separated AIS packets and outputs"
+                        + " each decoded message to a new line of comma separated values to a user specified output file location.");
+        OPTIONS.addOption("i", "infile", true,
+                "The path to a plain text file consisting of newline separated AIS message"
+                        + " strings (e.g. !AIVDM,1,1,,B,15N9W:0P00ISR5hA7<A8:OvT0498,0*2F) to be decoded.");
+        OPTIONS.addOption("o", "outfile", true,
+                "The path to a target file location for decoded messages in CSV format (decoded"
+                        + " messages are separated by newline, fields within a message are separated by commas).");
 
         try {
             cmd = new DefaultParser().parse(OPTIONS, args);
@@ -123,17 +129,23 @@ public class Application {
     /**
      *
      * @param args the arguments passed to the program when it was run
-     * @throws IOException if we were provided with invalid or unusable file location data
+     * @throws IOException if we were provided with invalid or unusable file
+     *                     location data
      */
     public static void main(String[] args) throws IOException {
         CommandLine cmd = parseCmd(args);
 
-        if (cmd.hasOption("h")) showUsage(null);
+        if (cmd.hasOption("h"))
+            showUsage(null);
         else if (cmd.hasOption("b")) {
-            if (!cmd.hasOption("i")) showUsage("No input file specified!");
-            else if (!cmd.hasOption("o")) showUsage("No output file location specified!");
-            else Application.decodeFile(cmd.getOptionValue("i"), cmd.getOptionValue("o"));
-        } else Console.draw(args);
+            if (!cmd.hasOption("i"))
+                showUsage("No input file specified!");
+            else if (!cmd.hasOption("o"))
+                showUsage("No output file location specified!");
+            else
+                Application.decodeFile(cmd.getOptionValue("i"), cmd.getOptionValue("o"));
+        } else
+            Console.draw(args);
     }
 
     /**
@@ -141,11 +153,11 @@ public class Application {
      */
     static class FileWriter {
 
-        private final static String HEADER
-                = "Accurate,Course,Heading,Latitude,Longitude,Maneuver,Position,Radio,RAIM,Second,Speed,Status,Turn";
+        private final static String HEADER = "Accurate,Course,Heading,Latitude,Longitude,Maneuver,Position,Radio,RAIM,Second,Speed,Status,Turn";
 
         /**
          * opens file for creation and adds header line
+         * 
          * @param path the path at which we should open a new file
          */
         public static void initFile(Path path) throws IOException {
@@ -155,7 +167,7 @@ public class Application {
         }
 
         /**
-         * @param path the path to the file where we will write the message
+         * @param path    the path to the file where we will write the message
          * @param message the AISMessage we will write to the file
          * @throws IOException if we are unable to write to the file for any reason
          */
