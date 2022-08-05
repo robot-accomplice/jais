@@ -16,8 +16,8 @@
 package jais;
 
 import jais.exceptions.AISException;
-import jais.exceptions.AISPacketException;
-import jais.exceptions.AISPacketParseException;
+import jais.exceptions.AISSentenceException;
+import jais.exceptions.ParseException;
 import jais.messages.enums.Manufacturers;
 import jais.messages.enums.Talkers;
 import jais.messages.AISMessageDecoder;
@@ -39,9 +39,9 @@ import java.util.Objects;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
-public final class AISPacket {
+public final class AISSentence implements Sentence {
 
-    private final static Logger LOG = LogManager.getLogger(AISPacket.class);
+    private final static Logger LOG = LogManager.getLogger(AISSentence.class);
 
     // reserved characters
     public final static char ENCAP_START = '!';
@@ -57,102 +57,107 @@ public final class AISPacket {
 
     public final static String PREAMBLE = "([!|\\$]{1})([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1})){1}";
     public final static Pattern PREAMBLE_PATTERN = Pattern.compile(PREAMBLE);
-    public final static Pattern PACKET_PATTERN = Pattern
+    public final static Pattern SENTENCE_PATTERN = Pattern
             .compile("(" + TagBlock.TAGBLOCK_STRING + ")?(" + PREAMBLE + "(.*))");
     public final static int PREAMBLE_GROUPS = 5;
     public final static Charset DEFAULT_CHARSET = StandardCharsets.US_ASCII;
 
-    private TagBlock _tagBlock;
-    private Preamble _preamble;
-    private byte[] _source;
-    private byte[] _type;
-    private int _fragmentCount = 1;
-    private int _fragmentNumber = 1;
-    private int _sequentialMessageId = -1;
-    private char _radioChannelCode;
-    private byte[] _rawPacket; // the unparsed initial string
-    private byte[] _binaryString; // the binary string
-    private byte[] _packetBody; // the message without the tagblock
-    private int _fillBits;
-    private byte[] _checksum;
-    private final long _timeReceived = ZonedDateTime.now(ZoneOffset.UTC.normalized()).toInstant().toEpochMilli();
-    private byte[][] _packetParts;
-    private boolean _parsed = false;
+    private TagBlock tagBlock;
+    private Preamble preamble;
+    private byte[] source;
+    private byte[] type;
+
+    private int fragmentCount = 1;
+    private int fragmentNumber = 1;
+    private int sequentialMessageId = -1;
+    private char radioChannelCode;
+    private byte[] rawSentence; // the unparsed initial string
+    private byte[] binaryString; // the binary string
+    private byte[] sentenceBody; // the message without the tagblock
+    private int fillBits;
+    private byte[] checksum;
+    private final long timeReceived = ZonedDateTime.now(ZoneOffset.UTC.normalized()).toInstant().toEpochMilli();
+    private byte[][] sentenceParts;
+    private boolean parsed = false;
 
     /**
      * Constructor
      *
-     * @param rawPacket byte[] composed of the characters from the original
-     *                  non-decoded String representing a complete or partial AIS
-     *                  message
+     * @param rawSentence byte[] composed of the characters from the original
+     *                    non-decoded String representing a complete or partial AIS
+     *                    message
      */
-    public AISPacket(byte[] rawPacket) {
-        this(rawPacket, ByteArrayUtils.str2bArray(DEFAULT_SOURCE));
+    public AISSentence(byte[] rawSentence) {
+        this(rawSentence, ByteArrayUtils.str2bArray(DEFAULT_SOURCE));
     }
 
     /**
      * Constructor
      *
-     * @param rawPacket byte[] composed of the characters from the original
-     *                  non-decoded String representing a complete or partial AIS
-     *                  message
-     * @param source    byte[] for the named source of the AIS packet
+     * @param rawSentence byte[] composed of the characters from the original
+     *                    non-decoded String representing a complete or partial AIS
+     *                    message
+     * @param source      byte[] for the named source of the AIS sentence
      */
-    public AISPacket(byte[] rawPacket, byte[] source) {
+    public AISSentence(byte[] rawSentence, byte[] source) {
         if (LOG.isTraceEnabled())
-            LOG.trace("Constructor instantiated with: \"{}\", \"{}\"", rawPacket, source);
-        _rawPacket = ByteArrayUtils.trimByteArray(rawPacket);
-        _source = ByteArrayUtils.trimByteArray(source);
+            LOG.trace("Constructor instantiated with: \"{}\", \"{}\"", rawSentence, source);
+        this.rawSentence = ByteArrayUtils.trimByteArray(rawSentence);
+        this.source = ByteArrayUtils.trimByteArray(source);
     }
 
     /**
      * Constructor
      *
-     * @param rawPacket String representing the original 6 bit encoded String
-     *                  representing a complete or
-     *                  partial AIS message
+     * @param rawSentence String representing the original 6 bit encoded String
+     *                    representing a complete or
+     *                    partial AIS message
      */
-    public AISPacket(String rawPacket) {
-        this(rawPacket, DEFAULT_SOURCE);
+    public AISSentence(String rawSentence) {
+        this(rawSentence, DEFAULT_SOURCE);
     }
 
     /**
      * Constructor
      *
-     * @param rawPacket String representing the original 6 bit encoded String
-     *                  representing a complete or
-     *                  partial AIS message
-     * @param source    String representing the named source of this AIS packet
+     * @param rawSentence String representing the original 6 bit encoded String
+     *                    representing a complete or
+     *                    partial AIS message
+     * @param source      String representing the named source of this AIS sentence
      */
-    public AISPacket(String rawPacket, String source) {
+    public AISSentence(String rawSentence, String source) {
         if (LOG.isTraceEnabled())
-            LOG.trace("Constructor instantiated with: \"{}\", \"{}\"", rawPacket, source);
-        _rawPacket = ByteArrayUtils.str2bArray(rawPacket);
+            LOG.trace("Constructor instantiated with: \"{}\", \"{}\"", rawSentence, source);
+        this.rawSentence = ByteArrayUtils.str2bArray(rawSentence);
         if (source != null)
-            _source = ByteArrayUtils.str2bArray(source);
+            this.source = ByteArrayUtils.str2bArray(source);
         else
-            _source = ByteArrayUtils.str2bArray(DEFAULT_SOURCE);
+            this.source = ByteArrayUtils.str2bArray(DEFAULT_SOURCE);
+    }
+
+    public void parse() throws ParseException {
+
     }
 
     /**
-     * Validates the AIS packet preamble against a regular expression constant
+     * Validates the AIS sentence preamble against a regular expression constant
      *
      * @return boolean indicating whether or not the preamble is valid
      */
-    private boolean validatePreamble() throws AISPacketParseException {
-        if (_packetParts == null) {
-            LOG.debug("_packetParts is null");
+    private boolean validatePreamble() throws ParseException {
+        if (this.sentenceParts == null) {
+            LOG.debug("this.sentenceParts is null");
             return false;
-        } else if (_packetParts.length == 0) {
-            LOG.debug("_packetParts has zero members");
+        } else if (this.sentenceParts.length == 0) {
+            LOG.debug("this.sentenceParts has zero members");
             return false;
-        } else if (_packetParts[0] == null) {
-            LOG.debug("_packetParts[0] is null");
+        } else if (this.sentenceParts[0] == null) {
+            LOG.debug("this.sentenceParts[0] is null");
             return false;
         } else {
             if (LOG.isTraceEnabled())
-                LOG.trace("Creating preamble object from {}", ByteArrayUtils.bArray2Str(_packetParts[0]));
-            return validatePreamble(Preamble.parse(_packetParts[0]));
+                LOG.trace("Creating preamble object from {}", ByteArrayUtils.bArray2Str(this.sentenceParts[0]));
+            return validatePreamble(Preamble.parse(this.sentenceParts[0]));
         }
     }
 
@@ -168,138 +173,142 @@ public final class AISPacket {
     }
 
     /**
-     * Validates the AIS packet preamble against a regular expression constant
+     * Validates the AIS sentence preamble against a regular expression constant
      * 
      * @param preambleStr String preamble to evaluate for validity
      * @return boolean indicating whether or not the preamble is valid
-     * @throws AISPacketParseException If we are unable to parse the preamble
+     * @throws ParseException If we are unable to parse the preamble
      */
-    public static boolean validatePreamble(String preambleStr) throws AISPacketParseException {
+    public static boolean validatePreamble(String preambleStr) throws ParseException {
         return validatePreamble(Preamble.parse(preambleStr));
     }
 
     /**
      * Fetch the preamble (e.g. !AISVDM)
      * 
-     * @see jais.AISPacket.Preamble
+     * @see jais.AISSentence.Preamble
      * @return Preamble object
      */
     public final Preamble getPreamble() {
-        return _preamble;
+        return this.preamble;
     }
 
     /**
-     * Determines whether or not a TagBlock was parsed from this AISPacket
+     * Determines whether or not a TagBlock was parsed from this AISsentence
      * 
      * @see jais.TagBlock
      *
-     * @return boolean representing whether or not this packet has a TagBlock
+     * @return boolean representing whether or not this sentence has a TagBlock
      */
     public boolean hasTagBlock() {
-        return (_tagBlock != null);
+        return (this.tagBlock != null);
     }
 
     /**
-     * Returns the TagBlock parsed from this AISPacket
+     * Returns the TagBlock parsed from this AISsentence
      * 
      * @see jais.TagBlock
-     * @return TagBlock for this AISPacket
+     * @return TagBlock for this AISsentence
      */
     public final TagBlock getTagBlock() {
-        return _tagBlock;
+        return this.tagBlock;
     }
 
     /**
-     * Validates the contents of the packet and breaks it into its constituent parts
+     * Validates the contents of the sentence and breaks it into its constituent
+     * parts
      *
-     * @return @throws AISPacketException if processing fails
+     * @return @throws AISSentenceException if processing fails
      */
-    public final AISPacket process() throws AISPacketException {
+    public final AISSentence process() throws AISSentenceException {
         return process(false);
     }
 
     /**
-     * Validates the contents of the packet and breaks it into its constituent
+     * Validates the contents of the sentence and breaks it into its constituent
      * parts, optionally generates a TagBlock
-     * for the resulting AISPacket @see jais.TagBlock
+     * for the resulting AISsentence @see jais.TagBlock
      * 
      * @param addTagBlock boolean flag indicating whether or not a TagBlock should
-     *                    be pre-pended to the packet
+     *                    be pre-pended to the sentence
      * @see jais.TagBlock
-     * @return a reference to the current AISPacket object
-     * @throws jais.exceptions.AISPacketException if the raw packet is empty or
-     *                                            malformed
+     * @return a reference to the current AISsentence object
+     * @throws jais.exceptions.AISSentenceException if the raw sentence is empty or
+     *                                              malformed
      */
-    public final AISPacket process(boolean addTagBlock) throws AISPacketException {
-        String rawPacket;
+    public final AISSentence process(boolean addTagBlock) throws AISSentenceException {
+        String rawSentence;
 
-        if (_rawPacket == null)
-            throw new AISPacketException("Raw packet is null");
-        else if (_rawPacket.length == 0)
-            throw new AISPacketException("Raw packet is empty");
+        if (this.rawSentence == null)
+            throw new AISSentenceException("Raw sentence is null");
+        else if (this.rawSentence.length == 0)
+            throw new AISSentenceException("Raw sentence is empty");
         else {
-            rawPacket = ByteArrayUtils.bArray2Str(ByteArrayUtils.trimByteArray(_rawPacket));
+            rawSentence = ByteArrayUtils.bArray2Str(ByteArrayUtils.trimByteArray(this.rawSentence));
             if (LOG.isDebugEnabled())
-                LOG.debug("Processing new raw packet: {}", rawPacket);
+                LOG.debug("Processing new raw sentence: {}", rawSentence);
         }
 
-        Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher(rawPacket);
+        Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher(rawSentence);
         if (m.find()) {
             if (LOG.isDebugEnabled())
-                LOG.debug("Found a TagBlock in \"{}\"", rawPacket);
+                LOG.debug("Found a TagBlock in \"{}\"", rawSentence);
             try {
-                if (_source == null || _source.length == 0) {
-                    _tagBlock = TagBlock.parse(m.group(0));
-                    _source = _tagBlock.getSource();
+                if (this.source == null || this.source.length == 0) {
+                    this.tagBlock = TagBlock.parse(m.group(0));
+                    this.source = this.tagBlock.getSource();
                 } else
-                    _tagBlock = TagBlock.parse(m.group(0), _source);
+                    this.tagBlock = TagBlock.parse(m.group(0), this.source);
             } catch (Throwable t) {
                 if (LOG.isDebugEnabled())
                     LOG.debug("Unable to parse TagBlock from {}", m.group(0));
             }
 
-            _packetBody = ByteArrayUtils.str2bArray(rawPacket.substring(m.end()));
+            this.sentenceBody = ByteArrayUtils.str2bArray(rawSentence.substring(m.end()));
         } else if (addTagBlock) {
-            if (_source != null && _source.length != 0)
-                _tagBlock = TagBlock.build(_source);
-            _packetBody = _rawPacket;
+            if (this.source != null && this.source.length != 0)
+                this.tagBlock = TagBlock.build(this.source);
+            this.sentenceBody = this.rawSentence;
         } else {
             if (LOG.isDebugEnabled())
                 LOG.debug("No TagBlock found and addTagBlock is false");
-            _packetBody = _rawPacket;
+            this.sentenceBody = this.rawSentence;
         }
 
         if (LOG.isDebugEnabled())
-            LOG.debug("_packetBody = \"{}\"", ByteArrayUtils.bArray2Str(_packetBody));
+            LOG.debug("this.sentenceBody = \"{}\"", ByteArrayUtils.bArray2Str(this.sentenceBody));
 
-        if (_packetParts == null)
-            _packetParts = ByteArrayUtils.fastSplit(_packetBody, FIELD_DELIMITER);
+        if (this.sentenceParts == null)
+            this.sentenceParts = ByteArrayUtils.fastSplit(this.sentenceBody, FIELD_DELIMITER);
 
-        if (_packetParts == null || _packetParts.length < 6)
-            throw new AISPacketException(
-                    "Raw packet contains no message (inadequate number of comma-separated values).");
+        if (this.sentenceParts == null || this.sentenceParts.length < 6)
+            throw new AISSentenceException(
+                    "Raw sentence contains no message (inadequate number of comma-separated values).");
 
-        switch (_packetParts.length) {
+        switch (this.sentenceParts.length) {
             case 10:
                 if (LOG.isDebugEnabled())
-                    LOG.debug("Unrecognized field at position 10: {}", ByteArrayUtils.bArray2Str(_packetParts[9]));
+                    LOG.debug("Unrecognized field at position 10: {}",
+                            ByteArrayUtils.bArray2Str(this.sentenceParts[9]));
             case 9:
                 if (LOG.isDebugEnabled())
-                    LOG.debug("Unrecognized field at position  9: {}", ByteArrayUtils.bArray2Str(_packetParts[8]));
+                    LOG.debug("Unrecognized field at position  9: {}",
+                            ByteArrayUtils.bArray2Str(this.sentenceParts[8]));
             case 8:
                 if (LOG.isDebugEnabled())
-                    LOG.debug("Unrecognized field at position  8: {}", ByteArrayUtils.bArray2Str(_packetParts[7]));
+                    LOG.debug("Unrecognized field at position  8: {}",
+                            ByteArrayUtils.bArray2Str(this.sentenceParts[7]));
             case 7:
                 try {
-                    if (_packetParts[6] != null && _packetParts[6].length > 0) {
-                        byte[] checksum = _packetParts[6];
-                        int csIndex = ByteArrayUtils.indexOf(_packetParts[6], CHECKSUM_DELIMITER);
+                    if (this.sentenceParts[6] != null && this.sentenceParts[6].length > 0) {
+                        byte[] checksum = this.sentenceParts[6];
+                        int csIndex = ByteArrayUtils.indexOf(this.sentenceParts[6], CHECKSUM_DELIMITER);
                         if (csIndex != -1) {
-                            _fillBits = Integer.parseInt(ByteArrayUtils.substring(checksum, 0, csIndex));
-                            _checksum = ByteArrayUtils
+                            this.fillBits = Integer.parseInt(ByteArrayUtils.substring(checksum, 0, csIndex));
+                            this.checksum = ByteArrayUtils
                                     .trimByteArray(Arrays.copyOfRange(checksum, csIndex + 1, checksum.length));
                         } else if (LOG.isDebugEnabled())
-                            LOG.debug("Packet is missing checksum!");
+                            LOG.debug("sentence is missing checksum!");
                     }
                 } catch (NumberFormatException nfe) {
                     if (LOG.isDebugEnabled())
@@ -307,83 +316,84 @@ public final class AISPacket {
                                 nfe.getMessage());
                 }
             case 6:
-                if (_packetParts[5] == null)
-                    throw new AISPacketException("Raw message is null.");
-                else if (_packetParts[5].length == 0)
-                    throw new AISPacketException("Raw message is empty.");
-                _binaryString = _packetParts[5]; // only the binary string
+                if (this.sentenceParts[5] == null)
+                    throw new AISSentenceException("Raw message is null.");
+                else if (this.sentenceParts[5].length == 0)
+                    throw new AISSentenceException("Raw message is empty.");
+                this.binaryString = this.sentenceParts[5]; // only the binary string
                 break;
             default:
-                throw new AISPacketException("Packet is corrupt and has no message body.");
+                throw new AISSentenceException("sentence is corrupt and has no message body.");
         }
 
-        _parsed = true;
+        this.parsed = true;
         return this;
     }
 
     /**
-     * Returns a boolean indicating whether this AISPacket object has been parsed
+     * Returns a boolean indicating whether this AISsentence object has been parsed
      *
-     * @return a boolean representing the parse state of this AISPacket object
+     * @return a boolean representing the parse state of this AISsentence object
      */
     public final boolean isParsed() {
-        return _parsed;
+        return this.parsed;
     }
 
     /**
-     * Checks the validity of the current AIS packet by analyzing the length of its
+     * Checks the validity of the current AIS sentence by analyzing the length of
+     * its
      * String representation, the number of comma separated fields it
      * contains, whether or not it has a valid preamble, whether or not it contains
      * any invalid characters, and whether or not it has a valid
      * checksum
      *
-     * @return a boolean value representing the validity of this AISPacket
+     * @return a boolean value representing the validity of this AISsentence
      */
     public final boolean isValid() {
         try {
             // so we don't throw NPEs over the failure to split the raw String
-            if (_packetParts == null)
+            if (this.sentenceParts == null)
                 process();
 
             if (LOG.isDebugEnabled())
-                LOG.debug("Validating packetBody: {}", ByteArrayUtils.bArray2Str(_packetBody));
+                LOG.debug("Validating sentenceBody: {}", ByteArrayUtils.bArray2Str(this.sentenceBody));
 
-            if (_packetBody.length > 82)
-                return false; // invalid packet length
-            if (_packetParts.length == 0)
+            if (this.sentenceBody.length > 82)
+                return false; // invalid sentence length
+            if (this.sentenceParts.length == 0)
                 return false; // split failed
-            if (_packetParts.length != 7)
+            if (this.sentenceParts.length != 7)
                 return false; // invalid number of csv fields
             if (!validatePreamble())
                 return false; // invalid preamble
 
             // check for bad characters in binary string
-            for (char c : ByteArrayUtils.bArray2cArray(_packetParts[5])) {
+            for (char c : ByteArrayUtils.bArray2cArray(this.sentenceParts[5])) {
                 // is this character within an accepted range?
                 if (!((c <= AISMessageDecoder.CHAR_RANGE_A_MAX && c >= AISMessageDecoder.CHAR_RANGE_A_MIN)
                         || (c <= AISMessageDecoder.CHAR_RANGE_B_MAX && c >= AISMessageDecoder.CHAR_RANGE_B_MIN))) {
-                    LOG.debug("Packet contains an invalid character: {}", c);
+                    LOG.debug("sentence contains an invalid character: {}", c);
                     return false;
                 }
             }
 
             // if we don't have any bad characters validate the checksum
-            int csIndex = ByteArrayUtils.indexOf(_packetBody, CHECKSUM_DELIMITER) + 1;
+            int csIndex = ByteArrayUtils.indexOf(this.sentenceBody, CHECKSUM_DELIMITER) + 1;
 
             if (csIndex > 0) {
                 // validate checksum
-                if (!validateChecksum(_packetBody, _checksum)) {
-                    LOG.debug("Packet failed checksum validation.");
+                if (!validateChecksum(this.sentenceBody, this.checksum)) {
+                    LOG.debug("sentence failed checksum validation.");
                     return false;
                 }
             } else {
-                LOG.fatal("Packet is missing fillbits and/or checksum.");
+                LOG.fatal("sentence is missing fillbits and/or checksum.");
                 return false;
             }
-        } catch (AISPacketException ape) {
+        } catch (AISSentenceException | ParseException ape) {
             // do nothing
             if (LOG.isDebugEnabled())
-                LOG.debug("Packet validation failed: {}", ape.getMessage(), ape);
+                LOG.debug("sentence validation failed: {}", ape.getMessage(), ape);
             return false;
         }
 
@@ -431,7 +441,7 @@ public final class AISPacket {
      * Attempts to parse a checksum from the provided String and generates a new one
      * if the parsing operation is unsuccessful
      *
-     * @param data the AIS packet string for which you wish to parse the checksum
+     * @param data the AIS sentence string for which you wish to parse the checksum
      * @return the int checksum for the provided string
      */
     private static int getChecksum(String data) {
@@ -453,7 +463,7 @@ public final class AISPacket {
      * @return the int checksum for the provided byte []
      */
     private static int getChecksum(byte[] bytes) {
-        return AISPacket
+        return AISSentence
                 .generateChecksum(ByteArrayUtils
                         .bArray2cArray(Arrays.copyOfRange(bytes, 1,
                                 ByteArrayUtils.indexOf(bytes, CHECKSUM_DELIMITER))));
@@ -472,20 +482,22 @@ public final class AISPacket {
         if (endAt <= startFrom || endAt > genString.length())
             return -1;
 
-        return AISPacket.generateChecksum(genString.substring(startFrom, endAt).toCharArray());
+        return AISSentence.generateChecksum(genString.substring(startFrom, endAt).toCharArray());
     }
 
     /**
-     * Validates the provided checksum (byte [] packetChecksum) by generating a new
+     * Validates the provided checksum (byte [] sentenceChecksum) by generating a
+     * new
      * checksum for byte [] data and comparing them
      *
-     * @param data           the byte [] to which the provided packetChecksum should
-     *                       apply
-     * @param packetChecksum a byte [] representation of the checksum to be
-     *                       validated
+     * @param data             the byte [] to which the provided sentenceChecksum
+     *                         should
+     *                         apply
+     * @param sentenceChecksum a byte [] representation of the checksum to be
+     *                         validated
      * @return a boolean representing the validity of the checksum
      */
-    private static boolean validateChecksum(byte[] data, byte[] packetChecksum) {
+    private static boolean validateChecksum(byte[] data, byte[] sentenceChecksum) {
         long calcChecksum;
         long pktChecksum;
 
@@ -501,16 +513,16 @@ public final class AISPacket {
         }
 
         try {
-            pktChecksum = Long.parseUnsignedLong(ByteArrayUtils.bArray2Str(packetChecksum), 16);
+            pktChecksum = Long.parseUnsignedLong(ByteArrayUtils.bArray2Str(sentenceChecksum), 16);
         } catch (NumberFormatException nfe) {
             if (LOG.isInfoEnabled())
-                LOG.info("Cannot parse \"{}\" into a valid long", ByteArrayUtils.bArray2Str(packetChecksum));
+                LOG.info("Cannot parse \"{}\" into a valid long", ByteArrayUtils.bArray2Str(sentenceChecksum));
             return false;
         }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Comparing: \"{}/{}\" to \"{}/{}\"", pktChecksum, ByteArrayUtils
-                    .bArray2Str(packetChecksum).toUpperCase(),
+                    .bArray2Str(sentenceChecksum).toUpperCase(),
                     calcChecksum, Long.toHexString(calcChecksum).toUpperCase());
             LOG.debug("\"{}\" is {} equal to \"{}\"", calcChecksum, ((calcChecksum == pktChecksum) ? "" : "not"),
                     pktChecksum);
@@ -523,136 +535,144 @@ public final class AISPacket {
      * A utility method that enables binary decoding even when the binary string is
      * all we have
      *
-     * @param rawData the binary String from an AIS packet String which has no
+     * @param rawData the binary String from an AIS sentence String which has no
      *                prefix or suffix
-     * @return a generated String representation of a complete AIS packet (with
+     * @return a generated String representation of a complete AIS sentence (with
      *         prefix, suffix, checksum, etc)
      */
-    public static String createPacketStringFromBinaryString(String rawData) {
-        String packetString = "!AIVDM,1,1,,A," + rawData + ",0*";
-        LOG.debug("Packet before checksum: {}", packetString);
-        packetString += Integer.toHexString(AISPacket.getChecksum(packetString));
-        LOG.debug("Packet after checksum: {}", packetString);
+    public static String createsentenceStringFromBinaryString(String rawData) {
+        String sentenceString = "!AIVDM,1,1,,A," + rawData + ",0*";
+        LOG.debug("sentence before checksum: {}", sentenceString);
+        sentenceString += Integer.toHexString(AISSentence.getChecksum(sentenceString));
+        LOG.debug("sentence after checksum: {}", sentenceString);
 
-        return packetString;
+        return sentenceString;
     }
 
     /**
-     * A utility method that creates an AISPacket object based solely on the 6-bit
-     * encoded String from an AIS packet
+     * A utility method that creates an AISsentence object based solely on the 6-bit
+     * encoded String from an AIS sentence
      * String
      * 
      * @param rawData The binary encoded String
-     * @return an AISPacket object based on the provided binary string
-     * @throws jais.exceptions.AISPacketException if we are unable to produce an
-     *                                            AISPacket from the binary string
+     * @return an AISsentence object based on the provided binary string
+     * @throws jais.exceptions.AISSentenceException if we are unable to produce an
+     *                                              AISsentence from the binary
+     *                                              string
      */
-    public static AISPacket createFromBinaryString(String rawData) throws AISPacketException {
+    public static AISSentence createFromBinaryString(String rawData) throws AISSentenceException {
         return createFromBinaryString(rawData, null);
     }
 
     /**
-     * Generates an AISPacket object from a raw 6-bit encoded String and a String
+     * Generates an AISsentence object from a raw 6-bit encoded String and a String
      * representing the data source
      *
      * @param rawData The binary encoded String
-     * @param source  A string representing the source from which this packet
+     * @param source  A string representing the source from which this sentence
      *                originated
-     * @return an AISPacket object based on the provided binary string
-     * @throws jais.exceptions.AISPacketException if we are unable to transform teh
-     *                                            binary string into a packet string
+     * @return an AISsentence object based on the provided binary string
+     * @throws jais.exceptions.AISSentenceException if we are unable to transform
+     *                                              teh
+     *                                              binary string into a sentence
+     *                                              string
      */
-    public static AISPacket createFromBinaryString(String rawData, String source) throws AISPacketException {
+    public static AISSentence createFromBinaryString(String rawData, String source) throws AISSentenceException {
         if (source == null)
             source = "UNKNOWN";
-        return new AISPacket(createPacketStringFromBinaryString(rawData), source);
+        return new AISSentence(createsentenceStringFromBinaryString(rawData), source);
     }
 
     /**
-     * Returns the unparsed, non-decoded raw AISPacket contents as a byte []
+     * Returns the unparsed, non-decoded raw AISsentence contents as a byte []
      *
-     * @return the byte [] containing the raw, non-decoded AISPacket data
+     * @return the byte [] containing the raw, non-decoded AISsentence data
      */
-    public final byte[] getRawPacket() {
-        return _rawPacket;
+    public final byte[] getRawSentence() {
+        return this.rawSentence;
     }
 
     /**
-     * Generates a String representation of the AISPacket with a pre-pended TagBlock
+     * Generates a String representation of the AISsentence with a pre-pended
+     * TagBlock
      * String which contains only
-     * the source and time stamp values of the AISPacket object
+     * the source and time stamp values of the AISsentence object
      *
-     * @return a String representation of the AISPacket with a pre-pended TagBlock
+     * @return a String representation of the AISsentence with a pre-pended TagBlock
      *         String
      */
-    public final String generateTagBlockPacketString() {
+    public final String generateTagBlocksentenceString() {
         TagBlock tb = new TagBlock();
-        tb.setSource(_source);
-        tb.setTimestamp(_timeReceived);
-        return generateTagBlockPacketString(_rawPacket, tb);
+        tb.setSource(this.source);
+        tb.setTimestamp(this.timeReceived);
+        return generateTagBlocksentenceString(this.rawSentence, tb);
     }
 
     /**
-     * Generates a String representation of the AISPacket with a pre-pended TagBlock
+     * Generates a String representation of the AISsentence with a pre-pended
+     * TagBlock
      * String containing the source and time stamp values of the
-     * AISPacket object as well as the text provided at method invocation
+     * AISsentence object as well as the text provided at method invocation
      *
      * @param text the byte array we wish to use to construct a TagBlock String
      * @return a String representing the TagBlock contents
      */
-    public final String generateTagBlockPacketString(byte[] text) {
+    public final String generateTagBlocksentenceString(byte[] text) {
         TagBlock tb = new TagBlock();
-        tb.setSource(_source);
-        tb.setTimestamp(_timeReceived);
+        tb.setSource(this.source);
+        tb.setTimestamp(this.timeReceived);
         tb.setTextStr(text);
-        return generateTagBlockPacketString(_rawPacket, tb);
+        return generateTagBlocksentenceString(this.rawSentence, tb);
     }
 
     /**
-     * Generates a String representation of the AISPacket with its pre-pended
+     * Generates a String representation of the AISsentence with its pre-pended
      * TagBlock String as already defined
      *
-     * @param rawPacket A byte array containing representing the binary AIS packet
-     *                  String
-     * @param tb        The TagBlock object we wish to prepend to the AIS packet
-     * @return A String representation of the concatenated TagBlock and AIS packet
+     * @param rawSentence A byte array containing representing the binary AIS
+     *                    sentence
+     *                    String
+     * @param tb          The TagBlock object we wish to prepend to the AIS sentence
+     * @return A String representation of the concatenated TagBlock and AIS sentence
      */
-    private static String generateTagBlockPacketString(byte[] rawPacket, TagBlock tb) {
-        return tb.toString() + ByteArrayUtils.bArray2Str(rawPacket);
+    private static String generateTagBlocksentenceString(byte[] rawSentence, TagBlock tb) {
+        return tb.toString() + ByteArrayUtils.bArray2Str(rawSentence);
     }
 
     /**
      *
-     * @return the value of _type
+     * @return the value of this.type
      */
     public final byte[] getType() {
-        return _type;
+        return this.type;
     }
 
     /**
      * Returns the AIS message fragmentation count as defined in the original
-     * non-decoded AIS Packet String
-     * This count indicates how many related AIS packets the complete AIS message is
+     * non-decoded AIS sentence String
+     * This count indicates how many related AIS sentences the complete AIS message
+     * is
      * composed of
      *
-     * @return an int representing the total number of packet fragments that compose
+     * @return an int representing the total number of sentence fragments that
+     *         compose
      *         the final message
      */
     public final int getFragmentCount() {
-        return _fragmentCount;
+        return this.fragmentCount;
     }
 
     /**
      * Returns the AIS message fragmentation number as defined in the original
-     * non-decoded AIS Packet String
+     * non-decoded AIS sentence String
      * This number indicates the position of this fragment in the fully assembled
      * AIS message
      *
      * @return an int representing the specific fragment (of the total message) this
-     *         packet represents
+     *         sentence represents
      */
     public final int getFragmentNumber() {
-        return _fragmentNumber;
+        return this.fragmentNumber;
     }
 
     /**
@@ -662,29 +682,29 @@ public final class AISPacket {
      * @return an int representing the locally unique broadcaster of this message
      */
     public final int getSequentialMessageId() {
-        return _sequentialMessageId;
+        return this.sequentialMessageId;
     }
 
     /**
      * Returns the letter representation of the Radio frequency on which this AIS
-     * packet was broadcast
+     * sentence was broadcast
      *
      * @return A single character representing the radio frequency on which this
-     *         packet was broadcast
+     *         sentence was broadcast
      */
     public final char getRadioChannelCode() {
-        return _radioChannelCode;
+        return this.radioChannelCode;
     }
 
     /**
      * Returns the actual numeric frequency (as a double) indicated by the
-     * _radioChannelCode (see {@link #getRadioChannelCode()})
+     * this.radioChannelCode (see {@link #getRadioChannelCode()})
      *
      * @return a double representing the numeric frequency on which this message was
      *         broadcast
      */
     public final double getRadioChannelFrequencyInMhz() {
-        switch (_radioChannelCode) {
+        switch (this.radioChannelCode) {
             case 'a':
                 return CHANNEL_A_FREQUENCY_IN_MHZ;
             case 'b':
@@ -700,63 +720,64 @@ public final class AISPacket {
      * @return the raw binary string in the form of a byte array
      */
     public final byte[] getBinaryStringAsByteArray() {
-        return _binaryString;
+        return this.binaryString;
     }
 
     /**
-     * Returns the body of the AIS Packet as a byte []
+     * Returns the body of the AIS sentence as a byte []
      *
-     * @return the raw body (binary string portion) of the packet in the form of a
+     * @return the raw body (binary string portion) of the sentence in the form of a
      *         byte array
      */
-    public final byte[] getPacketBodyAsByteArray() {
-        return _packetBody;
+    public final byte[] getSentenceBodyAsByteArray() {
+        return this.sentenceBody;
     }
 
     /**
-     * Returns the parsed count of fill bits from the AIS packet String
+     * Returns the parsed count of fill bits from the AIS sentence String
      *
      * @return an int representing the number of fillbits specified in the AIS
-     *         packet String
+     *         sentence String
      */
     public final int getFillBits() {
-        return _fillBits;
+        return this.fillBits;
     }
 
     /**
-     * Returns the parsed or generated checksum from the AIS packet
+     * Returns the parsed or generated checksum from the AIS sentence
      *
-     * @return a byte array representation of the packet checksum
+     * @return a byte array representation of the sentence checksum
      */
     public final byte[] getChecksum() {
-        return _checksum;
+        return this.checksum;
     }
 
     /**
-     * Returns the time at which this AISPacket object was instantiated
+     * Returns the time at which this AISsentence object was instantiated
      *
      * @return a long representing the time at which we instantiated this instance
-     *         of AISPacket
+     *         of AISsentence
      */
     public final long getTimeReceived() {
-        return _timeReceived;
+        return this.timeReceived;
     }
 
     /**
-     * Returns the time at which this AISPacket object was instantiated for the
+     * Returns the time at which this AISsentence object was instantiated for the
      * specified ZoneOffset
      *
      * @param offset The ZoneOffset for calculating the time since epoch value of
-     *               the time at which this packet was received
-     * @return a ZonedDateTime object representing the time at which this AIS packet
+     *               the time at which this sentence was received
+     * @return a ZonedDateTime object representing the time at which this AIS
+     *         sentence
      *         was received
      */
     public final ZonedDateTime getTimeReceived(ZoneOffset offset) {
-        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(_timeReceived), offset);
+        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.timeReceived), offset);
     }
 
     /**
-     * Returns the time at which this AISPacket object was instantiated for the
+     * Returns the time at which this AISsentence object was instantiated for the
      * specified ZoneId
      *
      * @param zone the ZoneId which we want to use to calculate the ZonedDateTime
@@ -764,59 +785,60 @@ public final class AISPacket {
      * @return the calculated ZonedDateTime value
      */
     public final ZonedDateTime getTimeReceived(ZoneId zone) {
-        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(_timeReceived), zone);
+        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.timeReceived), zone);
     }
 
     /**
-     * Returns the time at which this AISPacket object was presumably sent based on
+     * Returns the time at which this AISsentence object was presumably sent based
+     * on
      * the timestamp contained within the TagBlock
      *
-     * @return a long representation of the timestamp at which the packet was sent
+     * @return a long representation of the timestamp at which the sentence was sent
      */
     public final long getTimeSent() {
         if (hasTagBlock())
-            return _tagBlock.getTimestamp();
+            return this.tagBlock.getTimestamp();
         return 0;
     }
 
     /**
-     * Returns the source of the AISPacket as a byte []
+     * Returns the source of the AISsentence as a byte []
      *
-     * @return a byte array representation of the name of the packet source
+     * @return a byte array representation of the name of the sentence source
      */
     public final byte[] getSource() {
-        return _source;
+        return this.source;
     }
 
     /**
-     * Sets the source of the AISPacket to the provided byte [] value
+     * Sets the source of the AISsentence to the provided byte [] value
      *
-     * @param source sets the name of the source of this packet as a byte array
+     * @param source sets the name of the source of this sentence as a byte array
      */
     public final void setSource(byte[] source) {
-        _source = source;
+        this.source = source;
     }
 
     /**
      * Truncates the provided StringBuilder object based on the index returned by
-     * {@link #getPacketTruncIndex( String s )}
+     * {@link #getSentenceTruncIndex( String s )}
      * 
      * @param sb the StringBuilder from which we want to produce a truncated String
      * @return a truncated String
      */
-    public static String truncatePacket(StringBuilder sb) {
-        return truncatePacket(sb.toString());
+    public static String truncateSentence(StringBuilder sb) {
+        return truncateSentence(sb.toString());
     }
 
     /**
      * Truncates the provided String object based on the index returned by
-     * {@link #getPacketTruncIndex( String s )}
+     * {@link #getSentenceTruncIndex( String s )}
      *
      * @param s a String we wish to truncate
      * @return the substring produced by truncating the provided String
      */
-    public static String truncatePacket(String s) {
-        int truncIndex = AISPacket.getPacketTruncIndex(s);
+    public static String truncateSentence(String s) {
+        int truncIndex = AISSentence.getSentenceTruncIndex(s);
         String substring = null;
 
         if (truncIndex != -1) {
@@ -834,7 +856,7 @@ public final class AISPacket {
      *          truncated based on the String contents
      * @return the calculated index at which truncation should occur
      */
-    private static int getPacketTruncIndex(String s) {
+    private static int getSentenceTruncIndex(String s) {
         int truncIndex = 0;
 
         if (LOG.isDebugEnabled())
@@ -842,10 +864,11 @@ public final class AISPacket {
 
         // String [] sansTagBlock = s.split( "\\\\!" );
         //
-        // Matcher m = AISPacket.PREAMBLE_PATTERN.matcher( ( sansTagBlock.length > 1) ?
+        // Matcher m = AISsentence.PREAMBLE_PATTERN.matcher( ( sansTagBlock.length > 1)
+        // ?
         // sansTagBlock[1] : sansTagBlock[0] );
 
-        Matcher m = AISPacket.PREAMBLE_PATTERN.matcher(s);
+        Matcher m = AISSentence.PREAMBLE_PATTERN.matcher(s);
         if (m.find()) {
             if (s.contains("\n")) {
                 if (LOG.isDebugEnabled())
@@ -875,34 +898,36 @@ public final class AISPacket {
     }
 
     /**
-     * Combines two or more AISPacket objects into a single non-decoded AIS message
+     * Combines two or more AISsentence objects into a single non-decoded AIS
+     * message
      * and returns the results as a byte []
      *
-     * @param packets one or more AISPacket objects that we wish to combine into a
-     *                single binary string for decoding
+     * @param sentences one or more AISsentence objects that we wish to combine into
+     *                  a
+     *                  single binary string for decoding
      * @return a byte [] representation of the concatenated AIS binary strings
-     * @throws AISException if AISPacket.process() fails on any of the provided
-     *                      packets
+     * @throws AISException if AISsentence.process() fails on any of the provided
+     *                      sentences
      */
-    public static byte[] concatenate(AISPacket... packets) throws AISException {
-        if (packets.length == 1) {
-            if (!packets[0].isParsed())
-                packets[0].process();
-            return packets[0].getBinaryStringAsByteArray();
+    public static byte[] concatenate(AISSentence... sentences) throws AISException {
+        if (sentences.length == 1) {
+            if (!sentences[0].isParsed())
+                sentences[0].process();
+            return sentences[0].getBinaryStringAsByteArray();
         }
 
         byte[] compositeMsg = null;
 
         if (LOG.isDebugEnabled())
-            LOG.debug("Concatenating {} packets.", packets.length);
-        for (AISPacket packet : packets) {
-            if (packet == null) {
-                LOG.warn("Skipping null packet in {} length array of packets.", packets.length);
+            LOG.debug("Concatenating {} sentences.", sentences.length);
+        for (AISSentence sentence : sentences) {
+            if (sentence == null) {
+                LOG.warn("Skipping null sentence in {} length array of sentences.", sentences.length);
                 continue;
-            } else if (!packet.isParsed())
-                packet.process();
+            } else if (!sentence.isParsed())
+                sentence.process();
 
-            byte[] bytes = packet.getBinaryStringAsByteArray();
+            byte[] bytes = sentence.getBinaryStringAsByteArray();
             if (compositeMsg == null)
                 compositeMsg = bytes;
             else {
@@ -927,14 +952,15 @@ public final class AISPacket {
     public final boolean equals(Object o) {
         if (o == null)
             return false;
-        if (!(o instanceof AISPacket))
+        if (!(o instanceof AISSentence))
             return false;
 
-        AISPacket that = (AISPacket) o;
-        if (that.getRawPacket() == null)
+        AISSentence that = (AISSentence) o;
+        if (that.getRawSentence() == null)
             return false;
 
-        return (Arrays.equals(that.getRawPacket(), _rawPacket) && Objects.equals(that.getSource(), _source));
+        return (Arrays.equals(that.getRawSentence(), this.rawSentence)
+                && Objects.equals(that.getSource(), this.source));
     }
 
     /**
@@ -945,37 +971,37 @@ public final class AISPacket {
     @Override
     public final int hashCode() {
         int hash = 7;
-        hash = 79 * hash + (_rawPacket != null ? Arrays.hashCode(_rawPacket) : 0);
-        hash = 79 * hash + (_source != null ? Arrays.hashCode(_source) : 0);
+        hash = 79 * hash + (this.rawSentence != null ? Arrays.hashCode(this.rawSentence) : 0);
+        hash = 79 * hash + (this.source != null ? Arrays.hashCode(this.source) : 0);
         return hash;
     }
 
     /**
-     * Returns a HashMap representation of the AISPacket fields
+     * Returns a HashMap representation of the AISsentence fields
      *
-     * @return a HashMap representation of the AISPacket
+     * @return a HashMap representation of the AISsentence
      */
     public final HashMap<String, Object> toMap() {
-        HashMap<String, Object> packetMap = new HashMap<>();
+        HashMap<String, Object> sentenceMap = new HashMap<>();
 
-        packetMap.put("tagblock", _tagBlock);
-        packetMap.put("preamble", _preamble);
-        packetMap.put("raw_message", _binaryString);
-        packetMap.put("raw_packet", _rawPacket);
-        packetMap.put("time_received", _timeReceived);
-        packetMap.put("source", _source);
-        packetMap.put("fragment_count", _fragmentCount);
-        packetMap.put("fragment_number", _fragmentNumber);
-        packetMap.put("sequential_message_id", _sequentialMessageId);
-        packetMap.put("radio_channel_code", _radioChannelCode);
-        packetMap.put("checksum", _checksum);
-        packetMap.put("fill_bits", _fillBits);
+        sentenceMap.put("tagblock", this.tagBlock);
+        sentenceMap.put("preamble", this.preamble);
+        sentenceMap.put("raw_message", this.binaryString);
+        sentenceMap.put("raw_sentence", this.rawSentence);
+        sentenceMap.put("time_received", this.timeReceived);
+        sentenceMap.put("source", this.source);
+        sentenceMap.put("fragment_count", this.fragmentCount);
+        sentenceMap.put("fragment_number", this.fragmentNumber);
+        sentenceMap.put("sequential_message_id", this.sequentialMessageId);
+        sentenceMap.put("radio_channel_code", this.radioChannelCode);
+        sentenceMap.put("checksum", this.checksum);
+        sentenceMap.put("fillbits", this.fillBits);
 
-        return packetMap;
+        return sentenceMap;
     }
 
     /**
-     * An object representation of an AISPacket preamble
+     * An object representation of an AISsentence preamble
      *
      */
     public static class Preamble {
@@ -992,7 +1018,7 @@ public final class AISPacket {
 
         /**
          *
-         * @param rawPreamble a byte [] representation of the AISPacket preamble
+         * @param rawPreamble a byte [] representation of the AISsentence preamble
          */
         public Preamble(byte[] rawPreamble) {
             this.rawPreamble = rawPreamble;
@@ -1003,9 +1029,9 @@ public final class AISPacket {
          * rawPreamble byte [] and returns this Preamble object
          *
          * @return a Preamble object
-         * @throws AISPacketParseException if we are unable to parse the preamble
+         * @throws ParseException if we are unable to parse the preamble
          */
-        public Preamble parse() throws AISPacketParseException {
+        public Preamble parse() throws ParseException {
             return parse(this, ByteArrayUtils.bArray2Str(rawPreamble));
         }
 
@@ -1015,9 +1041,9 @@ public final class AISPacket {
          *
          * @param rawPreamble the unparsed preamble in byte array form
          * @return a Preamble object based on parsing the provided rawPreamble
-         * @throws AISPacketParseException if the parsing of the preamble fails
+         * @throws ParseException if the parsing of the preamble fails
          */
-        public static Preamble parse(byte[] rawPreamble) throws AISPacketParseException {
+        public static Preamble parse(byte[] rawPreamble) throws ParseException {
             return parse(ByteArrayUtils.bArray2Str(rawPreamble));
         }
 
@@ -1027,9 +1053,9 @@ public final class AISPacket {
          *
          * @param rawPreamble a String representation of the unparsed preamble
          * @return a Preamble object
-         * @throws AISPacketParseException if the parsing of the preamble fails
+         * @throws ParseException if the parsing of the preamble fails
          */
-        public static Preamble parse(String rawPreamble) throws AISPacketParseException {
+        public static Preamble parse(String rawPreamble) throws ParseException {
             return parse(new Preamble(ByteArrayUtils.str2bArray(rawPreamble)), rawPreamble);
         }
 
@@ -1041,9 +1067,9 @@ public final class AISPacket {
          * @param rawPreamble the raw String we wish to parse in order to build our
          *                    Preamble object
          * @return the completed Preamble object
-         * @throws AISPacketParseException if we are unable to parse the preamble
+         * @throws ParseException if we are unable to parse the preamble
          */
-        public static Preamble parse(Preamble p, String rawPreamble) throws AISPacketParseException {
+        public static Preamble parse(Preamble p, String rawPreamble) throws ParseException {
             if (LOG.isDebugEnabled())
                 LOG.debug("Parsing {}", rawPreamble);
             Matcher m = PREAMBLE_PATTERN.matcher(rawPreamble);
