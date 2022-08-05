@@ -16,11 +16,11 @@
 
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.TagBlock;
 import jais.Vessel;
 import jais.exceptions.AISException;
-import jais.exceptions.AISPacketException;
+import jais.exceptions.AISSentenceException;
 import jais.messages.enums.AISMessageType;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -45,13 +45,15 @@ public class AISDecoderTest {
     // initialize log4j
     private final static Logger LOG = LogManager.getLogger(AISDecoderTest.class);
 
-    private static String[] TEST_PACKETS;
+    private static String[] TEST_SENTENCES;
 
     private final static String[] TEST_COMPOUND_MESSAGE = {
             "!AIVDM,2,1,0,B,55MwNGP08bnIMUCWC?84ppEA@F2222222222220O0h;2540Ht00000000000,0*55",
             "!AIVDM,2,2,0,B,00000000000,2*27",
             "!AIVDM,2,1,1,B,55O5v842<<>1L=SSK7<aDhTF222222222222220PB`N;;6GT0B0QC31H0j0D,0*59",
             "!AIVDM,2,2,1,B,liH0CPj8880,2*1A", };
+
+    private final static int RUN_COUNT = 100000;
 
     /**
      * Create the test case
@@ -67,16 +69,16 @@ public class AISDecoderTest {
      */
     @BeforeAll
     public static void setup() throws URISyntaxException, IOException {
-        TEST_PACKETS = Files.lines(Paths.get("src/test/resources/ais_packets.txt")).toArray(String[]::new);
+        TEST_SENTENCES = Files.lines(Paths.get("src/test/resources/ais_sentences.txt")).toArray(String[]::new);
     }
 
     /**
      *
-     * @param packets
+     * @param sentences
      */
-    private void decodePackets(AISPacket... packets) throws AISException {
+    private void decodesentences(AISSentence... sentences) throws AISException {
 
-        Optional<AISMessage> msg = AISMessageFactory.create("UnitTest", packets);
+        Optional<AISMessage> msg = AISMessageFactory.create("UnitTest", sentences);
 
         if (!msg.isPresent()) {
             LOG.warn("Factory returned a null message!  May be an unsupported message type.");
@@ -154,27 +156,27 @@ public class AISDecoderTest {
     }
 
     /**
-     * @throws jais.exceptions.AISPacketException
+     * @throws jais.exceptions.AISSentenceException
      */
     @Test
-    public void testPacketValidation() throws AISPacketException {
-        LOG.info("*** testPacketValidation()");
-        for (String packetStr : TEST_PACKETS) {
-            LOG.debug("Validating packet: {}", packetStr);
-            String truncStr = AISPacket.truncatePacket(packetStr);
-            LOG.debug("AISPacket.truncatePacket() produced: \"{}\" from \"{}\"", truncStr, packetStr);
+    public void testsentenceValidation() throws AISSentenceException {
+        LOG.info("*** testsentenceValidation()");
+        for (String sentenceStr : TEST_SENTENCES) {
+            LOG.debug("Validating sentence: {}", sentenceStr);
+            String truncStr = AISSentence.truncateSentence(sentenceStr);
+            LOG.debug("AISsentence.truncatesentence() produced: \"{}\" from \"{}\"", truncStr, sentenceStr);
             if (truncStr != null && !truncStr.isEmpty())
-                Assertions.assertTrue(new AISPacket(truncStr).isValid(), "Packet string is invalid:\n" + truncStr);
+                Assertions.assertTrue(new AISSentence(truncStr).isValid(), "sentence string is invalid:\n" + truncStr);
             else {
-                AISPacket packet = new AISPacket(packetStr);
+                AISSentence sentence = new AISSentence(sentenceStr);
 
-                Assertions.assertNotNull(packet, "AISPacket from String is null: " + packetStr);
-                Assertions.assertTrue(packet.isValid(),
-                        "Truncated packet is null or empty and original packetStr is invalid: "
-                                + packetStr);
+                Assertions.assertNotNull(sentence, "AISsentence from String is null: " + sentenceStr);
+                Assertions.assertTrue(sentence.isValid(),
+                        "Truncated sentence is null or empty and original sentenceStr is invalid: "
+                                + sentenceStr);
             }
         }
-        LOG.info("Packet validation test successful!");
+        LOG.info("sentence validation test successful!");
     }
 
     /**
@@ -183,12 +185,12 @@ public class AISDecoderTest {
      * @throws AISException
      */
     @Test
-    public void testPacketDecoding() throws AISException {
-        LOG.info("*** testPacketDecoding()");
+    public void testsentenceDecoding() throws AISException {
+        LOG.info("*** testsentenceDecoding()");
 
-        LOG.info("Testing with {} packets.", TEST_PACKETS.length);
-        for (String packetStr : TEST_PACKETS) {
-            Matcher pm = AISPacket.PACKET_PATTERN.matcher(packetStr);
+        LOG.info("Testing with {} sentences.", TEST_SENTENCES.length);
+        for (String sentenceStr : TEST_SENTENCES) {
+            Matcher pm = AISSentence.SENTENCE_PATTERN.matcher(sentenceStr);
 
             if (pm.find()) {
                 LOG.debug("Found {} groups", pm.groupCount());
@@ -196,62 +198,62 @@ public class AISDecoderTest {
                     LOG.debug("Group {} = \"{}\"", i, pm.group(i));
                 }
             } else {
-                LOG.debug("MATCHER COMPLETELY FAILED! {}", AISPacket.PACKET_PATTERN);
+                LOG.debug("MATCHER COMPLETELY FAILED! {}", AISSentence.SENTENCE_PATTERN);
             }
 
-            String truncStr = AISPacket.truncatePacket(packetStr);
+            String truncStr = AISSentence.truncateSentence(sentenceStr);
             if (truncStr != null && !truncStr.isEmpty())
-                packetStr = truncStr;
+                sentenceStr = truncStr;
 
-            LOG.debug("Processing \"{}\"", packetStr);
-            AISPacket packet = new AISPacket(packetStr.trim());
-            packet.process();
-            if (packet.getTagBlock() != null) {
-                Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher(packetStr);
+            LOG.debug("Processing \"{}\"", sentenceStr);
+            AISSentence sentence = new AISSentence(sentenceStr.trim());
+            sentence.process();
+            if (sentence.getTagBlock() != null) {
+                Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher(sentenceStr);
                 if (m.find()) {
                     for (int i = 0; i <= m.groupCount(); i++)
                         LOG.debug("Found: {}", m.group(i));
                 }
-                LOG.info("\n\n{}", packetStr);
-                LOG.info("TagBlock: {}\n\n", packet.getTagBlock().toString());
+                LOG.info("\n\n{}", sentenceStr);
+                LOG.info("TagBlock: {}\n\n", sentence.getTagBlock().toString());
             } else {
                 LOG.info("TAGBLOCK is null");
             }
-            decodePackets(packet);
+            decodesentences(sentence);
         }
 
         LOG.info("Testing compound message with two parts");
-        AISPacket pOne = new AISPacket(TEST_COMPOUND_MESSAGE[0]);
-        AISPacket pTwo = new AISPacket(TEST_COMPOUND_MESSAGE[1]);
+        AISSentence pOne = new AISSentence(TEST_COMPOUND_MESSAGE[0]);
+        AISSentence pTwo = new AISSentence(TEST_COMPOUND_MESSAGE[1]);
         pOne.process();
         pTwo.process();
-        AISPacket[] compoundMsg = new AISPacket[] { pOne, pTwo };
+        AISSentence[] compoundMsg = new AISSentence[] { pOne, pTwo };
 
-        decodePackets(compoundMsg);
+        decodesentences(compoundMsg);
 
-        LOG.info("** Subtest of packet separation logic");
-        LOG.info("Testing packets that are not newline separated");
-        String packetString = TEST_PACKETS[0] + TEST_PACKETS[1];
-        for (String ps : packetString.split("!AIVD")) {
+        LOG.info("** Subtest of sentence separation logic");
+        LOG.info("Testing sentences that are not newline separated");
+        String sentenceString = TEST_SENTENCES[0] + TEST_SENTENCES[1];
+        for (String ps : sentenceString.split("!AIVD")) {
             if (ps != null && !ps.isEmpty()) {
                 ps = "!AIVDM" + ps.trim();
-                LOG.debug("Found packet to test: {}", ps);
+                LOG.debug("Found sentence to test: {}", ps);
                 try {
-                    decodePackets(new AISPacket(ps));
+                    decodesentences(new AISSentence(ps));
                 } catch (AISException t) {
                     LOG.info(t.getMessage(), t);
                 }
             }
         }
 
-        LOG.info("Testing packets that ARE newline separated");
-        packetString = TEST_PACKETS[0] + "\n" + TEST_PACKETS[1];
-        for (String ps : packetString.split("!AIVD")) {
+        LOG.info("Testing sentences that ARE newline separated");
+        sentenceString = TEST_SENTENCES[0] + "\n" + TEST_SENTENCES[1];
+        for (String ps : sentenceString.split("!AIVD")) {
             if (ps != null && !ps.trim().isEmpty()) {
                 ps = "!AIVD" + ps;
-                LOG.debug("Found packet to test: {}", ps);
+                LOG.debug("Found sentence to test: {}", ps);
                 try {
-                    decodePackets(new AISPacket(ps));
+                    decodesentences(new AISSentence(ps));
                 } catch (AISException t) {
                     LOG.info(t.getMessage(), t);
                 }
@@ -263,31 +265,31 @@ public class AISDecoderTest {
 
     /**
      * 
-     * @throws AISPacketException
+     * @throws AISSentenceException
      * @throws AISException
      */
     @Test
-    public void testDecodingSpeed() throws AISPacketException, AISException {
+    public void testDecodingSpeed() throws AISSentenceException, AISException {
         LOG.fatal("*************************************");
         LOG.fatal("*** testDecodingSpeed() ***");
         LOG.fatal("*************************************");
         long start;
         long stop;
 
-        AISPacket pOne = new AISPacket(TEST_COMPOUND_MESSAGE[0]);
-        AISPacket pTwo = new AISPacket(TEST_COMPOUND_MESSAGE[1]);
+        AISSentence pOne = new AISSentence(TEST_COMPOUND_MESSAGE[0]);
+        AISSentence pTwo = new AISSentence(TEST_COMPOUND_MESSAGE[1]);
         start = System.nanoTime();
         pOne.process();
         pTwo.process();
         stop = System.nanoTime();
 
         LOG.fatal("============================================================================================");
-        LOG.fatal("Packet processing for two packets took {} ms", (stop - start) / 1000000f);
+        LOG.fatal("sentence processing for two sentences took {} ms", (stop - start) / 1000000f);
         LOG.fatal("============================================================================================");
 
-        AISPacket[] packets = new AISPacket[] { pOne, pTwo };
+        AISSentence[] sentences = new AISSentence[] { pOne, pTwo };
         start = System.nanoTime();
-        AISMessageFactory.create("UnitTest", packets);
+        AISMessageFactory.create("UnitTest", sentences);
         stop = System.nanoTime();
 
         LOG.fatal("============================================================================================");
@@ -300,21 +302,21 @@ public class AISDecoderTest {
         long decodePerMsgTime = 0;
         Map<AISMessageType, Integer> counts = new HashMap<>();
 
-        for (int i = 0; i < 1000; i++) {
-            for (String packetStr : TEST_PACKETS) {
+        for (int i = 0; i < RUN_COUNT; i++) {
+            for (String sentenceStr : TEST_SENTENCES) {
                 try {
-                    AISPacket packet = new AISPacket(packetStr);
+                    AISSentence sentence = new AISSentence(sentenceStr);
                     start = System.nanoTime();
-                    packet.process();
+                    sentence.process();
                     stop = System.nanoTime();
                     processTotalTime += (stop - start);
-                    processPerMsgTime += (stop - start) / TEST_PACKETS.length;
+                    processPerMsgTime += (stop - start) / TEST_SENTENCES.length;
 
                     start = System.nanoTime();
-                    Optional<AISMessage> message = AISMessageFactory.create("UnitTest", packet);
+                    Optional<AISMessage> message = AISMessageFactory.create("UnitTest", sentence);
                     stop = System.nanoTime();
                     decodeTotalTime += (stop - start);
-                    decodePerMsgTime += (stop - start) / TEST_PACKETS.length;
+                    decodePerMsgTime += (stop - start) / TEST_SENTENCES.length;
                     if (message.isPresent() && i == 0) {
                         AISMessageType type = message.get().getType();
                         int count = (counts.get(type) == null) ? 0 : counts.get(type);
@@ -328,15 +330,15 @@ public class AISDecoderTest {
         }
 
         LOG.fatal("============================================================================================");
-        LOG.fatal("Average packet process time across 1000 runs for {} messages    :  {} ms",
-                TEST_PACKETS.length, processTotalTime / (1000f * 1000000f));
-        LOG.fatal("Average per packet process time across 1000 runs                 :  {} ms",
-                processPerMsgTime / (1000f * 1000000f));
+        LOG.fatal("Average sentence process time across {} runs for {} messages    :  {} ms",
+                RUN_COUNT, TEST_SENTENCES.length, processTotalTime / (1000f * 1000000f));
+        LOG.fatal("Average per sentence process time across {} runs                 :  {} ms",
+                RUN_COUNT, processPerMsgTime / (1000f * 1000000f));
 
-        LOG.fatal("Average message decode time across 1000 runs for {} messages    :  {} ms",
-                TEST_PACKETS.length, decodeTotalTime / (1000f * 1000000f));
-        LOG.fatal("Average per message decode time across 1000 runs                 :  {} ms",
-                decodePerMsgTime / (1000f * 1000000f));
+        LOG.fatal("Average message decode time across {} runs for {} messages    :  {} ms",
+                RUN_COUNT, TEST_SENTENCES.length, decodeTotalTime / (1000f * 1000000f));
+        LOG.fatal("Average per message decode time across {} runs                 :  {} ms",
+                RUN_COUNT, decodePerMsgTime / (1000f * 1000000f));
         LOG.fatal("============================================================================================");
 
         counts.keySet().forEach((type) -> {
@@ -358,13 +360,13 @@ public class AISDecoderTest {
 
     /**
      * 
-     * @throws AISPacketException
+     * @throws AISSentenceException
      */
     @Test
-    public void testAISPacketGenerationFromBinaryString() throws AISPacketException {
+    public void testAISsentenceGenerationFromBinaryString() throws AISSentenceException {
         final String binString = "15P<mB003?L02DPGIfh:F`A<0000";
-        LOG.info("*** testAISPacketGenerationFromBinaryString()");
-        AISPacket p = AISPacket.createFromBinaryString(binString, "TEST").process();
+        LOG.info("*** testAISsentenceGenerationFromBinaryString()");
+        AISSentence p = AISSentence.createFromBinaryString(binString, "TEST").process();
         try {
             Assertions.assertTrue(p.isValid(), binString + " is NOT valid.");
         } catch (Exception e) {

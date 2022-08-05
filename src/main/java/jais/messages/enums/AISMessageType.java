@@ -18,6 +18,7 @@ package jais.messages.enums;
 import jais.messages.AISMessage;
 import jais.messages.MultipleSlotBinaryMessage;
 import jais.messages.UTCDateResponse;
+import lombok.Getter;
 import jais.messages.BinaryAcknowledge;
 import jais.messages.DataLinkManagementMessage;
 import jais.messages.StandardSARAircraftPositionReport;
@@ -48,6 +49,7 @@ import jais.messages.BinaryAddressedMessageBase;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public enum AISMessageType {
 
     // these are sent every 2 to 10 seconds while underway (depending on speed)
@@ -151,9 +153,9 @@ public enum AISMessageType {
     /*
      * private variables
      */
-    private final int _id;
-    private final String _description;
-    private final Class<? extends AISMessage> _messageClass;
+    private final int id;
+    private final String description;
+    private final Class<? extends AISMessage> messageClass;
 
     /**
      * @param id           int
@@ -161,33 +163,9 @@ public enum AISMessageType {
      * @param messageClass Class<? extends AISMessage>
      */
     AISMessageType(int id, String description, Class<? extends AISMessage> messageClass) {
-        _id = id;
-        _description = description;
-        _messageClass = messageClass;
-    }
-
-    /**
-     * 
-     * @return int
-     */
-    private int getId() {
-        return _id;
-    }
-
-    /**
-     * 
-     * @return String
-     */
-    public String getDescription() {
-        return _description;
-    }
-
-    /**
-     * 
-     * @return Class that extends AISMessage
-     */
-    public Class<? extends AISMessage> getMessageClass() {
-        return _messageClass;
+        this.id = id;
+        this.description = description;
+        this.messageClass = messageClass;
     }
 
     /**

@@ -21,16 +21,16 @@ package jais.messages.enums;
  * Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public enum GeneralPurposeParametricFormatters {
-    
-    AAM( "Waypoint Arrival Alarm" );
-    
+
+    AAM("Waypoint Arrival Alarm");
+
     public final String description;
-    
+
     /**
      * 
-     * @param description 
+     * @param description
      */
-    GeneralPurposeParametricFormatters( String description ) {
+    GeneralPurposeParametricFormatters(String description) {
         this.description = description;
     }
 }

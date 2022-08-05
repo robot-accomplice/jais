@@ -16,11 +16,14 @@
 
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.BinaryAddressedMessageType;
 import jais.messages.enums.FieldMap;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.lang.reflect.Constructor;
 import java.util.BitSet;
 import org.apache.logging.log4j.LogManager;
@@ -30,25 +33,27 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
+@Setter
 public abstract class BinaryAddressedMessageBase extends AISMessageBase {
 
     private final static Logger LOG = LogManager.getLogger(BinaryAddressedMessageBase.class);
 
-    private int _seqno;
-    private int _destMmsi;
-    private boolean _retransmit;
-    private int _dac; // designated area code
-    private int _fid; // functional id
-    private BitSet _data;
-    private BinaryAddressedMessageType _subType;
+    private int seqno;
+    private int destMmsi;
+    private boolean retransmit;
+    private int dac; // designated area code
+    private int fid; // functional id
+    private BitSet data;
+    private BinaryAddressedMessageType subType;
 
     /**
      *
-     * @param source  String denoting the source of the packet
-     * @param packets AISPacket[] from which the message is composed
+     * @param source    String denoting the source of the packet
+     * @param sentences AISSentence[] from which the message is composed
      */
-    public BinaryAddressedMessageBase(String source, AISPacket... packets) {
-        super(source, AISMessageType.BINARY_ADDRESSED_MESSAGE, packets);
+    public BinaryAddressedMessageBase(String source, AISSentence... sentences) {
+        super(source, AISMessageType.BINARY_ADDRESSED_MESSAGE, sentences);
     }
 
     /**
@@ -57,65 +62,17 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
      * @param subType BinaryAddressedMessageType
      * @param packets AISPacket[] from which the message is composed
      */
-    public BinaryAddressedMessageBase(String source, BinaryAddressedMessageType subType, AISPacket... packets) {
+    public BinaryAddressedMessageBase(String source, BinaryAddressedMessageType subType, AISSentence... packets) {
         this(source, packets);
-        _subType = subType;
+        this.subType = subType;
     }
 
     /**
-     *
+     * 
      * @return int
      */
     public int getSourceMmsi() {
         return super.getMmsi();
-    }
-
-    /**
-     *
-     * @return int
-     */
-    public int getSeqno() {
-        return _seqno;
-    }
-
-    /**
-     *
-     * @return int
-     */
-    public int getDestMmsi() {
-        return _destMmsi;
-    }
-
-    /**
-     *
-     * @return boolean
-     */
-    public boolean isRetransmit() {
-        return _retransmit;
-    }
-
-    /**
-     *
-     * @return int
-     */
-    public int getDac() {
-        return _dac;
-    }
-
-    /**
-     *
-     * @return int
-     */
-    public int getFid() {
-        return _fid;
-    }
-
-    /**
-     *
-     * @return BitSet
-     */
-    public BitSet getData() {
-        return _data;
     }
 
     /**
@@ -132,11 +89,11 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
      * @return BinaryAddressedMessageType
      */
     public BinaryAddressedMessageType getSubType() {
-        if (_subType == null) {
-            _subType = BinaryAddressedMessageType.fetch(_dac, _fid, _bits.size());
+        if (subType == null) {
+            subType = BinaryAddressedMessageType.fetch(dac, fid, bits.size());
         }
 
-        return _subType;
+        return subType;
     }
 
     /**
@@ -144,7 +101,7 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
      * @param subType BinaryAddressedMessageType
      */
     public void setSubType(BinaryAddressedMessageType subType) {
-        _subType = subType;
+        this.subType = subType;
     }
 
     /**
@@ -157,35 +114,35 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
     public BinaryAddressedMessageBase getSubTypeInstance() throws AISException {
         BinaryAddressedMessageBase message;
 
-        if (_subType == null) {
+        if (this.subType == null) {
             decode(); // we need the dac and fid
             getSubType();
         }
 
-        if (_subType != null) {
+        if (this.subType != null) {
             try {
                 if (LOG.isDebugEnabled())
-                    LOG.debug("Creating a new {} instance.", _subType.getDescription());
+                    LOG.debug("Creating a new {} instance.", this.subType.getDescription());
 
-                Constructor<? extends BinaryAddressedMessageBase> con = _subType.getMsgClass()
-                        .getDeclaredConstructor(AISPacket[].class);
+                Constructor<? extends BinaryAddressedMessageBase> con = this.subType.getMsgClass()
+                        .getDeclaredConstructor(AISSentence[].class);
                 con.setAccessible(true);
 
-                if (_packets.length == 1) {
-                    message = (BinaryAddressedMessageBase) con.newInstance((Object) _packets);
+                if (this.sentences.length == 1) {
+                    message = (BinaryAddressedMessageBase) con.newInstance((Object) this.sentences);
                 } else {
-                    message = (BinaryAddressedMessageBase) con.newInstance(new Object[] { _packets });
+                    message = (BinaryAddressedMessageBase) con.newInstance(new Object[] { this.sentences });
                 }
 
                 message.setType(super.getType());
-                message.setSubType(_subType);
+                message.setSubType(this.subType);
             } catch (ReflectiveOperationException roe) {
                 throw new AISException("Reflection failure: " + roe.getMessage(), roe);
             } catch (SecurityException se) {
                 throw new AISException("SecurityException: " + se.getMessage(), se);
             }
         } else {
-            throw new AISException("Unable to determine message subtype for DAC: " + _dac + " and FID: " + _fid);
+            throw new AISException("Unable to determine message subtype for DAC: " + dac + " and FID: " + fid);
         }
 
         return message;
@@ -202,24 +159,24 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
         for (BinaryAddressedMessageFieldMap field : BinaryAddressedMessageFieldMap.values()) {
             switch (field) {
                 case SEQUENCE_NUMBER:
-                    if (_bits.size() >= field.getStartBit())
-                        _seqno = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        seqno = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DESTINATION_MMSI:
-                    if (_bits.size() >= field.getStartBit())
-                        _destMmsi = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        destMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case RETRANSMIT:
-                    if (_bits.size() >= field.getStartBit())
-                        _retransmit = _bits.get(field.getStartBit());
+                    if (bits.size() >= field.getStartBit())
+                        retransmit = bits.get(field.getStartBit());
                     break;
                 case DAC:
-                    if (_bits.size() >= field.getStartBit())
-                        _dac = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        dac = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case FID:
-                    if (_bits.size() >= field.getStartBit())
-                        _fid = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        fid = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DATA:
                     break;
@@ -232,6 +189,7 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
     /**
      *
      */
+    @Getter
     private enum BinaryAddressedMessageFieldMap implements FieldMap {
 
         SEQUENCE_NUMBER(38, 39),
@@ -243,8 +201,8 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
         DATA(88, -1) // -1 means from startBit to end of bitArray
         ;
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
@@ -252,26 +210,8 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
          * @param endBit   int
          */
         BinaryAddressedMessageFieldMap(int startBit, int endBit) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return int
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         * 
-         * @return int
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

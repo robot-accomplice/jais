@@ -16,7 +16,7 @@
 
 package jais.messages.binarybroadcast;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.messages.BinaryBroadcastMessage;
 import jais.messages.enums.BinaryBroadcastMessageType;
 
@@ -29,15 +29,15 @@ public class IMO289AreaNotice extends BinaryBroadcastMessage {
     /**
      * 
      * @param source
-     * @param packets 
+     * @param packets
      */
-    public IMO289AreaNotice( String source, AISPacket... packets ) {
-        super( source, packets );
+    public IMO289AreaNotice(String source, AISSentence... packets) {
+        super(source, packets);
     }
 
     /**
      * 
-     * @return 
+     * @return
      */
     @Override
     public BinaryBroadcastMessageType getSubType() {

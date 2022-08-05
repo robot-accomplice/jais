@@ -16,63 +16,49 @@
 
 package jais.messages.enums;
 
+import lombok.Getter;
+
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public enum MarpolAnnexIIType {
 
-    DEFAULT( 0, "N/A (default)" ),
-    CATEGORY_X( 1, "Category X" ),
-    CATEGORY_Y( 2, "Category Y" ),
-    CATEGORY_Z( 3, "Category Z" ),
-    OTHER_SUBSTANCES( 4, "Other substances" );
+    DEFAULT(0, "N/A (default)"),
+    CATEGORY_X(1, "Category X"),
+    CATEGORY_Y(2, "Category Y"),
+    CATEGORY_Z(3, "Category Z"),
+    OTHER_SUBSTANCES(4, "Other substances");
 
-    private final int _code;
-    private final String _description;
+    private final int code;
+    private final String description;
 
     /**
      * 
      * @param code
-     * @param description 
+     * @param description
      */
-    MarpolAnnexIIType( int code, String description ) {
-        _code = code;
-        _description = description;
+    MarpolAnnexIIType(int code, String description) {
+        this.code = code;
+        this.description = description;
     }
 
-    /**
-     * 
-     * @return 
-     */
-    public int getCode() {
-        return _code;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public String getDescription() {
-        return _description;
-    }
-
-    
     /**
      * 
      * @param code
-     * @return 
+     * @return
      */
-    public static MarpolAnnexIIType getForCode( int code ) {
-       MarpolAnnexIIType t = null;
-       
-       for( MarpolAnnexIIType type : MarpolAnnexIIType.values() ) {
-           if( type.getCode() == code ) {
-               t = type;
-               break;
-           }
-       }
-       
-       return t;
+    public static MarpolAnnexIIType getForCode(int code) {
+        MarpolAnnexIIType t = null;
+
+        for (MarpolAnnexIIType type : MarpolAnnexIIType.values()) {
+            if (type.getCode() == code) {
+                t = type;
+                break;
+            }
+        }
+
+        return t;
     }
 }

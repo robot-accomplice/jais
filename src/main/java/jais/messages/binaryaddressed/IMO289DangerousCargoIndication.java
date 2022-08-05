@@ -16,10 +16,11 @@
 
 package jais.messages.binaryaddressed;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
+import lombok.Getter;
 import jais.messages.enums.BinaryAddressedMessageType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +31,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class IMO289DangerousCargoIndication extends BinaryAddressedMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( IMO289DangerousCargoIndication.class );
+    private final static Logger LOG = LogManager.getLogger(IMO289DangerousCargoIndication.class);
 
     /**
      *
@@ -38,9 +39,9 @@ public class IMO289DangerousCargoIndication extends BinaryAddressedMessageBase {
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO289DangerousCargoIndication( String source, AISPacket... packets )
+    public IMO289DangerousCargoIndication(String source, AISSentence... packets)
             throws AISException {
-        super( source, BinaryAddressedMessageType.DANGEROUS_CARGO_INDICATION, packets );
+        super(source, BinaryAddressedMessageType.DANGEROUS_CARGO_INDICATION, packets);
     }
 
     /**
@@ -50,11 +51,10 @@ public class IMO289DangerousCargoIndication extends BinaryAddressedMessageBase {
     public final void decode() throws AISException {
         super.decode();
 
-        for( IMO289DangerousCargoIndicationFieldMap field
-                : IMO289DangerousCargoIndicationFieldMap.values() ) {
-            switch( field ) {
+        for (IMO289DangerousCargoIndicationFieldMap field : IMO289DangerousCargoIndicationFieldMap.values()) {
+            switch (field) {
                 default:
-                    LOG.warn( "Ignoring field: {}", field.name() );
+                    LOG.warn("Ignoring field: {}", field.name());
             }
         }
     }
@@ -62,39 +62,22 @@ public class IMO289DangerousCargoIndication extends BinaryAddressedMessageBase {
     /**
      *
      */
+    @Getter
     private enum IMO289DangerousCargoIndicationFieldMap implements FieldMap {
 
-        DEFAULT( -1, -1 );
+        DEFAULT(-1, -1);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
          * @param startBit
          * @param endBit
          */
-        IMO289DangerousCargoIndicationFieldMap( int startBit, int endBit ) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+        IMO289DangerousCargoIndicationFieldMap(int startBit, int endBit) {
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

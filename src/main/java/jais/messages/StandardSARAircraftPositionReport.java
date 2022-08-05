@@ -16,7 +16,7 @@
 
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
@@ -43,23 +43,23 @@ public class StandardSARAircraftPositionReport extends AISMessageBase {
     /**
      *
      * @param source
-     * @param packets
+     * @param sentences
      * @throws jais.exceptions.AISException
      */
-    public StandardSARAircraftPositionReport(String source, AISPacket... packets)
+    public StandardSARAircraftPositionReport(String source, AISSentence... sentences)
             throws AISException {
-        super(source, packets);
+        super(source, sentences);
     }
 
     /**
      *
      * @param source
      * @param messageType
-     * @param packets
+     * @param sentences
      */
     public StandardSARAircraftPositionReport(String source, AISMessageType messageType,
-            AISPacket... packets) {
-        super(source, messageType, packets);
+            AISSentence... sentences) {
+        super(source, messageType, sentences);
     }
 
     /**
@@ -77,11 +77,11 @@ public class StandardSARAircraftPositionReport extends AISMessageBase {
      */
     @Override
     public Point getPosition() {
-        if (_position == null) {
-            _position = CTX.getShapeFactory().pointXY(_lat, _lon);
+        if (super.position == null) {
+            super.position = CTX.getShapeFactory().pointXY(_lat, _lon);
         }
 
-        return _position;
+        return super.position;
     }
 
     /**
@@ -183,48 +183,48 @@ public class StandardSARAircraftPositionReport extends AISMessageBase {
         for (SSARAircraftPositionReportFieldMap field : SSARAircraftPositionReportFieldMap.values()) {
             switch (field) {
                 case ALT:
-                    if (_bits.size() >= field.getStartBit())
-                        _alt = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _alt = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SPEED:
-                    if (_bits.size() >= field.getStartBit())
-                        _speed = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _speed = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case ACCURACY:
-                    if (_bits.size() >= field.getStartBit())
-                        _accurate = _bits.get(field.getStartBit());
+                    if (bits.size() >= field.getStartBit())
+                        _accurate = bits.get(field.getStartBit());
                     break;
                 case LON:
-                    if (_bits.size() >= field.getStartBit())
-                        _lon = AISMessageDecoder.decodeSignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _lon = AISMessageDecoder.decodeSignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case LAT:
-                    if (_bits.size() >= field.getStartBit())
-                        _lat = AISMessageDecoder.decodeSignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _lat = AISMessageDecoder.decodeSignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case COURSE:
-                    if (_bits.size() >= field.getStartBit())
-                        _course = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _course = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SECOND:
-                    if (_bits.size() >= field.getStartBit())
-                        _second = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DTE:
-                    if (_bits.size() >= field.getStartBit())
-                        _dte = _bits.get(field.getStartBit());
+                    if (bits.size() >= field.getStartBit())
+                        _dte = bits.get(field.getStartBit());
                     break;
                 case ASSIGNED:
-                    if (_bits.size() >= field.getStartBit())
-                        _assigned = _bits.get(field.getStartBit());
+                    if (bits.size() >= field.getStartBit())
+                        _assigned = bits.get(field.getStartBit());
                     break;
                 case RAIM:
-                    if (_bits.size() >= field.getStartBit())
-                        _raim = _bits.get(field.getStartBit());
+                    if (bits.size() >= field.getStartBit())
+                        _raim = bits.get(field.getStartBit());
                     break;
                 case RADIO:
-                    if (_bits.size() >= field.getStartBit())
-                        _radio = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case REGIONAL:
                     break;

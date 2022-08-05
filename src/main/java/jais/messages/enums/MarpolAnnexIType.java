@@ -16,61 +16,49 @@
 
 package jais.messages.enums;
 
+import lombok.Getter;
+
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public enum MarpolAnnexIType {
 
-    DEFAULT( 0, "N/A (default)" ),
-    ASPHALT( 1, "Asphalt solutions" ),
-    OILS( 2, "Oils" ),
-    DISTILLATES( 3, "Distillates" ),
-    GAS_OIL( 4, "Gas oil" ),
-    GASOLINE_BLENDING_STOCKS( 5, "Gasoline blending stocks" ),
-    GASOLINE( 6, "Gasoline" ),
-    JET_FUELS( 7, "Jet fuels" ),
-    NAPHTHA( 8, "Naphtha" );
+    DEFAULT(0, "N/A (default)"),
+    ASPHALT(1, "Asphalt solutions"),
+    OILS(2, "Oils"),
+    DISTILLATES(3, "Distillates"),
+    GAS_OIL(4, "Gas oil"),
+    GASOLINE_BLENDING_STOCKS(5, "Gasoline blending stocks"),
+    GASOLINE(6, "Gasoline"),
+    JET_FUELS(7, "Jet fuels"),
+    NAPHTHA(8, "Naphtha");
 
-    private final int _code;
-    private final String _description;
+    private final int code;
+    private final String description;
 
     /**
      * 
      * @param code
-     * @param description 
+     * @param description
      */
-    MarpolAnnexIType( int code, String description ) {
-        _code = code;
-        _description = description;
+    MarpolAnnexIType(int code, String description) {
+        this.code = code;
+        this.description = description;
     }
 
-    /**
-     * 
-     * @return 
-     */
-    public int getCode() {
-        return _code;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public String getDescription() {
-        return _description;
-    }
-    
     /**
      * 
      * @param code
-     * @return 
+     * @return
      */
-    public static MarpolAnnexIType getForCode( int code ) {
-       for( MarpolAnnexIType type : MarpolAnnexIType.values() ) {
-           if( type.getCode() == code ) return type;
-       }
-       
-       return null;
+    public static MarpolAnnexIType getForCode(int code) {
+        for (MarpolAnnexIType type : MarpolAnnexIType.values()) {
+            if (type.getCode() == code)
+                return type;
+        }
+
+        return null;
     }
 }

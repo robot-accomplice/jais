@@ -15,10 +15,13 @@
  */
 package jais.messages.enums;
 
+import lombok.Getter;
+
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public enum AreaNoticeType {
 
     CAUTION_MARINE_MAMMALS_HABITAT(0,
@@ -56,8 +59,8 @@ public enum AreaNoticeType {
 
     ;
 
-    private final int _code;
-    private final String _description;
+    private final int code;
+    private final String description;
 
     /**
      * 
@@ -65,24 +68,8 @@ public enum AreaNoticeType {
      * @param description
      */
     AreaNoticeType(int code, String description) {
-        _code = code;
-        _description = description;
-    }
-
-    /**
-     * 
-     * @return int
-     */
-    public int getCode() {
-        return _code;
-    }
-
-    /**
-     * 
-     * @return String
-     */
-    public String getDescription() {
-        return _description;
+        this.code = code;
+        this.description = description;
     }
 
     /**

@@ -16,10 +16,11 @@
 
 package jais.messages.binaryaddressed;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
+import lombok.Getter;
 import jais.messages.enums.BinaryAddressedMessageType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +31,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class IMO289AreaNotice extends BinaryAddressedMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( IMO289AreaNotice.class );
+    private final static Logger LOG = LogManager.getLogger(IMO289AreaNotice.class);
 
     /**
      *
@@ -38,9 +39,9 @@ public class IMO289AreaNotice extends BinaryAddressedMessageBase {
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO289AreaNotice( String source, AISPacket... packets )
+    public IMO289AreaNotice(String source, AISSentence... packets)
             throws AISException {
-        super( source, BinaryAddressedMessageType.AREA_NOTICE, packets );
+        super(source, BinaryAddressedMessageType.AREA_NOTICE, packets);
     }
 
     /**
@@ -51,15 +52,14 @@ public class IMO289AreaNotice extends BinaryAddressedMessageBase {
         super.decode();
 
         // here we need to figure out how many elements in an array of sub-
-        // areas there are (could be up to ten) based on the size of 
+        // areas there are (could be up to ten) based on the size of
         // remaining data after we decode the duration -- may use a public
         // static inner class to represent the sub-area information and just store
         // the array
-        for( IMO289AreaNoticeFieldMap field
-                : IMO289AreaNoticeFieldMap.values() ) {
-            switch( field ) {
+        for (IMO289AreaNoticeFieldMap field : IMO289AreaNoticeFieldMap.values()) {
+            switch (field) {
                 default:
-                    LOG.warn( "Ignoring field: {}", field.name() );
+                    LOG.warn("Ignoring field: {}", field.name());
             }
         }
     }
@@ -67,39 +67,22 @@ public class IMO289AreaNotice extends BinaryAddressedMessageBase {
     /**
      *
      */
+    @Getter
     private enum IMO289AreaNoticeFieldMap implements FieldMap {
 
-        DEFAULT( -1, -1 );
+        DEFAULT(-1, -1);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
          * @param startBit
          * @param endBit
          */
-        IMO289AreaNoticeFieldMap( int startBit, int endBit ) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+        IMO289AreaNoticeFieldMap(int startBit, int endBit) {
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

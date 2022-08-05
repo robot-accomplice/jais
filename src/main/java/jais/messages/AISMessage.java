@@ -15,11 +15,13 @@
  */
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.MMSIType;
+import lombok.Getter;
+
 import java.time.ZoneOffset;
 import org.locationtech.spatial4j.shape.Point;
 import java.time.ZonedDateTime;
@@ -105,9 +107,9 @@ public interface AISMessage {
 
     /**
      *
-     * @return the array of packets from which this message was composed
+     * @return the array of Sentences from which this message was composed
      */
-    AISPacket[] getPackets();
+    AISSentence[] getSentences();
 
     /**
      *
@@ -202,14 +204,15 @@ public interface AISMessage {
     /**
      * Fields common to all messages
      */
+    @Getter
     enum AISFieldMap implements FieldMap {
 
         TYPE(0, 5),
         REPEAT(6, 7),
         MMSI(8, 37);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
@@ -217,26 +220,8 @@ public interface AISMessage {
          * @param endBit   int
          */
         AISFieldMap(int startBit, int endBit) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return int indicating at which bit this field starts
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return int indicating at which bit this field ends
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

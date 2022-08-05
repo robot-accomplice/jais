@@ -15,7 +15,7 @@
  */
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.ByteArrayUtils;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
@@ -40,7 +40,8 @@ public class AISMessageFactory {
      * @return An Optional which may contain our decoded AISMessage
      * @throws AISException if decoding fails or AISPacket array is empty
      */
-    public static Optional<AISMessage> create(String source, boolean strict, AISPacket... packets) throws AISException {
+    public static Optional<AISMessage> create(String source, boolean strict, AISSentence... packets)
+            throws AISException {
         if (packets == null || packets.length < 1)
             throw new AISException("Packets array is empty!");
         LOG.debug("Decoding message from {} packet(s). Strict is set to {}", packets.length, strict);
@@ -51,7 +52,7 @@ public class AISMessageFactory {
                 packets[0].process();
             compositeBytes = packets[0].getBinaryStringAsByteArray();
         } else {
-            compositeBytes = AISPacket.concatenate(packets);
+            compositeBytes = AISSentence.concatenate(packets);
         }
 
         String compositeMsg = ByteArrayUtils.bArray2Str(compositeBytes);
@@ -168,7 +169,7 @@ public class AISMessageFactory {
      * @return An Optional which may contain the decoded AISMessage
      * @throws AISException if decoding fails
      */
-    public static Optional<AISMessage> create(String source, AISPacket... packets) throws AISException {
+    public static Optional<AISMessage> create(String source, AISSentence... packets) throws AISException {
         return create(source, true, packets);
     }
 
@@ -185,10 +186,10 @@ public class AISMessageFactory {
      */
     public static Optional<AISMessage> create(String source, boolean strict, String... packetStrings)
             throws AISException {
-        AISPacket[] packets = new AISPacket[packetStrings.length];
+        AISSentence[] packets = new AISSentence[packetStrings.length];
 
         for (int i = 0; i < packetStrings.length; i++)
-            packets[i] = new AISPacket(packetStrings[i], source);
+            packets[i] = new AISSentence(packetStrings[i], source);
 
         return create(source, strict, packets);
     }

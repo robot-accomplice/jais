@@ -16,7 +16,7 @@
 
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
@@ -26,86 +26,86 @@ import jais.messages.enums.FieldMap;
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class SafetyRelatedBroadcastMessage extends AISMessageBase {
-    
+
     private String _text;
-    
+
     /**
      * 
      * @param source
-     * @param packets 
-     * @throws jais.exceptions.AISException 
+     * @param packets
+     * @throws jais.exceptions.AISException
      */
-    public SafetyRelatedBroadcastMessage( String source, AISPacket... packets ) throws AISException {
-        super( source, packets );
-    }
-    
-    /**
-     * 
-     * @param source
-     * @param messageType
-     * @param packets 
-     */
-    public SafetyRelatedBroadcastMessage( String source, AISMessageType messageType, AISPacket... packets ) {
-        super( source, messageType, packets );
+    public SafetyRelatedBroadcastMessage(String source, AISSentence... packets) throws AISException {
+        super(source, packets);
     }
 
     /**
      * 
-     * @return 
+     * @param source
+     * @param messageType
+     * @param packets
+     */
+    public SafetyRelatedBroadcastMessage(String source, AISMessageType messageType, AISSentence... packets) {
+        super(source, messageType, packets);
+    }
+
+    /**
+     * 
+     * @return
      */
     public int getSourceMmsi() {
         return super.getMmsi();
     }
-    
+
     /**
      * 
-     * @return 
+     * @return
      */
     public String getText() {
         return _text;
     }
-    
+
     /**
      * 
-     * @throws AISException 
+     * @throws AISException
      */
     @Override
     public final void decode() throws AISException {
         super.decode();
-        
-        for( SRBMFieldMap field : SRBMFieldMap.values() ) {
-            switch( field ) {
+
+        for (SRBMFieldMap field : SRBMFieldMap.values()) {
+            switch (field) {
                 case TEXT:
-                    if( _bits.size() >= field.getStartBit() )
-                        _text = AISMessageDecoder.decodeToString( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _text = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
                     break;
             }
         }
     }
-    
+
     /**
      * 
      */
     private enum SRBMFieldMap implements FieldMap {
-        
-        TEXT( 40, -1 );
-        
+
+        TEXT(40, -1);
+
         private final int _startBit;
         private final int _endBit;
-        
+
         /**
          * 
          * @param startBit
-         * @param endBit 
+         * @param endBit
          */
-        SRBMFieldMap( int startBit, int endBit ) {
+        SRBMFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }
 
         /**
          * 
-         * @return 
+         * @return
          */
         @Override
         public int getStartBit() {
@@ -114,7 +114,7 @@ public class SafetyRelatedBroadcastMessage extends AISMessageBase {
 
         /**
          * 
-         * @return 
+         * @return
          */
         @Override
         public int getEndBit() {

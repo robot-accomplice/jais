@@ -16,11 +16,12 @@
 
 package jais.messages.binaryaddressed;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.AISMessageDecoder;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
+import lombok.Getter;
 import jais.messages.enums.BinaryAddressedMessageType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,12 +30,13 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public class IMO289TextDescription extends BinaryAddressedMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( IMO289TextDescription.class );
+    private final static Logger LOG = LogManager.getLogger(IMO289TextDescription.class);
 
-    private int _linkageId;
-    private String _description;
+    private int linkageId;
+    private String description;
 
     /**
      *
@@ -42,25 +44,9 @@ public class IMO289TextDescription extends BinaryAddressedMessageBase {
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO289TextDescription( String source, AISPacket... packets )
+    public IMO289TextDescription(String source, AISSentence... packets)
             throws AISException {
-        super( source, BinaryAddressedMessageType.TEXT_DESCRIPTION, packets );
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getLinkageId() {
-        return _linkageId;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getDescription() {
-        return _description;
+        super(source, BinaryAddressedMessageType.TEXT_DESCRIPTION, packets);
     }
 
     /**
@@ -70,19 +56,18 @@ public class IMO289TextDescription extends BinaryAddressedMessageBase {
     public final void decode() throws AISException {
         super.decode();
 
-        for( IMO289TextDescriptionFieldMap field
-                : IMO289TextDescriptionFieldMap.values() ) {
-            switch( field ) {
+        for (IMO289TextDescriptionFieldMap field : IMO289TextDescriptionFieldMap.values()) {
+            switch (field) {
                 case LINKAGE_ID:
-                    _linkageId = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    linkageId = AISMessageDecoder.decodeUnsignedInt(bits,
+                            field.getStartBit(), field.getEndBit());
                     break;
                 case DESCRIPTION:
-                    _description = AISMessageDecoder.decodeToString( _bits,
-                            field.getStartBit(), _bits.size() - 1 );
+                    description = AISMessageDecoder.decodeToString(bits,
+                            field.getStartBit(), bits.size() - 1);
                     break;
                 default:
-                    LOG.warn( "Ignoring field: {}", field.name() );
+                    LOG.warn("Ignoring field: {}", field.name());
             }
         }
     }
@@ -90,40 +75,23 @@ public class IMO289TextDescription extends BinaryAddressedMessageBase {
     /**
      *
      */
+    @Getter
     private enum IMO289TextDescriptionFieldMap implements FieldMap {
 
-        LINKAGE_ID( 88, 97 ),
-        DESCRIPTION( 98, -1 );
+        LINKAGE_ID(88, 97),
+        DESCRIPTION(98, -1);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
          * @param startBit
          * @param endBit
          */
-        IMO289TextDescriptionFieldMap( int startBit, int endBit ) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+        IMO289TextDescriptionFieldMap(int startBit, int endBit) {
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

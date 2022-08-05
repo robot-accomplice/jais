@@ -23,6 +23,7 @@ import jais.messages.binaryaddressed.IMO289DangerousCargoIndication;
 import jais.messages.binaryaddressed.IMO289RouteInformation;
 import jais.messages.binaryaddressed.IMO289AreaNotice;
 import jais.messages.binaryaddressed.IMO289TidalWindow;
+import lombok.Getter;
 import jais.messages.binaryaddressed.IMO289TextDescription;
 import jais.messages.binaryaddressed.IMO236DangerousCargoIndication;
 import jais.messages.binaryaddressed.IMO289ClearanceTimeToEnterPort;
@@ -31,6 +32,7 @@ import jais.messages.binaryaddressed.IMO289ClearanceTimeToEnterPort;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public enum BinaryAddressedMessageType {
 
     DANGEROUS_CARGO_INDICATION_DEPRECATED(1, 12, -1,
@@ -64,12 +66,12 @@ public enum BinaryAddressedMessageType {
             IMO289TidalWindow.class, IMOType.IMO289,
             "Tidal Window");
 
-    private final int _dac;
-    private final int _fid;
-    private final int _length;
-    private final Class<? extends BinaryAddressedMessageBase> _msgClass;
-    private final IMOType _source;
-    private final String _description;
+    private final int dac;
+    private final int fid;
+    private final int length;
+    private final Class<? extends BinaryAddressedMessageBase> msgClass;
+    private final IMOType source;
+    private final String description;
 
     /**
      * 
@@ -79,60 +81,12 @@ public enum BinaryAddressedMessageType {
      */
     BinaryAddressedMessageType(int dac, int fid, int length, Class<? extends BinaryAddressedMessageBase> msgClass,
             IMOType source, String description) {
-        _dac = dac;
-        _fid = fid;
-        _length = length;
-        _msgClass = msgClass;
-        _source = source;
-        _description = description;
-    }
-
-    /**
-     * 
-     * @return int
-     */
-    public int getDac() {
-        return _dac;
-    }
-
-    /**
-     * 
-     * @return int
-     */
-    public int getFid() {
-        return _fid;
-    }
-
-    /**
-     * 
-     * @return int
-     */
-    public int getLength() {
-        return _length;
-    }
-
-    /**
-     * 
-     * @return Class that extends BinaryAddressedMessageBase
-     */
-    public Class<? extends BinaryAddressedMessageBase> getMsgClass() {
-        return _msgClass;
-    }
-
-    /**
-     * 
-     * @return IMOType
-     */
-    public IMOType getSource() {
-        return _source;
-    }
-
-    /**
-     * 
-     * @return String
-     */
-    public String getDescription() {
-        return _description;
+        this.dac = dac;
+        this.fid = fid;
+        this.length = length;
+        this.msgClass = msgClass;
+        this.source = source;
+        this.description = description;
     }
 
     /**

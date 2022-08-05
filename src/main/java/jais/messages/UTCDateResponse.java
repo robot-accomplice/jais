@@ -18,7 +18,7 @@ package jais.messages;
 
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.AISMessageType;
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.enums.EPFDFixType;
 import org.apache.logging.log4j.LogManager;
@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class UTCDateResponse extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( UTCDateResponse.class );
+    private final static Logger LOG = LogManager.getLogger(UTCDateResponse.class);
 
     private int _year;
     private int _month;
@@ -50,8 +50,8 @@ public class UTCDateResponse extends AISMessageBase {
      * @param source
      * @param packets
      */
-    public UTCDateResponse( String source, AISPacket... packets ) {
-        super( source, packets );
+    public UTCDateResponse(String source, AISSentence... packets) {
+        super(source, packets);
     }
 
     /**
@@ -60,8 +60,8 @@ public class UTCDateResponse extends AISMessageBase {
      * @param type
      * @param packets
      */
-    public UTCDateResponse( String source, AISMessageType type, AISPacket... packets ) {
-        super( source, type, packets );
+    public UTCDateResponse(String source, AISMessageType type, AISSentence... packets) {
+        super(source, type, packets);
     }
 
     /**
@@ -169,61 +169,64 @@ public class UTCDateResponse extends AISMessageBase {
     public final void decode() throws AISException {
         super.decode();
 
-        for( UTCDateResponseFieldMap field : UTCDateResponseFieldMap.values() ) {
-            switch( field ) {
+        for (UTCDateResponseFieldMap field : UTCDateResponseFieldMap.values()) {
+            switch (field) {
                 case YEAR:
-                    if( _bits.size() >= field.getStartBit() ) 
-                        _year = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _year = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case MONTH:
-                    if( _bits.size() >= field.getStartBit() )
-                        _month = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _month = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DAY:
-                    if( _bits.size() >= field.getStartBit() )
-                        _day = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _day = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case HOUR:
-                    if( _bits.size() >= field.getStartBit() )
-                        _hour = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _hour = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case MINUTE:
-                    if( _bits.size() >= field.getStartBit() )
-                        _minute = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _minute = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SECOND:
-                    if( _bits.size() >= field.getStartBit() )
-                        _second = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case ACCURACY:
-                    if( _bits.size() >= field.getStartBit() )
-                        _accurate = _bits.get( field.getStartBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _accurate = bits.get(field.getStartBit());
                     break;
                 case LON:
-                    if( _bits.size() >= field.getStartBit() )
-                        _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case LAT:
-                    if( _bits.size() >= field.getStartBit() )
-                        _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case EPFD:
-                    if( _bits.size() >= field.getStartBit() ) {
-                        int epfdCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                        if( LOG.isDebugEnabled() ) LOG.debug( "Retrieving EPFDFixType for code: {}", epfdCode );
-                        _epfd = EPFDFixType.getForCode( epfdCode );
+                    if (bits.size() >= field.getStartBit()) {
+                        int epfdCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                                field.getEndBit());
+                        if (LOG.isDebugEnabled())
+                            LOG.debug("Retrieving EPFDFixType for code: {}", epfdCode);
+                        _epfd = EPFDFixType.getForCode(epfdCode);
                     }
                     break;
                 case RAIM:
-                    if( _bits.size() >= field.getStartBit() )
-                        _raim = _bits.get( field.getStartBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _raim = bits.get(field.getStartBit());
                     break;
                 case RADIO:
-                    if( _bits.size() >= field.getStartBit() )
-                        _radio = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 default:
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Encountered unhandled field type of : {}", field );
+                    if (LOG.isDebugEnabled())
+                        LOG.debug("Encountered unhandled field type of : {}", field);
             }
         }
     }
@@ -233,19 +236,19 @@ public class UTCDateResponse extends AISMessageBase {
      */
     private enum UTCDateResponseFieldMap implements FieldMap {
 
-        YEAR( 38, 51 ),
-        MONTH( 52, 55 ),
-        DAY( 56, 60 ),
-        HOUR( 61, 65 ),
-        MINUTE( 66, 71 ),
-        SECOND( 72, 77 ),
-        ACCURACY( 78, 78 ),
-        LON( 79, 106 ),
-        LAT( 107, 133 ),
-        EPFD( 134, 137 ),
-        SPARE( 138, 147 ),
-        RAIM( 148, 148 ),
-        RADIO( 149, 167 );
+        YEAR(38, 51),
+        MONTH(52, 55),
+        DAY(56, 60),
+        HOUR(61, 65),
+        MINUTE(66, 71),
+        SECOND(72, 77),
+        ACCURACY(78, 78),
+        LON(79, 106),
+        LAT(107, 133),
+        EPFD(134, 137),
+        SPARE(138, 147),
+        RAIM(148, 148),
+        RADIO(149, 167);
 
         private final int _startBit;
         private final int _endBit;
@@ -255,7 +258,7 @@ public class UTCDateResponse extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        UTCDateResponseFieldMap( int startBit, int endBit ) {
+        UTCDateResponseFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }

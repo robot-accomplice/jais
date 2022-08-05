@@ -16,7 +16,7 @@
 
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.AISMessageType;
@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class SingleSlotBinaryMessage extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( SingleSlotBinaryMessage.class );
+    private final static Logger LOG = LogManager.getLogger(SingleSlotBinaryMessage.class);
 
     private boolean _addressed;
     private boolean _structured;
@@ -44,8 +44,8 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
      * @param source
      * @param packets
      */
-    public SingleSlotBinaryMessage( String source, AISPacket... packets ) {
-        super( source, packets );
+    public SingleSlotBinaryMessage(String source, AISSentence... packets) {
+        super(source, packets);
     }
 
     /**
@@ -54,8 +54,8 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
      * @param type
      * @param packets
      */
-    public SingleSlotBinaryMessage( String source, AISMessageType type, AISPacket... packets ) {
-        super( source, type, packets );
+    public SingleSlotBinaryMessage(String source, AISMessageType type, AISSentence... packets) {
+        super(source, type, packets);
     }
 
     /**
@@ -113,51 +113,55 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
     public final void decode() throws AISException {
         super.decode();
 
-        for( SingleSlotBinaryMessageFieldMap field : SingleSlotBinaryMessageFieldMap.values() ) {
-            switch( field ) {
+        for (SingleSlotBinaryMessageFieldMap field : SingleSlotBinaryMessageFieldMap.values()) {
+            switch (field) {
                 case ADDRESSED:
-                    if( _bits.size() >= field.getStartBit() )
-                            _addressed = _bits.get( field.getStartBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _addressed = bits.get(field.getStartBit());
                     break;
                 case STRUCTURED:
-                    _structured = _bits.get( field.getStartBit() );
+                    _structured = bits.get(field.getStartBit());
                     break;
                 case DESTINATION_MMSI:
-                    if( _addressed ) {
-                        if( _bits.size() >= field.getStartBit() )
-                            _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_addressed) {
+                        if (bits.size() >= field.getStartBit())
+                            _destMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                                    field.getEndBit());
                     }
                     break;
                 case DAC:
-                    if( _structured ) {
-                        if( _bits.size() >= field.getStartBit() )
-                            _dac = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_structured) {
+                        if (bits.size() >= field.getStartBit())
+                            _dac = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     }
                     break;
                 case FID:
-                    if( _structured ) {
-                        if( _bits.size() >= field.getStartBit() )
-                            _fid = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (_structured) {
+                        if (bits.size() >= field.getStartBit())
+                            _fid = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     }
                     break;
                 case DATA:
-                    _data = new BitSet( _bits.size() );
-                    if( _addressed && _bits.size() >= 70 ) {
-                        if( _bits.size() >= field.getStartBit() )
-                            _data = _bits.get( 70, 70 );
-                    } else if( _structured && _bits.size() >= 56 ) {
-                        if( _bits.size() >= field.getStartBit() )
-                            _data = _bits.get( 56, _bits.size() );
-                    } else if( _bits.size() >= 40 ) {
-                        if( _bits.size() >= field.getStartBit() )
-                            _data = _bits.get( 40, _bits.size() );
+                    _data = new BitSet(bits.size());
+                    if (_addressed && bits.size() >= 70) {
+                        if (bits.size() >= field.getStartBit())
+                            _data = bits.get(70, 70);
+                    } else if (_structured && bits.size() >= 56) {
+                        if (bits.size() >= field.getStartBit())
+                            _data = bits.get(56, bits.size());
+                    } else if (bits.size() >= 40) {
+                        if (bits.size() >= field.getStartBit())
+                            _data = bits.get(40, bits.size());
                     } else {
-                        throw new AISException( "Invalid bit count.  BitVector size: " + _bits.size() + ", BitVector length: " + _bits.length() );
+                        throw new AISException("Invalid bit count.  BitVector size: " + bits.size()
+                                + ", BitVector length: " + bits.length());
                     }
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Setting data to {} bits", _data.length() );
+                    if (LOG.isDebugEnabled())
+                        LOG.debug("Setting data to {} bits", _data.length());
                     break;
                 default:
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
+                    if (LOG.isDebugEnabled())
+                        LOG.debug("Ignoring field: {}", field.name());
             }
         }
     }
@@ -167,24 +171,24 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
      */
     private enum SingleSlotBinaryMessageFieldMap implements FieldMap {
 
-        ADDRESSED( 38, 38 ),
-        STRUCTURED( 39, 39 ),
-        DESTINATION_MMSI( 40, 70 ), // as many as 30 bits
-        DAC( 40, 59 ), // as many as 10 bits
-        FID( 50, 55 ), // as many as 6 bits
-        DATA( 40, -1 );             // as many as 128 bits
+        ADDRESSED(38, 38),
+        STRUCTURED(39, 39),
+        DESTINATION_MMSI(40, 70), // as many as 30 bits
+        DAC(40, 59), // as many as 10 bits
+        FID(50, 55), // as many as 6 bits
+        DATA(40, -1); // as many as 128 bits
 
-//      from gpsd.berlios.de/AIVDM.html#_type_25_single_slot_binary_message
-//      If the addressed flag is on, 30 bits of data at offset 40 are interpreted 
-//      as a destination MMSI. Otherwise that field span becomes part of the 
-//      message payload, with the first 16 bits used as an Application ID if 
-//      the structured flag is on.  If the structured flag is on, a 16-bit 
-//      application identifier is extracted; this field is to be interpreted 
-//      as a 10 bit DAC and 6-bit FID as in message types 6 and 8. Otherwise 
-//      that field span becomes part of the message payload.
-//      The data fields are not, in contrast to message type 26, followed by a 
-//      radio status block. Note: Type 25 is extremely rare. As of April 2011 it 
-//      has not been observed even in long-duration samples from AISHub.        
+        // from gpsd.berlios.de/AIVDM.html#_type_25_single_slot_binary_message
+        // If the addressed flag is on, 30 bits of data at offset 40 are interpreted
+        // as a destination MMSI. Otherwise that field span becomes part of the
+        // message payload, with the first 16 bits used as an Application ID if
+        // the structured flag is on. If the structured flag is on, a 16-bit
+        // application identifier is extracted; this field is to be interpreted
+        // as a 10 bit DAC and 6-bit FID as in message types 6 and 8. Otherwise
+        // that field span becomes part of the message payload.
+        // The data fields are not, in contrast to message type 26, followed by a
+        // radio status block. Note: Type 25 is extremely rare. As of April 2011 it
+        // has not been observed even in long-duration samples from AISHub.
         private final int _startBit;
         private final int _endBit;
 
@@ -193,7 +197,7 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        SingleSlotBinaryMessageFieldMap( int startBit, int endBit ) {
+        SingleSlotBinaryMessageFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }

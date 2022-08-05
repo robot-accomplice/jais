@@ -18,21 +18,21 @@ package jais.messages;
 
 import jais.messages.enums.AISMessageType;
 import jais.exceptions.AISException;
-import jais.AISPacket;
+import jais.AISSentence;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class PositionReportClassA extends PositionReportBase {
-    
+
     /**
      * 
      * @param source
-     * @param aisPackets 
-     * @throws jais.exceptions.AISException 
+     * @param aisPackets
+     * @throws jais.exceptions.AISException
      */
-    public PositionReportClassA( String source, AISPacket... aisPackets ) throws AISException {
-        super( source, AISMessageType.POSITION_REPORT_CLASS_A, aisPackets );
+    public PositionReportClassA(String source, AISSentence... aisPackets) throws AISException {
+        super(source, AISMessageType.POSITION_REPORT_CLASS_A, aisPackets);
     }
 }

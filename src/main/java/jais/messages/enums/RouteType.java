@@ -16,60 +16,47 @@
 
 package jais.messages.enums;
 
+import lombok.Getter;
+
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public enum RouteType {
 
-    UNDEFINED( 0, "Undefined (default)" ),
-    MANDATORY( 1, "Mandatory" ),
-    RECOMMENDED( 2, "Recommended" ),
-    ALTERNATIVE( 3, "Alternative" ),
-    RECOMMENDED_ICE( 4, "Recommended route through ice" ),
-    SHIP_ROUTE_PLAN( 5, "Ship route plan" ),
-    CANCEL_ROUTE( 31, "Cancel route identified by message linkage" );
+    UNDEFINED(0, "Undefined (default)"),
+    MANDATORY(1, "Mandatory"),
+    RECOMMENDED(2, "Recommended"),
+    ALTERNATIVE(3, "Alternative"),
+    RECOMMENDED_ICE(4, "Recommended route through ice"),
+    SHIP_ROUTE_PLAN(5, "Ship route plan"),
+    CANCEL_ROUTE(31, "Cancel route identified by message linkage");
 
-    private final int _code;
-    private final String _description;
+    private final int code;
+    private final String description;
 
     /**
      * 
      * @param code
-     * @param description 
+     * @param description
      */
-    RouteType( int code, String description ) {
-        _code = code;
-        _description = description;
+    RouteType(int code, String description) {
+        this.code = code;
+        this.description = description;
     }
 
-    /**
-     * 
-     * @return 
-     */
-    public int getCode() {
-        return _code;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public String getDescription() {
-        return _description;
-    }
-
-    
     /**
      * 
      * @param code
-     * @return 
+     * @return
      */
-    public static RouteType getForCode( int code ) {
-       for( RouteType type : RouteType.values() ) {
-           if( type.getCode() == code ) return type;
-       }
-       
-       return null;
+    public static RouteType getForCode(int code) {
+        for (RouteType type : RouteType.values()) {
+            if (type.getCode() == code)
+                return type;
+        }
+
+        return null;
     }
 }

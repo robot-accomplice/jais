@@ -16,20 +16,24 @@
 
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
+@Setter
 public class AddressedSafetyRelatedMessage extends AISMessageBase {
 
-    private int _destMmsi;
-    private boolean _retransmit;
-    private String _text;
+    private int destMmsi;
+    private boolean retransmit;
+    private String text;
 
     /**
      * 
@@ -37,7 +41,7 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
      * @param packets AISPacket[] from which the message is composed
      * @throws jais.exceptions.AISException if decoding is unsuccessful
      */
-    public AddressedSafetyRelatedMessage(String source, AISPacket... packets) throws AISException {
+    public AddressedSafetyRelatedMessage(String source, AISSentence... packets) throws AISException {
         super(source, packets);
     }
 
@@ -47,40 +51,8 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
      * @param messageType AISMessageType
      * @param packets     AISPacket[] from which the message is composed
      */
-    public AddressedSafetyRelatedMessage(String source, AISMessageType messageType, AISPacket... packets) {
+    public AddressedSafetyRelatedMessage(String source, AISMessageType messageType, AISSentence... packets) {
         super(source, messageType, packets);
-    }
-
-    /**
-     * 
-     * @return int source MMSI value
-     */
-    public int getSourceMmsi() {
-        return super.getMmsi();
-    }
-
-    /**
-     * 
-     * @return int destination MMSI value
-     */
-    public int getDestMmsi() {
-        return _destMmsi;
-    }
-
-    /**
-     * 
-     * @return boolean representing whether the message is a retransmit
-     */
-    public boolean isRetransmit() {
-        return _retransmit;
-    }
-
-    /**
-     * 
-     * @return String representing the text of the message
-     */
-    public String getText() {
-        return _text;
     }
 
     /**
@@ -94,13 +66,13 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
         for (AddressedSafetyRelatedMessageFieldMap field : AddressedSafetyRelatedMessageFieldMap.values()) {
             switch (field) {
                 case DEST_MMSI:
-                    _destMmsi = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    destMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case RETRANSMIT:
-                    _retransmit = _bits.get(field.getStartBit());
+                    retransmit = bits.get(field.getStartBit());
                     break;
                 case TEXT:
-                    _text = AISMessageDecoder.decodeToString(_bits, field.getStartBit(), _bits.size() - 1);
+                    text = AISMessageDecoder.decodeToString(bits, field.getStartBit(), bits.size() - 1);
                     break;
                 case SPARE:
                     break;
@@ -111,6 +83,7 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
     /**
      * 
      */
+    @Getter
     private enum AddressedSafetyRelatedMessageFieldMap implements FieldMap {
 
         DEST_MMSI(40, 69),
@@ -118,8 +91,8 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
         SPARE(71, 71),
         TEXT(72, -1);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          * 
@@ -127,26 +100,8 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
          * @param endBit
          */
         AddressedSafetyRelatedMessageFieldMap(int startBit, int endBit) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         * 
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         * 
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

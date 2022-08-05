@@ -16,7 +16,7 @@
 
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.ByteArrayUtils;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
@@ -63,7 +63,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      * @param source
      * @param packets
      */
-    public StaticAndVoyageRelatedData(String source, AISPacket... packets) {
+    public StaticAndVoyageRelatedData(String source, AISSentence... packets) {
         super(source, packets);
     }
 
@@ -73,7 +73,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      * @param type
      * @param packets
      */
-    public StaticAndVoyageRelatedData(String source, AISMessageType type, AISPacket... packets) {
+    public StaticAndVoyageRelatedData(String source, AISMessageType type, AISSentence... packets) {
         super(source, type, packets);
     }
 
@@ -309,24 +309,24 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
         for (StaticAndVoyageFieldMap field : StaticAndVoyageFieldMap.values()) {
             switch (field) {
                 case VERSION:
-                    if (_bits.size() >= field.getStartBit())
-                        _version = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _version = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case IMO:
-                    if (_bits.size() >= field.getStartBit())
-                        _imo = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _imo = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case CALL_SIGN:
-                    if (_bits.size() >= field.getStartBit())
-                        _callsign = AISMessageDecoder.decodeToByteArray(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _callsign = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SHIP_NAME:
-                    if (_bits.size() >= field.getStartBit())
-                        _shipname = AISMessageDecoder.decodeToByteArray(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _shipname = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SHIP_TYPE:
-                    int shipCode = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
-                    if (_bits.size() >= field.getStartBit())
+                    int shipCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
                         _shiptype = ShipType.getForCode(shipCode);
                     if (_shiptype == null) {
                         LOG.error("No ShipType for {}", shipCode);
@@ -334,59 +334,59 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
                     }
                     break;
                 case TO_BOW:
-                    if (_bits.size() >= field.getStartBit())
-                        _toBow = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case TO_STERN:
-                    if (_bits.size() >= field.getStartBit())
-                        _toStern = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case TO_PORT:
-                    if (_bits.size() >= field.getStartBit())
-                        _toPort = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case TO_STARBOARD:
-                    if (_bits.size() >= field.getStartBit())
-                        _toStarboard = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(),
+                    if (bits.size() >= field.getStartBit())
+                        _toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
                     break;
                 case EPFD:
-                    int epfdCode = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
-                    if (_bits.size() >= field.getStartBit())
+                    int epfdCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
                         _epfd = EPFDFixType.getForCode(epfdCode);
                     break;
                 case ETA_MONTH:
-                    if (_bits.size() >= field.getStartBit())
-                        _month = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _month = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case ETA_DAY:
-                    if (_bits.size() >= field.getStartBit())
-                        _day = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _day = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case ETA_HOUR:
-                    if (_bits.size() >= field.getStartBit())
-                        _hour = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _hour = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case ETA_MINUTE:
-                    if (_bits.size() >= field.getStartBit())
-                        _minute = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _minute = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DRAUGHT:
-                    if (_bits.size() >= field.getStartBit())
-                        _draught = AISMessageDecoder.decodeDraught(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        _draught = AISMessageDecoder.decodeDraught(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DESTINATION:
-                    if (_bits.size() >= field.getStartBit())
+                    if (bits.size() >= field.getStartBit())
                         try {
-                            _destination = AISMessageDecoder.decodeToByteArray(_bits, field.getStartBit(),
+                            _destination = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(),
                                     field.getEndBit());
                         } catch (AISException ae) {
                             LOG.fatal(ae.getMessage(), ae);
                         }
                     break;
                 case DTE:
-                    if (field.getStartBit() < _bits.size()) {
-                        _dte = _bits.get(field.getStartBit());
+                    if (field.getStartBit() < bits.size()) {
+                        _dte = bits.get(field.getStartBit());
                     } else {
                         if (LOG.isDebugEnabled())
                             LOG.debug("Reached end of message before we could retrieve DTE value!");

@@ -16,11 +16,14 @@
 
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.NavigationStatus;
+import lombok.Getter;
+import lombok.Setter;
+
 import org.locationtech.spatial4j.shape.Point;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,122 +32,60 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
+@Setter
 public class LongRangeAISBroadcastMessage extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( LongRangeAISBroadcastMessage.class );
+    private final static Logger LOG = LogManager.getLogger(LongRangeAISBroadcastMessage.class);
 
-    private boolean _accurate;
-    private boolean _raim;
-    private NavigationStatus _navStatus;
-    private float _lon;
-    private float _lat;
-    private int _speed;
-    private int _course;
-    private boolean _gnss;
-    
+    private boolean accurate;
+    private boolean raim;
+    private NavigationStatus navStatus;
+    private float lon;
+    private float lat;
+    private int speed;
+    private int course;
+    private boolean gnss;
+
     /**
      *
      * @param source
      * @param packets
      */
-    public LongRangeAISBroadcastMessage( String source, AISPacket... packets ) {
-        super( source, packets );
+    public LongRangeAISBroadcastMessage(String source, AISSentence... packets) {
+        super(source, packets);
     }
-    
+
     /**
      * 
      * @param source
      * @param type
-     * @param packets 
+     * @param packets
      */
-    public LongRangeAISBroadcastMessage( String source, AISMessageType type, AISPacket... packets ) {
-        super( source, type, packets );
+    public LongRangeAISBroadcastMessage(String source, AISMessageType type, AISSentence... packets) {
+        super(source, type, packets);
     }
 
     /**
      * 
-     * @return 
-     */
-    public boolean isAccurate() {
-        return _accurate;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public boolean isRaim() {
-        return _raim;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public NavigationStatus getNavStatus() {
-        return _navStatus;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public float getLon() {
-        return _lon;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public float getLat() {
-        return _lat;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public int getSpeed() {
-        return _speed;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public int getCourse() {
-        return _course;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public boolean isGnss() {
-        return _gnss;
-    }
-    
-    /**
-     * 
-     * @return 
+     * @return
      */
     @Override
     public boolean hasPosition() {
         return true;
     }
-    
+
     /**
      * 
-     * @return 
+     * @return
      */
     @Override
     public Point getPosition() {
-        if( _position == null ) {
-            _position = CTX.getShapeFactory().pointXY( _lon, _lat );
+        if (super.position == null) {
+            super.position = CTX.getShapeFactory().pointXY(lon, lat);
         }
-        
-        return _position;
+
+        return super.position;
     }
 
     /**
@@ -154,45 +95,46 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
     @Override
     public final void decode() throws AISException {
         super.decode();
-        
-        for( LongRangeAISBroadcastMessageFieldMap field : LongRangeAISBroadcastMessageFieldMap.values() ) {
-            switch( field ) {
+
+        for (LongRangeAISBroadcastMessageFieldMap field : LongRangeAISBroadcastMessageFieldMap.values()) {
+            switch (field) {
                 case ACCURATE:
-                    if( _bits.size() >= field.getStartBit() )
-                        _accurate = _bits.get( field.getStartBit() );
+                    if (bits.size() >= field.getStartBit())
+                        accurate = bits.get(field.getStartBit());
                     break;
                 case RAIM:
-                    if( _bits.size() >= field.getStartBit() )
-                        _raim = _bits.get( field.getStartBit() );
+                    if (bits.size() >= field.getStartBit())
+                        raim = bits.get(field.getStartBit());
                     break;
                 case NAVIGATION_STATUS:
-                    if( _bits.size() >= field.getStartBit() ) {
-                        int nsCode = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
-                        _navStatus = NavigationStatus.getForCode( nsCode );
+                    if (bits.size() >= field.getStartBit()) {
+                        int nsCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        navStatus = NavigationStatus.getForCode(nsCode);
                     }
                     break;
                 case LON:
-                    if( _bits.size() >= field.getStartBit() )
-                        _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case LAT:
-                    if( _bits.size() >= field.getStartBit() )
-                        _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SPEED:
-                    if( _bits.size() >= field.getStartBit() )
-                        _speed = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        speed = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case COURSE:
-                    if( _bits.size() >= field.getStartBit() )
-                        _course = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        course = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case GNSS:
-                    if( _bits.size() >= field.getStartBit() )
-                        _gnss = !_bits.get( field.getStartBit() );
+                    if (bits.size() >= field.getStartBit())
+                        gnss = !bits.get(field.getStartBit());
                     break;
                 default:
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name());
+                    if (LOG.isDebugEnabled())
+                        LOG.debug("Ignoring field: {}", field.name());
             }
         }
     }
@@ -200,47 +142,30 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
     /**
      *
      */
+    @Getter
     private enum LongRangeAISBroadcastMessageFieldMap implements FieldMap {
 
-        ACCURATE( 38, 38 ),
-        RAIM( 39, 39 ),
-        NAVIGATION_STATUS( 40, 43 ),
-        LON( 44, 61 ),
-        LAT( 62, 78 ),
-        SPEED( 79, 84 ),
-        COURSE( 85, 93 ),
-        GNSS( 94, 94 ),
-        SPARE( 95, 95 );
+        ACCURATE(38, 38),
+        RAIM(39, 39),
+        NAVIGATION_STATUS(40, 43),
+        LON(44, 61),
+        LAT(62, 78),
+        SPEED(79, 84),
+        COURSE(85, 93),
+        GNSS(94, 94),
+        SPARE(95, 95);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
          * @param startBit
          * @param endBit
          */
-        LongRangeAISBroadcastMessageFieldMap( int startBit, int endBit ) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+        LongRangeAISBroadcastMessageFieldMap(int startBit, int endBit) {
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

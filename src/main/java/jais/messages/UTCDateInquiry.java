@@ -16,7 +16,7 @@
 
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
@@ -26,40 +26,40 @@ import jais.messages.enums.FieldMap;
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class UTCDateInquiry extends AISMessageBase {
-    
+
     private int _destMmsi;
-    
+
     /**
      * 
      * @param source
-     * @param packets 
-     * @throws jais.exceptions.AISException 
+     * @param packets
+     * @throws jais.exceptions.AISException
      */
-    public UTCDateInquiry( String source, AISPacket... packets ) throws AISException {
-        super( source, packets );
-    }
-    
-    /**
-     * 
-     * @param source
-     * @param messageType
-     * @param packets 
-     */
-    public UTCDateInquiry( String source, AISMessageType messageType, AISPacket... packets ) {
-        super( source, messageType, packets );
+    public UTCDateInquiry(String source, AISSentence... packets) throws AISException {
+        super(source, packets);
     }
 
     /**
      * 
-     * @return 
+     * @param source
+     * @param messageType
+     * @param packets
+     */
+    public UTCDateInquiry(String source, AISMessageType messageType, AISSentence... packets) {
+        super(source, messageType, packets);
+    }
+
+    /**
+     * 
+     * @return
      */
     public int getSourceMmsi() {
         return super.getMmsi();
     }
-    
+
     /**
      * 
-     * @return 
+     * @return
      */
     public int getDestMmsi() {
         return _destMmsi;
@@ -67,17 +67,17 @@ public class UTCDateInquiry extends AISMessageBase {
 
     /**
      * 
-     * @throws AISException 
+     * @throws AISException
      */
     @Override
     public final void decode() throws AISException {
         super.decode();
-        
-        for( UTCDateInquiryFieldMap field : UTCDateInquiryFieldMap.values() ) {
-            switch( field ) {
+
+        for (UTCDateInquiryFieldMap field : UTCDateInquiryFieldMap.values()) {
+            switch (field) {
                 case DEST_MMSI:
-                    if( _bits.size() >= field.getStartBit() )
-                        _destMmsi = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _destMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SPARE1:
                     break;
@@ -86,32 +86,32 @@ public class UTCDateInquiry extends AISMessageBase {
             }
         }
     }
-    
+
     /**
      * 
      */
     private enum UTCDateInquiryFieldMap implements FieldMap {
-        
-        SPARE1( 38, 39 ),
-        DEST_MMSI( 40, 69 ),
-        SPARE2( 70, 71 );
-        
+
+        SPARE1(38, 39),
+        DEST_MMSI(40, 69),
+        SPARE2(70, 71);
+
         private final int _startBit;
         private final int _endBit;
-        
+
         /**
          * 
          * @param startBit
-         * @param endBit 
+         * @param endBit
          */
-        UTCDateInquiryFieldMap( int startBit, int endBit ) {
+        UTCDateInquiryFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }
 
         /**
          * 
-         * @return 
+         * @return
          */
         @Override
         public int getStartBit() {
@@ -120,7 +120,7 @@ public class UTCDateInquiry extends AISMessageBase {
 
         /**
          * 
-         * @return 
+         * @return
          */
         @Override
         public int getEndBit() {

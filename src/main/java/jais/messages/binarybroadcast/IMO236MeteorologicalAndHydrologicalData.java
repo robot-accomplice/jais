@@ -16,7 +16,7 @@
 
 package jais.messages.binarybroadcast;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.messages.BinaryBroadcastMessage;
 import jais.messages.enums.BinaryBroadcastMessageType;
 
@@ -24,25 +24,25 @@ import jais.messages.enums.BinaryBroadcastMessageType;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
-public class IMO236MeteorologicalAndHydrologicalData 
+public class IMO236MeteorologicalAndHydrologicalData
         extends BinaryBroadcastMessage {
 
     /**
      * 
      * @param source
-     * @param packets 
+     * @param packets
      */
-    public IMO236MeteorologicalAndHydrologicalData( String source, AISPacket... packets ) {
-        super( source, packets );
+    public IMO236MeteorologicalAndHydrologicalData(String source, AISSentence... packets) {
+        super(source, packets);
     }
 
     /**
      * 
-     * @return 
+     * @return
      */
     @Override
     public BinaryBroadcastMessageType getSubType() {
         return BinaryBroadcastMessageType.IMO236_METEOROLOGICAL_AND_HYDROLOGICAL_DATA;
     }
-    
+
 }

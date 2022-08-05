@@ -16,59 +16,46 @@
 
 package jais.messages.enums;
 
+import lombok.Getter;
+
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public enum SubareaType {
 
-    CIRCLE_OR_POINT( 0, "Circle or point" ),
-    RECTANGLE( 1, "Rectangle" ),
-    SECTOR( 2, "Sector" ),
-    POLYLINE( 3, "Polyline" ),
-    POLYGON( 4, "Polygon" ),
-    ASSOCIATED_TEXT( 5, "Associated text" );
+    CIRCLE_OR_POINT(0, "Circle or point"),
+    RECTANGLE(1, "Rectangle"),
+    SECTOR(2, "Sector"),
+    POLYLINE(3, "Polyline"),
+    POLYGON(4, "Polygon"),
+    ASSOCIATED_TEXT(5, "Associated text");
 
-    private final int _code;
-    private final String _description;
+    private final int code;
+    private final String description;
 
     /**
      * 
      * @param code
-     * @param description 
+     * @param description
      */
-    SubareaType( int code, String description ) {
-        _code = code;
-        _description = description;
+    SubareaType(int code, String description) {
+        this.code = code;
+        this.description = description;
     }
 
-    /**
-     * 
-     * @return 
-     */
-    public int getCode() {
-        return _code;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public String getDescription() {
-        return _description;
-    }
-
-    
     /**
      * 
      * @param code
-     * @return 
+     * @return
      */
-    public static SubareaType getForCode( int code ) {
-       for( SubareaType type : SubareaType.values() ) {
-           if( type.getCode() == code ) return type;
-       }
-       
-       return null;
+    public static SubareaType getForCode(int code) {
+        for (SubareaType type : SubareaType.values()) {
+            if (type.getCode() == code)
+                return type;
+        }
+
+        return null;
     }
 }

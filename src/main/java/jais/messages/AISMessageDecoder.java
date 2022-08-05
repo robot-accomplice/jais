@@ -15,7 +15,7 @@
  */
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.InvalidAISCharacterException;
 import jais.exceptions.AISException;
 import jais.messages.AISMessage.AISFieldMap;
@@ -47,7 +47,7 @@ public class AISMessageDecoder {
      * @return a BitSet representing the decoded message
      */
     public static BitSet byteArrayToBitSet(byte[] rawMessage) {
-        return byteArrayToBitSet(rawMessage, AISPacket.DEFAULT_CHARSET);
+        return byteArrayToBitSet(rawMessage, AISSentence.DEFAULT_CHARSET);
     }
 
     /**
@@ -233,9 +233,9 @@ public class AISMessageDecoder {
      * @throws AISException if we are unable to concatenate the provided packets or
      *                      if the decode operation fails
      */
-    public static Optional<AISMessageType> decodeMessageType(AISPacket... packets) throws AISException {
+    public static Optional<AISMessageType> decodeMessageType(AISSentence... packets) throws AISException {
         // concatenate full raw message from all packets
-        return decodeMessageType(AISPacket.concatenate(packets));
+        return decodeMessageType(AISSentence.concatenate(packets));
     }
 
     /**

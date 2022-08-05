@@ -16,12 +16,15 @@
 
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.ManeuverType;
 import jais.messages.enums.NavigationStatus;
+import lombok.Getter;
+import lombok.Setter;
+
 import org.locationtech.spatial4j.shape.Point;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,25 +33,27 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
+@Setter
 public abstract class PositionReportBase extends AISMessageBase {
 
     private final static Logger LOG = LogManager.getLogger(PositionReportBase.class);
 
     // bit positions are off spec by 1 because the BitSet counts from 0 rather than
     // 1
-    private NavigationStatus _status = NavigationStatus.NOT_DEFINED; // bits 38-41
-    private float _turn; // bits 42-49
-    private float _speed; // bits 50-59, represented in knots
-    private boolean _accurate; // bit 60
-    private float _lon; // bits 61-88
-    private float _lat; // 89-115
-    private float _course; // bits 116-127, 0.1 degree precision, relative to true north
-    private int _heading = 511; // bits 128-136, 0-359 degrees, 511 means not available
-    private int _second; // bits 137-142, timestamp in seconds since epoch
-    private ManeuverType _maneuver = ManeuverType.NOT_AVAILABLE; // bits 143-144, maneuver indicator
+    private NavigationStatus status = NavigationStatus.NOT_DEFINED; // bits 38-41
+    private float turn; // bits 42-49
+    private float speed; // bits 50-59, represented in knots
+    private boolean accurate; // bit 60
+    private float lon; // bits 61-88
+    private float lat; // 89-115
+    private float course; // bits 116-127, 0.1 degree precision, relative to true north
+    private int heading = 511; // bits 128-136, 0-359 degrees, 511 means not available
+    private int second; // bits 137-142, timestamp in seconds since epoch
+    private ManeuverType maneuver = ManeuverType.NOT_AVAILABLE; // bits 143-144, maneuver indicator
     // spare bits 145-147
-    private boolean _raim; // bit 148
-    private int _radio; // bits 149-167, Radio Status
+    private boolean raim; // bit 148
+    private int radio; // bits 149-167, Radio Status
 
     /**
      * 
@@ -56,7 +61,7 @@ public abstract class PositionReportBase extends AISMessageBase {
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public PositionReportBase(String source, AISPacket... packets) throws AISException {
+    public PositionReportBase(String source, AISSentence... packets) throws AISException {
         super(source, packets);
     }
 
@@ -66,7 +71,7 @@ public abstract class PositionReportBase extends AISMessageBase {
      * @param messageType
      * @param packets
      */
-    public PositionReportBase(String source, AISMessageType messageType, AISPacket... packets) {
+    public PositionReportBase(String source, AISMessageType messageType, AISSentence... packets) {
         super(source, messageType, packets);
     }
 
@@ -85,11 +90,11 @@ public abstract class PositionReportBase extends AISMessageBase {
      */
     @Override
     public Point getPosition() {
-        if (_position == null) {
-            _position = CTX.getShapeFactory().pointXY(_lon, _lat); // must be in x, y (lon, lat) order
+        if (super.position == null) {
+            super.position = CTX.getShapeFactory().pointXY(lon, lat); // must be in x, y (lon, lat) order
         }
 
-        return _position;
+        return super.position;
     }
 
     /**
@@ -97,103 +102,7 @@ public abstract class PositionReportBase extends AISMessageBase {
      * @return
      */
     public boolean isPositionValid() {
-        return (_lon >= -90 && _lon <= 90 && _lat >= -180 && _lat <= 180);
-    }
-
-    /**
-     *
-     * @return
-     */
-    public NavigationStatus getStatus() {
-        return _status;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public float getTurn() {
-        return _turn;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public float getSpeed() {
-        return _speed;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public boolean isAccurate() {
-        return _accurate;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public float getLon() {
-        return _lon;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public float getLat() {
-        return _lat;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public float getCourse() {
-        return _course;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getHeading() {
-        return _heading;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getSecond() {
-        return _second;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public ManeuverType getManeuver() {
-        return _maneuver;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public boolean isRaim() {
-        return _raim;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getRadio() {
-        return _radio;
+        return (lon >= -90 && lon <= 90 && lat >= -180 && lat <= 180);
     }
 
     /**
@@ -207,60 +116,60 @@ public abstract class PositionReportBase extends AISMessageBase {
         for (PositionFieldMap field : PositionFieldMap.values()) {
             switch (field) {
                 case STATUS:
-                    if (_bits.size() >= field.getStartBit()) {
-                        int nsId = AISMessageDecoder.decodeUnsignedInt(super._bits, field.getStartBit(),
+                    if (bits.size() >= field.getStartBit()) {
+                        int nsId = AISMessageDecoder.decodeUnsignedInt(super.bits, field.getStartBit(),
                                 field.getEndBit());
-                        _status = NavigationStatus.getForCode(nsId);
+                        status = NavigationStatus.getForCode(nsId);
                     }
                     break;
                 case TURN:
-                    if (_bits.size() >= field.getStartBit())
-                        _turn = AISMessageDecoder.decodeTurn(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        turn = AISMessageDecoder.decodeTurn(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SPEED:
-                    if (_bits.size() >= field.getStartBit())
-                        _speed = AISMessageDecoder.decodeSpeed(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        speed = AISMessageDecoder.decodeSpeed(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case ACCURACY:
-                    if (_bits.size() >= field.getStartBit())
-                        _accurate = _bits.get(field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        accurate = bits.get(field.getEndBit());
                     break;
                 case LON:
-                    if (_bits.size() >= field.getStartBit())
-                        _lon = AISMessageDecoder.decodeLongitude(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case LAT:
-                    if (_bits.size() >= field.getStartBit())
-                        _lat = AISMessageDecoder.decodeLatitude(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case COURSE:
-                    if (_bits.size() >= field.getStartBit())
-                        _course = AISMessageDecoder.decodeCourse(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        course = AISMessageDecoder.decodeCourse(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case HEADING:
-                    if (_bits.size() >= field.getStartBit())
-                        _heading = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        heading = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SECOND:
-                    if (_bits.size() >= field.getStartBit())
-                        _second = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case MANEUVER:
-                    if (_bits.size() >= field.getStartBit()) {
-                        int mId = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
-                        _maneuver = ManeuverType.getForCode(mId);
-                        if (_maneuver == null) {
-                            _maneuver = ManeuverType.NOT_AVAILABLE;
+                    if (bits.size() >= field.getStartBit()) {
+                        int mId = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        maneuver = ManeuverType.getForCode(mId);
+                        if (maneuver == null) {
+                            maneuver = ManeuverType.NOT_AVAILABLE;
                         }
                     }
                     break;
                 case RAIM:
-                    if (_bits.size() >= field.getStartBit())
-                        _raim = _bits.get(field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        raim = bits.get(field.getEndBit());
                     break;
                 case RADIO:
-                    if (_bits.size() >= field.getStartBit())
-                        _radio = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 default:
                     if (LOG.isDebugEnabled())
@@ -274,6 +183,7 @@ public abstract class PositionReportBase extends AISMessageBase {
      * bit position numbers differ from the NMEA spec in that the BitSet in
      * which they are stored indexes from zero rather than one
      */
+    @Getter
     protected enum PositionFieldMap implements FieldMap {
         STATUS(38, 41),
         TURN(42, 49),
@@ -289,8 +199,8 @@ public abstract class PositionReportBase extends AISMessageBase {
         RAIM(148, 148),
         RADIO(149, 167);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          * s
@@ -299,26 +209,8 @@ public abstract class PositionReportBase extends AISMessageBase {
          * @param endBit
          */
         PositionFieldMap(int startBit, int endBit) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

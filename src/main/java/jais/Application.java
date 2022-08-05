@@ -66,9 +66,9 @@ public class Application {
             Files.lines(in).forEach((String s) -> {
                 System.out.println("READ: " + s);
                 try {
-                    AISPacket packet = (AISPacket.validatePreamble(s))
-                            ? new AISPacket(s, inputFilePath)
-                            : AISPacket.createFromBinaryString(s, inputFilePath);
+                    AISSentence packet = (AISSentence.validatePreamble(s))
+                            ? new AISSentence(s, inputFilePath)
+                            : AISSentence.createFromBinaryString(s, inputFilePath);
                     Optional<AISMessage> msg = AISMessageFactory.create(inputFilePath, packet);
                     if (msg.isPresent()) {
                         try {
@@ -77,7 +77,7 @@ public class Application {
                             throw new RuntimeException("There was an error writing to file " + outputFilePath, ioe);
                         }
                     }
-                } catch (AISException ae) {
+                } catch (jais.exceptions.ParseException | AISException ae) {
                     LOG.warn("Encountered an AISException while processing AISPacket from String \"" + s + "\" "
                             + ae.getMessage());
                 }

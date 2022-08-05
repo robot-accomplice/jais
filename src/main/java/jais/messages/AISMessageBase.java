@@ -15,12 +15,15 @@
  */
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.ByteArrayUtils;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.MMSIType;
+import lombok.Data;
+import lombok.Getter;
+
 import java.time.ZoneOffset;
 import org.locationtech.spatial4j.context.SpatialContext;
 import org.locationtech.spatial4j.shape.Point;
@@ -28,9 +31,7 @@ import java.time.ZonedDateTime;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
-import java.util.Arrays;
 import java.util.Optional;
 import org.apache.logging.log4j.Logger;
 
@@ -38,46 +39,47 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Data
 public abstract class AISMessageBase implements AISMessage {
 
     private final static Logger LOG = LogManager.getLogger(AISMessageBase.class);
 
-    private int _mmsi;
-    private MMSIType _mmsiType;
-    private int _repeat; // bits 6-7
+    private int mmsi;
+    private MMSIType mmsiType;
+    private int repeat; // bits 6-7
 
     protected final static SpatialContext CTX = SpatialContext.GEO;
 
-    private byte[] _source = ByteArrayUtils.str2bArray("UNKNOWN");
-    final AISPacket[] _packets;
-    private byte[] _compositeMsg;
-    private AISMessageType _messageType;
-    protected BitSet _bits;
-    protected Point _position;
-    private final Map<String, Object> _decodedFieldMap = new HashMap<>();
+    private byte[] source = ByteArrayUtils.str2bArray("UNKNOWN");
+    final AISSentence[] sentences;
+    private byte[] compositeMsg;
+    private AISMessageType messageType;
+    protected BitSet bits;
+    protected Point position;
+    private final Map<String, Object> decodedFieldMap = new HashMap<>();
 
     /**
      *
-     * @param source  the message source
-     * @param packets the array of packets used to compose this message
+     * @param source    the message source
+     * @param sentences the array of sentences used to compose this message
      */
-    AISMessageBase(String source, AISPacket... packets) {
+    AISMessageBase(String source, AISSentence... sentences) {
         if (source != null)
-            _source = ByteArrayUtils.str2bArray(source);
-        _packets = packets;
+            this.source = ByteArrayUtils.str2bArray(source);
+        this.sentences = sentences;
     }
 
     /**
      *
      * @param source      the message source
      * @param messageType the specific type of message we are dealing with
-     * @param packets     the array of packets used to compose this message
+     * @param sentences   the array of sentences used to compose this message
      */
-    AISMessageBase(String source, AISMessageType messageType, AISPacket... packets) {
+    AISMessageBase(String source, AISMessageType messageType, AISSentence... sentences) {
         if (source != null)
-            _source = ByteArrayUtils.str2bArray(source);
-        _messageType = messageType;
-        _packets = packets;
+            this.source = ByteArrayUtils.str2bArray(source);
+        this.messageType = messageType;
+        this.sentences = sentences;
     }
 
     /**
@@ -88,8 +90,8 @@ public abstract class AISMessageBase implements AISMessage {
     public String toString() {
         StringBuilder sb = new StringBuilder("AISMessage:{messageType:");
 
-        sb.append(_messageType.name()).append(",packets:[");
-        for (AISPacket packet : _packets)
+        sb.append(messageType.name()).append(",sentences:[");
+        for (AISSentence packet : this.sentences)
             sb.append(packet.toString());
         sb.append("],").append("}");
 
@@ -102,7 +104,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public String getSource() {
-        return ByteArrayUtils.bArray2Str(_source);
+        return ByteArrayUtils.bArray2Str(source);
     }
 
     /**
@@ -111,7 +113,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public void setSource(String source) {
-        _source = ByteArrayUtils.str2bArray(source);
+        this.source = ByteArrayUtils.str2bArray(source);
     }
 
     /**
@@ -120,7 +122,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public ZonedDateTime getTimeReceived(ZoneOffset offset) {
-        return _packets[0].getTimeReceived(offset);
+        return sentences[0].getTimeReceived(offset);
     }
 
     /**
@@ -129,7 +131,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public long getTimeReceived() {
-        return _packets[0].getTimeReceived();
+        return sentences[0].getTimeReceived();
     }
 
     /**
@@ -137,7 +139,7 @@ public abstract class AISMessageBase implements AISMessage {
      * @return the time the message was sent
      */
     public long getTimeSent() {
-        return _packets[0].getTimeSent();
+        return sentences[0].getTimeSent();
     }
 
     /**
@@ -147,7 +149,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public AISMessageType getType() {
-        return _messageType;
+        return messageType;
     }
 
     /**
@@ -156,16 +158,16 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public void setType(AISMessageType type) {
-        _messageType = type;
+        messageType = type;
     }
 
     /**
      *
-     * @return the array of packets with which this message was composed
+     * @return the array of sentences with which this message was composed
      */
     @Override
-    public AISPacket[] getPackets() {
-        return _packets;
+    public AISSentence[] getSentences() {
+        return sentences;
     }
 
     /**
@@ -174,7 +176,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public int getMmsi() {
-        return _mmsi;
+        return mmsi;
     }
 
     /**
@@ -183,7 +185,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public boolean hasValidMmsi() {
-        return isValidMmsi(_mmsi);
+        return isValidMmsi(mmsi);
     }
 
     /**
@@ -206,10 +208,10 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public MMSIType getMMSIType() {
-        if (_mmsiType == null || _mmsiType == MMSIType.UNKNOWN)
-            _mmsiType = MMSIType.forMMSI(_mmsi);
+        if (mmsiType == null || mmsiType == MMSIType.UNKNOWN)
+            mmsiType = MMSIType.forMMSI(mmsi);
 
-        return _mmsiType;
+        return mmsiType;
     }
 
     /**
@@ -226,7 +228,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public int getRepeat() {
-        return _repeat;
+        return repeat;
     }
 
     /**
@@ -276,7 +278,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public Point getPosition() {
-        return _position;
+        return position;
     }
 
     /**
@@ -285,25 +287,26 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public void decode() throws AISException {
-        _decodedFieldMap.put("time_received", getTimeReceived());
+        this.decodedFieldMap.put("timereceived", getTimeReceived());
 
-        _compositeMsg = AISPacket.concatenate(getPackets());
+        this.compositeMsg = AISSentence.concatenate(getSentences());
 
-        _bits = AISMessageDecoder.byteArrayToBitSet(_compositeMsg);
+        this.bits = AISMessageDecoder.byteArrayToBitSet(this.compositeMsg);
 
         for (AISFieldMap field : AISFieldMap.values()) {
             switch (field) {
                 case TYPE:
-                    if (_decodedFieldMap.get("message_type") == null) {
-                        Optional<AISMessageType> mType = AISMessageDecoder.decodeMessageType(_bits);
-                        mType.ifPresent(aisMessageType -> _messageType = aisMessageType);
+                    if (this.decodedFieldMap.get("messagetype") == null) {
+                        Optional<AISMessageType> mType = AISMessageDecoder.decodeMessageType(this.bits);
+                        mType.ifPresent(aisMessageType -> this.messageType = aisMessageType);
                     }
                     break;
                 case REPEAT:
-                    _repeat = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    this.repeat = AISMessageDecoder.decodeUnsignedInt(this.bits, field.getStartBit(),
+                            field.getEndBit());
                     break;
                 case MMSI:
-                    _mmsi = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    this.mmsi = AISMessageDecoder.decodeUnsignedInt(this.bits, field.getStartBit(), field.getEndBit());
                     break;
             }
         }
@@ -311,46 +314,16 @@ public abstract class AISMessageBase implements AISMessage {
 
     /**
      *
-     * @return the calculated hashcode for this object
      */
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 19 * hash + Objects.hashCode(this._source);
-        return hash;
-    }
-
-    /**
-     *
-     * @param obj the object to which we wish to compare our current object
-     * @return true if the objects are the same
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (this == obj)
-            return true;
-        if (getClass() != obj.getClass())
-            return false;
-        final AISMessageBase other = (AISMessageBase) obj;
-        if (!Arrays.equals(this._source, other._source))
-            return false;
-
-        return Arrays.equals(this._compositeMsg, other._compositeMsg);
-    }
-
-    /**
-     *
-     */
+    @Getter
     public enum AISFieldMap implements FieldMap {
 
         TYPE(0, 5),
         REPEAT(6, 7),
         MMSI(8, 37);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
@@ -358,26 +331,8 @@ public abstract class AISMessageBase implements AISMessage {
          * @param endBit   the ending bit for this field
          */
         AISFieldMap(int startBit, int endBit) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return the starting bit for this field
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return the ending bit for this field
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

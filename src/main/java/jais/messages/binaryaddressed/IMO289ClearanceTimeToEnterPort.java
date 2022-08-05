@@ -16,11 +16,14 @@
 
 package jais.messages.binaryaddressed;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.BinaryAddressedMessageType;
 import jais.messages.enums.FieldMap;
+import lombok.Getter;
+import lombok.Setter;
+
 import org.locationtech.spatial4j.shape.Point;
 import jais.messages.AISMessageDecoder;
 import org.apache.logging.log4j.LogManager;
@@ -30,19 +33,21 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
+@Setter
 public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( IMO289ClearanceTimeToEnterPort.class );
+    private final static Logger LOG = LogManager.getLogger(IMO289ClearanceTimeToEnterPort.class);
 
-    private int _linkageId;
-    private int _month;
-    private int _day;
-    private int _hour;
-    private int _minute;
-    private String _portName;
-    private String _destination;
-    private float _lon;
-    private float _lat;
+    private int linkageId;
+    private int month;
+    private int day;
+    private int hour;
+    private int minute;
+    private String portName;
+    private String destination;
+    private float lon;
+    private float lat;
 
     /**
      *
@@ -50,81 +55,9 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO289ClearanceTimeToEnterPort( String source, AISPacket... packets )
+    public IMO289ClearanceTimeToEnterPort(String source, AISSentence... packets)
             throws AISException {
-        super( source, BinaryAddressedMessageType.CLEARANCE_TIME_TO_ENTER_PORT, packets );
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getLinkageId() {
-        return _linkageId;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getMonth() {
-        return _month;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getDay() {
-        return _day;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getHour() {
-        return _hour;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getMinute() {
-        return _minute;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getPortName() {
-        return _portName;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getDestination() {
-        return _destination;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public float getLon() {
-        return _lon;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public float getLat() {
-        return _lat;
+        super(source, BinaryAddressedMessageType.CLEARANCE_TIME_TO_ENTER_PORT, packets);
     }
 
     /**
@@ -142,11 +75,11 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
      */
     @Override
     public Point getPosition() {
-        if( _position == null ) {
-            _position = CTX.getShapeFactory().pointXY( _lat, _lon );
+        if (this.position == null) {
+            this.position = CTX.getShapeFactory().pointXY(this.lat, this.lon);
         }
 
-        return _position;
+        return this.position;
     }
 
     /**
@@ -156,47 +89,46 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
     public final void decode() throws AISException {
         super.decode();
 
-        for( IMO289ClearanceTimeToEnterPortFieldMap field
-                : IMO289ClearanceTimeToEnterPortFieldMap.values() ) {
-            switch( field ) {
+        for (IMO289ClearanceTimeToEnterPortFieldMap field : IMO289ClearanceTimeToEnterPortFieldMap.values()) {
+            switch (field) {
                 case MESSAGE_LINKAGE_ID:
-                    _linkageId = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    linkageId = AISMessageDecoder.decodeUnsignedInt(bits,
+                            field.getStartBit(), field.getEndBit());
                     break;
                 case MONTH:
-                    _month = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    month = AISMessageDecoder.decodeUnsignedInt(bits,
+                            field.getStartBit(), field.getEndBit());
                     break;
                 case DAY:
-                    _day = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
-                   break;
+                    day = AISMessageDecoder.decodeUnsignedInt(bits,
+                            field.getStartBit(), field.getEndBit());
+                    break;
                 case HOUR:
-                    _hour = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    hour = AISMessageDecoder.decodeUnsignedInt(bits,
+                            field.getStartBit(), field.getEndBit());
                     break;
                 case MINUTE:
-                    _minute = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    minute = AISMessageDecoder.decodeUnsignedInt(bits,
+                            field.getStartBit(), field.getEndBit());
                     break;
                 case PORT_NAME_AND_BERTH:
-                    _portName = AISMessageDecoder.decodeToString( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    this.portName = AISMessageDecoder.decodeToString(this.bits,
+                            field.getStartBit(), field.getEndBit());
                     break;
                 case DESTINATION:
-                    _destination = AISMessageDecoder.decodeToString( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    this.destination = AISMessageDecoder.decodeToString(this.bits,
+                            field.getStartBit(), field.getEndBit());
                     break;
                 case LON:
-                    _lon = AISMessageDecoder.decodeLongitude( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    this.lon = AISMessageDecoder.decodeLongitude(this.bits,
+                            field.getStartBit(), field.getEndBit());
                     break;
                 case LAT:
-                    _lat = AISMessageDecoder.decodeLatitude( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    this.lat = AISMessageDecoder.decodeLatitude(this.bits,
+                            field.getStartBit(), field.getEndBit());
                     break;
                 default:
-                    LOG.warn( "Ignoring field: {}", field.name() );
+                    LOG.warn("Ignoring field: {}", field.name());
             }
         }
     }
@@ -204,48 +136,31 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
     /**
      *
      */
+    @Getter
     private enum IMO289ClearanceTimeToEnterPortFieldMap implements FieldMap {
 
-        MESSAGE_LINKAGE_ID( 88, 97 ),
-        MONTH( 98, 101 ),
-        DAY( 102, 106 ),
-        HOUR( 107, 111 ),
-        MINUTE( 112, 117 ),
-        PORT_NAME_AND_BERTH( 118, 237 ),
-        DESTINATION( 238, 267 ),
-        LON( 268, 292 ),
-        LAT( 293, 316 ),
-        SPARE( 317, 359 );
+        MESSAGE_LINKAGE_ID(88, 97),
+        MONTH(98, 101),
+        DAY(102, 106),
+        HOUR(107, 111),
+        MINUTE(112, 117),
+        PORT_NAME_AND_BERTH(118, 237),
+        DESTINATION(238, 267),
+        LON(268, 292),
+        LAT(293, 316),
+        SPARE(317, 359);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
          * @param startBit
          * @param endBit
          */
-        IMO289ClearanceTimeToEnterPortFieldMap( int startBit, int endBit ) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+        IMO289ClearanceTimeToEnterPortFieldMap(int startBit, int endBit) {
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

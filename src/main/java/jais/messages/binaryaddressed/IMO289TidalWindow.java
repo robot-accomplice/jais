@@ -16,14 +16,15 @@
 
 package jais.messages.binaryaddressed;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.BinaryAddressedMessageType;
 import jais.messages.enums.FieldMap;
+import lombok.Getter;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 
 /**
  *
@@ -31,7 +32,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class IMO289TidalWindow extends BinaryAddressedMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( IMO289TidalWindow.class );
+    private final static Logger LOG = LogManager.getLogger(IMO289TidalWindow.class);
 
     /**
      *
@@ -39,9 +40,9 @@ public class IMO289TidalWindow extends BinaryAddressedMessageBase {
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO289TidalWindow( String source, AISPacket... packets )
+    public IMO289TidalWindow(String source, AISSentence... packets)
             throws AISException {
-        super( source, BinaryAddressedMessageType.TIDAL_WINDOW, packets );
+        super(source, BinaryAddressedMessageType.TIDAL_WINDOW, packets);
     }
 
     /**
@@ -51,11 +52,11 @@ public class IMO289TidalWindow extends BinaryAddressedMessageBase {
     public final void decode() throws AISException {
         super.decode();
 
-        for( IMO289TidalWindowFieldMap field : IMO289TidalWindowFieldMap.values() ) {
+        for (IMO289TidalWindowFieldMap field : IMO289TidalWindowFieldMap.values()) {
 
-            switch( field ) {
+            switch (field) {
                 default:
-                    LOG.warn( "Ignoring field: {}", field.name() );
+                    LOG.warn("Ignoring field: {}", field.name());
             }
         }
     }
@@ -63,39 +64,22 @@ public class IMO289TidalWindow extends BinaryAddressedMessageBase {
     /**
      *
      */
+    @Getter
     private enum IMO289TidalWindowFieldMap implements FieldMap {
 
-        DEFAULT( -1, -1 );
+        DEFAULT(-1, -1);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
          * @param startBit
          * @param endBit
          */
-        IMO289TidalWindowFieldMap( int startBit, int endBit ) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+        IMO289TidalWindowFieldMap(int startBit, int endBit) {
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

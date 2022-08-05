@@ -16,7 +16,7 @@
 
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.AISMessageType;
@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class ChannelManagement extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( ChannelManagement.class );
+    private final static Logger LOG = LogManager.getLogger(ChannelManagement.class);
 
     private int _channelA;
     private int _channelB;
@@ -51,8 +51,8 @@ public class ChannelManagement extends AISMessageBase {
      * @param source
      * @param packets
      */
-    public ChannelManagement( String source, AISPacket... packets ) {
-        super( source, packets );
+    public ChannelManagement(String source, AISSentence... packets) {
+        super(source, packets);
     }
 
     /**
@@ -61,8 +61,8 @@ public class ChannelManagement extends AISMessageBase {
      * @param type
      * @param packets
      */
-    public ChannelManagement( String source, AISMessageType type, AISPacket... packets ) {
-        super( source, type, packets );
+    public ChannelManagement(String source, AISMessageType type, AISSentence... packets) {
+        super(source, type, packets);
     }
 
     /**
@@ -184,50 +184,51 @@ public class ChannelManagement extends AISMessageBase {
     public final void decode() throws AISException {
         super.decode();
 
-        for( ChannelManagementFieldMap field : ChannelManagementFieldMap.values() ) {
-            switch( field ) {
+        for (ChannelManagementFieldMap field : ChannelManagementFieldMap.values()) {
+            switch (field) {
                 case NE_LON:
-                    if( _bits.size() >= field.getStartBit() )
-                        _neLon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _neLon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case NE_LAT:
-                    if( _bits.size() >= field.getStartBit() )
-                        _neLat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _neLat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SW_LON:
-                    if( _bits.size() >= field.getStartBit() )
-                        _swLon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _swLon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SW_LAT:
-                    if( _bits.size() >= field.getStartBit() )
-                        _swLat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _swLat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DEST_MMSI1:
-                    if( _bits.size() >= field.getStartBit() )
-                        _destMmsi1 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _destMmsi1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DEST_MMSI2:
-                    if( _bits.size() >= field.getStartBit() )
-                        _destMmsi2 = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _destMmsi2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case ADDRESSED:
-                    if( _bits.size() >= field.getStartBit() )
-                        _addressed = _bits.get( field.getStartBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _addressed = bits.get(field.getStartBit());
                     break;
                 case CHANNEL_A_BAND:
-                    if( _bits.size() >= field.getStartBit() )
-                        _bandA = _bits.get( field.getStartBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _bandA = bits.get(field.getStartBit());
                     break;
                 case CHANNEL_B_BAND:
-                    if( _bits.size() >= field.getStartBit() )
-                        _bandB = _bits.get( field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _bandB = bits.get(field.getEndBit());
                     break;
                 case ZONE_SIZE:
-                    if( _bits.size() >= field.getStartBit() )
-                        _zoneSize = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                    if (bits.size() >= field.getStartBit())
+                        _zoneSize = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 default:
-                    if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
+                    if (LOG.isDebugEnabled())
+                        LOG.debug("Ignoring field: {}", field.name());
             }
         }
     }
@@ -237,22 +238,22 @@ public class ChannelManagement extends AISMessageBase {
      */
     private enum ChannelManagementFieldMap implements FieldMap {
 
-        SPARE( 38, 39 ),
-        CHANNEL_A( 40, 51 ),
-        CHANNEL_B( 52, 63 ),
-        TXRX_MODE( 64, 67 ),
-        HIGH_POWER( 68, 68 ),
-        NE_LON( 69, 86 ),
-        NE_LAT( 87, 103 ),
-        SW_LON( 104, 121 ),
-        SW_LAT( 122, 138 ),
-        DEST_MMSI1( 69, 98 ),
-        DEST_MMSI2( 104, 133 ),
-        ADDRESSED( 139, 139 ),
-        CHANNEL_A_BAND( 140, 140 ),
-        CHANNEL_B_BAND( 141, 141 ),
-        ZONE_SIZE( 142, 144 ),
-        SPARE2( 145, 167 );
+        SPARE(38, 39),
+        CHANNEL_A(40, 51),
+        CHANNEL_B(52, 63),
+        TXRX_MODE(64, 67),
+        HIGH_POWER(68, 68),
+        NE_LON(69, 86),
+        NE_LAT(87, 103),
+        SW_LON(104, 121),
+        SW_LAT(122, 138),
+        DEST_MMSI1(69, 98),
+        DEST_MMSI2(104, 133),
+        ADDRESSED(139, 139),
+        CHANNEL_A_BAND(140, 140),
+        CHANNEL_B_BAND(141, 141),
+        ZONE_SIZE(142, 144),
+        SPARE2(145, 167);
 
         private final int _startBit;
         private final int _endBit;
@@ -262,7 +263,7 @@ public class ChannelManagement extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        ChannelManagementFieldMap( int startBit, int endBit ) {
+        ChannelManagementFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }

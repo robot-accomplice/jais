@@ -16,56 +16,44 @@
 
 package jais.messages.enums;
 
+import lombok.Getter;
+
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public enum ManeuverType {
-    
-    NOT_AVAILABLE( 0, "Not available (default)" ),
-    NO_SPECIAL_MANEUVER( 1, "No special maneuver" ),
-    SPECIAL_MANEUVER( 2, "Special maneuver" );  // ie, regional passing arrangement
 
-    private final int _code;
-    private final String _description;
-    
+    NOT_AVAILABLE(0, "Not available (default)"),
+    NO_SPECIAL_MANEUVER(1, "No special maneuver"),
+    SPECIAL_MANEUVER(2, "Special maneuver"); // ie, regional passing arrangement
+
+    private final int code;
+    private final String description;
+
     /**
      * 
      * @param code
-     * @param description 
+     * @param description
      */
-    ManeuverType( int code, String description ) {
-        _code = code;
-        _description = description;
+    ManeuverType(int code, String description) {
+        this.code = code;
+        this.description = description;
     }
-    
-    /**
-     * 
-     * @return 
-     */
-    public int getCode() {
-        return _code;
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    public String getdescription() {
-        return _description;
-    }
-    
+
     /**
      * 
      * @param code
-     * @return 
+     * @return
      */
-    public static ManeuverType getForCode( int code ) {
-        for( ManeuverType type : ManeuverType.values() ) {
-            if( type.getCode() == code ) return type;
+    public static ManeuverType getForCode(int code) {
+        for (ManeuverType type : ManeuverType.values()) {
+            if (type.getCode() == code)
+                return type;
         }
-        
+
         return null;
     }
-    
+
 }

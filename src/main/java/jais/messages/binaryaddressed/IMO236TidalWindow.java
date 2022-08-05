@@ -16,10 +16,12 @@
 
 package jais.messages.binaryaddressed;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
+import lombok.Getter;
+import lombok.Setter;
 import jais.messages.enums.BinaryAddressedMessageType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,21 +31,23 @@ import org.apache.logging.log4j.Logger;
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 @Deprecated
+@Getter
+@Setter
 public class IMO236TidalWindow extends BinaryAddressedMessageBase {
 
     private final static Logger LOG = LogManager.getLogger(IMO236TidalWindow.class);
 
-    private int _month;
-    private int _day;
-    private String[] _tidals;
-    private float _lat;
-    private float _lon;
-    private int _fromHour;
-    private int _fromMinute;
-    private int _toHour;
-    private int _toMinute;
-    private int _currentDir;
-    private float _currentSpeed;
+    private int month;
+    private int day;
+    private String[] tidals;
+    private float lat;
+    private float lon;
+    private int fromHour;
+    private int fromMinute;
+    private int toHour;
+    private int toMinute;
+    private int currentDir;
+    private float currentSpeed;
 
     /**
      *
@@ -51,185 +55,9 @@ public class IMO236TidalWindow extends BinaryAddressedMessageBase {
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO236TidalWindow(String source, AISPacket... packets)
+    public IMO236TidalWindow(String source, AISSentence... packets)
             throws AISException {
         super(source, BinaryAddressedMessageType.TIDAL_WINDOW_DEPRECATED, packets);
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getMonth() {
-        return _month;
-    }
-
-    /**
-     *
-     * @param month
-     */
-    public void setMonth(int month) {
-        this._month = month;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getDay() {
-        return _day;
-    }
-
-    /**
-     *
-     * @param day
-     */
-    public void setDay(int day) {
-        this._day = day;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public String[] getTidals() {
-        return _tidals;
-    }
-
-    /**
-     * 
-     * @param tidals
-     */
-    public void setTidals(String[] tidals) {
-        this._tidals = tidals;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public float getLat() {
-        return _lat;
-    }
-
-    /**
-     *
-     * @param lat
-     */
-    public void setLat(float lat) {
-        this._lat = lat;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public float getLon() {
-        return _lon;
-    }
-
-    /**
-     *
-     * @param lon
-     */
-    public void setLon(float lon) {
-        this._lon = lon;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getFromHour() {
-        return _fromHour;
-    }
-
-    /**
-     *
-     * @param fromHour
-     */
-    public void setFromHour(int fromHour) {
-        this._fromHour = fromHour;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getFromMinute() {
-        return _fromMinute;
-    }
-
-    /**
-     *
-     * @param fromMinute
-     */
-    public void setFromMinute(int fromMinute) {
-        this._fromMinute = fromMinute;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getToHour() {
-        return _toHour;
-    }
-
-    /**
-     *
-     * @param toHour
-     */
-    public void setToHour(int toHour) {
-        this._toHour = toHour;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getToMinute() {
-        return _toMinute;
-    }
-
-    /**
-     *
-     * @param toMinute
-     */
-    public void setToMinute(int toMinute) {
-        this._toMinute = toMinute;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getCurrentDir() {
-        return _currentDir;
-    }
-
-    /**
-     *
-     * @param currentDir
-     */
-    public void setCurrentDir(int currentDir) {
-        this._currentDir = currentDir;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public float getCurrentSpeed() {
-        return _currentSpeed;
-    }
-
-    /**
-     *
-     * @param currentSpeed
-     */
-    public void setCurrentSpeed(float currentSpeed) {
-        this._currentSpeed = currentSpeed;
     }
 
     /**
@@ -256,14 +84,15 @@ public class IMO236TidalWindow extends BinaryAddressedMessageBase {
     /**
      *
      */
+    @Getter
     private enum IMO236TidalWindowFieldMap implements FieldMap {
 
         DEFAULT(-1, -1),
         LATITUDE(0, 26),
         LONGITUDE(27, 54);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
@@ -271,26 +100,8 @@ public class IMO236TidalWindow extends BinaryAddressedMessageBase {
          * @param endBit
          */
         IMO236TidalWindowFieldMap(int startBit, int endBit) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

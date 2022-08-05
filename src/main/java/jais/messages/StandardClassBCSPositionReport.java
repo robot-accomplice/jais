@@ -16,7 +16,7 @@
 
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
@@ -30,8 +30,8 @@ import org.apache.logging.log4j.Logger;
  */
 public class StandardClassBCSPositionReport extends AISMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( StandardClassBCSPositionReport.class );
-    
+    private final static Logger LOG = LogManager.getLogger(StandardClassBCSPositionReport.class);
+
     private int _speed;
     private boolean _accurate;
     private float _lon;
@@ -51,20 +51,20 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
     /**
      *
      * @param source
-     * @param packets
+     * @param sentences
      */
-    public StandardClassBCSPositionReport( String source, AISPacket... packets ) {
-        super( source, packets );
+    public StandardClassBCSPositionReport(String source, AISSentence... sentences) {
+        super(source, sentences);
     }
 
     /**
      *
      * @param source
      * @param type
-     * @param packets
+     * @param sentences
      */
-    public StandardClassBCSPositionReport( String source, AISMessageType type, AISPacket... packets ) {
-        super( source, type, packets );
+    public StandardClassBCSPositionReport(String source, AISMessageType type, AISSentence... sentences) {
+        super(source, type, sentences);
     }
 
     /**
@@ -114,11 +114,11 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
      */
     @Override
     public Point getPosition() {
-        if( _position == null ) {
-            _position = CTX.getShapeFactory().pointXY( _lon, _lat ); // must be in x, y (lon, lat) order
+        if (super.position == null) {
+            super.position = CTX.getShapeFactory().pointXY(_lon, _lat); // must be in x, y (lon, lat) order
         }
 
-        return _position;
+        return super.position;
     }
 
     /**
@@ -217,75 +217,79 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
     public final void decode() throws AISException {
         super.decode();
 
-        for( StandardClassBCSPositionReportFieldMap field : StandardClassBCSPositionReportFieldMap.values() ) {
+        for (StandardClassBCSPositionReportFieldMap field : StandardClassBCSPositionReportFieldMap.values()) {
             try {
-                switch( field ) {
+                switch (field) {
                     case SPEED:
-                        if( _bits.size() >= field.getStartBit() )
-                            _speed = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _speed = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                         break;
                     case ACCURATE:
-                        if( _bits.size() >= field.getStartBit() )
-                            _accurate = _bits.get( field.getStartBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _accurate = bits.get(field.getStartBit());
                         break;
                     case LON:
-                        if( _bits.size() >= field.getStartBit() )
-                            _lon = AISMessageDecoder.decodeLongitude( _bits, field.getStartBit(), field.getEndBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
                         break;
                     case LAT:
-                        if( _bits.size() >= field.getStartBit() )
-                            _lat = AISMessageDecoder.decodeLatitude( _bits, field.getStartBit(), field.getEndBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
                         break;
                     case COURSE:
-                        if( _bits.size() >= field.getStartBit() )
-                            _course = AISMessageDecoder.decodeCourse( _bits, field.getStartBit(), field.getEndBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _course = AISMessageDecoder.decodeCourse(bits, field.getStartBit(), field.getEndBit());
                         break;
                     case HEADING:
-                        if( _bits.size() >= field.getStartBit() )
-                            _heading = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _heading = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                                    field.getEndBit());
                         break;
                     case SECOND:
-                        if( _bits.size() >= field.getStartBit() )
-                            _second = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                                    field.getEndBit());
                         break;
                     case CS:
-                        if( _bits.size() >= field.getStartBit() )
-                            _cs = _bits.get( field.getStartBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _cs = bits.get(field.getStartBit());
                         break;
                     case DISPLAY:
-                        if( _bits.size() >= field.getStartBit() )
-                            _display = _bits.get( field.getStartBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _display = bits.get(field.getStartBit());
                         break;
                     case DSC:
-                        if( _bits.size() >= field.getStartBit() )
-                            _dsc = _bits.get( field.getStartBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _dsc = bits.get(field.getStartBit());
                         break;
                     case MSG22:
-                        if( _bits.size() >= field.getStartBit() )
-                            _msg22 = _bits.get( field.getStartBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _msg22 = bits.get(field.getStartBit());
                         break;
                     case ASSIGNED:
-                        if( _bits.size() >= field.getStartBit() )
-                            _assigned = _bits.get( field.getStartBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _assigned = bits.get(field.getStartBit());
                         break;
                     case RAIM:
-                        if( _bits.size() >= field.getStartBit() )
-                            _raim = _bits.get( field.getStartBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _raim = bits.get(field.getStartBit());
                         break;
                     case BAND:
-                        if( _bits.size() >= field.getStartBit() )
-                            _band = _bits.get( field.getStartBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _band = bits.get(field.getStartBit());
                         break;
                     case RADIO:
-                        if( _bits.size() >= field.getStartBit() )
-                            _radio = AISMessageDecoder.decodeUnsignedInt( _bits, field.getStartBit(), field.getEndBit() );
+                        if (bits.size() >= field.getStartBit())
+                            _radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                         break;
                     default:
-                        if( LOG.isDebugEnabled() ) LOG.debug( "Ignoring field: {}", field.name() );
+                        if (LOG.isDebugEnabled())
+                            LOG.debug("Ignoring field: {}", field.name());
                 }
-            } catch( AISException ae ) {
-                LOG.warn( "Unable to decode field: {}: {}", field.name(), ae.getMessage() );
-                if( LOG.isDebugEnabled() ) LOG.debug( ae.getMessage() );
+            } catch (AISException ae) {
+                LOG.warn("Unable to decode field: {}: {}", field.name(), ae.getMessage());
+                if (LOG.isDebugEnabled())
+                    LOG.debug(ae.getMessage());
             }
         }
     }
@@ -295,23 +299,23 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
      */
     private enum StandardClassBCSPositionReportFieldMap implements FieldMap {
 
-        RESERVED1( 38, 45 ),
-        SPEED( 46, 55 ),
-        ACCURATE( 56, 56 ),
-        LON( 57, 84 ),
-        LAT( 85, 111 ),
-        COURSE( 112, 123 ),
-        HEADING( 124, 132 ),
-        SECOND( 133, 138 ),
-        RESERVED2( 139, 140 ),
-        CS( 141, 141 ),
-        DISPLAY( 142, 142 ),
-        DSC( 143, 143 ),
-        BAND( 144, 144 ),
-        MSG22( 145, 145 ),
-        ASSIGNED( 146, 146 ),
-        RAIM( 147, 147 ),
-        RADIO( 148, 167 );
+        RESERVED1(38, 45),
+        SPEED(46, 55),
+        ACCURATE(56, 56),
+        LON(57, 84),
+        LAT(85, 111),
+        COURSE(112, 123),
+        HEADING(124, 132),
+        SECOND(133, 138),
+        RESERVED2(139, 140),
+        CS(141, 141),
+        DISPLAY(142, 142),
+        DSC(143, 143),
+        BAND(144, 144),
+        MSG22(145, 145),
+        ASSIGNED(146, 146),
+        RAIM(147, 147),
+        RADIO(148, 167);
 
         private final int _startBit;
         private final int _endBit;
@@ -321,7 +325,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
          * @param startBit
          * @param endBit
          */
-        StandardClassBCSPositionReportFieldMap( int startBit, int endBit ) {
+        StandardClassBCSPositionReportFieldMap(int startBit, int endBit) {
             _startBit = startBit;
             _endBit = endBit;
         }

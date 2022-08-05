@@ -17,10 +17,11 @@
 package jais.messages.binaryaddressed;
 
 import jais.messages.AISMessageDecoder;
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
+import lombok.Getter;
 import jais.messages.enums.BinaryAddressedMessageType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,9 +32,9 @@ import org.apache.logging.log4j.Logger;
  */
 public class IMO289NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( IMO289NumberOfPersonsOnBoard.class );
+    private final static Logger LOG = LogManager.getLogger(IMO289NumberOfPersonsOnBoard.class);
 
-    private int _persons;
+    private int persons;
 
     /**
      *
@@ -41,9 +42,9 @@ public class IMO289NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO289NumberOfPersonsOnBoard( String source, AISPacket... packets )
+    public IMO289NumberOfPersonsOnBoard(String source, AISSentence... packets)
             throws AISException {
-        super( source, BinaryAddressedMessageType.NUMBER_OF_PERSONS_ON_BOARD, packets );
+        super(source, BinaryAddressedMessageType.NUMBER_OF_PERSONS_ON_BOARD, packets);
     }
 
     /**
@@ -51,7 +52,7 @@ public class IMO289NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
      * @return
      */
     public int getPersons() {
-        return _persons;
+        return persons;
     }
 
     /**
@@ -61,16 +62,15 @@ public class IMO289NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
     public final void decode() throws AISException {
         super.decode();
 
-        for( IMO289NumberOfPersonsOnBoardFieldMap field
-                : IMO289NumberOfPersonsOnBoardFieldMap.values() ) {
+        for (IMO289NumberOfPersonsOnBoardFieldMap field : IMO289NumberOfPersonsOnBoardFieldMap.values()) {
 
-            switch( field ) {
+            switch (field) {
                 case PERSONS:
-                    _persons = AISMessageDecoder.decodeUnsignedInt( _bits,
-                            field.getStartBit(), field.getEndBit() );
+                    persons = AISMessageDecoder.decodeUnsignedInt(bits,
+                            field.getStartBit(), field.getEndBit());
                     break;
                 default:
-                    LOG.warn( "Ignoring field: {}", field.name() );
+                    LOG.warn("Ignoring field: {}", field.name());
             }
         }
     }
@@ -78,40 +78,23 @@ public class IMO289NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
     /**
      *
      */
+    @Getter
     private enum IMO289NumberOfPersonsOnBoardFieldMap implements FieldMap {
 
-        PERSONS( 88, 100 ),
-        SPARE( 101, 135 );
+        PERSONS(88, 100),
+        SPARE(101, 135);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
          * @param startBit
          * @param endBit
          */
-        IMO289NumberOfPersonsOnBoardFieldMap( int startBit, int endBit ) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+        IMO289NumberOfPersonsOnBoardFieldMap(int startBit, int endBit) {
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

@@ -16,10 +16,11 @@
 
 package jais.messages.binaryaddressed;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
+import lombok.Getter;
 import jais.messages.enums.BinaryAddressedMessageType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +31,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class IMO289RouteInformation extends BinaryAddressedMessageBase {
 
-    private final static Logger LOG = LogManager.getLogger( IMO289RouteInformation.class );
+    private final static Logger LOG = LogManager.getLogger(IMO289RouteInformation.class);
 
     /**
      *
@@ -38,9 +39,9 @@ public class IMO289RouteInformation extends BinaryAddressedMessageBase {
      * @param packets
      * @throws jais.exceptions.AISException
      */
-    public IMO289RouteInformation( String source, AISPacket... packets )
+    public IMO289RouteInformation(String source, AISSentence... packets)
             throws AISException {
-        super( source, BinaryAddressedMessageType.ROUTE_INFORMATION, packets );
+        super(source, BinaryAddressedMessageType.ROUTE_INFORMATION, packets);
     }
 
     /**
@@ -50,11 +51,10 @@ public class IMO289RouteInformation extends BinaryAddressedMessageBase {
     public final void decode() throws AISException {
         super.decode();
 
-        for( IMO289RouteInformationFieldMap field
-                : IMO289RouteInformationFieldMap.values() ) {
-            switch( field ) {
+        for (IMO289RouteInformationFieldMap field : IMO289RouteInformationFieldMap.values()) {
+            switch (field) {
                 default:
-                    LOG.warn( "Ignoring field: {}", field.name() );
+                    LOG.warn("Ignoring field: {}", field.name());
             }
         }
     }
@@ -62,39 +62,22 @@ public class IMO289RouteInformation extends BinaryAddressedMessageBase {
     /**
      *
      */
+    @Getter
     private enum IMO289RouteInformationFieldMap implements FieldMap {
 
-        DEFAULT( -1, -1 );
+        DEFAULT(-1, -1);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
          * @param startBit
          * @param endBit
          */
-        IMO289RouteInformationFieldMap( int startBit, int endBit ) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+        IMO289RouteInformationFieldMap(int startBit, int endBit) {
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

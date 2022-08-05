@@ -18,7 +18,7 @@ package jais.messages;
 
 import jais.messages.enums.AISMessageType;
 import jais.exceptions.AISException;
-import jais.AISPacket;
+import jais.AISSentence;
 
 /**
  *
@@ -29,11 +29,11 @@ public class PositionReportClassAResponseToInterrogation extends PositionReportB
     /**
      * 
      * @param source
-     * @param aisPackets 
-     * @throws jais.exceptions.AISException 
+     * @param aisPackets
+     * @throws jais.exceptions.AISException
      */
-    public PositionReportClassAResponseToInterrogation( String source, AISPacket... aisPackets ) 
+    public PositionReportClassAResponseToInterrogation(String source, AISSentence... aisPackets)
             throws AISException {
-        super( source, AISMessageType.POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION, aisPackets );
+        super(source, AISMessageType.POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION, aisPackets);
     }
 }

@@ -16,12 +16,15 @@
 
 package jais.messages;
 
-import jais.AISPacket;
+import jais.AISSentence;
 import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.NavaidType;
+import lombok.Getter;
+import lombok.Setter;
+
 import org.locationtech.spatial4j.shape.Point;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,34 +33,36 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
+@Setter
 public class AidToNavigationReport extends AISMessageBase {
 
     private final static Logger LOG = LogManager.getLogger(AidToNavigationReport.class);
 
-    private NavaidType _navaidType;
-    private String _name;
-    private boolean _accurate;
-    private float _lon;
-    private float _lat;
-    private int _toBow;
-    private int _toStern;
-    private int _toPort;
-    private int _toStarboard;
-    private EPFDFixType _epfd;
-    private int _second;
-    private boolean _offPosition;
-    private int _regional;
-    private boolean _raim;
-    private boolean _virtualAid;
-    private boolean _assigned;
-    private String _nameExtension;
+    private NavaidType navaidType;
+    private String name;
+    private boolean accurate;
+    private float lon;
+    private float lat;
+    private int toBow;
+    private int toStern;
+    private int toPort;
+    private int toStarboard;
+    private EPFDFixType epfd;
+    private int second;
+    private boolean offPosition;
+    private int regional;
+    private boolean raim;
+    private boolean virtualAid;
+    private boolean assigned;
+    private String nameExtension;
 
     /**
      *
      * @param source  String denoting the source of the packet
      * @param packets AISPacket[] from which the message is composed
      */
-    public AidToNavigationReport(String source, AISPacket... packets) {
+    public AidToNavigationReport(String source, AISSentence... packets) {
         super(source, packets);
     }
 
@@ -67,144 +72,8 @@ public class AidToNavigationReport extends AISMessageBase {
      * @param type    AISMessageType
      * @param packets AISPacket[] from which the message is composed
      */
-    public AidToNavigationReport(String source, AISMessageType type, AISPacket... packets) {
+    public AidToNavigationReport(String source, AISMessageType type, AISSentence... packets) {
         super(source, type, packets);
-    }
-
-    /**
-     *
-     * @return NavaidType
-     */
-    public NavaidType getNavaidType() {
-        return _navaidType;
-    }
-
-    /**
-     *
-     * @return String
-     */
-    public String getName() {
-        return _name;
-    }
-
-    /**
-     *
-     * @return boolean
-     */
-    public boolean isAccurate() {
-        return _accurate;
-    }
-
-    /**
-     *
-     * @return float
-     */
-    public float getLon() {
-        return _lon;
-    }
-
-    /**
-     *
-     * @return float
-     */
-    public float getLat() {
-        return _lat;
-    }
-
-    /**
-     *
-     * @return int
-     */
-    public int getToBow() {
-        return _toBow;
-    }
-
-    /**
-     *
-     * @return int
-     */
-    public int getToStern() {
-        return _toStern;
-    }
-
-    /**
-     *
-     * @return int
-     */
-    public int getToPort() {
-        return _toPort;
-    }
-
-    /**
-     *
-     * @return int
-     */
-    public int getToStarboard() {
-        return _toStarboard;
-    }
-
-    /**
-     *
-     * @return EPFDFixType
-     */
-    public EPFDFixType getEpfd() {
-        return _epfd;
-    }
-
-    /**
-     *
-     * @return int
-     */
-    public int getSecond() {
-        return _second;
-    }
-
-    /**
-     *
-     * @return boolean
-     */
-    public boolean isOffPosition() {
-        return _offPosition;
-    }
-
-    /**
-     *
-     * @return int
-     */
-    public int getRegional() {
-        return _regional;
-    }
-
-    /**
-     *
-     * @return boolean
-     */
-    public boolean isRaim() {
-        return _raim;
-    }
-
-    /**
-     *
-     * @return boolean
-     */
-    public boolean isVirtualAid() {
-        return _virtualAid;
-    }
-
-    /**
-     *
-     * @return boolean
-     */
-    public boolean isAssigned() {
-        return _assigned;
-    }
-
-    /**
-     *
-     * @return String
-     */
-    public String getNameExtension() {
-        return _nameExtension;
     }
 
     /**
@@ -213,11 +82,11 @@ public class AidToNavigationReport extends AISMessageBase {
      */
     @Override
     public Point getPosition() {
-        if (_position == null) {
-            _position = CTX.getShapeFactory().pointXY(_lon, _lat);
+        if (position == null) {
+            position = CTX.getShapeFactory().pointXY(lon, lat);
         }
 
-        return _position;
+        return position;
     }
 
     /**
@@ -239,72 +108,72 @@ public class AidToNavigationReport extends AISMessageBase {
         for (AidToNavigationReportFieldMap field : AidToNavigationReportFieldMap.values()) {
             switch (field) {
                 case NAVAID_TYPE:
-                    if (_bits.size() >= field.getStartBit()) {
-                        int navCode = AISMessageDecoder.decodeSignedInt(_bits, field.getStartBit(), field.getEndBit());
-                        _navaidType = NavaidType.getForCode(navCode);
+                    if (bits.size() >= field.getStartBit()) {
+                        int navCode = AISMessageDecoder.decodeSignedInt(bits, field.getStartBit(), field.getEndBit());
+                        navaidType = NavaidType.getForCode(navCode);
                     }
                     break;
                 case NAME:
-                    if (_bits.size() >= field.getStartBit())
-                        _name = AISMessageDecoder.decodeToString(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        name = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case ACCURATE:
-                    if (_bits.size() >= field.getStartBit())
-                        _accurate = _bits.get(field.getStartBit());
+                    if (bits.size() >= field.getStartBit())
+                        accurate = bits.get(field.getStartBit());
                     break;
                 case LON:
-                    if (_bits.size() >= field.getStartBit())
-                        _lon = AISMessageDecoder.decodeLongitude(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case LAT:
-                    if (_bits.size() >= field.getStartBit())
-                        _lat = AISMessageDecoder.decodeLatitude(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case TO_BOW:
-                    if (_bits.size() >= field.getStartBit())
-                        _toBow = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case TO_STERN:
-                    if (_bits.size() >= field.getStartBit())
-                        _toStern = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case TO_PORT:
-                    if (_bits.size() >= field.getStartBit())
-                        _toPort = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case TO_STARBOARD:
-                    if (_bits.size() >= field.getStartBit())
-                        _toStarboard = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(),
+                    if (bits.size() >= field.getStartBit())
+                        toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
                     break;
                 case EPFD:
-                    int epfdCode = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
-                    if (_bits.size() >= field.getStartBit())
-                        _epfd = EPFDFixType.getForCode(epfdCode);
+                    int epfdCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        epfd = EPFDFixType.getForCode(epfdCode);
                     break;
                 case SECOND:
-                    if (_bits.size() >= field.getStartBit())
-                        _second = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case OFF_POSITION:
-                    if (_bits.size() >= field.getStartBit())
-                        _offPosition = _bits.get(field.getStartBit());
+                    if (bits.size() >= field.getStartBit())
+                        offPosition = bits.get(field.getStartBit());
                     break;
                 case REGIONAL_RESERVED:
-                    if (_bits.size() >= field.getStartBit())
-                        _regional = AISMessageDecoder.decodeUnsignedInt(_bits, field.getStartBit(), field.getEndBit());
+                    if (bits.size() >= field.getStartBit())
+                        regional = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case RAIM:
-                    if (_bits.size() >= field.getStartBit())
-                        _raim = _bits.get(field.getStartBit());
+                    if (bits.size() >= field.getStartBit())
+                        raim = bits.get(field.getStartBit());
                     break;
                 case VIRTUAL_AID:
-                    if (_bits.size() >= field.getStartBit())
-                        _virtualAid = _bits.get(field.getStartBit());
+                    if (bits.size() >= field.getStartBit())
+                        virtualAid = bits.get(field.getStartBit());
                     break;
                 case NAME_EXTENSION:
-                    if (_bits.size() >= field.getStartBit())
-                        _nameExtension = AISMessageDecoder.decodeToString(_bits, field.getStartBit(), _bits.size() - 1);
+                    if (bits.size() >= field.getStartBit())
+                        nameExtension = AISMessageDecoder.decodeToString(bits, field.getStartBit(), bits.size() - 1);
                     break;
                 default:
                     if (LOG.isTraceEnabled())
@@ -316,6 +185,7 @@ public class AidToNavigationReport extends AISMessageBase {
     /**
      *
      */
+    @Getter
     private enum AidToNavigationReportFieldMap implements FieldMap {
 
         NAVAID_TYPE(38, 42),
@@ -337,8 +207,8 @@ public class AidToNavigationReport extends AISMessageBase {
         SPARE(271, 271),
         NAME_EXTENSION(272, 360);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
@@ -346,26 +216,8 @@ public class AidToNavigationReport extends AISMessageBase {
          * @param endBit
          */
         AidToNavigationReportFieldMap(int startBit, int endBit) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return int
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return int
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

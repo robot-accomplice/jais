@@ -15,56 +15,44 @@
  */
 package jais.messages.enums;
 
+import lombok.Getter;
+
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public enum TransmitMode {
-    
-    DEFAULT( 0, "TxA/TxB, RxA/RxB (default" ),
-    TXA_RXA_B( 1, "TxA, RxA/RxB" ),
-    TXB_RXA_B( 2, "TxB, RxA/RxB" ),
-    RESERVED( 3, "Reserved for Future Use" );
-    
-    private final int _code;
-    private final String _description;
+
+    DEFAULT(0, "TxA/TxB, RxA/RxB (default"),
+    TXA_RXA_B(1, "TxA, RxA/RxB"),
+    TXB_RXA_B(2, "TxB, RxA/RxB"),
+    RESERVED(3, "Reserved for Future Use");
+
+    private final int code;
+    private final String description;
 
     /**
      * 
      * @param code
-     * @param description 
+     * @param description
      */
-    TransmitMode( int code, String description ) {
-        _code = code;
-        _description = description;
+    TransmitMode(int code, String description) {
+        this.code = code;
+        this.description = description;
     }
-    
-    /**
-     * 
-     * @return 
-     */
-    public int getCode() {
-        return _code;
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    public String getDescription() {
-        return _description;
-    }
-    
+
     /**
      * 
      * @param code
-     * @return 
+     * @return
      */
-    public static TransmitMode getForCode( int code ) {
-       for( TransmitMode type : TransmitMode.values() ) {
-           if( type.getCode() == code ) return type;
-       }
-       
-       return null;
+    public static TransmitMode getForCode(int code) {
+        for (TransmitMode type : TransmitMode.values()) {
+            if (type.getCode() == code)
+                return type;
+        }
+
+        return null;
     }
 }

@@ -16,57 +16,44 @@
 
 package jais.messages.enums;
 
+import lombok.Getter;
+
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public enum CargoUnitCode {
 
-    DEFAULT( 0, "Not available (default)" ),
-    KILOGRAMS( 1, "Kilograms" ),
-    METRIC_TONS( 2, "Metric tons" ),
-    METRIC_KILOTONS( 3, "Metric kilotons" );
+    DEFAULT(0, "Not available (default)"),
+    KILOGRAMS(1, "Kilograms"),
+    METRIC_TONS(2, "Metric tons"),
+    METRIC_KILOTONS(3, "Metric kilotons");
 
-    private final int _code;
-    private final String _description;
+    private final int code;
+    private final String description;
 
     /**
      * 
      * @param code
-     * @param description 
+     * @param description
      */
-    CargoUnitCode( int code, String description ) {
-        _code = code;
-        _description = description;
+    CargoUnitCode(int code, String description) {
+        this.code = code;
+        this.description = description;
     }
 
-    /**
-     * 
-     * @return 
-     */
-    public int getCode() {
-        return _code;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public String getDescription() {
-        return _description;
-    }
-
-    
     /**
      * 
      * @param code
-     * @return 
+     * @return
      */
-    public static CargoUnitCode getForCode( int code ) {
-       for( CargoUnitCode type : CargoUnitCode.values() ) {
-           if( type.getCode() == code ) return type;
-       }
-       
-       return null;
+    public static CargoUnitCode getForCode(int code) {
+        for (CargoUnitCode type : CargoUnitCode.values()) {
+            if (type.getCode() == code)
+                return type;
+        }
+
+        return null;
     }
 }

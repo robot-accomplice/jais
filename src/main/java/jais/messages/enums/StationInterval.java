@@ -16,68 +16,56 @@
 
 package jais.messages.enums;
 
+import lombok.Getter;
+
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public enum StationInterval {
 
-    DEFAULT( 0, "Autonomous" ),
-    TEN_MINUTES( 1, "10 Minutes" ),
-    SIX_MINUTES( 2, "6 Minutes" ),
-    THREE_MINUTES( 3, "3 Minutes" ),
-    ONE_MINUTE( 4, "1 Minute" ),
-    THIRTY_SECONDS( 5, "30 Seconds" ),
-    FIFTEEN_SECONDS( 6, "15 Seconds" ),
-    TEN_SECONDS( 7, "10 Seconds" ),
-    FIVE_SECONDS( 8, "5 Seconds" ),
-    NEXT_SHORTER( 9, "Next Shorter Reporting Interval" ),
-    NEXT_LONGER( 10, "Next Longer Reporting Interval" ),
-    RESERVED11( 11, "Reserved for future use" ),
-    RESERVED12( 12, "Reserved for future use" ),
-    RESERVED13( 13, "Reserved for future use" ),
-    RESERVED14( 14, "Reserved for future use" ),
-    RESERVED15( 15, "Reserved for future use" );
+    DEFAULT(0, "Autonomous"),
+    TEN_MINUTES(1, "10 Minutes"),
+    SIX_MINUTES(2, "6 Minutes"),
+    THREE_MINUTES(3, "3 Minutes"),
+    ONE_MINUTE(4, "1 Minute"),
+    THIRTY_SECONDS(5, "30 Seconds"),
+    FIFTEEN_SECONDS(6, "15 Seconds"),
+    TEN_SECONDS(7, "10 Seconds"),
+    FIVE_SECONDS(8, "5 Seconds"),
+    NEXT_SHORTER(9, "Next Shorter Reporting Interval"),
+    NEXT_LONGER(10, "Next Longer Reporting Interval"),
+    RESERVED11(11, "Reserved for future use"),
+    RESERVED12(12, "Reserved for future use"),
+    RESERVED13(13, "Reserved for future use"),
+    RESERVED14(14, "Reserved for future use"),
+    RESERVED15(15, "Reserved for future use");
 
-    private final int _code;
-    private final String _description;
+    private final int code;
+    private final String description;
 
     /**
      * 
      * @param code
-     * @param description 
+     * @param description
      */
-    StationInterval( int code, String description ) {
-        _code = code;
-        _description = description;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public int getCode() {
-        return _code;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public String getDescription() {
-        return _description;
+    StationInterval(int code, String description) {
+        this.code = code;
+        this.description = description;
     }
 
     /**
      * 
      * @param code
-     * @return 
+     * @return
      */
-    public static StationInterval getForCode( int code ) {
-       for( StationInterval type : StationInterval.values() ) {
-           if( type.getCode() == code ) return type;
-       }
-       
-       return null;
+    public static StationInterval getForCode(int code) {
+        for (StationInterval type : StationInterval.values()) {
+            if (type.getCode() == code)
+                return type;
+        }
+
+        return null;
     }
 }

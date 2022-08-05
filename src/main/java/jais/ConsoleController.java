@@ -15,7 +15,7 @@
  */
 package jais;
 
-import jais.AISPacket.Preamble;
+import jais.AISSentence.Preamble;
 import jais.messages.AISMessageFactory;
 import jais.messages.AISMessage;
 import jais.messages.BaseStationReport;
@@ -80,15 +80,15 @@ public class ConsoleController implements Initializable {
             if (inText == null || inText.isEmpty())
                 throw new Exception("Null Input");
 
-            String[] packetStrings = inText.split("\n");
-            AISPacket[] packets = new AISPacket[packetStrings.length];
-            for (int i = 0; i < packetStrings.length; i++) {
-                AISPacket packet = (AISPacket.validatePreamble(packetStrings[i]))
-                        ? new AISPacket(packetStrings[i])
-                        : AISPacket.createFromBinaryString(packetStrings[i], null);
-                packet.process();
+            String[] sentenceStrings = inText.split("\n");
+            AISSentence[] sentences = new AISSentence[sentenceStrings.length];
+            for (int i = 0; i < sentenceStrings.length; i++) {
+                AISSentence sentence = (AISSentence.validatePreamble(sentenceStrings[i]))
+                        ? new AISSentence(sentenceStrings[i])
+                        : AISSentence.createFromBinaryString(sentenceStrings[i], null);
+                sentence.process();
                 appendLineToOutput(BORDER_SINGLE);
-                TagBlock tb = packet.getTagBlock();
+                TagBlock tb = sentence.getTagBlock();
                 if (tb != null) {
                     appendLineToOutput("TagBlock: " + ByteArrayUtils.bArray2Str(tb.rawTagBlock));
                     appendLineToOutput(BORDER_SINGLE);
@@ -110,7 +110,7 @@ public class ConsoleController implements Initializable {
                     appendLineToOutput(BORDER_SINGLE);
                     appendLineToOutput("\t- none -");
                 }
-                Preamble pre = Preamble.parse(packet.getRawPacket());
+                Preamble pre = Preamble.parse(sentence.getRawSentence());
                 appendLineToOutput(BORDER_SINGLE);
                 appendLineToOutput("Preamble: " + ByteArrayUtils.bArray2Str(pre.parsed));
                 appendLineToOutput(BORDER_SINGLE);
@@ -123,12 +123,12 @@ public class ConsoleController implements Initializable {
                     appendLineToOutput("\tmanufacturer : null");
                 else
                     appendLineToOutput("\tmanufacturer : " + pre.manufacturer.fullName);
-                appendLineToOutput("\tvalid packet: " + packet.isValid());
-                packets[i] = packet;
+                appendLineToOutput("\tvalid sentence: " + sentence.isValid());
+                sentences[i] = sentence;
             }
             appendLineToOutput(BORDER_SINGLE);
 
-            Optional<AISMessage> msgOpt = AISMessageFactory.create("CONSOLE", false, packets);
+            Optional<AISMessage> msgOpt = AISMessageFactory.create("CONSOLE", false, sentences);
             if (msgOpt.isPresent()) {
                 AISMessage msg = msgOpt.get();
                 // from AISMessageBase
@@ -236,9 +236,9 @@ public class ConsoleController implements Initializable {
                 LOG.warn("AISMessageFactory returned a null message!");
             }
         } catch (Exception e) {
-            appendLineToOutput("Unable to decode packet: \"" + inText + "\": " + e.getMessage());
+            appendLineToOutput("Unable to decode sentence: \"" + inText + "\": " + e.getMessage());
             appendLineToOutput("StackTrace:\n" + e);
-            LOG.error("Unable to decode packet: \"{}\": {}", inText, e.getMessage());
+            LOG.error("Unable to decode sentence: \"{}\": {}", inText, e.getMessage());
             if (LOG.isTraceEnabled())
                 LOG.trace("StackTrace:", e);
         } finally {
