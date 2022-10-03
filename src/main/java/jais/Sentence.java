@@ -1,8 +1,11 @@
 package jais;
 
 import jais.exceptions.ParseException;
+import jais.messages.enums.SentenceType;
 
 public interface Sentence {
 
-    public void parse() throws ParseException;
+    void parse() throws ParseException;
+
+    SentenceType getSentenceType();
 }

@@ -17,10 +17,12 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.ShipType;
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,20 +30,22 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
+@Setter
 public class StaticDataReport extends AISMessageBase {
 
     private final static Logger LOG = LogManager.getLogger(StaticDataReport.class);
 
-    private int _partNo;
-    private String _shipName;
-    private ShipType _shipType;
-    private String _vendorId;
-    private String _callSign;
-    private int _toBow;
-    private int _toStern;
-    private int _toPort;
-    private int _toStarboard;
-    private int _mothershipMmsi;
+    private int partNo;
+    private String shipName;
+    private ShipType shipType;
+    private String vendorId;
+    private String callSign;
+    private int toBow;
+    private int toStern;
+    private int toPort;
+    private int toStarboard;
+    private int mothershipMmsi;
 
     /**
      *
@@ -64,134 +68,55 @@ public class StaticDataReport extends AISMessageBase {
 
     /**
      *
-     * @return
-     */
-    public int getPartNo() {
-        return _partNo;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getShipName() {
-        return _shipName;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public ShipType getShipType() {
-        return _shipType;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getVendorId() {
-        return _vendorId;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getCallSign() {
-        return _callSign;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getToBow() {
-        return _toBow;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getToStern() {
-        return _toStern;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getToPort() {
-        return _toPort;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getToStarboard() {
-        return _toStarboard;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getMothershipMmsi() {
-        return _mothershipMmsi;
-    }
-
-    /**
-     *
-     * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (StaticDataReportFieldMap field : StaticDataReportFieldMap.values()) {
             switch (field) {
                 case PART_NUMBER:
                     if (bits.size() >= field.getStartBit())
-                        _partNo = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        this.partNo = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SHIP_NAME:
                     if (bits.size() >= field.getStartBit())
-                        _shipName = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
+                        this.shipName = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SHIP_TYPE:
                     if (bits.size() >= field.getStartBit()) {
                         int stCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                        _shipType = ShipType.getForCode(stCode);
+                        this.shipType = ShipType.getForCode(stCode);
                     }
                     break;
                 case VENDOR_ID:
                     if (bits.size() >= field.getStartBit())
-                        _vendorId = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
+                        this.vendorId = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case CALL_SIGN:
                     if (bits.size() >= field.getStartBit())
-                        _callSign = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
+                        this.callSign = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case TO_BOW:
                     if (bits.size() >= field.getStartBit())
-                        _toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        this.toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case TO_STERN:
                     if (bits.size() >= field.getStartBit())
-                        _toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        this.toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                                field.getEndBit());
                     break;
                 case TO_PORT:
                     if (bits.size() >= field.getStartBit())
-                        _toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        this.toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case TO_STARBOARD:
-                    _toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    this.toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                            field.getEndBit());
                     break;
                 case MOTHERSHIP_MMSI:
                     if (bits.size() >= field.getStartBit())
-                        _mothershipMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                        this.mothershipMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
                     break;
                 default:
@@ -204,6 +129,7 @@ public class StaticDataReport extends AISMessageBase {
     /**
      *
      */
+    @Getter
     private enum StaticDataReportFieldMap implements FieldMap {
 
         PART_NUMBER(38, 39),
@@ -219,8 +145,8 @@ public class StaticDataReport extends AISMessageBase {
         MOTHERSHIP_MMSI(132, 161),
         SPARE2(162, 167);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
@@ -228,26 +154,8 @@ public class StaticDataReport extends AISMessageBase {
          * @param endBit
          */
         StaticDataReportFieldMap(int startBit, int endBit) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }

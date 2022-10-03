@@ -17,7 +17,6 @@
 package jais.messages.binaryaddressed;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
@@ -37,18 +36,15 @@ public class IMO289AreaNotice extends BinaryAddressedMessageBase {
      *
      * @param source
      * @param packets
-     * @throws jais.exceptions.AISException
      */
-    public IMO289AreaNotice(String source, AISSentence... packets)
-            throws AISException {
+    public IMO289AreaNotice(String source, AISSentence... packets) {
         super(source, BinaryAddressedMessageType.AREA_NOTICE, packets);
     }
 
     /**
-     * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         // here we need to figure out how many elements in an array of sub-

@@ -17,25 +17,27 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
+@Setter
 public class SafetyRelatedBroadcastMessage extends AISMessageBase {
 
-    private String _text;
+    private String text;
 
     /**
      * 
      * @param source
      * @param packets
-     * @throws jais.exceptions.AISException
      */
-    public SafetyRelatedBroadcastMessage(String source, AISSentence... packets) throws AISException {
+    public SafetyRelatedBroadcastMessage(String source, AISSentence... packets) {
         super(source, packets);
     }
 
@@ -59,26 +61,15 @@ public class SafetyRelatedBroadcastMessage extends AISMessageBase {
 
     /**
      * 
-     * @return
-     */
-    public String getText() {
-        return _text;
-    }
-
-    /**
-     * 
-     * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (SRBMFieldMap field : SRBMFieldMap.values()) {
-            switch (field) {
-                case TEXT:
-                    if (bits.size() >= field.getStartBit())
-                        _text = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
-                    break;
+            if (field == SRBMFieldMap.TEXT) {
+                if (bits.size() >= field.getStartBit())
+                    this.text = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
             }
         }
     }
@@ -86,12 +77,13 @@ public class SafetyRelatedBroadcastMessage extends AISMessageBase {
     /**
      * 
      */
+    @Getter
     private enum SRBMFieldMap implements FieldMap {
 
         TEXT(40, -1);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          * 
@@ -99,8 +91,8 @@ public class SafetyRelatedBroadcastMessage extends AISMessageBase {
          * @param endBit
          */
         SRBMFieldMap(int startBit, int endBit) {
-            _startBit = startBit;
-            _endBit = endBit;
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
 
         /**
@@ -109,7 +101,7 @@ public class SafetyRelatedBroadcastMessage extends AISMessageBase {
          */
         @Override
         public int getStartBit() {
-            return _startBit;
+            return this.startBit;
         }
 
         /**
@@ -118,7 +110,7 @@ public class SafetyRelatedBroadcastMessage extends AISMessageBase {
          */
         @Override
         public int getEndBit() {
-            return _endBit;
+            return this.endBit;
         }
     }
 }

@@ -1,17 +1,17 @@
 package jais.messages.nmea.gga;
 
 import jais.ByteArrayUtils;
+import jais.Sentence;
 import jais.exceptions.ParseException;
-import jais.messages.nmea.ENMEAType;
-import jais.messages.nmea.NMEASentence;
+import jais.messages.enums.SentenceType;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GGATiming implements NMEASentence {
+public class GGATiming implements Sentence {
 
-    private final ENMEAType type = ENMEAType.GGA_TIMING;
+    private final SentenceType sentenceType = SentenceType.NMEA_GGA_TIMING;
 
     private String rawSentence;
     private float fixTaken;
@@ -46,12 +46,12 @@ public class GGATiming implements NMEASentence {
     public void parse() throws ParseException {
         String[] parts = ByteArrayUtils.fastSplit(this.rawSentence);
 
-        if (parts.length != type.getFieldCount()) {
+        if (parts.length != sentenceType.getFieldCount()) {
             throw new ParseException("Unable to parse NMEASentence. Insufficient fields.");
-        } else if (parts[0].equals(type.getPreamble())) {
+        } else if (parts[0].equals(sentenceType.getPreamble())) {
             throw new ParseException("Invalid preamble!");
-        } else if (type.hasEmptyIndex() && !parts[type.getFirstEmptyIndex()].equals("")) {
-            throw new ParseException(String.format("Field %d should be empty!", type.getFirstEmptyIndex()));
+        } else if (sentenceType.hasEmptyIndex() && !parts[sentenceType.getFirstEmptyIndex()].equals("")) {
+            throw new ParseException(String.format("Field %d should be empty!", sentenceType.getFirstEmptyIndex()));
         } else {
             fixTaken = Float.parseFloat(parts[1]);
             lat = Float.parseFloat(parts[2]);

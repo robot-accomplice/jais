@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.ManeuverType;
@@ -42,12 +41,12 @@ public abstract class PositionReportBase extends AISMessageBase {
     // bit positions are off spec by 1 because the BitSet counts from 0 rather than
     // 1
     private NavigationStatus status = NavigationStatus.NOT_DEFINED; // bits 38-41
-    private float turn; // bits 42-49
+    private float rateOfTurn; // bits 42-49
     private float speed; // bits 50-59, represented in knots
-    private boolean accurate; // bit 60
-    private float lon; // bits 61-88
-    private float lat; // 89-115
-    private float course; // bits 116-127, 0.1 degree precision, relative to true north
+    private boolean accuracy; // bit 60
+    private float lon = -91; // bits 61-88
+    private float lat = -181; // 89-115
+    private float courseOverGround; // bits 116-127, 0.1 degree precision, relative to true north
     private int heading = 511; // bits 128-136, 0-359 degrees, 511 means not available
     private int second; // bits 137-142, timestamp in seconds since epoch
     private ManeuverType maneuver = ManeuverType.NOT_AVAILABLE; // bits 143-144, maneuver indicator
@@ -59,9 +58,8 @@ public abstract class PositionReportBase extends AISMessageBase {
      * 
      * @param source
      * @param packets
-     * @throws jais.exceptions.AISException
      */
-    public PositionReportBase(String source, AISSentence... packets) throws AISException {
+    public PositionReportBase(String source, AISSentence... packets) {
         super(source, packets);
     }
 
@@ -90,8 +88,8 @@ public abstract class PositionReportBase extends AISMessageBase {
      */
     @Override
     public Point getPosition() {
-        if (super.position == null) {
-            super.position = CTX.getShapeFactory().pointXY(lon, lat); // must be in x, y (lon, lat) order
+        if (super.position == null && isPositionValid()) {
+            super.position = CTX.getShapeFactory().pointLatLon(lat, lon);
         }
 
         return super.position;
@@ -102,15 +100,46 @@ public abstract class PositionReportBase extends AISMessageBase {
      * @return
      */
     public boolean isPositionValid() {
-        return (lon >= -90 && lon <= 90 && lat >= -180 && lat <= 180);
+        return ((lon >= -180 && lon <= 180) && (lat >= -90 && lat <= 90));
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isCourseValid() {
+        return this.courseOverGround < 3600;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isSpeedValid() {
+        return speed < 1023;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isHeadingValid() {
+        return heading < 360;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isTurnValid() {
+        return rateOfTurn > -128;
     }
 
     /**
      *
-     * @throws jais.exceptions.AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (PositionFieldMap field : PositionFieldMap.values()) {
@@ -122,9 +151,9 @@ public abstract class PositionReportBase extends AISMessageBase {
                         status = NavigationStatus.getForCode(nsId);
                     }
                     break;
-                case TURN:
+                case RATE_OF_TURN:
                     if (bits.size() >= field.getStartBit())
-                        turn = AISMessageDecoder.decodeTurn(bits, field.getStartBit(), field.getEndBit());
+                        rateOfTurn = AISMessageDecoder.decodeTurn(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SPEED:
                     if (bits.size() >= field.getStartBit())
@@ -132,7 +161,7 @@ public abstract class PositionReportBase extends AISMessageBase {
                     break;
                 case ACCURACY:
                     if (bits.size() >= field.getStartBit())
-                        accurate = bits.get(field.getEndBit());
+                        accuracy = bits.get(field.getEndBit());
                     break;
                 case LON:
                     if (bits.size() >= field.getStartBit())
@@ -142,9 +171,9 @@ public abstract class PositionReportBase extends AISMessageBase {
                     if (bits.size() >= field.getStartBit())
                         lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
                     break;
-                case COURSE:
+                case COURSE_OVER_GROUND:
                     if (bits.size() >= field.getStartBit())
-                        course = AISMessageDecoder.decodeCourse(bits, field.getStartBit(), field.getEndBit());
+                        courseOverGround = AISMessageDecoder.decodeCourse(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case HEADING:
                     if (bits.size() >= field.getStartBit())
@@ -186,12 +215,12 @@ public abstract class PositionReportBase extends AISMessageBase {
     @Getter
     protected enum PositionFieldMap implements FieldMap {
         STATUS(38, 41),
-        TURN(42, 49),
+        RATE_OF_TURN(42, 49),
         SPEED(50, 59),
         ACCURACY(60, 60),
         LON(61, 88),
         LAT(89, 115),
-        COURSE(116, 127),
+        COURSE_OVER_GROUND(116, 127),
         HEADING(128, 136),
         SECOND(137, 142),
         MANEUVER(143, 144),

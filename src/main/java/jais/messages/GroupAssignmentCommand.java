@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.ShipType;
@@ -70,10 +69,9 @@ public class GroupAssignmentCommand extends AISMessageBase {
     }
 
     /**
-     * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (GroupAssignmentCommandFieldMap field : GroupAssignmentCommandFieldMap.values()) {

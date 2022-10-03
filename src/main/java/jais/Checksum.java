@@ -33,7 +33,7 @@ public final class Checksum {
      * @param source the source char [] for which you wish to generate a checksum
      * @return a generated int checksum for the provided char []
      */
-    public final static Checksum generateChecksum(char[] source) {
+    public static Checksum generateChecksum(char[] source) {
         if (LOG.isDebugEnabled())
             LOG.debug("Generating checksum for String \"{}\"", new String(source));
 
@@ -54,7 +54,7 @@ public final class Checksum {
      *                     checksum
      * @return a generated int checksum for the provided String
      */
-    public final static Checksum generateChecksum(String sourceString) {
+    public static Checksum generateChecksum(String sourceString) {
         return generateChecksum(sourceString.toCharArray());
     }
 
@@ -65,7 +65,7 @@ public final class Checksum {
      * @param data the AIS packet string for which you wish to parse the checksum
      * @return the int checksum for the provided string
      */
-    public final static Checksum parse(String data) {
+    public static Checksum parse(String data) {
         int index = data.indexOf(String.valueOf(CHECKSUM_DELIMITER));
         if (LOG.isDebugEnabled())
             LOG.debug("Index: {}", index);
@@ -73,7 +73,7 @@ public final class Checksum {
             index = data.length() - 1;
         }
 
-        int crc = Integer.parseInt(data.substring(index));
+        int crc = Integer.parseInt(data.substring(index), 16);
 
         return new Checksum(crc);
     }
@@ -83,7 +83,7 @@ public final class Checksum {
      * @param data
      * @return
      */
-    public final static Checksum parse(byte[] data) {
+    public static Checksum parse(byte[] data) {
         int index = ByteArrayUtils.indexOf(data, CHECKSUM_DELIMITER);
         if (LOG.isDebugEnabled())
             LOG.debug("Index: {}", index);
@@ -91,7 +91,7 @@ public final class Checksum {
             index = data.length - 1;
         }
 
-        int crc = Integer.parseInt(ByteArrayUtils.substring(data, index));
+        int crc = Integer.parseInt(ByteArrayUtils.substring(data, index), 16);
 
         return new Checksum(crc);
     }
@@ -105,7 +105,7 @@ public final class Checksum {
      * @param endAt     the int end index of the substring
      * @return the int form of the checksum
      */
-    public final static Checksum generateChecksum(String genString, int startFrom, int endAt) {
+    public static Checksum generateChecksum(String genString, int startFrom, int endAt) {
         if (endAt <= startFrom || endAt > genString.length())
             return null;
 
@@ -122,7 +122,7 @@ public final class Checksum {
      *                       validated
      * @return a boolean representing the validity of the checksum
      */
-    public final static boolean validateChecksum(byte[] data, byte[] packetChecksum) {
+    public static boolean validateChecksum(byte[] data, byte[] packetChecksum) {
         Checksum calcChecksum;
         Checksum pktChecksum;
 
@@ -159,14 +159,14 @@ public final class Checksum {
     /*
      * returns the crc value for the current Checksum object
      */
-    public final int getCRC() {
+    public int getCRC() {
         return this.crc;
     }
 
     /**
      * @return hex String representation of the crc value
      */
-    public final String toHexString() {
+    public String toHexString() {
         String hexString = Integer.toHexString(this.crc);
         hexString = (hexString.length() == 1) ? "0" + hexString : hexString;
         return hexString;

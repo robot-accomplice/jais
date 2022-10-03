@@ -22,6 +22,11 @@ import jais.Vessel;
 import jais.exceptions.AISException;
 import jais.exceptions.AISSentenceException;
 import jais.messages.enums.AISMessageType;
+import jais.messages.enums.EPFDFixType;
+import jais.messages.enums.ManeuverType;
+import jais.messages.enums.NavigationStatus;
+import jais.messages.enums.ShipType;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -76,7 +81,7 @@ public class AISDecoderTest {
      *
      * @param sentences
      */
-    private void decodesentences(AISSentence... sentences) throws AISException {
+    private void decodesentences(AISSentence... sentences) {
 
         Optional<AISMessage> msg = AISMessageFactory.create("UnitTest", sentences);
 
@@ -180,6 +185,67 @@ public class AISDecoderTest {
     }
 
     /**
+     * 
+     * 
+     * @throws AISSentenceException
+     */
+    @Test
+    public void testdecodingAcurracy() throws AISException {
+        LOG.info("*** testdecodingAccuracy()");
+        final String posStr = "!AIVDM,1,1,,A,15NHl8500pqSdR8A7jnq9oRF0<<P,0*38";
+        LOG.info("Testing with sentence: {}", posStr);
+
+        AISSentence sentence = new AISSentence(posStr);
+        Optional<AISMessage> msg = AISMessageFactory.create("UnitTest", sentence);
+        Assertions.assertNotNull(msg, "Optional for decoded message was null!");
+        Assertions.assertTrue(msg.isPresent(), "Optional for decoded message is not present!");
+        AISMessage aisMsg = msg.get();
+        Assertions.assertEquals(aisMsg.getType(), AISMessageType.POSITION_REPORT_CLASS_A);
+        aisMsg.decode();
+        PositionReportClassA posDecoded = (PositionReportClassA) aisMsg;
+        Assertions.assertEquals(367408160, posDecoded.getMmsi());
+        Assertions.assertEquals(29.92249870300293, posDecoded.getLat());
+        Assertions.assertEquals(-90.06922149658203, posDecoded.getLon());
+        Assertions.assertEquals(234.3000030517578, posDecoded.getCourseOverGround());
+        Assertions.assertEquals(241, posDecoded.getHeading());
+        Assertions.assertEquals(ManeuverType.NOT_AVAILABLE, posDecoded.getManeuver());
+        Assertions.assertEquals(49952, posDecoded.getRadio());
+        Assertions.assertEquals(11, posDecoded.getSecond());
+        Assertions.assertEquals(5.599999904632568, posDecoded.getSpeed());
+        Assertions.assertEquals(NavigationStatus.MOORED, posDecoded.getStatus());
+
+        final String[] statStr = {
+                "!AIVDM,2,1,1,B,55O5v842<<>1L=SSK7<aDhTF222222222222220PB`N;;6GT0B0QC31H0j0D,0*59",
+                "!AIVDM,2,2,1,B,liH0CPj8880,2*1A"
+        };
+        LOG.info("Testing with sentences: {}", (Object[]) statStr);
+        Optional<AISMessage> staMsg = AISMessageFactory.create("UnitTest", new AISSentence(statStr[0]),
+                new AISSentence(statStr[1]));
+        Assertions.assertNotNull(staMsg, "Optional for decoded message was null!");
+        Assertions.assertTrue(staMsg.isPresent(), "Optional for decoded message is not present!");
+        aisMsg = staMsg.get();
+        Assertions.assertEquals(aisMsg.getType(), AISMessageType.STATIC_AND_VOYAGE_RELATED_DATA);
+        aisMsg.decode();
+        StaticAndVoyageRelatedData staDecoded = (StaticAndVoyageRelatedData) aisMsg;
+        Assertions.assertEquals(368148000, staDecoded.getMmsi());
+        Assertions.assertEquals("WCX8613", staDecoded.getCallsign());
+        Assertions.assertEquals("JULIE", staDecoded.getShipName());
+        Assertions.assertEquals(ShipType.TOWING_LONG_OR_WIDE, staDecoded.getShipType());
+        Assertions.assertEquals(149, staDecoded.getToBow());
+        Assertions.assertEquals(30, staDecoded.getToStern());
+        Assertions.assertEquals(11, staDecoded.getToPort());
+        Assertions.assertEquals(EPFDFixType.GPS, staDecoded.getEpfd());
+        Assertions.assertEquals("BELLE CHASSE ANCH", staDecoded.getDestination());
+        Assertions.assertEquals(true, staDecoded.dteReady());
+        Assertions.assertEquals(9187552, staDecoded.getImo());
+        Assertions.assertEquals(7.199999809265137, staDecoded.getDraught());
+        Assertions.assertEquals(9, staDecoded.getMonth());
+        Assertions.assertEquals(15, staDecoded.getDay());
+        Assertions.assertEquals(4, staDecoded.getHour());
+        Assertions.assertEquals(0, staDecoded.getMinute());
+    }
+
+    /**
      * Tests basic AIS decoding
      *
      * @throws AISException
@@ -238,11 +304,8 @@ public class AISDecoderTest {
             if (ps != null && !ps.isEmpty()) {
                 ps = "!AIVDM" + ps.trim();
                 LOG.debug("Found sentence to test: {}", ps);
-                try {
-                    decodesentences(new AISSentence(ps));
-                } catch (AISException t) {
-                    LOG.info(t.getMessage(), t);
-                }
+
+                decodesentences(new AISSentence(ps));
             }
         }
 
@@ -252,11 +315,8 @@ public class AISDecoderTest {
             if (ps != null && !ps.trim().isEmpty()) {
                 ps = "!AIVD" + ps;
                 LOG.debug("Found sentence to test: {}", ps);
-                try {
-                    decodesentences(new AISSentence(ps));
-                } catch (AISException t) {
-                    LOG.info(t.getMessage(), t);
-                }
+
+                decodesentences(new AISSentence(ps));
             }
         }
 
@@ -304,27 +364,25 @@ public class AISDecoderTest {
 
         for (int i = 0; i < RUN_COUNT; i++) {
             for (String sentenceStr : TEST_SENTENCES) {
-                try {
-                    AISSentence sentence = new AISSentence(sentenceStr);
-                    start = System.nanoTime();
-                    sentence.process();
-                    stop = System.nanoTime();
-                    processTotalTime += (stop - start);
-                    processPerMsgTime += (stop - start) / TEST_SENTENCES.length;
+                AISSentence sentence = new AISSentence(sentenceStr);
+                start = System.nanoTime();
+                sentence = sentence.process();
+                stop = System.nanoTime();
+                processTotalTime += (stop - start);
+                processPerMsgTime += (stop - start) / TEST_SENTENCES.length;
 
-                    start = System.nanoTime();
-                    Optional<AISMessage> message = AISMessageFactory.create("UnitTest", sentence);
-                    stop = System.nanoTime();
-                    decodeTotalTime += (stop - start);
-                    decodePerMsgTime += (stop - start) / TEST_SENTENCES.length;
-                    if (message.isPresent() && i == 0) {
-                        AISMessageType type = message.get().getType();
-                        int count = (counts.get(type) == null) ? 0 : counts.get(type);
-                        counts.put(type, ++count);
-                    }
-                } catch (AISException e) {
-                    // do nothing
+                start = System.nanoTime();
+                Optional<AISMessage> message = Optional.empty();
+                message = AISMessageFactory.create("UnitTest", sentence);
+                stop = System.nanoTime();
+                decodeTotalTime += (stop - start);
+                decodePerMsgTime += (stop - start) / TEST_SENTENCES.length;
+                if (message.isPresent() && i == 0) {
+                    AISMessageType type = message.get().getType();
+                    int count = (counts.get(type) == null) ? 0 : counts.get(type);
+                    counts.put(type, ++count);
                 }
+
             }
 
         }

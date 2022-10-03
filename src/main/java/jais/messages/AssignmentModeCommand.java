@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,10 +61,9 @@ public class AssignmentModeCommand extends AISMessageBase {
     }
 
     /**
-     * @throws AISException if any part of the decoding process fails
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (AssignmentModeCommandFieldMap field : AssignmentModeCommandFieldMap.values()) {

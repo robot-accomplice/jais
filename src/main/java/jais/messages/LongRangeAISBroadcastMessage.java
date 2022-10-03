@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.NavigationStatus;
@@ -90,10 +89,9 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
 
     /**
      *
-     * @throws jais.exceptions.AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (LongRangeAISBroadcastMessageFieldMap field : LongRangeAISBroadcastMessageFieldMap.values()) {

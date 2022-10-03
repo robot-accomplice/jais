@@ -18,7 +18,6 @@ package jais.messages.binaryaddressed;
 
 import jais.messages.AISMessageDecoder;
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
@@ -40,10 +39,8 @@ public class IMO289NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
      *
      * @param source
      * @param packets
-     * @throws jais.exceptions.AISException
      */
-    public IMO289NumberOfPersonsOnBoard(String source, AISSentence... packets)
-            throws AISException {
+    public IMO289NumberOfPersonsOnBoard(String source, AISSentence... packets) {
         super(source, BinaryAddressedMessageType.NUMBER_OF_PERSONS_ON_BOARD, packets);
     }
 
@@ -56,10 +53,9 @@ public class IMO289NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
     }
 
     /**
-     * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (IMO289NumberOfPersonsOnBoardFieldMap field : IMO289NumberOfPersonsOnBoardFieldMap.values()) {

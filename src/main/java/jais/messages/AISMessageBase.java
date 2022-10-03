@@ -17,7 +17,6 @@ package jais.messages;
 
 import jais.AISSentence;
 import jais.ByteArrayUtils;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.MMSIType;
@@ -245,11 +244,10 @@ public abstract class AISMessageBase implements AISMessage {
      *
      * @return an instance of AISMessage based on the correct subtype of the current
      *         message
-     * @throws AISException if an overridden version of this method is unable to
-     *                      create a subtype instance for any reason
+     *         create a subtype instance for any reason
      */
     @Override
-    public AISMessage getSubTypeInstance() throws AISException {
+    public AISMessage getSubTypeInstance() {
         return this;
     }
 
@@ -283,10 +281,9 @@ public abstract class AISMessageBase implements AISMessage {
 
     /**
      *
-     * @throws AISException if we are unable to decode the message
      */
     @Override
-    public void decode() throws AISException {
+    public void decode() {
         this.decodedFieldMap.put("timereceived", getTimeReceived());
 
         this.compositeMsg = AISSentence.concatenate(getSentences());

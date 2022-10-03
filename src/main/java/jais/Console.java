@@ -39,14 +39,16 @@ public class Console extends Application {
     @Override
     public void start( Stage stage ) {
         try {
-            stage.setTitle( "AIS Decoder Console " );
-            Scene scene = new Scene( FXMLLoader.load( getClass().getResource( FXML_PATH ) ) );
-            stage.setScene( scene );
+            stage.setTitle("AIS Decoder Console ");
+            Scene scene = new Scene(FXMLLoader.load(getClass().getResource(FXML_PATH)));
+            stage.setScene(scene);
             stage.show();
-        } catch( IOException ioe ) {
-            LOG.error( "Unanticipated fault when launching the interface: {}", ioe.getMessage() );
+        } catch(NullPointerException npe) {
+            LOG.error("Unable to retrieve the FXML resource(s): {}", npe.getMessage(), npe);
+        } catch(IOException ioe) {
+            LOG.error("Unanticipated fault when launching the interface: {}", ioe.getMessage());
             // alert dialog?
-            System.exit( 1 );
+            System.exit(1);
         }
     }
 
@@ -54,7 +56,7 @@ public class Console extends Application {
      *
      * @param args the commandline arguments provided for launching our console
      */
-    public static void draw( String [] args ) {
-        Console.launch( args );
+    public static void draw(String [] args) {
+        Console.launch(args);
     }
 }

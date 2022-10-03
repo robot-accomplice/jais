@@ -15,6 +15,13 @@
  */
 package jais;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import jais.messages.ExtendedClassBCSPositionReport;
 import jais.messages.PositionReportBase;
 import jais.messages.StandardClassBCSPositionReport;
@@ -24,12 +31,8 @@ import jais.messages.enums.ManeuverType;
 import jais.messages.enums.NavigationStatus;
 import jais.messages.enums.ShipType;
 import lombok.Data;
-
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * An aggregate representation of a vessel based on PositionReport and
@@ -37,7 +40,8 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
-@Data
+@Getter
+@Setter
 public class Vessel implements Cloneable {
 
     private final static Logger LOG = LogManager.getLogger(Vessel.class);
@@ -48,8 +52,8 @@ public class Vessel implements Cloneable {
     private int version;
     private int imo;
     private byte[] callsign;
-    private byte[] shipname;
-    private ShipType shiptype = ShipType.OTHER_NO_INFO;
+    private byte[] shipName;
+    private ShipType shipType = ShipType.OTHER_NO_INFO;
     private int toBow;
     private int toStern;
     private int toPort;
@@ -62,18 +66,18 @@ public class Vessel implements Cloneable {
     private float draught;
     private byte[] destination;
     private boolean dte;
-    private NavigationStatus status = NavigationStatus.NOT_DEFINED;
-    private float turn;
+    private NavigationStatus navigationStatus = NavigationStatus.NOT_DEFINED;
+    private float rateOfTurn;
     private float speed;
-    private boolean accurate = false;
+    private boolean accuracy = false;
     private float lon;
     private float lat;
-    private float course;
+    private float courseOverGround;
     private int heading = 511;
     private int second;
     private ManeuverType maneuver = ManeuverType.NOT_AVAILABLE;
     private boolean raim = false;
-    private int repeat = 0;
+    private int repeat;
     private int radio;
     private ZonedDateTime eta = ZonedDateTime.parse("1970/01/01 00:00", ETA_FORMATTER);
     private long currentMessageTimestamp;
@@ -90,7 +94,7 @@ public class Vessel implements Cloneable {
         this.id = new Identifier(report.getMmsi(), report.getSource());
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
-        this.course = report.getCourse();
+        this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
         this.lat = report.getLat();
         this.lon = report.getLon();
@@ -112,7 +116,7 @@ public class Vessel implements Cloneable {
         this.id = new Identifier(report.getMmsi(), report.getSource());
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
-        this.course = report.getCourse();
+        this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
         this.lat = report.getLat();
         this.lon = report.getLon();
@@ -123,8 +127,8 @@ public class Vessel implements Cloneable {
         this.toPort = report.getToPort();
         this.toStarboard = report.getToStarboard();
         this.second = report.getSecond();
-        this.shipname = ByteArrayUtils.str2bArray(report.getShipName());
-        this.shiptype = report.getShipType();
+        this.shipName = ByteArrayUtils.str2bArray(report.getShipName());
+        this.shipType = report.getShipType();
         this.timeSent = report.getTimeSent();
 
         if (LOG.isDebugEnabled())
@@ -142,7 +146,7 @@ public class Vessel implements Cloneable {
         this.id = new Identifier(report.getMmsi(), report.getSource());
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
-        this.course = report.getCourse();
+        this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
         this.lat = report.getLat();
         this.lon = report.getLon();
@@ -151,9 +155,9 @@ public class Vessel implements Cloneable {
         this.repeat = report.getRepeat();
         this.second = report.getSecond();
         this.speed = report.getSpeed();
-        this.status = report.getStatus();
-        this.turn = report.getTurn();
-        this.accurate = report.isAccurate();
+        this.navigationStatus = report.getStatus();
+        this.rateOfTurn = report.getRateOfTurn();
+        this.accuracy = report.isAccuracy();
         this.raim = report.isRaim();
         this.timeSent = report.getTimeSent();
 
@@ -170,8 +174,8 @@ public class Vessel implements Cloneable {
         this.id = new Identifier(savrd.getMmsi(), savrd.getSource());
         this.currentMessageTimestamp = savrd.getTimeReceived();
         this.imo = savrd.getImo();
-        this.shiptype = savrd.getShiptype();
-        this.shipname = (savrd.getShipname() == null) ? null : ByteArrayUtils.str2bArray(savrd.getShipname());
+        this.shipType = savrd.getShipType();
+        this.shipName = (savrd.getShipName() == null) ? null : ByteArrayUtils.str2bArray(savrd.getShipName());
         this.callsign = (savrd.getCallsign() == null) ? null : ByteArrayUtils.str2bArray(savrd.getCallsign());
         this.destination = (savrd.getDestination() == null) ? null : ByteArrayUtils.str2bArray(savrd.getDestination());
         this.draught = savrd.getDraught();
@@ -204,7 +208,7 @@ public class Vessel implements Cloneable {
         this.currentMessageTimestamp = report.getTimeReceived();
         this.previousPositionTimestamp = this.currentMessageTimestamp;
         this.currentPositionTimestamp = report.getTimeReceived();
-        this.course = report.getCourse();
+        this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
         this.lat = report.getLat();
         this.lon = report.getLon();
@@ -213,14 +217,59 @@ public class Vessel implements Cloneable {
         this.repeat = report.getRepeat();
         this.second = report.getSecond();
         this.speed = report.getSpeed();
-        this.status = report.getStatus();
-        this.turn = report.getTurn();
-        this.accurate = report.isAccurate();
+        this.navigationStatus = report.getStatus();
+        this.rateOfTurn = report.getRateOfTurn();
+        this.accuracy = report.isAccuracy();
         this.raim = report.isRaim();
         this.timeSent = report.getTimeSent();
 
         if (LOG.isDebugEnabled())
             LOG.debug("Vessel updated with PositionReportBase:\n{}", toString());
+    }
+
+    /**
+     * Updates the current instance of Vessel based on the fields contained within
+     * an instance of StandardClassBCSPositionReport
+     * 
+     * @param report
+     */
+    public void addUpdatePositionReportClassB(StandardClassBCSPositionReport report) {
+        this.currentMessageTimestamp = report.getTimeReceived();
+        this.previousPositionTimestamp = this.currentMessageTimestamp;
+        this.courseOverGround = report.getCourseOverGround();
+        this.heading = report.getHeading();
+        this.lat = report.getLat();
+        this.lon = report.getLon();
+        this.radio = report.getRadio();
+        this.repeat = report.getRepeat();
+        this.second = report.getSecond();
+        this.speed = report.getSpeed();
+    }
+
+    /**
+     * Updates the current instance of Vessel based on the fields contained within
+     * an
+     * instance of ExtendedClassBCSPositionReport
+     * 
+     * @param report
+     */
+    public void addUpdatePositionReportClassB(ExtendedClassBCSPositionReport report) {
+        this.currentMessageTimestamp = report.getTimeReceived();
+        this.previousPositionTimestamp = this.currentMessageTimestamp;
+        this.courseOverGround = report.getCourseOverGround();
+        this.heading = report.getHeading();
+        this.lat = report.getLat();
+        this.lon = report.getLon();
+        this.toBow = report.getToBow();
+        this.toStern = report.getToStern();
+        this.toPort = report.getToPort();
+        this.toStarboard = report.getToStarboard();
+        this.repeat = report.getRepeat();
+        this.second = report.getSecond();
+        this.speed = report.getSpeed();
+        this.epfd = report.getEpfd();
+        this.shipName = (report.getShipName() == null) ? null : ByteArrayUtils.str2bArray(report.getShipName());
+        this.shipType = report.getShipType();
     }
 
     /**
@@ -231,8 +280,8 @@ public class Vessel implements Cloneable {
      */
     public void addUpdateStaticReport(StaticAndVoyageRelatedData savrd) {
         this.imo = savrd.getImo();
-        this.shiptype = savrd.getShiptype();
-        this.shipname = (savrd.getShipname() == null) ? null : ByteArrayUtils.str2bArray(savrd.getShipname());
+        this.shipType = savrd.getShipType();
+        this.shipName = (savrd.getShipName() == null) ? null : ByteArrayUtils.str2bArray(savrd.getShipName());
         this.callsign = (savrd.getCallsign() == null) ? null : ByteArrayUtils.str2bArray(savrd.getCallsign());
         this.destination = (savrd.getDestination() == null) ? null : ByteArrayUtils.str2bArray(savrd.getDestination());
         this.draught = savrd.getDraught();
@@ -268,9 +317,9 @@ public class Vessel implements Cloneable {
         Vessel clone = (Vessel) super.clone();
 
         clone.id = this.id;
-        clone.accurate = this.accurate;
+        clone.accuracy = this.accuracy;
         clone.callsign = this.callsign;
-        clone.course = this.course;
+        clone.courseOverGround = this.courseOverGround;
         clone.day = this.day;
         clone.destination = this.destination;
         clone.draught = this.draught;
@@ -289,10 +338,10 @@ public class Vessel implements Cloneable {
         clone.raim = this.raim;
         clone.repeat = this.repeat;
         clone.second = this.second;
-        clone.shipname = this.shipname;
-        clone.shiptype = this.shiptype;
+        clone.shipName = this.shipName;
+        clone.shipType = this.shipType;
         clone.speed = this.speed;
-        clone.status = this.status;
+        clone.navigationStatus = this.navigationStatus;
         clone.currentMessageTimestamp = this.currentMessageTimestamp;
         clone.previousPositionTimestamp = this.previousPositionTimestamp;
         clone.currentPositionTimestamp = this.currentPositionTimestamp;
@@ -300,35 +349,11 @@ public class Vessel implements Cloneable {
         clone.toPort = this.toPort;
         clone.toStarboard = this.toStarboard;
         clone.toStern = this.toStern;
-        clone.turn = this.turn;
+        clone.rateOfTurn = this.rateOfTurn;
         clone.version = this.version;
         clone.timeSent = this.timeSent;
 
         return clone;
-    }
-
-    /**
-     *
-     * @return Vessel.Identifier for this instance of Vessel
-     */
-    public Identifier getId() {
-        return this.id;
-    }
-
-    /**
-     * @return the version value of whatever StaticAndVoyageRelatedData message may
-     *         have been used to populate this object
-     */
-    public int getVersion() {
-        return this.version;
-    }
-
-    /**
-     * @return the IMO value of whatever StaticAndVoyageRelatedData message may have
-     *         been used to populate this object
-     */
-    public int getImo() {
-        return this.imo;
     }
 
     /**
@@ -343,8 +368,8 @@ public class Vessel implements Cloneable {
      * @return the ship name value of whatever StaticAndVoyageRelatedData message
      *         may have been used to populate this object
      */
-    public String getShipname() {
-        return (this.shipname == null) ? null : ByteArrayUtils.bArray2Str(this.shipname);
+    public String getshipName() {
+        return (this.shipName == null) ? null : ByteArrayUtils.bArray2Str(this.shipName);
     }
 
     /**
@@ -353,276 +378,6 @@ public class Vessel implements Cloneable {
      */
     public String getDestination() {
         return (this.destination == null) ? null : ByteArrayUtils.bArray2Str(this.destination);
-    }
-
-    /**
-     * @return the ship type value of whatever StaticAndVoyageRelatedData message
-     *         may have been used to populate this object
-     */
-    public ShipType getShiptype() {
-        return this.shiptype;
-    }
-
-    /**
-     * @return the toBow value of whatever StaticAndVoyageRelatedData message may
-     *         have been used to populate this object
-     */
-    public int getToBow() {
-        return this.toBow;
-    }
-
-    /**
-     * @return the toStern value of whatever StaticAndVoyageRelatedData message may
-     *         have been used to populate this object
-     */
-    public int getToStern() {
-        return this.toStern;
-    }
-
-    /**
-     * @return the toPort value of whatever StaticAndVoyageRelatedData message may
-     *         have been used to populate this object
-     */
-    public int getToPort() {
-        return this.toPort;
-    }
-
-    /**
-     * @return the toStarboard value of whatever StaticAndVoyageRelatedData message
-     *         may have been used to populate this object
-     */
-    public int getToStarboard() {
-        return this.toStarboard;
-    }
-
-    /**
-     * @return the EPFD value of whatever StaticAndVoyageRelatedData message may
-     *         have been used to populate this object
-     */
-    public EPFDFixType getEpfd() {
-        return this.epfd;
-    }
-
-    /**
-     * @return the month value of whatever StaticAndVoyageRelatedData message may
-     *         have been used to populate this object
-     */
-    public int getMonth() {
-        return this.month;
-    }
-
-    /**
-     * @return the day value of whatever StaticAndVoyageRelatedData message may have
-     *         been used to populate this object
-     */
-    public int getDay() {
-        return this.day;
-    }
-
-    /**
-     * @return the hour value of whatever StaticAndVoyageRelatedData message may
-     *         have been used to populate this object
-     */
-    public int getHour() {
-        return this.hour;
-    }
-
-    /**
-     * @return the minute value of whatever StaticAndVoyageRelatedData message may
-     *         have been used to populate this object
-     */
-    public int getMinute() {
-        return this.minute;
-    }
-
-    /**
-     * @return the draught value of whatever StaticAndVoyageRelatedData message may
-     *         have been used to populate this object
-     */
-    public float getDraught() {
-        return this.draught;
-    }
-
-    /**
-     * @return the DTE value of whatever StaticAndVoyageRelatedData message may have
-     *         been used to populate this object
-     */
-    public boolean isDte() {
-        return this.dte;
-    }
-
-    /**
-     * @return the IMO value of whatever StaticAndVoyageRelatedData message may have
-     *         been used to populate this object
-     */
-    public NavigationStatus getStatus() {
-        return this.status;
-    }
-
-    /**
-     * @return the turn value of whatever PositionReport message may have been used
-     *         to populate this object
-     */
-    public float getTurn() {
-        return this.turn;
-    }
-
-    /**
-     * @return the speed value of whatever PositionReport message may have been used
-     *         to populate this object
-     */
-    public float getSpeed() {
-        return this.speed;
-    }
-
-    /**
-     *
-     * @param speed
-     */
-    public void setSpeed(float speed) {
-        this.speed = speed;
-    }
-
-    /**
-     * @return the accuracy value of whatever PositionReport message may have been
-     *         used to populate this object
-     */
-    public boolean isAccurate() {
-        return this.accurate;
-    }
-
-    /**
-     * @return the longitude value of whatever PositionReport message may have been
-     *         used to populate this object
-     */
-    public float getLon() {
-        return this.lon;
-    }
-
-    /**
-     * @param lon
-     */
-    public void setLon(float lon) {
-        this.lon = lon;
-    }
-
-    /**
-     * @return the latitude value of whatever PositionReport message may have been
-     *         used to populate this object
-     */
-    public float getLat() {
-        return this.lat;
-    }
-
-    /**
-     *
-     * @param lat
-     */
-    public void setLat(float lat) {
-        this.lat = lat;
-    }
-
-    /**
-     * @return the course value of whatever PositionReport message may have been
-     *         used to populate this object
-     */
-    public float getCourse() {
-        return this.course;
-    }
-
-    /**
-     *
-     * @param course
-     */
-    public void setCourse(float course) {
-        this.course = course;
-    }
-
-    /**
-     * @return the heading value of whatever PositionReport message may have been
-     *         used to populate this object
-     */
-    public int getHeading() {
-        return this.heading;
-    }
-
-    /**
-     * @return the second value of whatever PositionReport message may have been
-     *         used to populate this object
-     */
-    public int getSecond() {
-        return this.second;
-    }
-
-    /**
-     * @return the maneuver value of whatever PositionReport message may have been
-     *         used to populate this object
-     */
-    public ManeuverType getManeuver() {
-        return this.maneuver;
-    }
-
-    /**
-     * @return the RAIM value of whatever PositionReport message may have been used
-     *         to populate this object
-     */
-    public boolean isRaim() {
-        return this.raim;
-    }
-
-    /**
-     * @return the repeat value of whatever PositionReport message may have been
-     *         used to populate this object
-     */
-    public int getRepeat() {
-        return this.repeat;
-    }
-
-    /**
-     * @return the radio value of whatever PositionReport message may have been used
-     *         to populate this object
-     */
-    public int getRadio() {
-        return this.radio;
-    }
-
-    /**
-     * @return the ETA value of whatever PositionReport message may have been used
-     *         to populate this object
-     */
-    public ZonedDateTime getEta() {
-        return this.eta;
-    }
-
-    /**
-     * @return the timestamp of the most recent update to this Vessel object
-     */
-    public long getCurrentMessageTimestamp() {
-        return this.currentMessageTimestamp;
-    }
-
-    /**
-     * @return the timestamp of the most recent position update for this Vessel
-     *         object
-     */
-    public long getCurrentPositionTimestamp() {
-        return this.currentPositionTimestamp;
-    }
-
-    /**
-     * @return the timestamp of the most recent position update prior to the most
-     *         current position update for this Vessel object
-     */
-    public long getPreviousPositionTimestamp() {
-        return this.previousPositionTimestamp;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public long getTimeSent() {
-        return this.timeSent;
     }
 
     /**
@@ -667,8 +422,8 @@ public class Vessel implements Cloneable {
         sb.append(", version : ").append(getVersion());
         sb.append(", imo : ").append(getImo());
         sb.append(", callsign : \"").append(getCallsign()).append("\"");
-        sb.append(", shipname : \"").append(getShipname()).append("\"");
-        sb.append(", shiptype : \"").append(getShiptype()).append("\"");
+        sb.append(", shipName : \"").append(getshipName()).append("\"");
+        sb.append(", shiptype : \"").append(getShipType()).append("\"");
         sb.append(", toBow : ").append(getToBow());
         sb.append(", toPort : ").append(getToPort());
         sb.append(", toStern : ").append(getToStern());
@@ -682,13 +437,13 @@ public class Vessel implements Cloneable {
         sb.append(", draught : ").append(getDraught());
         sb.append(", destination : ").append(getDestination());
         sb.append(", dte : ").append(isDte());
-        sb.append(", status : ").append(getStatus());
-        sb.append(", turn : ").append(getTurn());
+        sb.append(", navigationStatus : ").append(getNavigationStatus());
+        sb.append(", turn : ").append(getRateOfTurn());
         sb.append(", speed : ").append(getSpeed());
-        sb.append(", accurate : ").append(isAccurate());
+        sb.append(", accuracy : ").append(isAccuracy());
         sb.append(", lon : ").append(getLon());
         sb.append(", lat : ").append(getLat());
-        sb.append(", course : ").append(getCourse());
+        sb.append(", courseOverGround : ").append(getCourseOverGround());
         sb.append(", heading : ").append(getHeading());
         sb.append(", maneuver : ").append(getManeuver());
         sb.append(", raim : ").append(isRaim());

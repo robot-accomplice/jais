@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
@@ -99,10 +98,9 @@ public class AidToNavigationReport extends AISMessageBase {
     }
 
     /**
-     * @throws AISException if any part of the decoding fails
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (AidToNavigationReportFieldMap field : AidToNavigationReportFieldMap.values()) {

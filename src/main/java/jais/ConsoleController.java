@@ -162,8 +162,8 @@ public class ConsoleController implements Initializable {
                         PositionReportBase prb = (PositionReportBase) msg;
 
                         // from PositionReportBase
-                        appendLineToOutput("Accuracy : " + prb.isAccurate());
-                        appendLineToOutput("Course   : " + prb.getCourse());
+                        appendLineToOutput("Accuracy : " + prb.isAccuracy());
+                        appendLineToOutput("Course   : " + prb.getCourseOverGround());
                         appendLineToOutput("Heading  : " + prb.getHeading());
                         appendLineToOutput("Latitude : " + prb.getLat());
                         appendLineToOutput("Longitude: " + prb.getLon());
@@ -177,7 +177,7 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput("Second   : " + prb.getSecond());
                         appendLineToOutput("Speed    : " + prb.getSpeed());
                         appendLineToOutput("Status   : " + prb.getStatus());
-                        appendLineToOutput("Turn     : " + prb.getTurn());
+                        appendLineToOutput("Turn     : " + prb.getRateOfTurn());
                         break;
                     case STATIC_AND_VOYAGE_RELATED_DATA:
                         StaticAndVoyageRelatedData savrd = (StaticAndVoyageRelatedData) msg;
@@ -185,8 +185,8 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput("AIS Version  : " + savrd.getVersion());
                         appendLineToOutput("IMO Number   : " + savrd.getImo());
                         appendLineToOutput("Call Sign    : " + savrd.getCallsign());
-                        appendLineToOutput("Ship Name    : " + savrd.getShipname());
-                        appendLineToOutput("Ship Type    : " + savrd.getShiptype());
+                        appendLineToOutput("Ship Name    : " + savrd.getShipName());
+                        appendLineToOutput("Ship Type    : " + savrd.getShipType());
                         appendLineToOutput("To Bow       : " + savrd.getToBow());
                         appendLineToOutput("To Stern     : " + savrd.getToStern());
                         appendLineToOutput("To Port      : " + savrd.getToPort());
@@ -203,7 +203,7 @@ public class ConsoleController implements Initializable {
                     case STANDARD_CLASS_B_CS_POSITION_REPORT:
                         StandardClassBCSPositionReport scbpr = (StandardClassBCSPositionReport) msg;
 
-                        appendLineToOutput("Course   : " + scbpr.getCourse());
+                        appendLineToOutput("Course   : " + scbpr.getCourseOverGround());
                         appendLineToOutput("Heading  : " + scbpr.getHeading());
                         appendLineToOutput("Latitude : " + scbpr.getLat());
                         appendLineToOutput("Longitude: " + scbpr.getLon());
@@ -215,7 +215,7 @@ public class ConsoleController implements Initializable {
                         ExtendedClassBCSPositionReport ecbpr = (ExtendedClassBCSPositionReport) msg;
 
                         appendLineToOutput("Assigned    : " + ecbpr.getAssigned());
-                        appendLineToOutput("Course      : " + ecbpr.getCourse());
+                        appendLineToOutput("Course      : " + ecbpr.getCourseOverGround());
                         appendLineToOutput("Heading     : " + ecbpr.getHeading());
                         appendLineToOutput("Latitude    : " + ecbpr.getLat());
                         appendLineToOutput("Longitude   : " + ecbpr.getLon());

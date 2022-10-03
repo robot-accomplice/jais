@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.BinaryBroadcastMessageType;
 import jais.messages.enums.FieldMap;
@@ -75,10 +74,9 @@ public class BinaryBroadcastMessage extends AISMessageBase {
 
     /**
      *
-     * @throws jais.exceptions.AISException if we are unable to decode the message
      */
     @Override
-    public void decode() throws AISException {
+    public void decode() {
         super.decode();
 
         for (BinaryBroadcastMessageBaseFieldMap field : BinaryBroadcastMessageBaseFieldMap.values()) {
@@ -98,11 +96,8 @@ public class BinaryBroadcastMessage extends AISMessageBase {
                         data = bits.get(field.getStartBit(), bits.size() - 1);
                     break;
                 case DESTINATION_MMSI:
-                    break;
                 case RETRANSMIT:
-                    break;
                 case SEQUENCE_NUMBER:
-                    break;
                 case SPARE:
                     break;
             }

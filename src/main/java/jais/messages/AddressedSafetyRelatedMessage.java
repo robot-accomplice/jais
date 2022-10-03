@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
@@ -39,9 +38,8 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
      * 
      * @param source  String denoting the source of the packet
      * @param packets AISPacket[] from which the message is composed
-     * @throws jais.exceptions.AISException if decoding is unsuccessful
      */
-    public AddressedSafetyRelatedMessage(String source, AISSentence... packets) throws AISException {
+    public AddressedSafetyRelatedMessage(String source, AISSentence... packets) {
         super(source, packets);
     }
 
@@ -57,10 +55,9 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
 
     /**
      * 
-     * @throws AISException if any part of the AIS message decoding fails
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (AddressedSafetyRelatedMessageFieldMap field : AddressedSafetyRelatedMessageFieldMap.values()) {

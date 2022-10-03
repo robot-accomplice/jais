@@ -17,7 +17,6 @@
 package jais.messages.binaryaddressed;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
@@ -37,18 +36,15 @@ public class IMO289DangerousCargoIndication extends BinaryAddressedMessageBase {
      *
      * @param source
      * @param packets
-     * @throws jais.exceptions.AISException
      */
-    public IMO289DangerousCargoIndication(String source, AISSentence... packets)
-            throws AISException {
+    public IMO289DangerousCargoIndication(String source, AISSentence... packets) {
         super(source, BinaryAddressedMessageType.DANGEROUS_CARGO_INDICATION, packets);
     }
 
     /**
-     * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (IMO289DangerousCargoIndicationFieldMap field : IMO289DangerousCargoIndicationFieldMap.values()) {

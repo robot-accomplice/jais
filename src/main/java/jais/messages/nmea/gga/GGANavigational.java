@@ -1,17 +1,17 @@
 package jais.messages.nmea.gga;
 
 import jais.ByteArrayUtils;
+import jais.Sentence;
 import jais.exceptions.ParseException;
-import jais.messages.nmea.ENMEAType;
-import jais.messages.nmea.NMEASentence;
+import jais.messages.enums.SentenceType;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GGANavigational implements NMEASentence {
+public class GGANavigational implements Sentence {
 
-    private final ENMEAType type = ENMEAType.GGA_NAVIGATIONAL;
+    private final SentenceType sentenceType = SentenceType.NMEA_GGA_NAVIGATIONAL;
 
     private String rawSentence;
     private float fixTaken;
@@ -43,8 +43,8 @@ public class GGANavigational implements NMEASentence {
     public void parse() throws ParseException {
         String[] parts = ByteArrayUtils.fastSplit(this.rawSentence);
 
-        if (parts.length == type.getFieldCount() && parts[0].equals(type.getPreamble()) &&
-                (!type.hasEmptyIndex() && !parts[type.getFirstEmptyIndex()].equals(""))) {
+        if (parts.length == sentenceType.getFieldCount() && parts[0].equals(sentenceType.getPreamble()) &&
+                (!sentenceType.hasEmptyIndex() && !parts[sentenceType.getFirstEmptyIndex()].equals(""))) {
             fixTaken = Float.parseFloat(parts[1]);
             lat = Float.parseFloat(parts[2]);
             latDir = parts[3].charAt(0);

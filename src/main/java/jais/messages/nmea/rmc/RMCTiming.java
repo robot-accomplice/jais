@@ -1,8 +1,14 @@
 package jais.messages.nmea.rmc;
 
-public class RMCTiming {
+import jais.Sentence;
+import jais.exceptions.ParseException;
+import jais.messages.enums.SentenceType;
+import lombok.Getter;
 
-    private static String preamble = "$GPRMC";
+@Getter
+public class RMCTiming implements Sentence {
+
+    private final SentenceType sentenceType = SentenceType.NMEA_RMC_TIMING;
 
     float fixTaken;
     EStatus status;
@@ -17,15 +23,16 @@ public class RMCTiming {
     // String null4;
     EModeIndicator mode;
     String checksum;
+    String rawMessage;
 
     // Timing we only want the constructor to be invoked as part of a factory
     private RMCTiming() {
     }
 
-    public static RMCTiming parse(String message) {
-        String[] fields = message.split(",");
+    public void parse() throws ParseException {
+        String[] fields = rawMessage.split(",");
 
-        if (message.length() != 14) {
+        if (fields.length != 14) {
             // uh oh
         }
 
@@ -35,8 +42,5 @@ public class RMCTiming {
         timingObj.lat = fields[3];
         timingObj.lat_dir = fields[4].toCharArray()[0];
         timingObj.lon = fields[5];
-
-        return timingObj;
     }
-
 }

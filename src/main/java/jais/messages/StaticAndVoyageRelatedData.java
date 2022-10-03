@@ -18,11 +18,13 @@ package jais.messages;
 
 import jais.AISSentence;
 import jais.ByteArrayUtils;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.ShipType;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,6 +35,8 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
+@Setter
 public class StaticAndVoyageRelatedData extends AISMessageBase {
 
     private final static Logger LOG = LogManager.getLogger(StaticAndVoyageRelatedData.class);
@@ -40,23 +44,23 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
     private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
             .withZone(ZoneOffset.UTC.normalized());
 
-    private int _version;
-    private int _imo;
-    private byte[] _callsign;
-    private byte[] _shipname;
-    private ShipType _shiptype = ShipType.OTHER_NO_INFO;
-    private int _toBow;
-    private int _toStern;
-    private int _toPort;
-    private int _toStarboard;
-    private EPFDFixType _epfd;
-    private int _month = 1;
-    private int _day = 1;
-    private int _hour;
-    private int _minute;
-    private float _draught;
-    private byte[] _destination;
-    private boolean _dte;
+    private int version;
+    private int imo;
+    private byte[] callsign;
+    private byte[] shipName;
+    private ShipType shipType = ShipType.OTHER_NO_INFO;
+    private int toBow;
+    private int toStern;
+    private int toPort;
+    private int toStarboard;
+    private EPFDFixType epfd;
+    private int month = 1;
+    private int day = 1;
+    private int hour;
+    private int minute;
+    private float draught;
+    private byte[] destination;
+    private boolean dte;
 
     /**
      *
@@ -81,112 +85,16 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      *
      * @return
      */
-    public int getVersion() {
-        return _version;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getImo() {
-        return _imo;
-    }
-
-    /**
-     *
-     * @return
-     */
     public String getCallsign() {
-        return ByteArrayUtils.bArray2Str(_callsign);
+        return ByteArrayUtils.bArray2Str(this.callsign);
     }
 
     /**
      *
      * @return
      */
-    public String getShipname() {
-        return ByteArrayUtils.bArray2Str(_shipname);
-    }
-
-    /**
-     *
-     * @return
-     */
-    public ShipType getShiptype() {
-        return _shiptype;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getToBow() {
-        return _toBow;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getToStern() {
-        return _toStern;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getToPort() {
-        return _toPort;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getToStarboard() {
-        return _toStarboard;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public EPFDFixType getEpfd() {
-        return _epfd;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getMonth() {
-        return _month;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getDay() {
-        return _day;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getHour() {
-        return _hour;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getMinute() {
-        return _minute;
+    public String getShipName() {
+        return ByteArrayUtils.bArray2Str(this.shipName);
     }
 
     /**
@@ -199,20 +107,20 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
         int year = dt.getYear();
         int month = dt.getMonthValue();
 
-        if (_month > 0) {
+        if (this.month > 0) {
             // properly formatted month
-            if (_month < 10) {
-                eta.append("0").append(_month);
-            } else if (_month > 12) {
+            if (this.month < 10) {
+                eta.append("0").append(this.month);
+            } else if (this.month > 12) {
                 eta.append("12");
-                _month = 12; // use this to validate the days later
+                month = 12; // use this to validate the days later
             } else {
-                eta.append(_month);
+                eta.append(this.month);
             }
             eta.append("/");
 
             // assume next year
-            if (_month < month) {
+            if (this.month < month) {
                 year++;
             }
 
@@ -226,36 +134,32 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
             int daysInMonth = dt.getMonth().maxLength();
 
             // properly formatted day
-            if (_day < 1) {
+            if (this.day < 1) {
                 eta.append("01");
-            } else if (_day < 10) {
-                eta.append("0").append(_day);
-            } else if (_day >= daysInMonth) {
-                eta.append(daysInMonth);
-            } else {
-                eta.append(_day);
-            }
+            } else if (this.day < 10) {
+                eta.append("0").append(this.day);
+            } else eta.append(Math.min(this.day, daysInMonth));
             eta.append(" ");
 
             // properly formatted hour
-            if (_hour < 1) {
+            if (this.hour < 1) {
                 eta.append("00");
-            } else if (_hour < 10) {
-                eta.append("0").append(_hour);
-            } else if (_hour >= 24) {
+            } else if (this.hour < 10) {
+                eta.append("0").append(this.hour);
+            } else if (this.hour >= 24) {
                 eta.append("00");
             } else {
-                eta.append(_hour);
+                eta.append(this.hour);
             }
             eta.append(":");
 
             // properly formatted minute
-            if (_minute < 1 || _minute > 59) {
+            if (this.minute < 1 || minute > 59) {
                 eta.append("00");
-            } else if (_minute < 10) {
-                eta.append("0").append(_minute);
+            } else if (this.minute < 10) {
+                eta.append("0").append(this.minute);
             } else {
-                eta.append(_minute);
+                eta.append(this.minute);
             }
         } else {
             // default to epoch if month is invalid
@@ -276,18 +180,10 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      *
      * @return
      */
-    public float getDraught() {
-        return _draught;
-    }
-
-    /**
-     *
-     * @return
-     */
     public String getDestination() {
-        if (_destination == null)
+        if (this.destination == null)
             return null;
-        return ByteArrayUtils.bArray2Str(_destination);
+        return ByteArrayUtils.bArray2Str(this.destination);
     }
 
     /**
@@ -295,98 +191,96 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      * @return
      */
     public boolean dteReady() {
-        return !_dte;
+        return !this.dte;
     }
 
     /**
      *
-     * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (StaticAndVoyageFieldMap field : StaticAndVoyageFieldMap.values()) {
             switch (field) {
                 case VERSION:
                     if (bits.size() >= field.getStartBit())
-                        _version = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        this.version = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                                field.getEndBit());
                     break;
                 case IMO:
                     if (bits.size() >= field.getStartBit())
-                        _imo = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        this.imo = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case CALL_SIGN:
                     if (bits.size() >= field.getStartBit())
-                        _callsign = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(), field.getEndBit());
+                        this.callsign = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(),
+                                field.getEndBit());
                     break;
                 case SHIP_NAME:
                     if (bits.size() >= field.getStartBit())
-                        _shipname = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(), field.getEndBit());
+                        this.shipName = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(),
+                                field.getEndBit());
                     break;
                 case SHIP_TYPE:
                     int shipCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     if (bits.size() >= field.getStartBit())
-                        _shiptype = ShipType.getForCode(shipCode);
-                    if (_shiptype == null) {
-                        LOG.error("No ShipType for {}", shipCode);
-                        _shiptype = ShipType.OTHER_NO_INFO;
+                        this.shipType = ShipType.getForCode(shipCode);
+                    if (this.shipType == null) {
+                        LOG.debug("No ShipType for {}", shipCode);
+                        this.shipType = ShipType.OTHER_NO_INFO;
                     }
                     break;
                 case TO_BOW:
                     if (bits.size() >= field.getStartBit())
-                        _toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case TO_STERN:
                     if (bits.size() >= field.getStartBit())
-                        _toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case TO_PORT:
                     if (bits.size() >= field.getStartBit())
-                        _toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case TO_STARBOARD:
                     if (bits.size() >= field.getStartBit())
-                        _toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                        toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
                     break;
                 case EPFD:
                     int epfdCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     if (bits.size() >= field.getStartBit())
-                        _epfd = EPFDFixType.getForCode(epfdCode);
+                        epfd = EPFDFixType.getForCode(epfdCode);
                     break;
                 case ETA_MONTH:
                     if (bits.size() >= field.getStartBit())
-                        _month = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        month = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case ETA_DAY:
                     if (bits.size() >= field.getStartBit())
-                        _day = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        day = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case ETA_HOUR:
                     if (bits.size() >= field.getStartBit())
-                        _hour = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        hour = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case ETA_MINUTE:
                     if (bits.size() >= field.getStartBit())
-                        _minute = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        minute = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DRAUGHT:
                     if (bits.size() >= field.getStartBit())
-                        _draught = AISMessageDecoder.decodeDraught(bits, field.getStartBit(), field.getEndBit());
+                        draught = AISMessageDecoder.decodeDraught(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DESTINATION:
                     if (bits.size() >= field.getStartBit())
-                        try {
-                            _destination = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(),
-                                    field.getEndBit());
-                        } catch (AISException ae) {
-                            LOG.fatal(ae.getMessage(), ae);
-                        }
+                        destination = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(),
+                                field.getEndBit());
                     break;
                 case DTE:
                     if (field.getStartBit() < bits.size()) {
-                        _dte = bits.get(field.getStartBit());
+                        dte = bits.get(field.getStartBit());
                     } else {
                         if (LOG.isDebugEnabled())
                             LOG.debug("Reached end of message before we could retrieve DTE value!");
@@ -402,6 +296,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
     /**
      *
      */
+    @Getter
     private enum StaticAndVoyageFieldMap implements FieldMap {
 
         VERSION(38, 39),
@@ -423,8 +318,8 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
         DTE(422, 422),
         SPARE(423, 423);
 
-        private final int _startBit;
-        private final int _endBit;
+        private final int startBit;
+        private final int endBit;
 
         /**
          *
@@ -432,26 +327,8 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
          * @param endBit
          */
         StaticAndVoyageFieldMap(int startBit, int endBit) {
-            _startBit = startBit;
-            _endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return _startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return _endBit;
+            this.startBit = startBit;
+            this.endBit = endBit;
         }
     }
 }
