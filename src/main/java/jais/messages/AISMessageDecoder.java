@@ -16,8 +16,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.InvalidAISCharacterException;
-import jais.exceptions.AISException;
 import jais.messages.AISMessage.AISFieldMap;
 import jais.messages.enums.AISMessageType;
 import java.nio.ByteBuffer;
@@ -70,18 +68,14 @@ public class AISMessageDecoder {
 
         int bIndex = 0;
         for (char c : msgChars) {
-            try {
-                int oc = encodedToSixBitInt(c); // pull the current raw message char
-                if (oc == -1) {
-                    LOG.info("Invalid character: '{}'", c);
-                    bits.clear();
-                    break;
-                } else {
-                    for (int bPos = 5; bPos >= 0; bPos--)
-                        bits.set(bIndex++, 0 < (oc & (1 << bPos)));
-                }
-            } catch (InvalidAISCharacterException iace) {
-                LOG.info("Encountered an invalid character (possible message padding?) : {}", iace.getMessage());
+            int oc = encodedToSixBitInt(c); // pull the current raw message char
+            if (oc == -1) {
+                LOG.trace("Invalid character: '{}'", c);
+                bits.clear();
+                break;
+            } else {
+                for (int bPos = 5; bPos >= 0; bPos--)
+                    bits.set(bIndex++, 0 < (oc & (1 << bPos)));
             }
         }
 
@@ -105,21 +99,15 @@ public class AISMessageDecoder {
 
         int bIndex = 0;
         for (char c : msgChars) {
-            try {
-                int oc = encodedToSixBitInt(c); // pull the current raw message char
-                if (oc == -1) {
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Invalid character: '{}'", c);
-                    bits.clear();
-                    break;
-                } else {
-                    for (int bPos = 5; bPos >= 0; bPos--)
-                        bits.set(bIndex++, 0 < (oc & (1 << bPos)));
-                }
-            } catch (InvalidAISCharacterException iace) {
+            int oc = encodedToSixBitInt(c); // pull the current raw message char
+            if (oc == -1) {
                 if (LOG.isDebugEnabled())
-                    LOG.debug("Encountered an invalid character (possible message padding?) : {}", iace.getMessage());
+                    LOG.debug("Invalid character: '{}'", c);
+                bits.clear();
                 break;
+            } else {
+                for (int bPos = 5; bPos >= 0; bPos--)
+                    bits.set(bIndex++, 0 < (oc & (1 << bPos)));
             }
         }
 
@@ -130,16 +118,16 @@ public class AISMessageDecoder {
      *
      * @param c the character we want to encode to a six bit int
      * @return the six bit int representation of the provided character
-     * @throws InvalidAISCharacterException if the character is out of bounds
      */
-    private static int encodedToSixBitInt(char c) throws InvalidAISCharacterException {
+    private static int encodedToSixBitInt(char c) {
         if (c <= CHAR_RANGE_A_MAX && c >= CHAR_RANGE_A_MIN)
             return c - CHAR_RANGE_A_MIN;
         else if (c <= CHAR_RANGE_B_MAX && c >= CHAR_RANGE_B_MIN)
             return c - CHAR_RANGE_B_MIN + (CHAR_RANGE_A_MAX - CHAR_RANGE_A_MIN + 1);
-        else
-            throw new InvalidAISCharacterException(
-                    "Character \'" + c + "\' is outside of either of the acceptable ranges.");
+        else {
+            LOG.trace("Character '{}' is outside of either of the acceptable ranges.", c);
+            return '@';
+        }
     }
 
     /**
@@ -153,8 +141,7 @@ public class AISMessageDecoder {
         int rval = 0;
 
         if (endBit > bits.size())
-            throw new ArrayIndexOutOfBoundsException(
-                    "DecodeInt: position " + endBit + " exceeds input array length " + bits.size());
+            endBit = bits.size();
 
         int binPosValue = 1;
         for (int i = endBit; i >= startBit; i--) {
@@ -213,14 +200,14 @@ public class AISMessageDecoder {
      * @param c the int representing the six bit character we want to convert to
      *          ASCII
      * @return the ASCII character
-     * @throws AISException if the provided int value is out of bounds
      */
-    private static char sixBitIntToAscii(int c) throws AISException {
+    private static char sixBitIntToAscii(int c) {
         int rval = c;
 
-        if (c < 0 || c > 63)
-            throw new AISException("sixBitIntToAscii: Invalid input for 6-bit conversion: " + c);
-        else if (c < 32)
+        if (c < 0 || c > 63) {
+            LOG.trace("sixBitIntToAscii: Invalid input for 6-bit conversion: {}", c);
+            return '@';
+        } else if (c < 32)
             rval += 64;
 
         return (char) rval;
@@ -230,10 +217,8 @@ public class AISMessageDecoder {
      *
      * @param packets the collection of packets from which this message was composed
      * @return An optional which may contain the decoded AISMessageType
-     * @throws AISException if we are unable to concatenate the provided packets or
-     *                      if the decode operation fails
      */
-    public static Optional<AISMessageType> decodeMessageType(AISSentence... packets) throws AISException {
+    public static Optional<AISMessageType> decodeMessageType(AISSentence... packets) {
         // concatenate full raw message from all packets
         return decodeMessageType(AISSentence.concatenate(packets));
     }
@@ -242,9 +227,8 @@ public class AISMessageDecoder {
      *
      * @param rawMessage the String from which this message was composed
      * @return An optional which may contain the decoded AISMessageType
-     * @throws AISException if the decode operation fails
      */
-    public static Optional<AISMessageType> decodeMessageType(String rawMessage) throws AISException {
+    public static Optional<AISMessageType> decodeMessageType(String rawMessage) {
         return decodeMessageType(stringToBitSet(rawMessage));
     }
 
@@ -252,9 +236,8 @@ public class AISMessageDecoder {
      *
      * @param rawMessage the byte array from which this message was composed
      * @return An optional which may contain the decoded AISMessageType
-     * @throws AISException if the decode operation fails
      */
-    public static Optional<AISMessageType> decodeMessageType(byte[] rawMessage) throws AISException {
+    public static Optional<AISMessageType> decodeMessageType(byte[] rawMessage) {
         return decodeMessageType(byteArrayToBitSet(rawMessage));
     }
 
@@ -262,12 +245,13 @@ public class AISMessageDecoder {
      *
      * @param bits the BitSet containing the message we wish to decode
      * @return an Optional which may contain the AISMessageType
-     * @throws AISException if we are unable to decode the message
      */
-    public static Optional<AISMessageType> decodeMessageType(BitSet bits) throws AISException {
+    public static Optional<AISMessageType> decodeMessageType(BitSet bits) {
 
-        if (bits.size() < AISFieldMap.TYPE.getEndBit())
-            throw new AISException("BitSet is too short: " + bits.size());
+        if (bits.size() < AISFieldMap.TYPE.getEndBit()) {
+            LOG.trace("BitSet is too short: {}", bits.size());
+            return Optional.empty();
+        }
 
         if (LOG.isDebugEnabled())
             LOG.debug("BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(),
@@ -287,17 +271,15 @@ public class AISMessageDecoder {
      * @param startBit the starting bit where the latitude data is located
      * @param endBit   the ending bit where the latitude data is located
      * @return a float representing the latitude
-     * @throws AISException if the latitude data is unavailable
      */
-    public static float decodeLatitude(BitSet b, int startBit, int endBit) throws AISException {
+    public static float decodeLatitude(BitSet b, int startBit, int endBit) {
         int i = decodeSignedInt(b, startBit, endBit);
 
-        switch (i) {
-            case 0x3412140:
-                throw new AISException("Latitude unavailable.");
-            default:
-                return (float) (((double) i) / (60f * 10000f));
+        if (i == 0x3412140) {
+            LOG.trace("Latitude unavailable.");
+            return -181f;
         }
+        return (float) (((double) i) / (60f * 10000f));
     }
 
     /**
@@ -306,17 +288,15 @@ public class AISMessageDecoder {
      * @param startBit the starting bit where the longitude data is located
      * @param endBit   the ending bit where the longitude data is located
      * @return a float representing the longitude
-     * @throws AISException if the longitude data is unavailable
      */
-    public static float decodeLongitude(BitSet b, int startBit, int endBit) throws AISException {
+    public static float decodeLongitude(BitSet b, int startBit, int endBit) {
         int i = decodeSignedInt(b, startBit, endBit);
 
-        switch (i) {
-            case 0x6791AC0:
-                throw new AISException("Longitude unavailable.");
-            default:
-                return (float) (((double) i) / (60f * 10000f));
+        if (i == 0x6791AC0) {
+            LOG.trace("Longitude unavailable.");
+            return -91f;
         }
+        return (float) (((double) i) / (60f * 10000f));
     }
 
     /**
@@ -338,18 +318,18 @@ public class AISMessageDecoder {
      * @param startBit the starting bit where the speed data is located
      * @param endBit   the ending bit where the speed data is located
      * @return a float representing the speed
-     * @throws AISException if the value is invalid
      */
-    public static float decodeSpeed(BitSet bits, int startBit, int endBit) throws AISException {
+    public static float decodeSpeed(BitSet bits, int startBit, int endBit) {
         int i = decodeUnsignedInt(bits, startBit, endBit);
 
-        if ((i < 0) || (i > 1023))
-            throw new AISException("getSpeedOverGround: invalid value: " + i);
-
+        if ((i < 0) || (i > 1023)) {
+            LOG.trace("invalid speedOverGround");
+            return -1f;
+        }
         switch (i) {
             case 1023:
                 // speed unavailable
-                LOG.debug("getSpeedOverGround: unavailable: {}", i);
+                LOG.debug("speedOverGround: unavailable: {}", i);
                 return -1f;
             case 1022:
                 return 102.2f;
@@ -365,19 +345,15 @@ public class AISMessageDecoder {
      * @param startBit the starting bit where the course information is located
      * @param endBit   the ending bit where the course information is located
      * @return a float representing the course
-     * @throws AISException if the decoded value is invalid or unavailable
      */
-    public static float decodeCourse(BitSet bits, int startBit, int endBit) throws AISException {
+    public static float decodeCourse(BitSet bits, int startBit, int endBit) {
         int i = decodeUnsignedInt(bits, startBit, endBit);
 
-        if ((i < 0) || (i > 3600))
-            throw new AISException("decodeCourse: invalid value: " + i);
-
-        switch (i) {
-            case 3600:
-                throw new AISException("Course unavailable");
-            default:
-                return i / 10f;
+        if ((i < 0) || (i >= 3600)) {
+            LOG.trace("decodeCourse: invalid value: {}", i);
+            return 3600;
+        } else {
+            return i / 10f;
         }
     }
 
@@ -387,16 +363,14 @@ public class AISMessageDecoder {
      * @param startBit the starting bit where our String is located
      * @param endBit   the ending bit where our String is located
      * @return the decoded String
-     * @throws AISException if we are unable to convert a six bit character into
-     *                      Ascii
      */
-    public static String decodeToString(BitSet bits, int startBit, int endBit) throws AISException {
+    public static String decodeToString(BitSet bits, int startBit, int endBit) {
         if (LOG.isTraceEnabled())
             LOG.trace("Decoding bit {} through bit {} of {} element BitSet", startBit, endBit, bits.size());
 
         CharBuffer cb = CharBuffer.allocate((((endBit - startBit) / 6) + 1));
 
-        int stopBit = (endBit > bits.size()) ? bits.size() : endBit;
+        int stopBit = Math.min(endBit, bits.size());
 
         // we need to walk forward through every set of six bits without traveling past
         // the endBit
@@ -425,10 +399,8 @@ public class AISMessageDecoder {
      * @param startBit the starting bit where our byte array is located
      * @param endBit   the ending bit where our byte array is located
      * @return the decoded byte array
-     * @throws AISException if we are unable to convert a six bit character into
-     *                      Ascii
      */
-    public static byte[] decodeToByteArray(BitSet bits, int startBit, int endBit) throws AISException {
+    public static byte[] decodeToByteArray(BitSet bits, int startBit, int endBit) {
         return decodeToString(bits, startBit, endBit).getBytes();
     }
 }

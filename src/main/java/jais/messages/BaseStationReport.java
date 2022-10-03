@@ -16,7 +16,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
@@ -92,10 +91,9 @@ public class BaseStationReport extends AISMessageBase {
     }
 
     /**
-     * @throws AISException if decoding fails
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (BaseReportFieldMap field : BaseReportFieldMap.values()) {

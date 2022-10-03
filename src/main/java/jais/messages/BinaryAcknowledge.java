@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
@@ -62,7 +61,7 @@ public class BinaryAcknowledge extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return int representing the MMSI of the super class
      */
     public int getSourceMmsi() {
         return super.getMmsi();
@@ -70,10 +69,9 @@ public class BinaryAcknowledge extends AISMessageBase {
 
     /**
      *
-     * @throws jais.exceptions.AISException if we fail to decode the message
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (BinaryAcknowledgeFieldMap field : BinaryAcknowledgeFieldMap.values()) {

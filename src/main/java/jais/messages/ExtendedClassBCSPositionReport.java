@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.FieldMap;
@@ -43,7 +42,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
     private boolean accurate;
     private float lon;
     private float lat;
-    private float course;
+    private float courseOverGround;
     private int heading;
     private int second;
     private String shipName;
@@ -98,10 +97,41 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
     }
 
     /**
-     * @throws AISException
+     * 
+     * @return
+     */
+    public boolean isPositionValid() {
+        return ((lon >= -180 && lon <= 180) && (lat >= -90 && lat <= 90));
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isCourseValid() {
+        return courseOverGround < 3600;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isSpeedValid() {
+        return speed < 1023;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isHeadingValid() {
+        return heading < 360;
+    }
+
+    /**
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (ExtendedClassBCSPositionReportFieldMap field : ExtendedClassBCSPositionReportFieldMap.values()) {
@@ -124,7 +154,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
                     break;
                 case COURSE:
                     if (bits.size() >= field.getStartBit())
-                        course = AISMessageDecoder.decodeCourse(bits, field.getStartBit(), field.getEndBit());
+                        courseOverGround = AISMessageDecoder.decodeCourse(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case HEADING:
                     if (bits.size() >= field.getStartBit())

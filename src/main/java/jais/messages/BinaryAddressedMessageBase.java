@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.BinaryAddressedMessageType;
 import jais.messages.enums.FieldMap;
@@ -107,12 +106,11 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
     /**
      *
      * @return BinaryAddressedMessageBase
-     * @throws jais.exceptions.AISException if we are unable to determine
-     *                                      subtype
+     *         subtype
      */
     @Override
-    public BinaryAddressedMessageBase getSubTypeInstance() throws AISException {
-        BinaryAddressedMessageBase message;
+    public BinaryAddressedMessageBase getSubTypeInstance() {
+        BinaryAddressedMessageBase message = null;
 
         if (this.subType == null) {
             decode(); // we need the dac and fid
@@ -129,20 +127,20 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
                 con.setAccessible(true);
 
                 if (this.sentences.length == 1) {
-                    message = (BinaryAddressedMessageBase) con.newInstance((Object) this.sentences);
+                    message = con.newInstance((Object) this.sentences);
                 } else {
-                    message = (BinaryAddressedMessageBase) con.newInstance(new Object[] { this.sentences });
+                    message = con.newInstance(new Object[] { this.sentences });
                 }
 
                 message.setType(super.getType());
                 message.setSubType(this.subType);
             } catch (ReflectiveOperationException roe) {
-                throw new AISException("Reflection failure: " + roe.getMessage(), roe);
+                LOG.trace("Reflection failure: {}", roe.getMessage(), roe);
             } catch (SecurityException se) {
-                throw new AISException("SecurityException: " + se.getMessage(), se);
+                LOG.trace("SecurityException: {}", se.getMessage(), se);
             }
         } else {
-            throw new AISException("Unable to determine message subtype for DAC: " + dac + " and FID: " + fid);
+            LOG.trace("Unable to determine message subtype for DAC:{} and FID: {}", dac, fid);
         }
 
         return message;
@@ -150,10 +148,9 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
 
     /**
      *
-     * @throws jais.exceptions.AISException if we are unable to decode the message
      */
     @Override
-    public void decode() throws AISException {
+    public void decode() {
         super.decode();
 
         for (BinaryAddressedMessageFieldMap field : BinaryAddressedMessageFieldMap.values()) {
@@ -179,7 +176,6 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
                         fid = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case DATA:
-                    break;
                 case SPARE:
                     break;
             }

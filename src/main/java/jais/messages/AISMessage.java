@@ -16,7 +16,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.MMSIType;
@@ -45,7 +44,7 @@ public interface AISMessage {
      * @param imo the IMO (in String form) of the originating vessel
      * @return a boolean indicating whether or not the provided IMO is valid
      */
-    public static boolean isValidImo(String imo) {
+    static boolean isValidImo(String imo) {
         if (imo.toLowerCase().startsWith("imo"))
             return isValidImo(Long.parseLong(imo.substring(4)));
         return isValidImo(Long.parseLong(imo));
@@ -57,7 +56,7 @@ public interface AISMessage {
      * @param imo the IMO (in long form) of the originating vessel
      * @return a boolean indicating whether or not the provided IMO is valid
      */
-    public static boolean isValidImo(long imo) {
+    static boolean isValidImo(long imo) {
         LOG.info("Validating IMO: {}", imo);
 
         boolean valid = (Long.toString(imo).length() == 7);
@@ -189,17 +188,15 @@ public interface AISMessage {
     /**
      *
      * @return A properly typed instance of AISMessage given the message content
-     * @throws AISException if we are unable to determine the subtype instance
-     *                      (usually because of a decoding or parsing error)
+     *         (usually because of a decoding or parsing error)
      */
-    AISMessage getSubTypeInstance() throws AISException;
+    AISMessage getSubTypeInstance();
 
     /**
      * Decodes this message
      * 
-     * @throws AISException if decoding fails
      */
-    void decode() throws AISException;
+    void decode();
 
     /**
      * Fields common to all messages

@@ -2,16 +2,16 @@ package jais.messages.nmea.rmc;
 
 import jais.ByteArrayUtils;
 import jais.exceptions.ParseException;
-import jais.messages.nmea.ENMEAType;
-import jais.messages.nmea.NMEASentence;
+import jais.messages.enums.SentenceType;
+import jais.Sentence;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class RMCNavigational implements NMEASentence {
+public class RMCNavigational implements Sentence {
 
-    ENMEAType type = ENMEAType.RMC_NAVIGATIONAL;
+    SentenceType sentenceType = SentenceType.NMEA_RMC_NAVIGATIONAL;
     float fixTaken;
     EStatus status;
     String lat;

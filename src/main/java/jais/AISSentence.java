@@ -15,30 +15,35 @@
  */
 package jais;
 
-import jais.exceptions.AISException;
-import jais.exceptions.AISSentenceException;
-import jais.exceptions.ParseException;
-import jais.messages.enums.Manufacturers;
-import jais.messages.enums.Talkers;
-import jais.messages.AISMessageDecoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.util.Objects;
+
+import jais.messages.AISMessageDecoder;
+import jais.messages.enums.Manufacturers;
+import jais.messages.enums.SentenceType;
+import jais.messages.enums.Talkers;
+import lombok.Getter;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public final class AISSentence implements Sentence {
 
     private final static Logger LOG = LogManager.getLogger(AISSentence.class);
@@ -55,7 +60,7 @@ public final class AISSentence implements Sentence {
     private final static double CHANNEL_A_FREQUENCY_IN_MHZ = 161.975;
     private final static double CHANNEL_B_FREQUENCY_IN_MHZ = 162.025;
 
-    public final static String PREAMBLE = "([!|\\$]{1})([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]{1})){1}";
+    public final static String PREAMBLE = "([!|$])([A-Z0-9]{1,2})(([A-Z]{2})([A-Z]))";
     public final static Pattern PREAMBLE_PATTERN = Pattern.compile(PREAMBLE);
     public final static Pattern SENTENCE_PATTERN = Pattern
             .compile("(" + TagBlock.TAGBLOCK_STRING + ")?(" + PREAMBLE + "(.*))");
@@ -79,6 +84,8 @@ public final class AISSentence implements Sentence {
     private final long timeReceived = ZonedDateTime.now(ZoneOffset.UTC.normalized()).toInstant().toEpochMilli();
     private byte[][] sentenceParts;
     private boolean parsed = false;
+
+    private final SentenceType sentenceType = SentenceType.NMEA_AIS;
 
     /**
      * Constructor
@@ -135,8 +142,14 @@ public final class AISSentence implements Sentence {
             this.source = ByteArrayUtils.str2bArray(DEFAULT_SOURCE);
     }
 
-    public void parse() throws ParseException {
-
+    /**
+     * 
+     */
+    @Override
+    public void parse() {
+        if (this.sentenceParts[0] != null) this.preamble = new Preamble(this.sentenceParts[0]);
+        this.validatePreamble();
+        this.process();
     }
 
     /**
@@ -144,15 +157,15 @@ public final class AISSentence implements Sentence {
      *
      * @return boolean indicating whether or not the preamble is valid
      */
-    private boolean validatePreamble() throws ParseException {
+    private boolean validatePreamble() {
         if (this.sentenceParts == null) {
-            LOG.debug("this.sentenceParts is null");
+            LOG.trace("this.sentenceParts is null");
             return false;
         } else if (this.sentenceParts.length == 0) {
-            LOG.debug("this.sentenceParts has zero members");
+            LOG.trace("this.sentenceParts has zero members");
             return false;
-        } else if (this.sentenceParts[0] == null) {
-            LOG.debug("this.sentenceParts[0] is null");
+        } else if (this.preamble == null && this.sentenceParts[0] == null) {
+            LOG.trace("this.sentenceParts[0] is null");
             return false;
         } else {
             if (LOG.isTraceEnabled())
@@ -177,20 +190,9 @@ public final class AISSentence implements Sentence {
      * 
      * @param preambleStr String preamble to evaluate for validity
      * @return boolean indicating whether or not the preamble is valid
-     * @throws ParseException If we are unable to parse the preamble
      */
-    public static boolean validatePreamble(String preambleStr) throws ParseException {
+    public static boolean validatePreamble(String preambleStr) {
         return validatePreamble(Preamble.parse(preambleStr));
-    }
-
-    /**
-     * Fetch the preamble (e.g. !AISVDM)
-     * 
-     * @see jais.AISSentence.Preamble
-     * @return Preamble object
-     */
-    public final Preamble getPreamble() {
-        return this.preamble;
     }
 
     /**
@@ -205,22 +207,12 @@ public final class AISSentence implements Sentence {
     }
 
     /**
-     * Returns the TagBlock parsed from this AISsentence
-     * 
-     * @see jais.TagBlock
-     * @return TagBlock for this AISsentence
-     */
-    public final TagBlock getTagBlock() {
-        return this.tagBlock;
-    }
-
-    /**
      * Validates the contents of the sentence and breaks it into its constituent
      * parts
-     *
-     * @return @throws AISSentenceException if processing fails
+     * 
+     * @return an AISSentence that is the product of the processing
      */
-    public final AISSentence process() throws AISSentenceException {
+    public final AISSentence process() {
         return process(false);
     }
 
@@ -233,26 +225,25 @@ public final class AISSentence implements Sentence {
      *                    be pre-pended to the sentence
      * @see jais.TagBlock
      * @return a reference to the current AISsentence object
-     * @throws jais.exceptions.AISSentenceException if the raw sentence is empty or
-     *                                              malformed
+     *         malformed
      */
-    public final AISSentence process(boolean addTagBlock) throws AISSentenceException {
+    public final AISSentence process(boolean addTagBlock) {
         String rawSentence;
 
-        if (this.rawSentence == null)
-            throw new AISSentenceException("Raw sentence is null");
-        else if (this.rawSentence.length == 0)
-            throw new AISSentenceException("Raw sentence is empty");
-        else {
+        if (this.rawSentence == null) {
+            LOG.trace("Raw sentence is null");
+            return this;
+        } else if (this.rawSentence.length == 0) {
+            LOG.trace("Raw sentence is empty");
+            return this;
+        } else {
             rawSentence = ByteArrayUtils.bArray2Str(ByteArrayUtils.trimByteArray(this.rawSentence));
-            if (LOG.isDebugEnabled())
-                LOG.debug("Processing new raw sentence: {}", rawSentence);
+            LOG.trace("Processing new raw sentence: {}", rawSentence);
         }
 
         Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher(rawSentence);
         if (m.find()) {
-            if (LOG.isDebugEnabled())
-                LOG.debug("Found a TagBlock in \"{}\"", rawSentence);
+            LOG.trace("Found a TagBlock in \"{}\"", rawSentence);
             try {
                 if (this.source == null || this.source.length == 0) {
                     this.tagBlock = TagBlock.parse(m.group(0));
@@ -260,8 +251,8 @@ public final class AISSentence implements Sentence {
                 } else
                     this.tagBlock = TagBlock.parse(m.group(0), this.source);
             } catch (Throwable t) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Unable to parse TagBlock from {}", m.group(0));
+                if (LOG.isTraceEnabled())
+                    LOG.trace("Unable to parse TagBlock from {}", m.group(0));
             }
 
             this.sentenceBody = ByteArrayUtils.str2bArray(rawSentence.substring(m.end()));
@@ -270,73 +261,65 @@ public final class AISSentence implements Sentence {
                 this.tagBlock = TagBlock.build(this.source);
             this.sentenceBody = this.rawSentence;
         } else {
-            if (LOG.isDebugEnabled())
-                LOG.debug("No TagBlock found and addTagBlock is false");
+            LOG.trace("No TagBlock found and addTagBlock is false");
             this.sentenceBody = this.rawSentence;
         }
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("this.sentenceBody = \"{}\"", ByteArrayUtils.bArray2Str(this.sentenceBody));
+        if (LOG.isTraceEnabled())
+            LOG.trace("this.sentenceBody = \"{}\"", ByteArrayUtils.bArray2Str(this.sentenceBody));
 
         if (this.sentenceParts == null)
             this.sentenceParts = ByteArrayUtils.fastSplit(this.sentenceBody, FIELD_DELIMITER);
 
         if (this.sentenceParts == null || this.sentenceParts.length < 6)
-            throw new AISSentenceException(
-                    "Raw sentence contains no message (inadequate number of comma-separated values).");
+            LOG.trace("Raw sentence contains no message (inadequate number of comma-separated values).");
 
         switch (this.sentenceParts.length) {
             case 10:
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Unrecognized field at position 10: {}",
+                if (LOG.isTraceEnabled())
+                    LOG.trace("Unrecognized field at position 10: {}",
                             ByteArrayUtils.bArray2Str(this.sentenceParts[9]));
             case 9:
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Unrecognized field at position  9: {}",
+                if (LOG.isTraceEnabled())
+                    LOG.trace("Unrecognized field at position  9: {}",
                             ByteArrayUtils.bArray2Str(this.sentenceParts[8]));
             case 8:
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Unrecognized field at position  8: {}",
+                if (LOG.isTraceEnabled())
+                    LOG.trace("Unrecognized field at position  8: {}",
                             ByteArrayUtils.bArray2Str(this.sentenceParts[7]));
             case 7:
-                try {
-                    if (this.sentenceParts[6] != null && this.sentenceParts[6].length > 0) {
-                        byte[] checksum = this.sentenceParts[6];
-                        int csIndex = ByteArrayUtils.indexOf(this.sentenceParts[6], CHECKSUM_DELIMITER);
-                        if (csIndex != -1) {
-                            this.fillBits = Integer.parseInt(ByteArrayUtils.substring(checksum, 0, csIndex));
-                            this.checksum = ByteArrayUtils
-                                    .trimByteArray(Arrays.copyOfRange(checksum, csIndex + 1, checksum.length));
-                        } else if (LOG.isDebugEnabled())
-                            LOG.debug("sentence is missing checksum!");
+                if (this.sentenceParts[6] != null && this.sentenceParts[6].length > 0) {
+                    try {
+                        byte[] firstByte = { this.sentenceParts[6][0] };
+                        this.fillBits = Integer.parseInt(ByteArrayUtils.bArray2Str(firstByte));
+                    } catch (NumberFormatException nfe) {
                     }
-                } catch (NumberFormatException nfe) {
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Failed to set fill bits and/or checksum due to NumberFormatException: {}",
-                                nfe.getMessage());
+
+                    int csIndex = ByteArrayUtils.indexOf(this.sentenceParts[6], CHECKSUM_DELIMITER);
+                    if (csIndex != -1) {
+                        byte[] checksumBytes = Arrays.copyOfRange(
+                                this.sentenceParts[6], csIndex + 1, this.sentenceParts[6].length);
+                        if (checksumBytes != null && checksumBytes.length > 0) {
+                            this.checksum = ByteArrayUtils.trimByteArray(checksumBytes);
+                        }
+                    } else
+                        LOG.trace("Sentence is missing checksum!");
                 }
             case 6:
                 if (this.sentenceParts[5] == null)
-                    throw new AISSentenceException("Raw message is null.");
+                    LOG.trace("Raw message is null.");
                 else if (this.sentenceParts[5].length == 0)
-                    throw new AISSentenceException("Raw message is empty.");
+                    LOG.trace("Raw message is empty.");
                 this.binaryString = this.sentenceParts[5]; // only the binary string
                 break;
             default:
-                throw new AISSentenceException("sentence is corrupt and has no message body.");
+                if (LOG.isTraceEnabled())
+                    LOG.trace("Sentence is corrupt and has no message body: {}",
+                            ByteArrayUtils.bArray2Str(this.rawSentence));
         }
 
         this.parsed = true;
         return this;
-    }
-
-    /**
-     * Returns a boolean indicating whether this AISsentence object has been parsed
-     *
-     * @return a boolean representing the parse state of this AISsentence object
-     */
-    public final boolean isParsed() {
-        return this.parsed;
     }
 
     /**
@@ -355,8 +338,8 @@ public final class AISSentence implements Sentence {
             if (this.sentenceParts == null)
                 process();
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("Validating sentenceBody: {}", ByteArrayUtils.bArray2Str(this.sentenceBody));
+            if (LOG.isTraceEnabled())
+                LOG.trace("Validating sentenceBody: {}", ByteArrayUtils.bArray2Str(this.sentenceBody));
 
             if (this.sentenceBody.length > 82)
                 return false; // invalid sentence length
@@ -372,7 +355,7 @@ public final class AISSentence implements Sentence {
                 // is this character within an accepted range?
                 if (!((c <= AISMessageDecoder.CHAR_RANGE_A_MAX && c >= AISMessageDecoder.CHAR_RANGE_A_MIN)
                         || (c <= AISMessageDecoder.CHAR_RANGE_B_MAX && c >= AISMessageDecoder.CHAR_RANGE_B_MIN))) {
-                    LOG.debug("sentence contains an invalid character: {}", c);
+                    LOG.trace("sentence contains an invalid character: {}", c);
                     return false;
                 }
             }
@@ -383,17 +366,15 @@ public final class AISSentence implements Sentence {
             if (csIndex > 0) {
                 // validate checksum
                 if (!validateChecksum(this.sentenceBody, this.checksum)) {
-                    LOG.debug("sentence failed checksum validation.");
+                    LOG.trace("sentence failed checksum validation.");
                     return false;
                 }
             } else {
-                LOG.fatal("sentence is missing fillbits and/or checksum.");
+                LOG.fatal("sentence is missing checksum.");
                 return false;
             }
-        } catch (AISSentenceException | ParseException ape) {
-            // do nothing
-            if (LOG.isDebugEnabled())
-                LOG.debug("sentence validation failed: {}", ape.getMessage(), ape);
+        } catch (Exception e) {
+            LOG.trace("sentence validation failed: {}", e.getMessage(), e);
             return false;
         }
 
@@ -407,15 +388,15 @@ public final class AISSentence implements Sentence {
      * @return a generated int checksum for the provided char []
      */
     private static int generateChecksum(char[] source) {
-        if (LOG.isDebugEnabled())
-            LOG.debug("Generating checksum for String \"{}\"", new String(source));
+        if (LOG.isTraceEnabled())
+            LOG.trace("Generating checksum for String \"{}\"", new String(source));
 
         int crc = 0;
         for (char aSource : source)
             crc ^= aSource;
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("Generated CRC = {}(int)/{}(hex)", crc, Integer.toHexString(crc));
+        if (LOG.isTraceEnabled())
+            LOG.trace("Generated CRC = {}(int)/{}(hex)", crc, Integer.toHexString(crc));
 
         return crc;
     }
@@ -432,7 +413,7 @@ public final class AISSentence implements Sentence {
 
         hexString = (hexString.length() == 1) ? "0" + hexString : hexString;
 
-        LOG.debug("Produced hex string {} from sourceString {}", hexString, sourceString);
+        LOG.trace("Produced hex string {} from sourceString {}", hexString, sourceString);
 
         return hexString;
     }
@@ -447,11 +428,10 @@ public final class AISSentence implements Sentence {
     private static int getChecksum(String data) {
         int index = data.indexOf(String.valueOf(CHECKSUM_DELIMITER));
         if (index > -1) {
-            if (LOG.isDebugEnabled())
-                LOG.debug("Found * at {}", index);
+            LOG.trace("Found * at {}", index);
             return getChecksum(data, 1, data.indexOf((String.valueOf(CHECKSUM_DELIMITER))));
         } else {
-            LOG.debug("Index was {}", index);
+            LOG.trace("Index was {}", index);
             return getChecksum(data, 1, data.length());
         }
     }
@@ -505,10 +485,10 @@ public final class AISSentence implements Sentence {
 
         try {
             calcChecksum = getChecksum(trimmed);
-            LOG.debug("Generated checksum {}", calcChecksum);
+            LOG.trace("Generated checksum {}", calcChecksum);
         } catch (NumberFormatException nfe) {
-            if (LOG.isDebugEnabled())
-                LOG.debug("Cannot produce a checksum from  \"{}\"", ByteArrayUtils.bArray2Str(trimmed));
+            if (LOG.isTraceEnabled())
+                LOG.trace("Cannot produce a checksum from  \"{}\"", ByteArrayUtils.bArray2Str(trimmed));
             return false;
         }
 
@@ -520,11 +500,11 @@ public final class AISSentence implements Sentence {
             return false;
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Comparing: \"{}/{}\" to \"{}/{}\"", pktChecksum, ByteArrayUtils
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Comparing: \"{}/{}\" to \"{}/{}\"", pktChecksum, ByteArrayUtils
                     .bArray2Str(sentenceChecksum).toUpperCase(),
                     calcChecksum, Long.toHexString(calcChecksum).toUpperCase());
-            LOG.debug("\"{}\" is {} equal to \"{}\"", calcChecksum, ((calcChecksum == pktChecksum) ? "" : "not"),
+            LOG.trace("\"{}\" is {} equal to \"{}\"", calcChecksum, ((calcChecksum == pktChecksum) ? "" : "not"),
                     pktChecksum);
         }
 
@@ -540,11 +520,11 @@ public final class AISSentence implements Sentence {
      * @return a generated String representation of a complete AIS sentence (with
      *         prefix, suffix, checksum, etc)
      */
-    public static String createsentenceStringFromBinaryString(String rawData) {
+    public static String createSentenceStringFromBinaryString(String rawData) {
         String sentenceString = "!AIVDM,1,1,,A," + rawData + ",0*";
-        LOG.debug("sentence before checksum: {}", sentenceString);
+        LOG.trace("sentence before checksum: {}", sentenceString);
         sentenceString += Integer.toHexString(AISSentence.getChecksum(sentenceString));
-        LOG.debug("sentence after checksum: {}", sentenceString);
+        LOG.trace("sentence after checksum: {}", sentenceString);
 
         return sentenceString;
     }
@@ -556,11 +536,8 @@ public final class AISSentence implements Sentence {
      * 
      * @param rawData The binary encoded String
      * @return an AISsentence object based on the provided binary string
-     * @throws jais.exceptions.AISSentenceException if we are unable to produce an
-     *                                              AISsentence from the binary
-     *                                              string
      */
-    public static AISSentence createFromBinaryString(String rawData) throws AISSentenceException {
+    public static AISSentence createFromBinaryString(String rawData) {
         return createFromBinaryString(rawData, null);
     }
 
@@ -572,15 +549,11 @@ public final class AISSentence implements Sentence {
      * @param source  A string representing the source from which this sentence
      *                originated
      * @return an AISsentence object based on the provided binary string
-     * @throws jais.exceptions.AISSentenceException if we are unable to transform
-     *                                              teh
-     *                                              binary string into a sentence
-     *                                              string
      */
-    public static AISSentence createFromBinaryString(String rawData, String source) throws AISSentenceException {
+    public static AISSentence createFromBinaryString(String rawData, String source) {
         if (source == null)
             source = "UNKNOWN";
-        return new AISSentence(createsentenceStringFromBinaryString(rawData), source);
+        return new AISSentence(createSentenceStringFromBinaryString(rawData), source);
     }
 
     /**
@@ -601,11 +574,11 @@ public final class AISSentence implements Sentence {
      * @return a String representation of the AISsentence with a pre-pended TagBlock
      *         String
      */
-    public final String generateTagBlocksentenceString() {
+    public final String generateTagBlockSentenceString() {
         TagBlock tb = new TagBlock();
         tb.setSource(this.source);
         tb.setTimestamp(this.timeReceived);
-        return generateTagBlocksentenceString(this.rawSentence, tb);
+        return generateTagBlockSentenceString(this.rawSentence, tb);
     }
 
     /**
@@ -617,12 +590,12 @@ public final class AISSentence implements Sentence {
      * @param text the byte array we wish to use to construct a TagBlock String
      * @return a String representing the TagBlock contents
      */
-    public final String generateTagBlocksentenceString(byte[] text) {
+    public final String generateTagBlockSentenceString(byte[] text) {
         TagBlock tb = new TagBlock();
         tb.setSource(this.source);
         tb.setTimestamp(this.timeReceived);
         tb.setTextStr(text);
-        return generateTagBlocksentenceString(this.rawSentence, tb);
+        return generateTagBlockSentenceString(this.rawSentence, tb);
     }
 
     /**
@@ -635,7 +608,7 @@ public final class AISSentence implements Sentence {
      * @param tb          The TagBlock object we wish to prepend to the AIS sentence
      * @return A String representation of the concatenated TagBlock and AIS sentence
      */
-    private static String generateTagBlocksentenceString(byte[] rawSentence, TagBlock tb) {
+    private static String generateTagBlockSentenceString(byte[] rawSentence, TagBlock tb) {
         return tb.toString() + ByteArrayUtils.bArray2Str(rawSentence);
     }
 
@@ -820,6 +793,28 @@ public final class AISSentence implements Sentence {
     }
 
     /**
+     * Takes a String parameter and divides it into one or more distinct AISSentece
+     * objects
+     * 
+     * @param sentence String to split or Truncate into multiple AISSentence objects
+     * @return Optional AISSentence[] which may be empty if no valid AISSentences
+     *         could be found
+     */
+    public static Optional<AISSentence[]> splitOrTruncate(String sentence) {
+        if (sentence != null && sentence.length() > 0) {
+            int index = getSentenceTruncIndex(sentence);
+            if (index > -1) {
+                String[] sentStrs = ByteArrayUtils.fastSplit(sentence, '!');
+                List<AISSentence> sList = Arrays.stream(sentStrs).map(AISSentence::new)
+                        .collect(Collectors.toList());
+                AISSentence[] sentences = new AISSentence[sList.size()];
+                return Optional.of(sList.toArray(sentences));
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Truncates the provided StringBuilder object based on the index returned by
      * {@link #getSentenceTruncIndex( String s )}
      * 
@@ -842,8 +837,7 @@ public final class AISSentence implements Sentence {
         String substring = null;
 
         if (truncIndex != -1) {
-            if (LOG.isDebugEnabled())
-                LOG.debug("Truncating: {}", s);
+            LOG.trace("Truncating: {}", s);
             substring = s.substring(0, truncIndex);
         }
 
@@ -859,8 +853,7 @@ public final class AISSentence implements Sentence {
     private static int getSentenceTruncIndex(String s) {
         int truncIndex = 0;
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("Evaluating \"{}\" for truncation point.", s);
+        LOG.trace("Evaluating \"{}\" for truncation point.", s);
 
         // String [] sansTagBlock = s.split( "\\\\!" );
         //
@@ -871,28 +864,23 @@ public final class AISSentence implements Sentence {
         Matcher m = AISSentence.PREAMBLE_PATTERN.matcher(s);
         if (m.find()) {
             if (s.contains("\n")) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("String is terminated by a newline");
+                LOG.trace("String is terminated by a newline");
                 truncIndex = s.indexOf("\n");
             } else if (s.contains("\r")) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("String is terminated by a carriage return");
+                LOG.trace("String is terminated by a carriage return");
                 truncIndex = s.indexOf("\r");
             } else if (m.find()) {
                 truncIndex = s.indexOf(m.group(0), 1);
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Truncating based on preamble");
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Matched string for index is: \"{}\"", m.group(0));
+                LOG.trace("Truncating based on preamble");
+                if (LOG.isTraceEnabled())
+                    LOG.trace("Matched string for index is: \"{}\"", m.group(0));
             } else {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Line should not be truncated.");
+                LOG.trace("Line should not be truncated.");
                 truncIndex = -1;
             }
         }
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("Truncation index set to {}", truncIndex);
+        LOG.trace("Truncation index set to {}", truncIndex);
 
         return truncIndex;
     }
@@ -903,13 +891,10 @@ public final class AISSentence implements Sentence {
      * and returns the results as a byte []
      *
      * @param sentences one or more AISsentence objects that we wish to combine into
-     *                  a
-     *                  single binary string for decoding
+     *                  a single binary string for decoding
      * @return a byte [] representation of the concatenated AIS binary strings
-     * @throws AISException if AISsentence.process() fails on any of the provided
-     *                      sentences
      */
-    public static byte[] concatenate(AISSentence... sentences) throws AISException {
+    public static byte[] concatenate(AISSentence... sentences) {
         if (sentences.length == 1) {
             if (!sentences[0].isParsed())
                 sentences[0].process();
@@ -918,8 +903,7 @@ public final class AISSentence implements Sentence {
 
         byte[] compositeMsg = null;
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("Concatenating {} sentences.", sentences.length);
+        LOG.trace("Concatenating {} sentences.", sentences.length);
         for (AISSentence sentence : sentences) {
             if (sentence == null) {
                 LOG.warn("Skipping null sentence in {} length array of sentences.", sentences.length);
@@ -960,7 +944,7 @@ public final class AISSentence implements Sentence {
             return false;
 
         return (Arrays.equals(that.getRawSentence(), this.rawSentence)
-                && Objects.equals(that.getSource(), this.source));
+                && Arrays.equals(that.getSource(), this.source));
     }
 
     /**
@@ -1029,9 +1013,8 @@ public final class AISSentence implements Sentence {
          * rawPreamble byte [] and returns this Preamble object
          *
          * @return a Preamble object
-         * @throws ParseException if we are unable to parse the preamble
          */
-        public Preamble parse() throws ParseException {
+        public Preamble parse() {
             return parse(this, ByteArrayUtils.bArray2Str(rawPreamble));
         }
 
@@ -1041,9 +1024,8 @@ public final class AISSentence implements Sentence {
          *
          * @param rawPreamble the unparsed preamble in byte array form
          * @return a Preamble object based on parsing the provided rawPreamble
-         * @throws ParseException if the parsing of the preamble fails
          */
-        public static Preamble parse(byte[] rawPreamble) throws ParseException {
+        public static Preamble parse(byte[] rawPreamble) {
             return parse(ByteArrayUtils.bArray2Str(rawPreamble));
         }
 
@@ -1053,9 +1035,8 @@ public final class AISSentence implements Sentence {
          *
          * @param rawPreamble a String representation of the unparsed preamble
          * @return a Preamble object
-         * @throws ParseException if the parsing of the preamble fails
          */
-        public static Preamble parse(String rawPreamble) throws ParseException {
+        public static Preamble parse(String rawPreamble) {
             return parse(new Preamble(ByteArrayUtils.str2bArray(rawPreamble)), rawPreamble);
         }
 
@@ -1067,17 +1048,15 @@ public final class AISSentence implements Sentence {
          * @param rawPreamble the raw String we wish to parse in order to build our
          *                    Preamble object
          * @return the completed Preamble object
-         * @throws ParseException if we are unable to parse the preamble
          */
-        public static Preamble parse(Preamble p, String rawPreamble) throws ParseException {
-            if (LOG.isDebugEnabled())
-                LOG.debug("Parsing {}", rawPreamble);
+        public static Preamble parse(Preamble p, String rawPreamble) {
+            LOG.trace("Parsing {}", rawPreamble);
             Matcher m = PREAMBLE_PATTERN.matcher(rawPreamble);
             if (m.find()) {
                 String parsed = m.group(0);
                 p.parsed = ByteArrayUtils.str2bArray(parsed);
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Found {} matcher groups: {}=({})({})({})({})", m.groupCount(),
+                if (LOG.isTraceEnabled())
+                    LOG.trace("Found {} matcher groups: {}=({})({})({})({})", m.groupCount(),
                             m.group(), m.group(1), m.group(2), m.group(4), m.group(5));
                 p.firstChar = m.group(1).charAt(0);
 
@@ -1086,7 +1065,8 @@ public final class AISSentence implements Sentence {
                 else if (m.group(1).equals("$"))
                     p.isEncapsulated = false;
                 else {
-                    LOG.debug("Unrecognized starting character in address field: {}", m.group(1));
+                    if (LOG.isTraceEnabled())
+                        LOG.trace("Unrecognized starting character in address field: {}", m.group(1));
                     p.isEncapsulated = false;
                 }
 
@@ -1097,13 +1077,14 @@ public final class AISSentence implements Sentence {
                     p.talker = Talkers.valueOf(m.group(2).toUpperCase());
                 } else {
                     p.talker = null;
-                    LOG.debug("Unrecognized/invalid talker type: {}", m.group(2));
+                    if (LOG.isTraceEnabled())
+                        LOG.trace("Unrecognized/invalid talker type: {}", m.group(2));
                 }
 
                 p.format = ByteArrayUtils.str2bArray(m.group(4));
                 p.isQuery = m.group(5).equals("Q");
             } else {
-                LOG.debug("Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE);
+                LOG.trace("Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE);
             }
 
             return p;

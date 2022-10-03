@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
@@ -40,9 +39,8 @@ public class SafetyRelatedAcknowledgement extends AISMessageBase {
      *
      * @param source
      * @param packets
-     * @throws jais.exceptions.AISException
      */
-    public SafetyRelatedAcknowledgement(String source, AISSentence... packets) throws AISException {
+    public SafetyRelatedAcknowledgement(String source, AISSentence... packets) {
         super(source, packets);
     }
 
@@ -66,10 +64,9 @@ public class SafetyRelatedAcknowledgement extends AISMessageBase {
 
     /**
      *
-     * @throws jais.exceptions.AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (SafetyRelatedAcknowledgeFieldMap field : SafetyRelatedAcknowledgeFieldMap.values()) {

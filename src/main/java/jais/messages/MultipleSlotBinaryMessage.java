@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import lombok.Setter;
@@ -65,10 +64,9 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
 
     /**
      *
-     * @throws jais.exceptions.AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (MultipleSlotBinaryMessageFieldMap field : MultipleSlotBinaryMessageFieldMap.values()) {
@@ -108,7 +106,7 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
                     } else if (bits.length() > 61) {
                         data = bits.get(40, (bits.size() - 61));
                     } else {
-                        throw new AISException("Invalid bit count.  BitVector size: " + bits.size()
+                        LOG.trace("Invalid bit count.  BitVector size: " + bits.size()
                                 + ", BitVector length: " + bits.length());
                     }
                     break;

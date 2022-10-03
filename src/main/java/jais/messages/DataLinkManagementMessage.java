@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import lombok.Setter;
@@ -72,10 +71,9 @@ public class DataLinkManagementMessage extends AISMessageBase {
     }
 
     /**
-     * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (DataLinkManagementMessageFieldMap field : DataLinkManagementMessageFieldMap.values()) {

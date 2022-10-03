@@ -21,7 +21,9 @@ public final class ByteArrayUtils {
      * @param bytes the byte [] to decode into a String
      * @return the String decoded from the provided byte array
      */
-    public final static String bArray2Str(byte[] bytes) {
+    public static String bArray2Str(byte[] bytes) {
+        if (bytes == null || bytes.length == 0)
+            return null;
         return bArray2Str(bytes, DEFAULT_CHARSET);
     }
 
@@ -32,7 +34,9 @@ public final class ByteArrayUtils {
      * @param cs    the Charset that should be used to perform the decode operation
      * @return the String decoded from the provided byte []
      */
-    public final static String bArray2Str(byte[] bytes, Charset cs) {
+    public static String bArray2Str(byte[] bytes, Charset cs) {
+        if (bytes == null || bytes.length == 0)
+            return null;
         return new String(bArray2cArray(bytes, cs));
     }
 
@@ -43,7 +47,9 @@ public final class ByteArrayUtils {
      *               of StandardCharsets.US_ASCII
      * @return the byte [] encoded from the provided String
      */
-    public final static byte[] str2bArray(String string) {
+    public static byte[] str2bArray(String string) {
+        if (string == null || string.length() == 0)
+            return null;
         return str2bArray(string, DEFAULT_CHARSET);
     }
 
@@ -55,7 +61,9 @@ public final class ByteArrayUtils {
      * @return the byte [] encoded from the provided String, using the provided
      *         Charset
      */
-    public final static byte[] str2bArray(String s, Charset cs) {
+    public static byte[] str2bArray(String s, Charset cs) {
+        if (s == null || s.length() == 0)
+            return null;
         return cs.encode(s).array();
     }
 
@@ -66,7 +74,9 @@ public final class ByteArrayUtils {
      *              of StandardCharsets.US_ASCII
      * @return the char [] decoded from the provided byte []
      */
-    public final static char[] bArray2cArray(byte[] bytes) {
+    public static char[] bArray2cArray(byte[] bytes) {
+        if (bytes == null || bytes.length == 0)
+            return null;
         return bArray2cArray(bytes, DEFAULT_CHARSET);
     }
 
@@ -78,7 +88,9 @@ public final class ByteArrayUtils {
      * @return the char [] decoded from the provided byte [] using the provided
      *         Charset
      */
-    public final static char[] bArray2cArray(byte[] bytes, Charset cs) {
+    public static char[] bArray2cArray(byte[] bytes, Charset cs) {
+        if (bytes == null || bytes.length == 0)
+            return null;
         return cs.decode(ByteBuffer.wrap(bytes)).array();
     }
 
@@ -90,7 +102,7 @@ public final class ByteArrayUtils {
      * @return the encoded byte [] from the provide char [] using the provided
      *         Charset
      */
-    public final static byte[] cArray2bArray(char[] ca, Charset cs) {
+    public static byte[] cArray2bArray(char[] ca, Charset cs) {
         return cs.encode(CharBuffer.wrap(ca)).array();
     }
 
@@ -102,7 +114,7 @@ public final class ByteArrayUtils {
      * @return the encoded byte [] from the provide char [] using the provided
      *         Charset
      */
-    public final static byte[] cArray2bArray(char[] ca) {
+    public static byte[] cArray2bArray(char[] ca) {
         return cArray2bArray(ca, DEFAULT_CHARSET);
     }
 
@@ -113,7 +125,7 @@ public final class ByteArrayUtils {
      * @param bytes the byte[] to be trimmed
      * @return the trimmed byte []
      */
-    public final static byte[] trimByteArray(byte[] bytes) {
+    public static byte[] trimByteArray(byte[] bytes) {
         return trimByteArray(bytes, DEFAULT_CHARSET);
     }
 
@@ -125,7 +137,7 @@ public final class ByteArrayUtils {
      * @param cs    the Charset to use in the conversion of the byte[] into a char[]
      * @return the trimmed byte []
      */
-    public final static byte[] trimByteArray(byte[] bytes, Charset cs) {
+    public static byte[] trimByteArray(byte[] bytes, Charset cs) {
         char[] chars = bArray2cArray(bytes, cs);
 
         for (int i = chars.length - 1; i > -1; i--) {
@@ -169,7 +181,7 @@ public final class ByteArrayUtils {
      * @return the substring decoded from the byte [] contained within the provided
      *         start index and end index of the provided byte array
      */
-    public final static String substring(byte[] bytes, int start, int end) {
+    public static String substring(byte[] bytes, int start, int end) {
         return bArray2Str(Arrays.copyOfRange(bytes, start, end));
     }
 
@@ -181,7 +193,7 @@ public final class ByteArrayUtils {
      * @return the substring decoded from the byte [] contained within the provided
      *         start index and end index of the provided byte array
      */
-    public final static String substring(byte[] bytes, int start) {
+    public static String substring(byte[] bytes, int start) {
         return bArray2Str(Arrays.copyOfRange(bytes, start, bytes.length - 1));
     }
 
@@ -192,7 +204,7 @@ public final class ByteArrayUtils {
      * @return an int representation of the provided byte []
      * @throws InvalidParameterException if the byte array is too short
      */
-    public final static int getInt(byte[] bytes) throws InvalidParameterException {
+    public static int getInt(byte[] bytes) throws InvalidParameterException {
         if (bytes.length < 4)
             throw new InvalidParameterException("The byte array is too short to represent an int");
         return ByteBuffer.wrap(bytes).getInt();
@@ -207,9 +219,23 @@ public final class ByteArrayUtils {
      * @return the first index of the provided char in the provided byte [] or -1 if
      *         the char does not exist within this byte []
      */
-    public final static int indexOf(byte[] ba, char c) {
+    public static int indexOf(byte[] ba, char c) {
+        return indexOf(ba, c, 0);
+    }
+
+    /**
+     * Returns the index of the first occurrence of char c in byte [] ba or -1
+     * the char is not present
+     *
+     * @param ba        the byte array we want to search
+     * @param c         the character for which we want the index
+     * @param startFrom the index from which to start the search
+     * @return the first index of the provided char in the provided byte [] or -1 if
+     *         the char does not exist within this byte []
+     */
+    public static int indexOf(byte[] ba, char c, int startFrom) {
         char[] chars = DEFAULT_CHARSET.decode(ByteBuffer.wrap(ba)).array();
-        for (int i = 0; i < chars.length; i++)
+        for (int i = startFrom; i < chars.length; i++)
             if (chars[i] == c)
                 return i;
 
@@ -222,7 +248,7 @@ public final class ByteArrayUtils {
      * @param toSplit The String we wish to split
      * @return a String [] containing the split elements of the source String
      */
-    public final static String[] fastSplit(String toSplit) {
+    public static String[] fastSplit(String toSplit) {
         return fastSplit(toSplit, ',');
     }
 
@@ -235,7 +261,7 @@ public final class ByteArrayUtils {
      * @return a byte [][] containing the segmentation of the provided byte [] based
      *         on the provided delimiter
      */
-    public final static byte[][] fastSplit(byte[] toSplit, char delimiter) {
+    public static byte[][] fastSplit(byte[] toSplit, char delimiter) {
         if (toSplit == null)
             return null;
 
@@ -270,7 +296,7 @@ public final class ByteArrayUtils {
      * @return a String [] containing the segmented version of the provided String
      *         based on the provided char delimiter
      */
-    public final static String[] fastSplit(String toSplit, char delimiter) {
+    public static String[] fastSplit(String toSplit, char delimiter) {
         if (toSplit == null)
             return null;
 

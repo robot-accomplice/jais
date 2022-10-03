@@ -19,7 +19,6 @@ package jais.messages;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.AISMessageType;
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.EPFDFixType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -163,10 +162,9 @@ public class UTCDateResponse extends AISMessageBase {
     }
 
     /**
-     * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (UTCDateResponseFieldMap field : UTCDateResponseFieldMap.values()) {

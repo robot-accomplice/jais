@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
@@ -74,10 +73,9 @@ public class Interrogation extends AISMessageBase {
 
     /**
      *
-     * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (InterrogationFieldMap field : InterrogationFieldMap.values()) {

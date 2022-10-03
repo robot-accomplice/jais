@@ -17,7 +17,6 @@
 package jais.messages.binaryaddressed;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
@@ -53,19 +52,17 @@ public class IMO236TidalWindow extends BinaryAddressedMessageBase {
      *
      * @param source
      * @param packets
-     * @throws jais.exceptions.AISException
+     * 
      */
-    public IMO236TidalWindow(String source, AISSentence... packets)
-            throws AISException {
+    public IMO236TidalWindow(String source, AISSentence... packets) {
         super(source, BinaryAddressedMessageType.TIDAL_WINDOW_DEPRECATED, packets);
     }
 
     /**
      *
-     * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         // here we need to figure out how many elements in an array of Tidal

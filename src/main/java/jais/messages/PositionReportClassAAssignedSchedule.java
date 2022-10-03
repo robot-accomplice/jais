@@ -17,7 +17,6 @@
 package jais.messages;
 
 import jais.messages.enums.AISMessageType;
-import jais.exceptions.AISException;
 import jais.AISSentence;
 
 /**
@@ -30,10 +29,8 @@ public class PositionReportClassAAssignedSchedule extends PositionReportBase {
      * 
      * @param source
      * @param aisPackets
-     * @throws jais.exceptions.AISException
      */
-    public PositionReportClassAAssignedSchedule(String source, AISSentence... aisPackets)
-            throws AISException {
+    public PositionReportClassAAssignedSchedule(String source, AISSentence... aisPackets) {
         super(source, AISMessageType.POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE, aisPackets);
     }
 }

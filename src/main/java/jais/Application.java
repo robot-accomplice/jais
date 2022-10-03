@@ -15,7 +15,6 @@
  */
 package jais;
 
-import jais.exceptions.AISException;
 import jais.messages.AISMessage;
 import jais.messages.AISMessageFactory;
 import jais.messages.PositionReportBase;
@@ -63,23 +62,19 @@ public class Application {
             // add header to file
             FileWriter.initFile(out);
 
-            Files.lines(in).forEach((String s) -> {
+            Files.lines(in).forEach(
+                    (String s) -> {
                 System.out.println("READ: " + s);
-                try {
-                    AISSentence packet = (AISSentence.validatePreamble(s))
-                            ? new AISSentence(s, inputFilePath)
-                            : AISSentence.createFromBinaryString(s, inputFilePath);
-                    Optional<AISMessage> msg = AISMessageFactory.create(inputFilePath, packet);
-                    if (msg.isPresent()) {
-                        try {
-                            FileWriter.writeln(out, msg.get());
-                        } catch (IOException ioe) {
-                            throw new RuntimeException("There was an error writing to file " + outputFilePath, ioe);
-                        }
+                AISSentence packet = (AISSentence.validatePreamble(s))
+                        ? new AISSentence(s, inputFilePath)
+                        : AISSentence.createFromBinaryString(s, inputFilePath);
+                Optional<AISMessage> msg = AISMessageFactory.create(inputFilePath, packet);
+                if (msg.isPresent()) {
+                    try {
+                        FileWriter.writeln(out, msg.get());
+                    } catch (IOException ioe) {
+                        throw new RuntimeException("There was an error writing to file " + outputFilePath, ioe);
                     }
-                } catch (jais.exceptions.ParseException | AISException ae) {
-                    LOG.warn("Encountered an AISException while processing AISPacket from String \"" + s + "\" "
-                            + ae.getMessage());
                 }
             });
         }
@@ -181,8 +176,8 @@ public class Application {
                 case POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION:
                     System.out.println("Writing " + message.getType() + " message to file...");
                     PositionReportBase prb = (PositionReportBase) message;
-                    msgSb.append(prb.isAccurate());
-                    msgSb.append(",").append(prb.getCourse());
+                    msgSb.append(prb.isAccuracy());
+                    msgSb.append(",").append(prb.getCourseOverGround());
                     msgSb.append(",").append(prb.getHeading());
                     msgSb.append(",").append(prb.getLat());
                     msgSb.append(",").append(prb.getLon());
@@ -193,10 +188,10 @@ public class Application {
                     msgSb.append(",").append(prb.getSecond());
                     msgSb.append(",").append(prb.getSpeed());
                     msgSb.append(",").append(prb.getStatus());
-                    msgSb.append(",").append(prb.getTurn());
+                    msgSb.append(",").append(prb.getRateOfTurn());
                     Files.write(path, msgSb.append("\n").toString().getBytes(),
                             StandardOpenOption.WRITE, StandardOpenOption.APPEND);
-                    LOG.info("WROTE: " + msgSb.toString());
+                    LOG.info("WROTE: " + msgSb);
                     break;
                 default:
                     LOG.warn("Skipping " + message.getType().name() + " message");

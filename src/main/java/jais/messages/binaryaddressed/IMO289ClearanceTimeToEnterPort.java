@@ -17,7 +17,6 @@
 package jais.messages.binaryaddressed;
 
 import jais.AISSentence;
-import jais.exceptions.AISException;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.BinaryAddressedMessageType;
 import jais.messages.enums.FieldMap;
@@ -53,10 +52,8 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
      *
      * @param source
      * @param packets
-     * @throws jais.exceptions.AISException
      */
-    public IMO289ClearanceTimeToEnterPort(String source, AISSentence... packets)
-            throws AISException {
+    public IMO289ClearanceTimeToEnterPort(String source, AISSentence... packets) {
         super(source, BinaryAddressedMessageType.CLEARANCE_TIME_TO_ENTER_PORT, packets);
     }
 
@@ -83,10 +80,9 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
     }
 
     /**
-     * @throws AISException
      */
     @Override
-    public final void decode() throws AISException {
+    public final void decode() {
         super.decode();
 
         for (IMO289ClearanceTimeToEnterPortFieldMap field : IMO289ClearanceTimeToEnterPortFieldMap.values()) {
