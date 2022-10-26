@@ -7,5 +7,9 @@ public interface Sentence {
 
     void parse() throws ParseException;
 
-    SentenceType getSentenceType();
+    boolean isValid();
+
+    static boolean isValid(SentenceType sentenceType, String preamble, int fieldCount) {
+        return (fieldCount == sentenceType.getFieldCount()) && preamble.equals(sentenceType.getPreamble());
+    }
 }
