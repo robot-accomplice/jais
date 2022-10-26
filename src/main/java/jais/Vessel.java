@@ -368,7 +368,7 @@ public class Vessel implements Cloneable {
      * @return the ship name value of whatever StaticAndVoyageRelatedData message
      *         may have been used to populate this object
      */
-    public String getshipName() {
+    public String getShipName() {
         return (this.shipName == null) ? null : ByteArrayUtils.bArray2Str(this.shipName);
     }
 
@@ -414,49 +414,46 @@ public class Vessel implements Cloneable {
      */
     @Override
     public final String toString() {
-        StringBuilder sb = new StringBuilder();
 
-        sb.append("{ ");
-        sb.append("id : { mmsi : ").append(getId().getMmsi()).append(", source : \"").append(getId().getSource())
-                .append(" }");
-        sb.append(", version : ").append(getVersion());
-        sb.append(", imo : ").append(getImo());
-        sb.append(", callsign : \"").append(getCallsign()).append("\"");
-        sb.append(", shipName : \"").append(getshipName()).append("\"");
-        sb.append(", shiptype : \"").append(getShipType()).append("\"");
-        sb.append(", toBow : ").append(getToBow());
-        sb.append(", toPort : ").append(getToPort());
-        sb.append(", toStern : ").append(getToStern());
-        sb.append(", toStarboard : ").append(getToStarboard());
-        sb.append(", epfd : ").append(getEpfd());
-        sb.append(", month : ").append(getMonth());
-        sb.append(", day : ").append(getDay());
-        sb.append(", hour : ").append(getHour());
-        sb.append(", minute : ").append(getMinute());
-        sb.append(", second : ").append(getSecond());
-        sb.append(", draught : ").append(getDraught());
-        sb.append(", destination : ").append(getDestination());
-        sb.append(", dte : ").append(isDte());
-        sb.append(", navigationStatus : ").append(getNavigationStatus());
-        sb.append(", turn : ").append(getRateOfTurn());
-        sb.append(", speed : ").append(getSpeed());
-        sb.append(", accuracy : ").append(isAccuracy());
-        sb.append(", lon : ").append(getLon());
-        sb.append(", lat : ").append(getLat());
-        sb.append(", courseOverGround : ").append(getCourseOverGround());
-        sb.append(", heading : ").append(getHeading());
-        sb.append(", maneuver : ").append(getManeuver());
-        sb.append(", raim : ").append(isRaim());
-        sb.append(", repeat : ").append(getRepeat());
-        sb.append(", radio : ").append(getRadio());
-        sb.append(", eta : ").append(getEta());
-        sb.append(", currentMessageTimestamp : ").append(getCurrentMessageTimestamp());
-        sb.append(", currentPositionTimestamp : ").append(getCurrentPositionTimestamp());
-        sb.append(", previousPositionTimestamp : ").append(getPreviousPositionTimestamp());
-        sb.append(", timeSent : ").append(this.timeSent);
-        sb.append("}");
-
-        return sb.toString();
+        return "{ " +
+                "id : { mmsi : " + getId().getMmsi() + ", source : \"" + getId().getSource() +
+                " }" +
+                ", version : " + getVersion() +
+                ", imo : " + getImo() +
+                ", callsign : \"" + getCallsign() + "\"" +
+                ", shipName : \"" + getShipName() + "\"" +
+                ", shiptype : \"" + getShipType() + "\"" +
+                ", toBow : " + getToBow() +
+                ", toPort : " + getToPort() +
+                ", toStern : " + getToStern() +
+                ", toStarboard : " + getToStarboard() +
+                ", epfd : " + getEpfd() +
+                ", month : " + getMonth() +
+                ", day : " + getDay() +
+                ", hour : " + getHour() +
+                ", minute : " + getMinute() +
+                ", second : " + getSecond() +
+                ", draught : " + getDraught() +
+                ", destination : " + getDestination() +
+                ", dte : " + isDte() +
+                ", navigationStatus : " + getNavigationStatus() +
+                ", turn : " + getRateOfTurn() +
+                ", speed : " + getSpeed() +
+                ", accuracy : " + isAccuracy() +
+                ", lon : " + getLon() +
+                ", lat : " + getLat() +
+                ", courseOverGround : " + getCourseOverGround() +
+                ", heading : " + getHeading() +
+                ", maneuver : " + getManeuver() +
+                ", raim : " + isRaim() +
+                ", repeat : " + getRepeat() +
+                ", radio : " + getRadio() +
+                ", eta : " + getEta() +
+                ", currentMessageTimestamp : " + getCurrentMessageTimestamp() +
+                ", currentPositionTimestamp : " + getCurrentPositionTimestamp() +
+                ", previousPositionTimestamp : " + getPreviousPositionTimestamp() +
+                ", timeSent : " + this.timeSent +
+                "}";
     }
 
     /**
