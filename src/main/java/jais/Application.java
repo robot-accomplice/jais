@@ -103,7 +103,7 @@ public class Application {
         OPTIONS.addOption("b", "batch", false,
                 "Run in \"batch\" mode.  Console mode (the default) provides a JFX interface for"
                         + " decoding one or more (manually entered) AIS strings at a time.  Whereas batch mode (requires -i/--infile &"
-                        + " -o/--outile switches) decodes a user specified plain text file of newline separated AIS packets and outputs"
+                        + " -o/--outfile switches) decodes a user specified plain text file of newline separated AIS packets and outputs"
                         + " each decoded message to a new line of comma separated values to a user specified output file location.");
         OPTIONS.addOption("i", "infile", true,
                 "The path to a plain text file consisting of newline separated AIS message"
@@ -171,9 +171,7 @@ public class Application {
 
             // build CSV line from message
             switch (message.getType()) {
-                case POSITION_REPORT_CLASS_A:
-                case POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE:
-                case POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION:
+                case POSITION_REPORT_CLASS_A, POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE, POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION -> {
                     System.out.println("Writing " + message.getType() + " message to file...");
                     PositionReportBase prb = (PositionReportBase) message;
                     msgSb.append(prb.isAccuracy());
@@ -192,9 +190,8 @@ public class Application {
                     Files.write(path, msgSb.append("\n").toString().getBytes(),
                             StandardOpenOption.WRITE, StandardOpenOption.APPEND);
                     LOG.info("WROTE: " + msgSb);
-                    break;
-                default:
-                    LOG.warn("Skipping " + message.getType().name() + " message");
+                }
+                default -> LOG.warn("Skipping " + message.getType().name() + " message");
             }
         }
     }
