@@ -17,26 +17,22 @@ package jais;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidParameterException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import jais.messages.AISMessageDecoder;
-import jais.messages.enums.Manufacturers;
+import jais.messages.enums.Manufacturer;
 import jais.messages.enums.SentenceType;
-import jais.messages.enums.Talkers;
+import jais.messages.enums.Talker;
 import lombok.Getter;
 
 /**
@@ -136,10 +132,7 @@ public final class AISSentence implements Sentence {
         if (LOG.isTraceEnabled())
             LOG.trace("Constructor instantiated with: \"{}\", \"{}\"", rawSentence, source);
         this.rawSentence = ByteArrayUtils.str2bArray(rawSentence);
-        if (source != null)
-            this.source = ByteArrayUtils.str2bArray(source);
-        else
-            this.source = ByteArrayUtils.str2bArray(DEFAULT_SOURCE);
+        this.source = ByteArrayUtils.str2bArray(Objects.requireNonNullElse(source, DEFAULT_SOURCE));
     }
 
     /**
@@ -212,7 +205,7 @@ public final class AISSentence implements Sentence {
      * 
      * @return an AISSentence that is the product of the processing
      */
-    public final AISSentence process() {
+    public AISSentence process() {
         return process(false);
     }
 
@@ -227,7 +220,7 @@ public final class AISSentence implements Sentence {
      * @return a reference to the current AISsentence object
      *         malformed
      */
-    public final AISSentence process(boolean addTagBlock) {
+    public AISSentence process(boolean addTagBlock) {
         String rawSentence;
 
         if (this.rawSentence == null) {
@@ -293,13 +286,14 @@ public final class AISSentence implements Sentence {
                         byte[] firstByte = { this.sentenceParts[6][0] };
                         this.fillBits = Integer.parseInt(ByteArrayUtils.bArray2Str(firstByte));
                     } catch (NumberFormatException nfe) {
+                        // ignore
                     }
 
                     int csIndex = ByteArrayUtils.indexOf(this.sentenceParts[6], CHECKSUM_DELIMITER);
                     if (csIndex != -1) {
                         byte[] checksumBytes = Arrays.copyOfRange(
                                 this.sentenceParts[6], csIndex + 1, this.sentenceParts[6].length);
-                        if (checksumBytes != null && checksumBytes.length > 0) {
+                        if (checksumBytes.length > 0) {
                             this.checksum = ByteArrayUtils.trimByteArray(checksumBytes);
                         }
                     } else
@@ -332,7 +326,7 @@ public final class AISSentence implements Sentence {
      *
      * @return a boolean value representing the validity of this AISsentence
      */
-    public final boolean isValid() {
+    public boolean isValid() {
         try {
             // so we don't throw NPEs over the failure to split the raw String
             if (this.sentenceParts == null)
@@ -561,7 +555,7 @@ public final class AISSentence implements Sentence {
      *
      * @return the byte [] containing the raw, non-decoded AISsentence data
      */
-    public final byte[] getRawSentence() {
+    public byte[] getRawSentence() {
         return this.rawSentence;
     }
 
@@ -574,7 +568,7 @@ public final class AISSentence implements Sentence {
      * @return a String representation of the AISsentence with a pre-pended TagBlock
      *         String
      */
-    public final String generateTagBlockSentenceString() {
+    public String generateTagBlockSentenceString() {
         TagBlock tb = new TagBlock();
         tb.setSource(this.source);
         tb.setTimestamp(this.timeReceived);
@@ -590,7 +584,7 @@ public final class AISSentence implements Sentence {
      * @param text the byte array we wish to use to construct a TagBlock String
      * @return a String representing the TagBlock contents
      */
-    public final String generateTagBlockSentenceString(byte[] text) {
+    public String generateTagBlockSentenceString(byte[] text) {
         TagBlock tb = new TagBlock();
         tb.setSource(this.source);
         tb.setTimestamp(this.timeReceived);
@@ -616,7 +610,7 @@ public final class AISSentence implements Sentence {
      *
      * @return the value of this.type
      */
-    public final byte[] getType() {
+    public byte[] getType() {
         return this.type;
     }
 
@@ -631,7 +625,7 @@ public final class AISSentence implements Sentence {
      *         compose
      *         the final message
      */
-    public final int getFragmentCount() {
+    public int getFragmentCount() {
         return this.fragmentCount;
     }
 
@@ -644,7 +638,7 @@ public final class AISSentence implements Sentence {
      * @return an int representing the specific fragment (of the total message) this
      *         sentence represents
      */
-    public final int getFragmentNumber() {
+    public int getFragmentNumber() {
         return this.fragmentNumber;
     }
 
@@ -654,7 +648,7 @@ public final class AISSentence implements Sentence {
      *
      * @return an int representing the locally unique broadcaster of this message
      */
-    public final int getSequentialMessageId() {
+    public int getSequentialMessageId() {
         return this.sequentialMessageId;
     }
 
@@ -665,7 +659,7 @@ public final class AISSentence implements Sentence {
      * @return A single character representing the radio frequency on which this
      *         sentence was broadcast
      */
-    public final char getRadioChannelCode() {
+    public char getRadioChannelCode() {
         return this.radioChannelCode;
     }
 
@@ -676,15 +670,13 @@ public final class AISSentence implements Sentence {
      * @return a double representing the numeric frequency on which this message was
      *         broadcast
      */
-    public final double getRadioChannelFrequencyInMhz() {
-        switch (this.radioChannelCode) {
-            case 'a':
-                return CHANNEL_A_FREQUENCY_IN_MHZ;
-            case 'b':
-                return CHANNEL_B_FREQUENCY_IN_MHZ;
-        }
+    public double getRadioChannelFrequencyInMhz() {
+        return switch (this.radioChannelCode) {
+            case 'a' -> CHANNEL_A_FREQUENCY_IN_MHZ;
+            case 'b' -> CHANNEL_B_FREQUENCY_IN_MHZ;
+            default -> 0d;
+        };
 
-        return 0d;
     }
 
     /**
@@ -692,7 +684,7 @@ public final class AISSentence implements Sentence {
      *
      * @return the raw binary string in the form of a byte array
      */
-    public final byte[] getBinaryStringAsByteArray() {
+    public byte[] getBinaryStringAsByteArray() {
         return this.binaryString;
     }
 
@@ -702,7 +694,7 @@ public final class AISSentence implements Sentence {
      * @return the raw body (binary string portion) of the sentence in the form of a
      *         byte array
      */
-    public final byte[] getSentenceBodyAsByteArray() {
+    public byte[] getSentenceBodyAsByteArray() {
         return this.sentenceBody;
     }
 
@@ -712,7 +704,7 @@ public final class AISSentence implements Sentence {
      * @return an int representing the number of fillbits specified in the AIS
      *         sentence String
      */
-    public final int getFillBits() {
+    public int getFillBits() {
         return this.fillBits;
     }
 
@@ -721,7 +713,7 @@ public final class AISSentence implements Sentence {
      *
      * @return a byte array representation of the sentence checksum
      */
-    public final byte[] getChecksum() {
+    public byte[] getChecksum() {
         return this.checksum;
     }
 
@@ -731,7 +723,7 @@ public final class AISSentence implements Sentence {
      * @return a long representing the time at which we instantiated this instance
      *         of AISsentence
      */
-    public final long getTimeReceived() {
+    public long getTimeReceived() {
         return this.timeReceived;
     }
 
@@ -745,7 +737,7 @@ public final class AISSentence implements Sentence {
      *         sentence
      *         was received
      */
-    public final ZonedDateTime getTimeReceived(ZoneOffset offset) {
+    public ZonedDateTime getTimeReceived(ZoneOffset offset) {
         return ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.timeReceived), offset);
     }
 
@@ -757,7 +749,7 @@ public final class AISSentence implements Sentence {
      *             value
      * @return the calculated ZonedDateTime value
      */
-    public final ZonedDateTime getTimeReceived(ZoneId zone) {
+    public ZonedDateTime getTimeReceived(ZoneId zone) {
         return ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.timeReceived), zone);
     }
 
@@ -768,7 +760,7 @@ public final class AISSentence implements Sentence {
      *
      * @return a long representation of the timestamp at which the sentence was sent
      */
-    public final long getTimeSent() {
+    public long getTimeSent() {
         if (hasTagBlock())
             return this.tagBlock.getTimestamp();
         return 0;
@@ -779,7 +771,7 @@ public final class AISSentence implements Sentence {
      *
      * @return a byte array representation of the name of the sentence source
      */
-    public final byte[] getSource() {
+    public byte[] getSource() {
         return this.source;
     }
 
@@ -788,7 +780,7 @@ public final class AISSentence implements Sentence {
      *
      * @param source sets the name of the source of this sentence as a byte array
      */
-    public final void setSource(byte[] source) {
+    public void setSource(byte[] source) {
         this.source = source;
     }
 
@@ -805,8 +797,7 @@ public final class AISSentence implements Sentence {
             int index = getSentenceTruncIndex(sentence);
             if (index > -1) {
                 String[] sentStrs = ByteArrayUtils.fastSplit(sentence, '!');
-                List<AISSentence> sList = Arrays.stream(sentStrs).map(AISSentence::new)
-                        .collect(Collectors.toList());
+                List<AISSentence> sList = Arrays.stream(sentStrs).map(AISSentence::new).toList();
                 AISSentence[] sentences = new AISSentence[sList.size()];
                 return Optional.of(sList.toArray(sentences));
             }
@@ -933,13 +924,12 @@ public final class AISSentence implements Sentence {
      *         current one
      */
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (o == null)
             return false;
-        if (!(o instanceof AISSentence))
+        if (!(o instanceof AISSentence that))
             return false;
 
-        AISSentence that = (AISSentence) o;
         if (that.getRawSentence() == null)
             return false;
 
@@ -953,7 +943,7 @@ public final class AISSentence implements Sentence {
      * @return an int representing a hashcode
      */
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         int hash = 7;
         hash = 79 * hash + (this.rawSentence != null ? Arrays.hashCode(this.rawSentence) : 0);
         hash = 79 * hash + (this.source != null ? Arrays.hashCode(this.source) : 0);
@@ -965,7 +955,7 @@ public final class AISSentence implements Sentence {
      *
      * @return a HashMap representation of the AISsentence
      */
-    public final HashMap<String, Object> toMap() {
+    public HashMap<String, Object> toMap() {
         HashMap<String, Object> sentenceMap = new HashMap<>();
 
         sentenceMap.put("tagblock", this.tagBlock);
@@ -993,9 +983,9 @@ public final class AISSentence implements Sentence {
         public final byte[] rawPreamble;
         public char firstChar;
         public boolean isEncapsulated;
-        public Talkers talker;
+        public Talker talker;
         public boolean isProprietary;
-        public Manufacturers manufacturer;
+        public Manufacturer manufacturer;
         public byte[] format;
         public boolean isQuery;
         public byte[] parsed;
@@ -1071,10 +1061,19 @@ public final class AISSentence implements Sentence {
                 }
 
                 if (m.group(3).startsWith("P")) {
-                    p.talker = Talkers.P;
-                    p.manufacturer = Manufacturers.valueOf((m.group(3) + m.group(4)).toUpperCase());
-                } else if (Talkers.isValid(m.group(2).toUpperCase())) {
-                    p.talker = Talkers.valueOf(m.group(2).toUpperCase());
+                    String mString = (m.group(3)).toUpperCase();
+                    if (!Manufacturer.isKnown(mString))
+                        return null;
+
+                    p.talker = Talker.P;
+                    try {
+                        p.manufacturer = Manufacturer.valueOf(mString);
+                    } catch (InvalidParameterException ipe) {
+                        // There is no Manufacturer that matches
+                        return null;
+                    }
+                } else if (Talker.isKnown(m.group(2).toUpperCase())) {
+                    p.talker = Talker.valueOf(m.group(2).toUpperCase());
                 } else {
                     p.talker = null;
                     if (LOG.isTraceEnabled())
