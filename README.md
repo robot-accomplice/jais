@@ -35,7 +35,7 @@ import jais.messages.*;
 
 public class Example {
 
-    public static void main(args String[]) {
+    public static void main(String[] args) {
         AISSentence sentence = (AISSentence.validatePreamble(packetString))
                 ? new AISSentence(packetString)
                 : AISSentence.createFromBinaryString(packetString, null);
