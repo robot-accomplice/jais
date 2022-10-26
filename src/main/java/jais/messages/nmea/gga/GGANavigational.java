@@ -1,15 +1,15 @@
 package jais.messages.nmea.gga;
 
 import jais.ByteArrayUtils;
-import jais.Sentence;
 import jais.exceptions.ParseException;
 import jais.messages.enums.SentenceType;
+import jais.messages.nmea.NMEASentenceBase;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GGANavigational implements Sentence {
+public class GGANavigational extends NMEASentenceBase {
 
     private final SentenceType sentenceType = SentenceType.NMEA_GGA_NAVIGATIONAL;
 
