@@ -16,6 +16,21 @@
 
 package jais.messages;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import jais.AISSentence;
 import jais.TagBlock;
 import jais.Vessel;
@@ -24,20 +39,6 @@ import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.ManeuverType;
 import jais.messages.enums.NavigationStatus;
 import jais.messages.enums.ShipType;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
 
 /**
  * Unit test for simple decoding tasks
@@ -70,7 +71,8 @@ public class AISDecoderTest {
      */
     @BeforeAll
     public static void setup() throws IOException {
-        TEST_SENTENCES = Files.lines(Paths.get("src/test/resources/ais_sentences.txt")).toArray(String[]::new);
+        TEST_SENTENCES = Files.lines(Paths.get("src/test/resources/ais_sentences.txt")).filter(t -> !t.isBlank())
+                .toArray(String[]::new);
     }
 
     /**
@@ -156,9 +158,11 @@ public class AISDecoderTest {
     public void testSentenceValidation() {
         LOG.info("*** testSentenceValidation()");
         for (String sentenceStr : TEST_SENTENCES) {
-            LOG.debug("Validating sentence: {}", sentenceStr);
+            if (sentenceStr.isBlank())
+                continue;
+            LOG.info("Validating sentence: {}", sentenceStr);
             String truncStr = AISSentence.truncateSentence(sentenceStr);
-            LOG.debug("AISSentence.truncateSentence() produced: \"{}\" from \"{}\"", truncStr, sentenceStr);
+            LOG.info("AISSentence.truncateSentence() produced: \"{}\" from \"{}\"", truncStr, sentenceStr);
             if (truncStr != null && !truncStr.isEmpty())
                 Assertions.assertTrue(new AISSentence(truncStr).isValid(), "sentence string is invalid:\n" + truncStr);
             else {
