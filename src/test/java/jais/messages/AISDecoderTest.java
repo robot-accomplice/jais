@@ -19,8 +19,6 @@ package jais.messages;
 import jais.AISSentence;
 import jais.TagBlock;
 import jais.Vessel;
-import jais.exceptions.AISException;
-import jais.exceptions.AISSentenceException;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.ManeuverType;
@@ -28,7 +26,6 @@ import jais.messages.enums.NavigationStatus;
 import jais.messages.enums.ShipType;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -69,11 +66,10 @@ public class AISDecoderTest {
 
     /**
      * 
-     * @throws URISyntaxException
      * @throws java.io.IOException
      */
     @BeforeAll
-    public static void setup() throws URISyntaxException, IOException {
+    public static void setup() throws IOException {
         TEST_SENTENCES = Files.lines(Paths.get("src/test/resources/ais_sentences.txt")).toArray(String[]::new);
     }
 
@@ -81,7 +77,7 @@ public class AISDecoderTest {
      *
      * @param sentences
      */
-    private void decodesentences(AISSentence... sentences) {
+    private void decodeSentences(AISSentence... sentences) {
 
         Optional<AISMessage> msg = AISMessageFactory.create("UnitTest", sentences);
 
@@ -141,17 +137,11 @@ public class AISDecoderTest {
                     LOG.debug("MMSI 4     : {}", ba.getMmsi4());
                     break;
                 case BINARY_BROADCAST_MESSAGE:
-                    break;
                 case STANDARD_SAR_AIRCRAFT_POSITION_REPORT:
-                    break;
                 case UTC_AND_DATE_INQUIRY:
-                    break;
                 case UTC_AND_DATE_RESPONSE:
-                    break;
                 case ADDRESSED_SAFETY_RELATED_MESSAGE:
-                    break;
                 case SAFETY_RELATED_ACKNOWLEDGEMENT:
-                    break;
                 case SAFETY_RELATED_BROADCAST_MESSAGE:
                     break;
                 default:
@@ -161,21 +151,20 @@ public class AISDecoderTest {
     }
 
     /**
-     * @throws jais.exceptions.AISSentenceException
      */
     @Test
-    public void testsentenceValidation() throws AISSentenceException {
-        LOG.info("*** testsentenceValidation()");
+    public void testSentenceValidation() {
+        LOG.info("*** testSentenceValidation()");
         for (String sentenceStr : TEST_SENTENCES) {
             LOG.debug("Validating sentence: {}", sentenceStr);
             String truncStr = AISSentence.truncateSentence(sentenceStr);
-            LOG.debug("AISsentence.truncatesentence() produced: \"{}\" from \"{}\"", truncStr, sentenceStr);
+            LOG.debug("AISSentence.truncateSentence() produced: \"{}\" from \"{}\"", truncStr, sentenceStr);
             if (truncStr != null && !truncStr.isEmpty())
                 Assertions.assertTrue(new AISSentence(truncStr).isValid(), "sentence string is invalid:\n" + truncStr);
             else {
                 AISSentence sentence = new AISSentence(sentenceStr);
 
-                Assertions.assertNotNull(sentence, "AISsentence from String is null: " + sentenceStr);
+                Assertions.assertNotNull(sentence, "AISSentence from String is null: " + sentenceStr);
                 Assertions.assertTrue(sentence.isValid(),
                         "Truncated sentence is null or empty and original sentenceStr is invalid: "
                                 + sentenceStr);
@@ -187,11 +176,10 @@ public class AISDecoderTest {
     /**
      * 
      * 
-     * @throws AISSentenceException
      */
     @Test
-    public void testdecodingAcurracy() throws AISException {
-        LOG.info("*** testdecodingAccuracy()");
+    public void testDecodingAccuracy() {
+        LOG.info("*** testDecodingAccuracy()");
         final String posStr = "!AIVDM,1,1,,A,15NHl8500pqSdR8A7jnq9oRF0<<P,0*38";
         LOG.info("Testing with sentence: {}", posStr);
 
@@ -236,7 +224,7 @@ public class AISDecoderTest {
         Assertions.assertEquals(11, staDecoded.getToPort());
         Assertions.assertEquals(EPFDFixType.GPS, staDecoded.getEpfd());
         Assertions.assertEquals("BELLE CHASSE ANCH", staDecoded.getDestination());
-        Assertions.assertEquals(true, staDecoded.dteReady());
+        Assertions.assertTrue(staDecoded.dteReady());
         Assertions.assertEquals(9187552, staDecoded.getImo());
         Assertions.assertEquals(7.199999809265137, staDecoded.getDraught());
         Assertions.assertEquals(9, staDecoded.getMonth());
@@ -248,11 +236,10 @@ public class AISDecoderTest {
     /**
      * Tests basic AIS decoding
      *
-     * @throws AISException
      */
     @Test
-    public void testsentenceDecoding() throws AISException {
-        LOG.info("*** testsentenceDecoding()");
+    public void testSentenceDecoding() {
+        LOG.info("*** testSentenceDecoding()");
 
         LOG.info("Testing with {} sentences.", TEST_SENTENCES.length);
         for (String sentenceStr : TEST_SENTENCES) {
@@ -285,7 +272,7 @@ public class AISDecoderTest {
             } else {
                 LOG.info("TAGBLOCK is null");
             }
-            decodesentences(sentence);
+            decodeSentences(sentence);
         }
 
         LOG.info("Testing compound message with two parts");
@@ -295,7 +282,7 @@ public class AISDecoderTest {
         pTwo.process();
         AISSentence[] compoundMsg = new AISSentence[] { pOne, pTwo };
 
-        decodesentences(compoundMsg);
+        decodeSentences(compoundMsg);
 
         LOG.info("** Subtest of sentence separation logic");
         LOG.info("Testing sentences that are not newline separated");
@@ -305,7 +292,7 @@ public class AISDecoderTest {
                 ps = "!AIVDM" + ps.trim();
                 LOG.debug("Found sentence to test: {}", ps);
 
-                decodesentences(new AISSentence(ps));
+                decodeSentences(new AISSentence(ps));
             }
         }
 
@@ -316,7 +303,7 @@ public class AISDecoderTest {
                 ps = "!AIVD" + ps;
                 LOG.debug("Found sentence to test: {}", ps);
 
-                decodesentences(new AISSentence(ps));
+                decodeSentences(new AISSentence(ps));
             }
         }
 
@@ -325,11 +312,9 @@ public class AISDecoderTest {
 
     /**
      * 
-     * @throws AISSentenceException
-     * @throws AISException
      */
     @Test
-    public void testDecodingSpeed() throws AISSentenceException, AISException {
+    public void testDecodingSpeed() {
         LOG.fatal("*************************************");
         LOG.fatal("*** testDecodingSpeed() ***");
         LOG.fatal("*************************************");
@@ -372,7 +357,7 @@ public class AISDecoderTest {
                 processPerMsgTime += (stop - start) / TEST_SENTENCES.length;
 
                 start = System.nanoTime();
-                Optional<AISMessage> message = Optional.empty();
+                Optional<AISMessage> message;
                 message = AISMessageFactory.create("UnitTest", sentence);
                 stop = System.nanoTime();
                 decodeTotalTime += (stop - start);
@@ -382,9 +367,7 @@ public class AISDecoderTest {
                     int count = (counts.get(type) == null) ? 0 : counts.get(type);
                     counts.put(type, ++count);
                 }
-
             }
-
         }
 
         LOG.fatal("============================================================================================");
@@ -399,9 +382,7 @@ public class AISDecoderTest {
                 RUN_COUNT, decodePerMsgTime / (1000f * 1000000f));
         LOG.fatal("============================================================================================");
 
-        counts.keySet().forEach((type) -> {
-            LOG.printf(Level.FATAL, "%2d x %s", counts.get(type), type);
-        });
+        counts.keySet().forEach((type) -> LOG.printf(Level.FATAL, "%2d x %s", counts.get(type), type));
     }
 
     /**
@@ -418,12 +399,11 @@ public class AISDecoderTest {
 
     /**
      * 
-     * @throws AISSentenceException
      */
     @Test
-    public void testAISsentenceGenerationFromBinaryString() throws AISSentenceException {
+    public void testAISSentenceGenerationFromBinaryString() {
         final String binString = "15P<mB003?L02DPGIfh:F`A<0000";
-        LOG.info("*** testAISsentenceGenerationFromBinaryString()");
+        LOG.info("*** testAISSentenceGenerationFromBinaryString()");
         AISSentence p = AISSentence.createFromBinaryString(binString, "TEST").process();
         try {
             Assertions.assertTrue(p.isValid(), binString + " is NOT valid.");
