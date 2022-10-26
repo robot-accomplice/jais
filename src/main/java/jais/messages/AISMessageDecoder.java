@@ -368,7 +368,12 @@ public class AISMessageDecoder {
         if (LOG.isTraceEnabled())
             LOG.trace("Decoding bit {} through bit {} of {} element BitSet", startBit, endBit, bits.size());
 
-        CharBuffer cb = CharBuffer.allocate((((endBit - startBit) / 6) + 1));
+        int capacity = (((endBit - startBit) / 6) + 1);
+        if (capacity < 0) {
+            return null;
+        }
+
+        CharBuffer cb = CharBuffer.allocate(capacity);
 
         int stopBit = Math.min(endBit, bits.size());
 
@@ -401,6 +406,10 @@ public class AISMessageDecoder {
      * @return the decoded byte array
      */
     public static byte[] decodeToByteArray(BitSet bits, int startBit, int endBit) {
-        return decodeToString(bits, startBit, endBit).getBytes();
+        String decoded = decodeToString(bits, startBit, endBit);
+        if (decoded != null)
+            return decoded.getBytes();
+        else
+            return null;
     }
 }
