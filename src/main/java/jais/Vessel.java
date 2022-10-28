@@ -84,6 +84,7 @@ public class Vessel implements Cloneable {
     private long currentPositionTimestamp;
     private long previousPositionTimestamp;
     private long timeSent;
+    private long messageCount = 1;
 
     /**
      * Creates a new Vessel object based on a StandardClassBCSPositionReport
@@ -102,9 +103,6 @@ public class Vessel implements Cloneable {
         this.repeat = report.getRepeat();
         this.speed = report.getSpeed();
         this.timeSent = report.getTimeSent();
-
-        if (LOG.isDebugEnabled())
-            LOG.debug("New Vessel from StandardClassBCSPositionReport:\n{}", toString());
     }
 
     /**
@@ -130,9 +128,6 @@ public class Vessel implements Cloneable {
         this.shipName = ByteArrayUtils.str2bArray(report.getShipName());
         this.shipType = report.getShipType();
         this.timeSent = report.getTimeSent();
-
-        if (LOG.isDebugEnabled())
-            LOG.debug("New Vessel from ExtendedClassBCSPositionReport:\n{}", toString());
     }
 
     /**
@@ -160,9 +155,6 @@ public class Vessel implements Cloneable {
         this.accuracy = report.isAccuracy();
         this.raim = report.isRaim();
         this.timeSent = report.getTimeSent();
-
-        if (LOG.isDebugEnabled())
-            LOG.debug("New Vessel from PositionReportBase:\n{}", toString());
     }
 
     /**
@@ -192,9 +184,7 @@ public class Vessel implements Cloneable {
         this.toStern = savrd.getToStern();
         this.version = savrd.getVersion();
         this.timeSent = savrd.getTimeSent();
-
-        if (LOG.isDebugEnabled())
-            LOG.debug("New Vessel from StaticAndVoyageRelatedData:\n{}", toString());
+        this.messageCount++;
     }
 
     /**
@@ -222,9 +212,7 @@ public class Vessel implements Cloneable {
         this.accuracy = report.isAccuracy();
         this.raim = report.isRaim();
         this.timeSent = report.getTimeSent();
-
-        if (LOG.isDebugEnabled())
-            LOG.debug("Vessel updated with PositionReportBase:\n{}", toString());
+        this.messageCount++;
     }
 
     /**
@@ -244,6 +232,7 @@ public class Vessel implements Cloneable {
         this.repeat = report.getRepeat();
         this.second = report.getSecond();
         this.speed = report.getSpeed();
+        this.messageCount++;
     }
 
     /**
@@ -270,6 +259,7 @@ public class Vessel implements Cloneable {
         this.epfd = report.getEpfd();
         this.shipName = (report.getShipName() == null) ? null : ByteArrayUtils.str2bArray(report.getShipName());
         this.shipType = report.getShipType();
+        this.messageCount++;
     }
 
     /**
@@ -298,9 +288,7 @@ public class Vessel implements Cloneable {
         this.toStern = savrd.getToStern();
         this.version = savrd.getVersion();
         this.timeSent = savrd.getTimeSent();
-
-        if (LOG.isDebugEnabled())
-            LOG.debug("Vessel updated with StaticAndVoyageRelatedData:\n{}", toString());
+        this.messageCount++;
     }
 
     /**
@@ -311,9 +299,6 @@ public class Vessel implements Cloneable {
      */
     @Override
     public Vessel clone() throws CloneNotSupportedException {
-        if (LOG.isDebugEnabled())
-            LOG.debug("Cloning Vessel:\n{}", toString());
-
         Vessel clone = (Vessel) super.clone();
 
         clone.id = this.id;
