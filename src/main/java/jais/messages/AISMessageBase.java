@@ -184,21 +184,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public boolean hasValidMmsi() {
-        return isValidMmsi(mmsi);
-    }
-
-    /**
-     *
-     * @param mmsi the MMSI
-     * @return a boolean indicating whether or not the MMSI is valid
-     */
-    private static boolean isValidMmsi(long mmsi) {
-        boolean valid = ((mmsi < 800000000) && (mmsi > 199999999));
-
-        if (!valid)
-            LOG.warn("MMSI: {} is not valid!", mmsi);
-
-        return valid;
+        return AISMessage.isValidMmsi(mmsi);
     }
 
     /**

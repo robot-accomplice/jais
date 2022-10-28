@@ -38,6 +38,16 @@ public interface AISMessage {
      */
     Logger LOG = LogManager.getLogger(AISMessage.class);
 
+
+    /**
+     *
+     * @param mmsi the MMSI
+     * @return a boolean indicating whether or not the MMSI is valid
+     */
+    static boolean isValidMmsi(long mmsi) {
+        return ((mmsi < 800000000) && (mmsi > 199999999));
+    }
+
     /**
      * Determines whether or not this is a valid IMO according to NMEA standards
      * 
