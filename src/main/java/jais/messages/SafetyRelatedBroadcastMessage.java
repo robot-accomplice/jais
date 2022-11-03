@@ -35,20 +35,20 @@ public class SafetyRelatedBroadcastMessage extends AISMessageBase {
     /**
      * 
      * @param source
-     * @param packets
+     * @param sentences
      */
-    public SafetyRelatedBroadcastMessage(String source, AISSentence... packets) {
-        super(source, packets);
+    public SafetyRelatedBroadcastMessage(String source, AISSentence... sentences) {
+        super(source, sentences);
     }
 
     /**
      * 
      * @param source
      * @param messageType
-     * @param packets
+     * @param sentences
      */
-    public SafetyRelatedBroadcastMessage(String source, AISMessageType messageType, AISSentence... packets) {
-        super(source, messageType, packets);
+    public SafetyRelatedBroadcastMessage(String source, AISMessageType messageType, AISSentence... sentences) {
+        super(source, messageType, sentences);
     }
 
     /**

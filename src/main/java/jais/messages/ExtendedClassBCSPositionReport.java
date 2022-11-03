@@ -58,8 +58,8 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param sentences
+     * @param source the name of the source of this message
+     * @param sentences the AIS sentences from which this message was composed
      */
     public ExtendedClassBCSPositionReport(String source, AISSentence... sentences) {
         super(source, sentences);
@@ -67,9 +67,9 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
 
     /**
      * 
-     * @param source
-     * @param type
-     * @param sentences
+     * @param source the name of the source of this message
+     * @param type the specific type of AISMessage
+     * @param sentences the AIS sentences from which this message was composed
      */
     public ExtendedClassBCSPositionReport(String source, AISMessageType type, AISSentence... sentences) {
         super(source, type, sentences);
@@ -77,7 +77,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return a boolean representing whether or not this message contains position information
      */
     @Override
     public boolean hasPosition() {
@@ -86,7 +86,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return a geometric point representing the current location of the sender
      */
     @Override
     public Point getPosition() {
@@ -98,7 +98,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return boolean representing whether or not the position is valid
      */
     public boolean isPositionValid() {
         return ((lon >= -180 && lon <= 180) && (lat >= -90 && lat <= 90));
@@ -106,7 +106,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return boolean representing whether or not the course is valid
      */
     public boolean isCourseValid() {
         return courseOverGround < 3600;
@@ -114,7 +114,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return boolean representing whether or not the speed is valid
      */
     public boolean isSpeedValid() {
         return speed < 1023;
@@ -122,7 +122,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return boolean representing whether or not the heading is valid
      */
     public boolean isHeadingValid() {
         return heading < 360;
@@ -250,8 +250,8 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         ExtendedClassBCSPositionReportFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

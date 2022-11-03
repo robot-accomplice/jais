@@ -34,11 +34,11 @@ public class IMO289DangerousCargoIndication extends BinaryAddressedMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source the name of the source for this message
+     * @param sentences the AIS Sentences from which this message was composed
      */
-    public IMO289DangerousCargoIndication(String source, AISSentence... packets) {
-        super(source, BinaryAddressedMessageType.DANGEROUS_CARGO_INDICATION, packets);
+    public IMO289DangerousCargoIndication(String source, AISSentence... sentences) {
+        super(source, BinaryAddressedMessageType.DANGEROUS_CARGO_INDICATION, sentences);
     }
 
     /**
@@ -68,8 +68,8 @@ public class IMO289DangerousCargoIndication extends BinaryAddressedMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         IMO289DangerousCargoIndicationFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

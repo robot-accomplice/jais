@@ -53,12 +53,12 @@ public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source the name of the source for this message
+     * @param sentences the AIS sentences from which this message was composed
      */
-    public IMO236DangerousCargoIndication(String source, AISSentence... packets) {
+    public IMO236DangerousCargoIndication(String source, AISSentence... sentences) {
         super(source, BinaryAddressedMessageType.DANGEROUS_CARGO_INDICATION_DEPRECATED,
-                packets);
+                sentences);
     }
 
     /**
@@ -71,69 +71,40 @@ public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
         for (IMO236DangerousCargoIndicationFieldMap field : IMO236DangerousCargoIndicationFieldMap.values()) {
 
             switch (field) {
-                case LAST_PORT_OF_CALL:
-                    this.lastPort = AISMessageDecoder.decodeToString(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case LAST_ETA_MONTH:
-                    this.lastMonth = AISMessageDecoder.decodeUnsignedInt(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case LAST_ETA_DAY:
-                    this.lastDay = AISMessageDecoder.decodeUnsignedInt(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case LAST_ETA_HOUR:
-                    this.lastHour = AISMessageDecoder.decodeUnsignedInt(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case LAST_ETA_MINUTE:
-                    this.lastMinute = AISMessageDecoder.decodeUnsignedInt(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case NEXT_PORT_OF_CALL:
-                    this.nextPort = AISMessageDecoder.decodeToString(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case NEXT_ETA_MONTH:
-                    this.nextMonth = AISMessageDecoder.decodeUnsignedInt(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case NEXT_ETA_DAY:
-                    this.nextDay = AISMessageDecoder.decodeUnsignedInt(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case NEXT_ETA_HOUR:
-                    this.nextHour = AISMessageDecoder.decodeUnsignedInt(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case NEXT_ETA_MINUTE:
-                    this.nextMinute = AISMessageDecoder.decodeUnsignedInt(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case DANGEROUS_GOOD:
-                    this.dangerous = AISMessageDecoder.decodeToString(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case IMD_CATEGORY:
-                    this.imdCat = AISMessageDecoder.decodeToString(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case UN_NUMBER:
-                    this.unId = AISMessageDecoder.decodeUnsignedInt(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case AMOUNT_OF_CARGO:
-                    this.amount = AISMessageDecoder.decodeUnsignedInt(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case UNIT_OF_QUANTITY:
+                case LAST_PORT_OF_CALL -> this.lastPort = AISMessageDecoder.decodeToString(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case LAST_ETA_MONTH -> this.lastMonth = AISMessageDecoder.decodeUnsignedInt(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case LAST_ETA_DAY -> this.lastDay = AISMessageDecoder.decodeUnsignedInt(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case LAST_ETA_HOUR -> this.lastHour = AISMessageDecoder.decodeUnsignedInt(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case LAST_ETA_MINUTE -> this.lastMinute = AISMessageDecoder.decodeUnsignedInt(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case NEXT_PORT_OF_CALL -> this.nextPort = AISMessageDecoder.decodeToString(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case NEXT_ETA_MONTH -> this.nextMonth = AISMessageDecoder.decodeUnsignedInt(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case NEXT_ETA_DAY -> this.nextDay = AISMessageDecoder.decodeUnsignedInt(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case NEXT_ETA_HOUR -> this.nextHour = AISMessageDecoder.decodeUnsignedInt(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case NEXT_ETA_MINUTE -> this.nextMinute = AISMessageDecoder.decodeUnsignedInt(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case DANGEROUS_GOOD -> this.dangerous = AISMessageDecoder.decodeToString(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case IMD_CATEGORY -> this.imdCat = AISMessageDecoder.decodeToString(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case UN_NUMBER -> this.unId = AISMessageDecoder.decodeUnsignedInt(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case AMOUNT_OF_CARGO -> this.amount = AISMessageDecoder.decodeUnsignedInt(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case UNIT_OF_QUANTITY -> {
                     int cargoCode = AISMessageDecoder.decodeUnsignedInt(this.bits,
                             field.getStartBit(), field.getEndBit());
                     this.cargoUnit = CargoUnitCode.getForCode(cargoCode);
-                    break;
-                default:
-                    LOG.warn("Ignoring field: {}", field.name());
+                }
+                default -> LOG.warn("Ignoring field: {}", field.name());
             }
         }
     }
@@ -166,8 +137,8 @@ public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         IMO236DangerousCargoIndicationFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

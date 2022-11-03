@@ -40,20 +40,20 @@ public class BinaryBroadcastMessage extends AISMessageBase {
     /**
      *
      * @param source  String denoting the source of the packet
-     * @param packets AISPacket[] from which the message is composed
+     * @param sentences AISPacket[] from which the message is composed
      */
-    public BinaryBroadcastMessage(String source, AISSentence... packets) {
-        super(source, packets);
+    public BinaryBroadcastMessage(String source, AISSentence... sentences) {
+        super(source, sentences);
     }
 
     /**
      *
      * @param source  String denoting the source of the packet
      * @param type    AISMessageType
-     * @param packets AISPacket[] from which the message is composed
+     * @param sentences AISPacket[] from which the message is composed
      */
-    public BinaryBroadcastMessage(String source, AISMessageType type, AISSentence... packets) {
-        super(source, type, packets);
+    public BinaryBroadcastMessage(String source, AISMessageType type, AISSentence... sentences) {
+        super(source, type, sentences);
     }
 
     /**
@@ -124,8 +124,8 @@ public class BinaryBroadcastMessage extends AISMessageBase {
 
         /**
          *
-         * @param startBit int
-         * @param endBit   int
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         BinaryBroadcastMessageBaseFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

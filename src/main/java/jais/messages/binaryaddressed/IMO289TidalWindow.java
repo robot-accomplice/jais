@@ -35,11 +35,11 @@ public class IMO289TidalWindow extends BinaryAddressedMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source the name of the source of this message
+     * @param sentences the AIS sentences from which this message was composed
      */
-    public IMO289TidalWindow(String source, AISSentence... packets) {
-        super(source, BinaryAddressedMessageType.TIDAL_WINDOW, packets);
+    public IMO289TidalWindow(String source, AISSentence... sentences) {
+        super(source, BinaryAddressedMessageType.TIDAL_WINDOW, sentences);
     }
 
     /**
@@ -49,11 +49,7 @@ public class IMO289TidalWindow extends BinaryAddressedMessageBase {
         super.decode();
 
         for (IMO289TidalWindowFieldMap field : IMO289TidalWindowFieldMap.values()) {
-
-            switch (field) {
-                default:
-                    LOG.warn("Ignoring field: {}", field.name());
-            }
+            LOG.warn("Ignoring field: {}", field.name());
         }
     }
 
@@ -70,8 +66,8 @@ public class IMO289TidalWindow extends BinaryAddressedMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         IMO289TidalWindowFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

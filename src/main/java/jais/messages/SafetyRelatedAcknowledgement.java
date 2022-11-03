@@ -38,20 +38,20 @@ public class SafetyRelatedAcknowledgement extends AISMessageBase {
     /**
      *
      * @param source
-     * @param packets
+     * @param sentences
      */
-    public SafetyRelatedAcknowledgement(String source, AISSentence... packets) {
-        super(source, packets);
+    public SafetyRelatedAcknowledgement(String source, AISSentence... sentences) {
+        super(source, sentences);
     }
 
     /**
      *
      * @param source
      * @param messageType
-     * @param packets
+     * @param sentences
      */
-    public SafetyRelatedAcknowledgement(String source, AISMessageType messageType, AISSentence... packets) {
-        super(source, messageType, packets);
+    public SafetyRelatedAcknowledgement(String source, AISMessageType messageType, AISSentence... sentences) {
+        super(source, messageType, sentences);
     }
 
     /**

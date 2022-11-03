@@ -107,89 +107,47 @@ public class AISMessageFactory {
 
                 AISMessage message;
                 switch (mType.get()) {
-                    case POSITION_REPORT_CLASS_A:
-                        message = new PositionReportClassA(source, sentences);
-                        break;
-                    case POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE:
-                        message = new PositionReportClassAAssignedSchedule(source, sentences);
-                        break;
-                    case POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION:
-                        message = new PositionReportClassAResponseToInterrogation(source, sentences);
-                        break;
-                    case BASE_STATION_REPORT:
-                        message = new BaseStationReport(source, sentences);
-                        break;
-                    case STATIC_AND_VOYAGE_RELATED_DATA:
-                        message = new StaticAndVoyageRelatedData(source, sentences);
-                        break;
-                    case BINARY_ACKNOWLEDGE:
-                        message = new BinaryAcknowledge(source, sentences);
-                        break;
-                    case STANDARD_SAR_AIRCRAFT_POSITION_REPORT:
-                        message = new StandardSARAircraftPositionReport(source, sentences);
-                        break;
-                    case UTC_AND_DATE_INQUIRY:
-                        message = new UTCDateInquiry(source, sentences);
-                        break;
-                    case UTC_AND_DATE_RESPONSE:
-                        message = new UTCDateResponse(source, sentences);
-                        break;
-                    case ADDRESSED_SAFETY_RELATED_MESSAGE:
-                        message = new AddressedSafetyRelatedMessage(source, sentences);
-                        break;
-                    case SAFETY_RELATED_ACKNOWLEDGEMENT:
-                        message = new SafetyRelatedAcknowledgement(source, sentences);
-                        break;
-                    case SAFETY_RELATED_BROADCAST_MESSAGE:
-                        message = new SafetyRelatedBroadcastMessage(source, sentences);
-                        break;
-                    case INTERROGATION:
-                        message = new Interrogation(source, sentences);
-                        break;
-                    case ASSIGNMENT_MODE_COMMAND:
-                        message = new AssignmentModeCommand(source, sentences);
-                        break;
-                    case DGNSS_BROADCAST_BINARY_MESSAGE:
-                        message = new DGNSSBroadcastBinaryMessage(source, sentences);
-                        break;
-                    case STANDARD_CLASS_B_CS_POSITION_REPORT:
-                        message = new StandardClassBCSPositionReport(source, sentences);
-                        break;
-                    case EXTENDED_CLASS_B_CS_POSITION_REPORT:
-                        message = new ExtendedClassBCSPositionReport(source, sentences);
-                        break;
-                    case DATA_LINK_MANAGEMENT_MESSAGE:
-                        message = new DataLinkManagementMessage(source, sentences);
-                        break;
-                    case AID_TO_NAVIGATION_REPORT:
-                        message = new AidToNavigationReport(source, sentences);
-                        break;
-                    case CHANNEL_MANAGEMENT:
-                        message = new ChannelManagement(source, sentences);
-                        break;
-                    case GROUP_ASSIGNMENT_COMMAND:
-                        message = new GroupAssignmentCommand(source, sentences);
-                        break;
-                    case STATIC_DATA_REPORT:
-                        message = new StaticDataReport(source, sentences);
-                        break;
-                    case SINGLE_SLOT_BINARY_MESSAGE:
-                        message = new SingleSlotBinaryMessage(source, sentences);
-                        break;
-                    case MULTIPLE_SLOT_BINARY_MESSAGE:
-                        message = new MultipleSlotBinaryMessage(source, sentences);
-                        break;
-                    case POSITION_REPORT_FOR_LONG_RANGE_APPLICATIONS:
-                        message = new LongRangeAISBroadcastMessage(source, sentences);
-                        break;
-                    case BINARY_BROADCAST_MESSAGE:
-                        message = new BinaryBroadcastMessage(source, sentences);
-                        break;
-                    default:
+                    case POSITION_REPORT_CLASS_A -> message = new PositionReportClassA(source, sentences);
+                    case POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE ->
+                            message = new PositionReportClassAAssignedSchedule(source, sentences);
+                    case POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION ->
+                            message = new PositionReportClassAResponseToInterrogation(source, sentences);
+                    case BASE_STATION_REPORT -> message = new BaseStationReport(source, sentences);
+                    case STATIC_AND_VOYAGE_RELATED_DATA -> message = new StaticAndVoyageRelatedData(source, sentences);
+                    case BINARY_ACKNOWLEDGE -> message = new BinaryAcknowledge(source, sentences);
+                    case STANDARD_SAR_AIRCRAFT_POSITION_REPORT ->
+                            message = new StandardSARAircraftPositionReport(source, sentences);
+                    case UTC_AND_DATE_INQUIRY -> message = new UTCDateInquiry(source, sentences);
+                    case UTC_AND_DATE_RESPONSE -> message = new UTCDateResponse(source, sentences);
+                    case ADDRESSED_SAFETY_RELATED_MESSAGE ->
+                            message = new AddressedSafetyRelatedMessage(source, sentences);
+                    case SAFETY_RELATED_ACKNOWLEDGEMENT ->
+                            message = new SafetyRelatedAcknowledgement(source, sentences);
+                    case SAFETY_RELATED_BROADCAST_MESSAGE ->
+                            message = new SafetyRelatedBroadcastMessage(source, sentences);
+                    case INTERROGATION -> message = new Interrogation(source, sentences);
+                    case ASSIGNMENT_MODE_COMMAND -> message = new AssignmentModeCommand(source, sentences);
+                    case DGNSS_BROADCAST_BINARY_MESSAGE -> message = new DGNSSBroadcastBinaryMessage(source, sentences);
+                    case STANDARD_CLASS_B_CS_POSITION_REPORT ->
+                            message = new StandardClassBCSPositionReport(source, sentences);
+                    case EXTENDED_CLASS_B_CS_POSITION_REPORT ->
+                            message = new ExtendedClassBCSPositionReport(source, sentences);
+                    case DATA_LINK_MANAGEMENT_MESSAGE -> message = new DataLinkManagementMessage(source, sentences);
+                    case AID_TO_NAVIGATION_REPORT -> message = new AidToNavigationReport(source, sentences);
+                    case CHANNEL_MANAGEMENT -> message = new ChannelManagement(source, sentences);
+                    case GROUP_ASSIGNMENT_COMMAND -> message = new GroupAssignmentCommand(source, sentences);
+                    case STATIC_DATA_REPORT -> message = new StaticDataReport(source, sentences);
+                    case SINGLE_SLOT_BINARY_MESSAGE -> message = new SingleSlotBinaryMessage(source, sentences);
+                    case MULTIPLE_SLOT_BINARY_MESSAGE -> message = new MultipleSlotBinaryMessage(source, sentences);
+                    case POSITION_REPORT_FOR_LONG_RANGE_APPLICATIONS ->
+                            message = new LongRangeAISBroadcastMessage(source, sentences);
+                    case BINARY_BROADCAST_MESSAGE -> message = new BinaryBroadcastMessage(source, sentences);
+                    default -> {
                         if (LOG.isWarnEnabled())
                             LOG.warn("{} - Unknown or invalid message type:  {}", source, mType.get());
                         LOG.debug("{} - AIS Packet String: \"{}\"", source, compositeMsg);
                         return Optional.empty();
+                    }
                 }
 
                 message.decode(); // decode message

@@ -28,9 +28,9 @@ public class PositionReportClassA extends PositionReportBase {
     /**
      * 
      * @param source
-     * @param aisPackets
+     * @param sentences
      */
-    public PositionReportClassA(String source, AISSentence... aisPackets) {
-        super(source, AISMessageType.POSITION_REPORT_CLASS_A, aisPackets);
+    public PositionReportClassA(String source, AISSentence... sentences) {
+        super(source, AISMessageType.POSITION_REPORT_CLASS_A, sentences);
     }
 }

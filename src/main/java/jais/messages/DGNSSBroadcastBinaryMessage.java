@@ -43,26 +43,26 @@ public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source the name of the source of this message
+     * @param sentences the AIS Sentences from which this message was composed
      */
-    public DGNSSBroadcastBinaryMessage(String source, AISSentence... packets) {
-        super(source, packets);
+    public DGNSSBroadcastBinaryMessage(String source, AISSentence... sentences) {
+        super(source, sentences);
     }
 
     /**
      *
-     * @param source
-     * @param type
-     * @param packets
+     * @param source the name of the source of this message
+     * @param type the specific type of AISMessage
+     * @param sentences the AIS sentences from which this message was composed
      */
-    public DGNSSBroadcastBinaryMessage(String source, AISMessageType type, AISSentence... packets) {
-        super(source, type, packets);
+    public DGNSSBroadcastBinaryMessage(String source, AISMessageType type, AISSentence... sentences) {
+        super(source, type, sentences);
     }
 
     /**
      *
-     * @return
+     * @return an indication that the current message type contains position information
      */
     @Override
     public boolean hasPosition() {
@@ -71,7 +71,7 @@ public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return a geometric point representing the current position of the vessel
      */
     @Override
     public Point getPosition() {
@@ -128,8 +128,8 @@ public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         DGNSSBroadcastBinaryMessageFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

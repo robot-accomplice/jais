@@ -64,8 +64,8 @@ public enum AreaNoticeType {
 
     /**
      * 
-     * @param code
-     * @param description
+     * @param code the NMEA code for the AreaNoticeType
+     * @param description the NMEA description for the AreaNoticeType
      */
     AreaNoticeType(int code, String description) {
         this.code = code;
@@ -74,8 +74,8 @@ public enum AreaNoticeType {
 
     /**
      * 
-     * @param code int
-     * @return AreaNoticeType
+     * @param code the code of the target AreaNoticeType
+     * @return the AreaNoticeType or null if a match cannot be found
      */
     public static AreaNoticeType getForCode(int code) {
         for (AreaNoticeType type : AreaNoticeType.values()) {

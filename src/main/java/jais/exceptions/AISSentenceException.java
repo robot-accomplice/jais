@@ -15,12 +15,15 @@
  */
 package jais.exceptions;
 
+import java.io.Serial;
+
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class AISSentenceException extends AISException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

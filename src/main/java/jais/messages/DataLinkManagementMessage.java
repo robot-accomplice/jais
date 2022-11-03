@@ -53,8 +53,8 @@ public class DataLinkManagementMessage extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param sentences
+     * @param source the name of the source of this message
+     * @param sentences the AIS sentences from which this message was composed
      */
     public DataLinkManagementMessage(String source, AISSentence... sentences) {
         super(source, sentences);
@@ -62,9 +62,9 @@ public class DataLinkManagementMessage extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param type
-     * @param sentences
+     * @param source the name of the source of this message
+     * @param type the type of AISMessage
+     * @param sentences the AIS sentences from which this message was composed
      */
     public DataLinkManagementMessage(String source, AISMessageType type, AISSentence... sentences) {
         super(source, type, sentences);
@@ -182,8 +182,8 @@ public class DataLinkManagementMessage extends AISMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         DataLinkManagementMessageFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

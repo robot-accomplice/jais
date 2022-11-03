@@ -39,11 +39,11 @@ public class IMO289TextDescription extends BinaryAddressedMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source the name of the source for this message
+     * @param sentences the AIS sentences from which this message was composed
      */
-    public IMO289TextDescription(String source, AISSentence... packets) {
-        super(source, BinaryAddressedMessageType.TEXT_DESCRIPTION, packets);
+    public IMO289TextDescription(String source, AISSentence... sentences) {
+        super(source, BinaryAddressedMessageType.TEXT_DESCRIPTION, sentences);
     }
 
     /**
@@ -54,16 +54,11 @@ public class IMO289TextDescription extends BinaryAddressedMessageBase {
 
         for (IMO289TextDescriptionFieldMap field : IMO289TextDescriptionFieldMap.values()) {
             switch (field) {
-                case LINKAGE_ID:
-                    linkageId = AISMessageDecoder.decodeUnsignedInt(bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case DESCRIPTION:
-                    description = AISMessageDecoder.decodeToString(bits,
-                            field.getStartBit(), bits.size() - 1);
-                    break;
-                default:
-                    LOG.warn("Ignoring field: {}", field.name());
+                case LINKAGE_ID -> linkageId = AISMessageDecoder.decodeUnsignedInt(bits,
+                        field.getStartBit(), field.getEndBit());
+                case DESCRIPTION -> description = AISMessageDecoder.decodeToString(bits,
+                        field.getStartBit(), bits.size() - 1);
+                default -> LOG.warn("Ignoring field: {}", field.name());
             }
         }
     }
@@ -82,8 +77,8 @@ public class IMO289TextDescription extends BinaryAddressedMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         IMO289TextDescriptionFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

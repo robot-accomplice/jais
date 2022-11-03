@@ -41,8 +41,8 @@ public enum EPFDFixType {
 
     /**
      * 
-     * @param code
-     * @param description
+     * @param code the NMEA defined numeric code for the EPFDFixType
+     * @param description the NMEA defined description for the EPFDFixType
      */
     EPFDFixType(int code, String description) {
         this.code = code;
@@ -51,8 +51,8 @@ public enum EPFDFixType {
 
     /**
      * 
-     * @param code
-     * @return
+     * @param code the numeric code we wish to use for EPFDFixType retrieval
+     * @return the EPFDFixType, if there is a match, null if there isn't
      */
     public static EPFDFixType getForCode(int code) {
         for (EPFDFixType type : EPFDFixType.values()) {

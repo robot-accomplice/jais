@@ -71,7 +71,7 @@ public enum ShipType {
     DREDGING(33, "Dredging or underwater ops"),
     DIVING(34, "Diving ops"),
     MILITARY(35, "Military ops"),
-    SAILING(36, "Sailings"),
+    SAILING(36, "Sailing"),
     PLEASURE_CRAFT(37, "Pleasure Craft"),
     RESERVED_38(38, "Reserved"),
     RESERVED_39(39, "Reserved"),

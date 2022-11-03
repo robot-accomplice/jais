@@ -210,8 +210,8 @@ public class AidToNavigationReport extends AISMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         AidToNavigationReportFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

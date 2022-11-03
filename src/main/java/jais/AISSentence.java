@@ -72,7 +72,7 @@ public final class AISSentence implements Sentence {
     private int fragmentNumber = 1;
     private int sequentialMessageId = -1;
     private char radioChannelCode;
-    private byte[] rawSentence; // the unparsed initial string
+    private final byte[] rawSentence; // the unparsed initial string
     private byte[] binaryString; // the binary string
     private byte[] sentenceBody; // the message without the tagblock
     private int fillBits;
@@ -604,63 +604,6 @@ public final class AISSentence implements Sentence {
      */
     private static String generateTagBlockSentenceString(byte[] rawSentence, TagBlock tb) {
         return tb.toString() + ByteArrayUtils.bArray2Str(rawSentence);
-    }
-
-    /**
-     *
-     * @return the value of this.type
-     */
-    public byte[] getType() {
-        return this.type;
-    }
-
-    /**
-     * Returns the AIS message fragmentation count as defined in the original
-     * non-decoded AIS sentence String
-     * This count indicates how many related AIS sentences the complete AIS message
-     * is
-     * composed of
-     *
-     * @return an int representing the total number of sentence fragments that
-     *         compose
-     *         the final message
-     */
-    public int getFragmentCount() {
-        return this.fragmentCount;
-    }
-
-    /**
-     * Returns the AIS message fragmentation number as defined in the original
-     * non-decoded AIS sentence String
-     * This number indicates the position of this fragment in the fully assembled
-     * AIS message
-     *
-     * @return an int representing the specific fragment (of the total message) this
-     *         sentence represents
-     */
-    public int getFragmentNumber() {
-        return this.fragmentNumber;
-    }
-
-    /**
-     * This returns the value of the locally distinct "talker" sending this and
-     * other AIS messages so that they can easily be grouped by source
-     *
-     * @return an int representing the locally unique broadcaster of this message
-     */
-    public int getSequentialMessageId() {
-        return this.sequentialMessageId;
-    }
-
-    /**
-     * Returns the letter representation of the Radio frequency on which this AIS
-     * sentence was broadcast
-     *
-     * @return A single character representing the radio frequency on which this
-     *         sentence was broadcast
-     */
-    public char getRadioChannelCode() {
-        return this.radioChannelCode;
     }
 
     /**

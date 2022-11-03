@@ -34,11 +34,11 @@ public class IMO289AreaNotice extends BinaryAddressedMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source the name of the source of this message
+     * @param sentences the AIS Sentences from which this message was composed
      */
-    public IMO289AreaNotice(String source, AISSentence... packets) {
-        super(source, BinaryAddressedMessageType.AREA_NOTICE, packets);
+    public IMO289AreaNotice(String source, AISSentence... sentences) {
+        super(source, BinaryAddressedMessageType.AREA_NOTICE, sentences);
     }
 
     /**
@@ -53,10 +53,7 @@ public class IMO289AreaNotice extends BinaryAddressedMessageBase {
         // static inner class to represent the sub-area information and just store
         // the array
         for (IMO289AreaNoticeFieldMap field : IMO289AreaNoticeFieldMap.values()) {
-            switch (field) {
-                default:
-                    LOG.warn("Ignoring field: {}", field.name());
-            }
+            LOG.warn("Ignoring field: {}", field.name());
         }
     }
 
@@ -73,8 +70,8 @@ public class IMO289AreaNotice extends BinaryAddressedMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         IMO289AreaNoticeFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

@@ -37,16 +37,16 @@ public class IMO289NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source the name of the source for this message
+     * @param sentences the AIS sentences from which this message was composed
      */
-    public IMO289NumberOfPersonsOnBoard(String source, AISSentence... packets) {
-        super(source, BinaryAddressedMessageType.NUMBER_OF_PERSONS_ON_BOARD, packets);
+    public IMO289NumberOfPersonsOnBoard(String source, AISSentence... sentences) {
+        super(source, BinaryAddressedMessageType.NUMBER_OF_PERSONS_ON_BOARD, sentences);
     }
 
     /**
      *
-     * @return
+     * @return the number of persons on the vessel
      */
     public int getPersons() {
         return persons;
@@ -60,13 +60,11 @@ public class IMO289NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
 
         for (IMO289NumberOfPersonsOnBoardFieldMap field : IMO289NumberOfPersonsOnBoardFieldMap.values()) {
 
-            switch (field) {
-                case PERSONS:
-                    persons = AISMessageDecoder.decodeUnsignedInt(bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                default:
-                    LOG.warn("Ignoring field: {}", field.name());
+            if (field == IMO289NumberOfPersonsOnBoardFieldMap.PERSONS) {
+                persons = AISMessageDecoder.decodeUnsignedInt(bits,
+                        field.getStartBit(), field.getEndBit());
+            } else {
+                LOG.warn("Ignoring field: {}", field.name());
             }
         }
     }
@@ -85,8 +83,8 @@ public class IMO289NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         IMO289NumberOfPersonsOnBoardFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

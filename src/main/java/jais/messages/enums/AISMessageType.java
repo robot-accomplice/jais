@@ -170,8 +170,8 @@ public enum AISMessageType {
 
     /**
      * 
-     * @param id int
-     * @return AISMessageType
+     * @param id the ID of the message type
+     * @return the actual AISMessageType (or null if there is no matching type)
      */
     public static AISMessageType fetchById(int id) {
         AISMessageType foundType = null;
@@ -188,8 +188,8 @@ public enum AISMessageType {
 
     /**
      * 
-     * @param messageClass AISMessageType
-     * @return AISMessageType
+     * @param messageClass the Java class of the AISMessageType we're trying to locate
+     * @return the actual AISMessageType (or null if there is no matching type)
      */
     public static AISMessageType fetchByMessageClass(Class<? extends AISMessage> messageClass) {
         AISMessageType foundType = null;

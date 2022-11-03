@@ -38,8 +38,8 @@ public enum CargoCode {
 
     /**
      * 
-     * @param code
-     * @param description
+     * @param code the NMEA defined numeric code for the Cargo
+     * @param description the NMEA provided description for the Cargo type
      */
     CargoCode(int code, String description) {
         this.code = code;
@@ -48,8 +48,8 @@ public enum CargoCode {
 
     /**
      * 
-     * @param code
-     * @return
+     * @param code the numeric code we want to use for CargoCode retrieval
+     * @return the CargoCode entry that matches the specified numeric code or null if there is no match
      */
     public static CargoCode getForCode(int code) {
         for (CargoCode type : CargoCode.values()) {

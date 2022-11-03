@@ -28,7 +28,7 @@ public enum GeneralPurposeParametricFormatter {
 
     /**
      * 
-     * @param description
+     * @param description the description for the relevant GeneralPurposeParametricFormatter
      */
     GeneralPurposeParametricFormatter(String description) {
         this.description = description;

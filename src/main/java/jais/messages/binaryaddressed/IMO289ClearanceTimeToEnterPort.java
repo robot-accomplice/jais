@@ -50,16 +50,16 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source the name of the source of this message
+     * @param sentences the AIS sentences from which this message was composed
      */
-    public IMO289ClearanceTimeToEnterPort(String source, AISSentence... packets) {
-        super(source, BinaryAddressedMessageType.CLEARANCE_TIME_TO_ENTER_PORT, packets);
+    public IMO289ClearanceTimeToEnterPort(String source, AISSentence... sentences) {
+        super(source, BinaryAddressedMessageType.CLEARANCE_TIME_TO_ENTER_PORT, sentences);
     }
 
     /**
      *
-     * @return
+     * @return whether or not the message contains position data
      */
     @Override
     public boolean hasPosition() {
@@ -68,7 +68,7 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
 
     /**
      *
-     * @return
+     * @return a geometric point representing the position
      */
     @Override
     public Point getPosition() {
@@ -87,44 +87,25 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
 
         for (IMO289ClearanceTimeToEnterPortFieldMap field : IMO289ClearanceTimeToEnterPortFieldMap.values()) {
             switch (field) {
-                case MESSAGE_LINKAGE_ID:
-                    linkageId = AISMessageDecoder.decodeUnsignedInt(bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case MONTH:
-                    month = AISMessageDecoder.decodeUnsignedInt(bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case DAY:
-                    day = AISMessageDecoder.decodeUnsignedInt(bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case HOUR:
-                    hour = AISMessageDecoder.decodeUnsignedInt(bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case MINUTE:
-                    minute = AISMessageDecoder.decodeUnsignedInt(bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case PORT_NAME_AND_BERTH:
-                    this.portName = AISMessageDecoder.decodeToString(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case DESTINATION:
-                    this.destination = AISMessageDecoder.decodeToString(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case LON:
-                    this.lon = AISMessageDecoder.decodeLongitude(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                case LAT:
-                    this.lat = AISMessageDecoder.decodeLatitude(this.bits,
-                            field.getStartBit(), field.getEndBit());
-                    break;
-                default:
-                    LOG.warn("Ignoring field: {}", field.name());
+                case MESSAGE_LINKAGE_ID -> linkageId = AISMessageDecoder.decodeUnsignedInt(bits,
+                        field.getStartBit(), field.getEndBit());
+                case MONTH -> month = AISMessageDecoder.decodeUnsignedInt(bits,
+                        field.getStartBit(), field.getEndBit());
+                case DAY -> day = AISMessageDecoder.decodeUnsignedInt(bits,
+                        field.getStartBit(), field.getEndBit());
+                case HOUR -> hour = AISMessageDecoder.decodeUnsignedInt(bits,
+                        field.getStartBit(), field.getEndBit());
+                case MINUTE -> minute = AISMessageDecoder.decodeUnsignedInt(bits,
+                        field.getStartBit(), field.getEndBit());
+                case PORT_NAME_AND_BERTH -> this.portName = AISMessageDecoder.decodeToString(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case DESTINATION -> this.destination = AISMessageDecoder.decodeToString(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case LON -> this.lon = AISMessageDecoder.decodeLongitude(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                case LAT -> this.lat = AISMessageDecoder.decodeLatitude(this.bits,
+                        field.getStartBit(), field.getEndBit());
+                default -> LOG.warn("Ignoring field: {}", field.name());
             }
         }
     }
@@ -151,8 +132,8 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         IMO289ClearanceTimeToEnterPortFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

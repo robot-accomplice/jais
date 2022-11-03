@@ -295,7 +295,7 @@ public class Vessel implements Cloneable {
      * Performs a deep copy of the current Vessel object
      *
      * @return
-     * @throws java.lang.CloneNotSupportedException
+     * @throws CloneNotSupportedException
      */
     @Override
     public Vessel clone() throws CloneNotSupportedException {

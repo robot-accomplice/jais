@@ -57,20 +57,20 @@ public abstract class PositionReportBase extends AISMessageBase {
     /**
      * 
      * @param source
-     * @param packets
+     * @param sentences
      */
-    public PositionReportBase(String source, AISSentence... packets) {
-        super(source, packets);
+    public PositionReportBase(String source, AISSentence... sentences) {
+        super(source, sentences);
     }
 
     /**
      *
      * @param source
      * @param messageType
-     * @param packets
+     * @param sentences
      */
-    public PositionReportBase(String source, AISMessageType messageType, AISSentence... packets) {
-        super(source, messageType, packets);
+    public PositionReportBase(String source, AISMessageType messageType, AISSentence... sentences) {
+        super(source, messageType, sentences);
     }
 
     /**
@@ -234,8 +234,8 @@ public abstract class PositionReportBase extends AISMessageBase {
         /**
          * s
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         PositionFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

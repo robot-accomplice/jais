@@ -77,7 +77,9 @@ public enum BinaryAddressedMessageType {
      * 
      * @param dac         int
      * @param fid         int
-     * @param description Class that extends BinaryAddressedMessageBase
+     * @param msgClass Class that extends BinaryAddressedMessageBase
+     * @param source the IMOType of the source
+     * @param description a description of the message
      */
     BinaryAddressedMessageType(int dac, int fid, int length, Class<? extends BinaryAddressedMessageBase> msgClass,
             IMOType source, String description) {

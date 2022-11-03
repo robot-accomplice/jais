@@ -51,21 +51,21 @@ public class ChannelManagement extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source the name of the source of this message
+     * @param sentences the AIS sentences from which this message was composed
      */
-    public ChannelManagement(String source, AISSentence... packets) {
-        super(source, packets);
+    public ChannelManagement(String source, AISSentence... sentences) {
+        super(source, sentences);
     }
 
     /**
      *
-     * @param source
-     * @param type
-     * @param packets
+     * @param source the name of the source of this message
+     * @param type the type of AISMessage
+     * @param sentences the AIS sentences from which this message was composed
      */
-    public ChannelManagement(String source, AISMessageType type, AISSentence... packets) {
-        super(source, type, packets);
+    public ChannelManagement(String source, AISMessageType type, AISSentence... sentences) {
+        super(source, type, sentences);
     }
 
     /**
@@ -150,8 +150,8 @@ public class ChannelManagement extends AISMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         ChannelManagementFieldMap(int startBit, int endBit) {
             this.startBit = startBit;
@@ -160,7 +160,7 @@ public class ChannelManagement extends AISMessageBase {
 
         /**
          *
-         * @return
+         * @return the start bit index
          */
         @Override
         public int getStartBit() {
@@ -169,7 +169,7 @@ public class ChannelManagement extends AISMessageBase {
 
         /**
          *
-         * @return
+         * @return the end bit index
          */
         @Override
         public int getEndBit() {

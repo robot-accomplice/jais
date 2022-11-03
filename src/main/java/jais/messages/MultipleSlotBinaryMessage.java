@@ -104,7 +104,7 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
                     } else if (structured && bits.length() >= 166) {
                         data = bits.get(56, (bits.size() - 76));
                     } else if (bits.length() > 61) {
-                        data = bits.get(40, (bits.size() - 61));
+                        data = bits.get(40, bits.size());
                     } else {
                         LOG.trace("Invalid bit count.  BitVector size: " + bits.size()
                                 + ", BitVector length: " + bits.length());

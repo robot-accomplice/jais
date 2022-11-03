@@ -49,20 +49,20 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
     /**
      *
      * @param source
-     * @param packets
+     * @param sentences
      */
-    public LongRangeAISBroadcastMessage(String source, AISSentence... packets) {
-        super(source, packets);
+    public LongRangeAISBroadcastMessage(String source, AISSentence... sentences) {
+        super(source, sentences);
     }
 
     /**
      * 
      * @param source
      * @param type
-     * @param packets
+     * @param sentences
      */
-    public LongRangeAISBroadcastMessage(String source, AISMessageType type, AISSentence... packets) {
-        super(source, type, packets);
+    public LongRangeAISBroadcastMessage(String source, AISMessageType type, AISSentence... sentences) {
+        super(source, type, sentences);
     }
 
     /**
@@ -158,8 +158,8 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         LongRangeAISBroadcastMessageFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

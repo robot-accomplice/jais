@@ -50,12 +50,12 @@ public class IMO236TidalWindow extends BinaryAddressedMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source the name of the source of this message
+     * @param sentences the AIS sentences from which this message was composed
      * 
      */
-    public IMO236TidalWindow(String source, AISSentence... packets) {
-        super(source, BinaryAddressedMessageType.TIDAL_WINDOW_DEPRECATED, packets);
+    public IMO236TidalWindow(String source, AISSentence... sentences) {
+        super(source, BinaryAddressedMessageType.TIDAL_WINDOW_DEPRECATED, sentences);
     }
 
     /**
@@ -71,10 +71,7 @@ public class IMO236TidalWindow extends BinaryAddressedMessageBase {
         // static inner class to represent the tidal information and just store
         // the array
         for (IMO236TidalWindowFieldMap field : IMO236TidalWindowFieldMap.values()) {
-            switch (field) {
-                default:
-                    LOG.warn("Ignoring field: {}", field.name());
-            }
+            LOG.warn("Ignoring field: {}", field.name());
         }
     }
 
@@ -93,8 +90,8 @@ public class IMO236TidalWindow extends BinaryAddressedMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         IMO236TidalWindowFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

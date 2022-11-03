@@ -27,7 +27,7 @@ public enum ApprovedAISParametricFormatter {
     
     /**
      * 
-     * @param description 
+     * @param description of the formatter
      */
     ApprovedAISParametricFormatter(String description ) {
         this.description = description;

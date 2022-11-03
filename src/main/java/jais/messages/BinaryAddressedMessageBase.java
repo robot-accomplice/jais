@@ -202,8 +202,8 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
 
         /**
          *
-         * @param startBit int
-         * @param endBit   int
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         BinaryAddressedMessageFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

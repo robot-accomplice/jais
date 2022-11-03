@@ -28,11 +28,11 @@ public class FairwayClosed extends BinaryBroadcastMessage {
 
     /**
      * 
-     * @param source
-     * @param packets
+     * @param source the name of the source of this message
+     * @param sentences the AIS sentences from which this message was composed
      */
-    public FairwayClosed(String source, AISSentence... packets) {
-        super(source, packets);
+    public FairwayClosed(String source, AISSentence... sentences) {
+        super(source, sentences);
     }
 
     /**

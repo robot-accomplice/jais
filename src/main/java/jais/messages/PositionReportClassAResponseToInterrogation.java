@@ -28,9 +28,9 @@ public class PositionReportClassAResponseToInterrogation extends PositionReportB
     /**
      * 
      * @param source
-     * @param aisPackets
+     * @param sentences
      */
-    public PositionReportClassAResponseToInterrogation(String source, AISSentence... aisPackets) {
-        super(source, AISMessageType.POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION, aisPackets);
+    public PositionReportClassAResponseToInterrogation(String source, AISSentence... sentences) {
+        super(source, AISMessageType.POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION, sentences);
     }
 }

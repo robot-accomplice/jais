@@ -27,12 +27,12 @@ import jais.messages.enums.BinaryBroadcastMessageType;
 public class IMO289RouteInformation extends BinaryBroadcastMessage {
 
     /**
-     * 
-     * @param source
-     * @param packets
+     *
+     * @param source the name of the source of this message
+     * @param sentences the AIS sentences from which this sentence was composed
      */
-    public IMO289RouteInformation(String source, AISSentence... packets) {
-        super(source, packets);
+    public IMO289RouteInformation(String source, AISSentence... sentences) {
+        super(source, sentences);
     }
 
     /**

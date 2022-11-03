@@ -15,27 +15,30 @@
  */
 package jais.exceptions;
 
+import java.io.Serial;
+
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class InvalidAISCharacterException extends AISException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
      *
-     * @param message
+     * @param message the message to include with the exception
      */
-    public InvalidAISCharacterException( String message ) { super( message ); }
+    public InvalidAISCharacterException(String message) { super(message); }
 
     /**
      *
-     * @param message
-     * @param t
+     * @param message the message to include with the exception
+     * @param t the throwable to include with the exception
      */
-    public InvalidAISCharacterException( String message, Throwable t ) {
-        super( message, t );
-        super.setStackTrace( t.getStackTrace() );
+    public InvalidAISCharacterException(String message, Throwable t) {
+        super(message, t);
+        super.setStackTrace(t.getStackTrace());
     }
 }

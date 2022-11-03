@@ -141,9 +141,8 @@ public class ConsoleController implements Initializable {
                 appendLineToOutput("MMSI Src: " + (type != null ? type.name() : "INVALID"));
 
                 switch (msg.getType()) {
-                    case BASE_STATION_REPORT:
+                    case BASE_STATION_REPORT -> {
                         BaseStationReport bsr = (BaseStationReport) msg;
-
                         appendLineToOutput("Year     : " + bsr.getYear());
                         appendLineToOutput("Month    : " + bsr.getMonth());
                         appendLineToOutput("Day      : " + bsr.getDay());
@@ -155,10 +154,8 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput("Lon      : " + bsr.getLon());
                         appendLineToOutput("Position : " + bsr.getPosition());
                         appendLineToOutput("Radio    : " + bsr.getRadio());
-                        break;
-                    case POSITION_REPORT_CLASS_A:
-                    case POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE:
-                    case POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION:
+                    }
+                    case POSITION_REPORT_CLASS_A, POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE, POSITION_REPORT_CLASS_A_RESPONSE_TO_INTERROGATION -> {
                         PositionReportBase prb = (PositionReportBase) msg;
 
                         // from PositionReportBase
@@ -178,10 +175,9 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput("Speed    : " + prb.getSpeed());
                         appendLineToOutput("Status   : " + prb.getStatus());
                         appendLineToOutput("Turn     : " + prb.getRateOfTurn());
-                        break;
-                    case STATIC_AND_VOYAGE_RELATED_DATA:
+                    }
+                    case STATIC_AND_VOYAGE_RELATED_DATA -> {
                         StaticAndVoyageRelatedData savrd = (StaticAndVoyageRelatedData) msg;
-
                         appendLineToOutput("AIS Version  : " + savrd.getVersion());
                         appendLineToOutput("IMO Number   : " + savrd.getImo());
                         appendLineToOutput("Call Sign    : " + savrd.getCallsign());
@@ -199,10 +195,9 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput("Draught      : " + savrd.getDraught());
                         appendLineToOutput("Destination  : " + savrd.getDestination());
                         appendLineToOutput("DTE Ready    : " + savrd.dteReady());
-                        break;
-                    case STANDARD_CLASS_B_CS_POSITION_REPORT:
+                    }
+                    case STANDARD_CLASS_B_CS_POSITION_REPORT -> {
                         StandardClassBCSPositionReport scbpr = (StandardClassBCSPositionReport) msg;
-
                         appendLineToOutput("Course   : " + scbpr.getCourseOverGround());
                         appendLineToOutput("Heading  : " + scbpr.getHeading());
                         appendLineToOutput("Latitude : " + scbpr.getLat());
@@ -210,10 +205,9 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput("Radio    : " + scbpr.getRadio());
                         appendLineToOutput("Second   : " + scbpr.getSecond());
                         appendLineToOutput("Speed    : " + scbpr.getSpeed());
-                        break;
-                    case EXTENDED_CLASS_B_CS_POSITION_REPORT:
+                    }
+                    case EXTENDED_CLASS_B_CS_POSITION_REPORT -> {
                         ExtendedClassBCSPositionReport ecbpr = (ExtendedClassBCSPositionReport) msg;
-
                         appendLineToOutput("Assigned    : " + ecbpr.getAssigned());
                         appendLineToOutput("Course      : " + ecbpr.getCourseOverGround());
                         appendLineToOutput("Heading     : " + ecbpr.getHeading());
@@ -227,9 +221,8 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput("To Stern    : " + ecbpr.getToStern());
                         appendLineToOutput("To Port     : " + ecbpr.getToPort());
                         appendLineToOutput("To Starboard: " + ecbpr.getToStarboard());
-                        break;
-                    default:
-                        appendLineToOutput("Not breaking out fields of " + msg.getType().getDescription());
+                    }
+                    default -> appendLineToOutput("Not breaking out fields of " + msg.getType().getDescription());
                 }
             } else {
                 appendLineToOutput("AISMessageFactory returned a null message!");

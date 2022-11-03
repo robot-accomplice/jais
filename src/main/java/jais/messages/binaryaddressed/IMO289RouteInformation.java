@@ -34,11 +34,11 @@ public class IMO289RouteInformation extends BinaryAddressedMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source the name of the source of this message
+     * @param sentences the AIS sentences from which this message was composed
      */
-    public IMO289RouteInformation(String source, AISSentence... packets) {
-        super(source, BinaryAddressedMessageType.ROUTE_INFORMATION, packets);
+    public IMO289RouteInformation(String source, AISSentence... sentences) {
+        super(source, BinaryAddressedMessageType.ROUTE_INFORMATION, sentences);
     }
 
     /**
@@ -48,10 +48,7 @@ public class IMO289RouteInformation extends BinaryAddressedMessageBase {
         super.decode();
 
         for (IMO289RouteInformationFieldMap field : IMO289RouteInformationFieldMap.values()) {
-            switch (field) {
-                default:
-                    LOG.warn("Ignoring field: {}", field.name());
-            }
+            LOG.warn("Ignoring field: {}", field.name());
         }
     }
 
@@ -68,8 +65,8 @@ public class IMO289RouteInformation extends BinaryAddressedMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit of the target field
+         * @param endBit the last bit of the target field
          */
         IMO289RouteInformationFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

@@ -575,7 +575,7 @@ public enum Manufacturer {
 
     /**
      * 
-     * @param fullName
+     * @param fullName the full name of the manufacturer
      */
     Manufacturer(String fullName) {
         this.fullName = fullName;
@@ -583,8 +583,8 @@ public enum Manufacturer {
 
     /**
      *
-     * @param code
-     * @return
+     * @param code the code for which we wish to check
+     * @return a boolean representing whether or not the manufacturer is known
      */
     public static boolean isKnown(String code) {
         if (code == null)

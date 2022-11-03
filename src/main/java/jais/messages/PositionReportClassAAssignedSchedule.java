@@ -28,9 +28,9 @@ public class PositionReportClassAAssignedSchedule extends PositionReportBase {
     /**
      * 
      * @param source
-     * @param aisPackets
+     * @param sentences
      */
-    public PositionReportClassAAssignedSchedule(String source, AISSentence... aisPackets) {
-        super(source, AISMessageType.POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE, aisPackets);
+    public PositionReportClassAAssignedSchedule(String source, AISSentence... sentences) {
+        super(source, AISMessageType.POSITION_REPORT_CLASS_A_ASSIGNED_SCHEDULE, sentences);
     }
 }
