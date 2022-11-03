@@ -608,7 +608,7 @@ public final class AISSentence implements Sentence {
 
     /**
      * Returns the actual numeric frequency (as a double) indicated by the
-     * this.radioChannelCode (see {@link #getRadioChannelCode()})
+     * this.radioChannelCode
      *
      * @return a double representing the numeric frequency on which this message was
      *         broadcast
