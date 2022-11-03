@@ -83,7 +83,7 @@ public class AISDecoderTest {
 
         Optional<AISMessage> msg = AISMessageFactory.create("UnitTest", sentences);
 
-        if (!msg.isPresent()) {
+        if (msg.isEmpty()) {
             LOG.warn("Factory returned a null message!  May be an unsupported message type.");
         } else {
             // from AISMessageBase
@@ -319,9 +319,9 @@ public class AISDecoderTest {
      */
     @Test
     public void testDecodingSpeed() {
-        LOG.fatal("*************************************");
-        LOG.fatal("*** testDecodingSpeed() ***");
-        LOG.fatal("*************************************");
+        LOG.info("*************************************");
+        LOG.info("*** testDecodingSpeed() ***");
+        LOG.info("*************************************");
         long start;
         long stop;
 
@@ -332,18 +332,18 @@ public class AISDecoderTest {
         pTwo.process();
         stop = System.nanoTime();
 
-        LOG.fatal("============================================================================================");
-        LOG.fatal("sentence processing for two sentences took {} ms", (stop - start) / 1000000f);
-        LOG.fatal("============================================================================================");
+        LOG.info("============================================================================================");
+        LOG.info("sentence processing for two sentences took {} ms", (stop - start) / 1000000f);
+        LOG.info("============================================================================================");
 
         AISSentence[] sentences = new AISSentence[] { pOne, pTwo };
         start = System.nanoTime();
         AISMessageFactory.create("UnitTest", sentences);
         stop = System.nanoTime();
 
-        LOG.fatal("============================================================================================");
-        LOG.fatal("Decoding of one compound message took {} ms", (stop - start) / 1000000f);
-        LOG.fatal("============================================================================================");
+        LOG.info("============================================================================================");
+        LOG.info("Decoding of one compound message took {} ms", (stop - start) / 1000000f);
+        LOG.info("============================================================================================");
 
         long processTotalTime = 0;
         long processPerMsgTime = 0;
@@ -374,19 +374,19 @@ public class AISDecoderTest {
             }
         }
 
-        LOG.fatal("============================================================================================");
-        LOG.fatal("Average sentence process time across {} runs for {} messages    :  {} ms",
+        LOG.info("============================================================================================");
+        LOG.info("Average sentence process time across {} runs for {} messages    :  {} ms",
                 RUN_COUNT, TEST_SENTENCES.length, processTotalTime / (1000f * 1000000f));
-        LOG.fatal("Average per sentence process time across {} runs                 :  {} ms",
+        LOG.info("Average per sentence process time across {} runs                 :  {} ms",
                 RUN_COUNT, processPerMsgTime / (1000f * 1000000f));
 
-        LOG.fatal("Average message decode time across {} runs for {} messages    :  {} ms",
+        LOG.info("Average message decode time across {} runs for {} messages    :  {} ms",
                 RUN_COUNT, TEST_SENTENCES.length, decodeTotalTime / (1000f * 1000000f));
-        LOG.fatal("Average per message decode time across {} runs                 :  {} ms",
+        LOG.info("Average per message decode time across {} runs                 :  {} ms",
                 RUN_COUNT, decodePerMsgTime / (1000f * 1000000f));
-        LOG.fatal("============================================================================================");
+        LOG.info("============================================================================================");
 
-        counts.keySet().forEach((type) -> LOG.printf(Level.FATAL, "%2d x %s", counts.get(type), type));
+        counts.keySet().forEach((type) -> LOG.printf(Level.INFO, "%2d x %s", counts.get(type), type));
     }
 
     /**
@@ -412,7 +412,7 @@ public class AISDecoderTest {
         try {
             Assertions.assertTrue(p.isValid(), binString + " is NOT valid.");
         } catch (Exception e) {
-            LOG.fatal(e.getMessage(), e);
+            LOG.info(e.getMessage(), e);
         }
     }
 }
