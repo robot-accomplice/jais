@@ -19,9 +19,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import jais.messages.ExtendedClassBCSPositionReport;
 import jais.messages.PositionReportBase;
 import jais.messages.StandardClassBCSPositionReport;
@@ -44,7 +41,6 @@ import lombok.Setter;
 @Setter
 public class Vessel implements Cloneable {
 
-    private final static Logger LOG = LogManager.getLogger(Vessel.class);
     private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
             .withZone(ZoneOffset.UTC.normalized());
 
@@ -160,7 +156,7 @@ public class Vessel implements Cloneable {
     /**
      * Creates a new Vessel object based on a StaticAndVoyageRelatedData object
      *
-     * @param savrd
+     * @param savrd The StaticAndVoyageRelatedData object we want to use as a basis for the new Vessel object
      */
     public Vessel(StaticAndVoyageRelatedData savrd) {
         this.id = new Identifier(savrd.getMmsi(), savrd.getSource());
@@ -219,7 +215,7 @@ public class Vessel implements Cloneable {
      * Updates the current instance of Vessel based on the fields contained within
      * an instance of StandardClassBCSPositionReport
      * 
-     * @param report
+     * @param report The StandardClassBCSPositionReport we want to use to update the Vessel object
      */
     public void addUpdatePositionReportClassB(StandardClassBCSPositionReport report) {
         this.currentMessageTimestamp = report.getTimeReceived();
@@ -240,7 +236,7 @@ public class Vessel implements Cloneable {
      * an
      * instance of ExtendedClassBCSPositionReport
      * 
-     * @param report
+     * @param report the ExtendedClassBCSPositionReport we want to use to update the Vessel object
      */
     public void addUpdatePositionReportClassB(ExtendedClassBCSPositionReport report) {
         this.currentMessageTimestamp = report.getTimeReceived();
@@ -266,7 +262,7 @@ public class Vessel implements Cloneable {
      * Updates the current instance of Vessel based on the fields contained within
      * an instance of StaticAndVoyageRelatedData
      *
-     * @param savrd
+     * @param savrd the StaticAndVoyageRelatedData we want to use to update the Vessel object
      */
     public void addUpdateStaticReport(StaticAndVoyageRelatedData savrd) {
         this.imo = savrd.getImo();
@@ -294,8 +290,8 @@ public class Vessel implements Cloneable {
     /**
      * Performs a deep copy of the current Vessel object
      *
-     * @return
-     * @throws CloneNotSupportedException
+     * @return a clone of the current Vessel object
+     * @throws CloneNotSupportedException if the clone operation cannot be completed
      */
     @Override
     public Vessel clone() throws CloneNotSupportedException {
@@ -376,7 +372,7 @@ public class Vessel implements Cloneable {
     }
 
     /**
-     * @param obj
+     * @param obj the object we wish to compare to the current Vessel
      * @return a boolean representing whether the provided object matches this
      *         object
      */
@@ -395,7 +391,7 @@ public class Vessel implements Cloneable {
      * A local implementation of toString() which encapsulates all of the object
      * member fields in an approximate JSON format
      * 
-     * @return
+     * @return a String representation of the current Vessel
      */
     @Override
     public final String toString() {
@@ -453,8 +449,8 @@ public class Vessel implements Cloneable {
 
         /**
          *
-         * @param mmsi
-         * @param source
+         * @param mmsi The MMSI portion of the identifier
+         * @param source The data source portion of the identifier
          */
         public Identifier(int mmsi, String source) {
             this.mmsi = mmsi;
