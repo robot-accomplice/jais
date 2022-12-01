@@ -277,7 +277,7 @@ public class AISMessageDecoder {
 
         if (i == 0x3412140) {
             LOG.trace("Latitude unavailable.");
-            return -181f;
+            return -91f;
         }
         return (float) (((double) i) / (60f * 10000f));
     }
@@ -294,7 +294,7 @@ public class AISMessageDecoder {
 
         if (i == 0x6791AC0) {
             LOG.trace("Longitude unavailable.");
-            return -91f;
+            return -181f;
         }
         return (float) (((double) i) / (60f * 10000f));
     }
