@@ -23,16 +23,12 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.BitSet;
 import java.util.Optional;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class AISMessageDecoder {
-
-    private final static Logger LOG = LogManager.getLogger(AISMessageDecoder.class);
 
     public final static int CHAR_RANGE_A_MIN = 48;
     public final static int CHAR_RANGE_A_MAX = 87;
@@ -58,19 +54,13 @@ public class AISMessageDecoder {
 
         char[] msgChars = charset.decode(ByteBuffer.wrap(rawMessage)).array();
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("8 bit char array is {} bytes long.", rawMessage.length);
-
         BitSet bits = new BitSet(8 * rawMessage.length / 6);
-        // boolean out[] = new boolean[6 * in.length];
-        if (LOG.isDebugEnabled())
-            LOG.debug("6 bit boolean array is {} bits long.", bits.size());
 
         int bIndex = 0;
         for (char c : msgChars) {
             int oc = encodedToSixBitInt(c); // pull the current raw message char
             if (oc == -1) {
-                LOG.trace("Invalid character: '{}'", c);
+                // invalid character
                 bits.clear();
                 break;
             } else {
@@ -90,19 +80,14 @@ public class AISMessageDecoder {
     private static BitSet stringToBitSet(String rawMessage) {
 
         char[] msgChars = rawMessage.toCharArray();
-        if (LOG.isDebugEnabled())
-            LOG.debug("8 bit char array is {} bytes long.", msgChars.length);
 
         BitSet bits = new BitSet(8 * msgChars.length / 6);
-        if (LOG.isDebugEnabled())
-            LOG.debug("6 bit boolean array is {} bits long.", bits.size());
 
         int bIndex = 0;
         for (char c : msgChars) {
             int oc = encodedToSixBitInt(c); // pull the current raw message char
             if (oc == -1) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Invalid character: '{}'", c);
+                // invalid character
                 bits.clear();
                 break;
             } else {
@@ -125,7 +110,7 @@ public class AISMessageDecoder {
         else if (c <= CHAR_RANGE_B_MAX && c >= CHAR_RANGE_B_MIN)
             return c - CHAR_RANGE_B_MIN + (CHAR_RANGE_A_MAX - CHAR_RANGE_A_MIN + 1);
         else {
-            LOG.trace("Character '{}' is outside of either of the acceptable ranges.", c);
+            // character outside of acceptable range
             return '@';
         }
     }
@@ -205,7 +190,7 @@ public class AISMessageDecoder {
         int rval = c;
 
         if (c < 0 || c > 63) {
-            LOG.trace("sixBitIntToAscii: Invalid input for 6-bit conversion: {}", c);
+            // invalid character
             return '@';
         } else if (c < 32)
             rval += 64;
@@ -249,13 +234,9 @@ public class AISMessageDecoder {
     public static Optional<AISMessageType> decodeMessageType(BitSet bits) {
 
         if (bits.size() < AISFieldMap.TYPE.getEndBit()) {
-            LOG.trace("BitSet is too short: {}", bits.size());
+            // bitset too short
             return Optional.empty();
         }
-
-        if (LOG.isDebugEnabled())
-            LOG.debug("BitSet Size: {}, Start Bit: {}, End Bit: {}", bits.size(),
-                    AISFieldMap.TYPE.getStartBit(), AISFieldMap.TYPE.getEndBit());
 
         int typeId = decodeUnsignedInt(bits, AISFieldMap.TYPE.getStartBit(), AISFieldMap.TYPE.getEndBit());
 
@@ -276,7 +257,7 @@ public class AISMessageDecoder {
         int i = decodeSignedInt(b, startBit, endBit);
 
         if (i == 0x3412140) {
-            LOG.trace("Latitude unavailable.");
+            // latitude unavailable
             return -91f;
         }
         return (float) (((double) i) / (60f * 10000f));
@@ -293,7 +274,7 @@ public class AISMessageDecoder {
         int i = decodeSignedInt(b, startBit, endBit);
 
         if (i == 0x6791AC0) {
-            LOG.trace("Longitude unavailable.");
+            // longitude unavailable
             return -181f;
         }
         return (float) (((double) i) / (60f * 10000f));
@@ -323,19 +304,16 @@ public class AISMessageDecoder {
         int i = decodeUnsignedInt(bits, startBit, endBit);
 
         if ((i < 0) || (i > 1023)) {
-            LOG.trace("invalid speedOverGround");
+            // invalid speed
             return -1f;
         }
-        switch (i) {
-            case 1023:
+        return switch (i) {
+            case 1023 ->
                 // speed unavailable
-                LOG.debug("speedOverGround: unavailable: {}", i);
-                return -1f;
-            case 1022:
-                return 102.2f;
-            default:
-                return i / 10.f;
-        }
+                -1f;
+            case 1022 -> 102.2f;
+            default -> i / 10.f;
+        };
     }
 
     /**
@@ -350,7 +328,7 @@ public class AISMessageDecoder {
         int i = decodeUnsignedInt(bits, startBit, endBit);
 
         if ((i < 0) || (i >= 3600)) {
-            LOG.trace("decodeCourse: invalid value: {}", i);
+            // invalid course
             return 3600;
         } else {
             return i / 10f;
@@ -365,8 +343,6 @@ public class AISMessageDecoder {
      * @return the decoded String
      */
     public static String decodeToString(BitSet bits, int startBit, int endBit) {
-        if (LOG.isTraceEnabled())
-            LOG.trace("Decoding bit {} through bit {} of {} element BitSet", startBit, endBit, bits.size());
 
         int capacity = (((endBit - startBit) / 6) + 1);
         if (capacity < 0) {
@@ -389,10 +365,7 @@ public class AISMessageDecoder {
             }
 
             char c = sixBitIntToAscii(charVal);
-            if (c != '@') {
-                LOG.trace("Appending character to CharBuffer: {}", c);
-                cb.put(c);
-            }
+            if (c != '@') cb.put(c);
         }
 
         return new String(cb.array()).trim();
