@@ -20,8 +20,6 @@ import jais.AISSentence;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import org.locationtech.spatial4j.shape.Point;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,8 +30,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class StandardClassBCSPositionReport extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(StandardClassBCSPositionReport.class);
 
     private int speed;
     private boolean accuracy;
@@ -53,8 +49,8 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param sentences the AISSentences from which this message should be composed
      */
     public StandardClassBCSPositionReport(String source, AISSentence... sentences) {
         super(source, sentences);
@@ -62,9 +58,9 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param type
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param type the AISMessageType of the message
+     * @param sentences the AISSentences from which this message should be composed
      */
     public StandardClassBCSPositionReport(String source, AISMessageType type, AISSentence... sentences) {
         super(source, type, sentences);
@@ -72,7 +68,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return a boolean indicating whether or not this message has position data
      */
     @Override
     public boolean hasPosition() {
@@ -81,7 +77,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return a Point representing the position of the vessel
      */
     @Override
     public Point getPosition() {
@@ -94,7 +90,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return a boolean indicating whether or not the positional information is valid
      */
     public boolean isPositionValid() {
         return ((lon >= -180 && lon <= 180) && (lat >= -90 && lat <= 90));
@@ -102,7 +98,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return a boolean indicating whether or not the course information is valid
      */
     public boolean isCourseValid() {
         return courseOverGround < 3600;
@@ -110,7 +106,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return a boolean indicating whether or not the speed information is valid
      */
     public boolean isSpeedValid() {
         return speed < 1023;
@@ -118,7 +114,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return a boolean indicating whether or not the heading information is valid
      */
     public boolean isHeadingValid() {
         return heading < 360;
@@ -199,8 +195,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
                                 field.getEndBit());
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Ignoring field: {}", field.name());
+                    // ignore field
             }
 
         }
@@ -234,31 +229,12 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
         private final int endBit;
 
         /**
-         *
-         * @param startBit
-         * @param endBit
+         * @param startBit the index of the first bit to include in the decoding of this field
+         * @param endBit   the index of the last bit to include in the decoding of this field
          */
         StandardClassBCSPositionReportFieldMap(int startBit, int endBit) {
             this.startBit = startBit;
             this.endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return this.startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return this.endBit;
         }
     }
 }

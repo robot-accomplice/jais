@@ -26,9 +26,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import jais.messages.AISMessageDecoder;
 import jais.messages.enums.Manufacturer;
 import jais.messages.enums.SentenceType;
@@ -41,8 +38,6 @@ import lombok.Getter;
  */
 @Getter
 public final class AISSentence implements Sentence {
-
-    private final static Logger LOG = LogManager.getLogger(AISSentence.class);
 
     // reserved characters
     public final static char ENCAP_START = '!';
@@ -103,8 +98,6 @@ public final class AISSentence implements Sentence {
      * @param source      byte[] for the named source of the AIS sentence
      */
     public AISSentence(byte[] rawSentence, byte[] source) {
-        if (LOG.isTraceEnabled())
-            LOG.trace("Constructor instantiated with: \"{}\", \"{}\"", rawSentence, source);
         this.rawSentence = ByteArrayUtils.trimByteArray(rawSentence);
         this.source = ByteArrayUtils.trimByteArray(source);
     }
@@ -129,8 +122,6 @@ public final class AISSentence implements Sentence {
      * @param source      String representing the named source of this AIS sentence
      */
     public AISSentence(String rawSentence, String source) {
-        if (LOG.isTraceEnabled())
-            LOG.trace("Constructor instantiated with: \"{}\", \"{}\"", rawSentence, source);
         this.rawSentence = ByteArrayUtils.str2bArray(rawSentence);
         this.source = ByteArrayUtils.str2bArray(Objects.requireNonNullElse(source, DEFAULT_SOURCE));
     }
@@ -152,17 +143,12 @@ public final class AISSentence implements Sentence {
      */
     private boolean validatePreamble() {
         if (this.sentenceParts == null) {
-            LOG.trace("this.sentenceParts is null");
             return false;
         } else if (this.sentenceParts.length == 0) {
-            LOG.trace("this.sentenceParts has zero members");
             return false;
         } else if (this.preamble == null && this.sentenceParts[0] == null) {
-            LOG.trace("this.sentenceParts[0] is null");
             return false;
         } else {
-            if (LOG.isTraceEnabled())
-                LOG.trace("Creating preamble object from {}", ByteArrayUtils.bArray2Str(this.sentenceParts[0]));
             return validatePreamble(Preamble.parse(this.sentenceParts[0]));
         }
     }
@@ -224,29 +210,20 @@ public final class AISSentence implements Sentence {
         String rawSentence;
 
         if (this.rawSentence == null) {
-            LOG.trace("Raw sentence is null");
             return this;
         } else if (this.rawSentence.length == 0) {
-            LOG.trace("Raw sentence is empty");
             return this;
         } else {
             rawSentence = ByteArrayUtils.bArray2Str(ByteArrayUtils.trimByteArray(this.rawSentence));
-            LOG.trace("Processing new raw sentence: {}", rawSentence);
         }
 
         Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher(rawSentence);
         if (m.find()) {
-            LOG.trace("Found a TagBlock in \"{}\"", rawSentence);
-            try {
-                if (this.source == null || this.source.length == 0) {
-                    this.tagBlock = TagBlock.parse(m.group(0));
-                    this.source = this.tagBlock.getSource();
-                } else
-                    this.tagBlock = TagBlock.parse(m.group(0), this.source);
-            } catch (Throwable t) {
-                if (LOG.isTraceEnabled())
-                    LOG.trace("Unable to parse TagBlock from {}", m.group(0));
-            }
+            if (this.source == null || this.source.length == 0) {
+                this.tagBlock = TagBlock.parse(m.group(0));
+                this.source = this.tagBlock.getSource();
+            } else
+                this.tagBlock = TagBlock.parse(m.group(0), this.source);
 
             this.sentenceBody = ByteArrayUtils.str2bArray(rawSentence.substring(m.end()));
         } else if (addTagBlock) {
@@ -254,32 +231,17 @@ public final class AISSentence implements Sentence {
                 this.tagBlock = TagBlock.build(this.source);
             this.sentenceBody = this.rawSentence;
         } else {
-            LOG.trace("No TagBlock found and addTagBlock is false");
+            // no TagBlock found and addTagBlock is false
             this.sentenceBody = this.rawSentence;
         }
-
-        if (LOG.isTraceEnabled())
-            LOG.trace("this.sentenceBody = \"{}\"", ByteArrayUtils.bArray2Str(this.sentenceBody));
 
         if (this.sentenceParts == null)
             this.sentenceParts = ByteArrayUtils.fastSplit(this.sentenceBody, FIELD_DELIMITER);
 
-        if (this.sentenceParts == null || this.sentenceParts.length < 6)
-            LOG.trace("Raw sentence contains no message (inadequate number of comma-separated values).");
-
         switch (this.sentenceParts.length) {
             case 10:
-                if (LOG.isTraceEnabled())
-                    LOG.trace("Unrecognized field at position 10: {}",
-                            ByteArrayUtils.bArray2Str(this.sentenceParts[9]));
             case 9:
-                if (LOG.isTraceEnabled())
-                    LOG.trace("Unrecognized field at position  9: {}",
-                            ByteArrayUtils.bArray2Str(this.sentenceParts[8]));
             case 8:
-                if (LOG.isTraceEnabled())
-                    LOG.trace("Unrecognized field at position  8: {}",
-                            ByteArrayUtils.bArray2Str(this.sentenceParts[7]));
             case 7:
                 if (this.sentenceParts[6] != null && this.sentenceParts[6].length > 0) {
                     try {
@@ -296,20 +258,12 @@ public final class AISSentence implements Sentence {
                         if (checksumBytes.length > 0) {
                             this.checksum = ByteArrayUtils.trimByteArray(checksumBytes);
                         }
-                    } else
-                        LOG.trace("Sentence is missing checksum!");
+                    }
                 }
             case 6:
-                if (this.sentenceParts[5] == null)
-                    LOG.trace("Raw message is null.");
-                else if (this.sentenceParts[5].length == 0)
-                    LOG.trace("Raw message is empty.");
                 this.binaryString = this.sentenceParts[5]; // only the binary string
                 break;
             default:
-                if (LOG.isTraceEnabled())
-                    LOG.trace("Sentence is corrupt and has no message body: {}",
-                            ByteArrayUtils.bArray2Str(this.rawSentence));
         }
 
         this.parsed = true;
@@ -332,9 +286,6 @@ public final class AISSentence implements Sentence {
             if (this.sentenceParts == null)
                 process();
 
-            if (LOG.isTraceEnabled())
-                LOG.trace("Validating sentenceBody: {}", ByteArrayUtils.bArray2Str(this.sentenceBody));
-
             if (this.sentenceBody.length > 82)
                 return false; // invalid sentence length
             if (this.sentenceParts.length == 0)
@@ -349,7 +300,7 @@ public final class AISSentence implements Sentence {
                 // is this character within an accepted range?
                 if (!((c <= AISMessageDecoder.CHAR_RANGE_A_MAX && c >= AISMessageDecoder.CHAR_RANGE_A_MIN)
                         || (c <= AISMessageDecoder.CHAR_RANGE_B_MAX && c >= AISMessageDecoder.CHAR_RANGE_B_MIN))) {
-                    LOG.trace("sentence contains an invalid character: {}", c);
+                    // sentence contains an invalid character
                     return false;
                 }
             }
@@ -360,15 +311,12 @@ public final class AISSentence implements Sentence {
             if (csIndex > 0) {
                 // validate checksum
                 if (!validateChecksum(this.sentenceBody, this.checksum)) {
-                    LOG.trace("sentence failed checksum validation.");
                     return false;
                 }
             } else {
-                LOG.fatal("sentence is missing checksum.");
                 return false;
             }
         } catch (Exception e) {
-            LOG.trace("sentence validation failed: {}", e.getMessage(), e);
             return false;
         }
 
@@ -382,15 +330,10 @@ public final class AISSentence implements Sentence {
      * @return a generated int checksum for the provided char []
      */
     private static int generateChecksum(char[] source) {
-        if (LOG.isTraceEnabled())
-            LOG.trace("Generating checksum for String \"{}\"", new String(source));
 
         int crc = 0;
         for (char aSource : source)
             crc ^= aSource;
-
-        if (LOG.isTraceEnabled())
-            LOG.trace("Generated CRC = {}(int)/{}(hex)", crc, Integer.toHexString(crc));
 
         return crc;
     }
@@ -407,8 +350,6 @@ public final class AISSentence implements Sentence {
 
         hexString = (hexString.length() == 1) ? "0" + hexString : hexString;
 
-        LOG.trace("Produced hex string {} from sourceString {}", hexString, sourceString);
-
         return hexString;
     }
 
@@ -422,10 +363,8 @@ public final class AISSentence implements Sentence {
     private static int getChecksum(String data) {
         int index = data.indexOf(String.valueOf(CHECKSUM_DELIMITER));
         if (index > -1) {
-            LOG.trace("Found * at {}", index);
             return getChecksum(data, 1, data.indexOf((String.valueOf(CHECKSUM_DELIMITER))));
         } else {
-            LOG.trace("Index was {}", index);
             return getChecksum(data, 1, data.length());
         }
     }
@@ -479,27 +418,14 @@ public final class AISSentence implements Sentence {
 
         try {
             calcChecksum = getChecksum(trimmed);
-            LOG.trace("Generated checksum {}", calcChecksum);
         } catch (NumberFormatException nfe) {
-            if (LOG.isTraceEnabled())
-                LOG.trace("Cannot produce a checksum from  \"{}\"", ByteArrayUtils.bArray2Str(trimmed));
             return false;
         }
 
         try {
             pktChecksum = Long.parseUnsignedLong(ByteArrayUtils.bArray2Str(sentenceChecksum), 16);
         } catch (NumberFormatException nfe) {
-            if (LOG.isInfoEnabled())
-                LOG.info("Cannot parse \"{}\" into a valid long", ByteArrayUtils.bArray2Str(sentenceChecksum));
             return false;
-        }
-
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Comparing: \"{}/{}\" to \"{}/{}\"", pktChecksum, ByteArrayUtils
-                    .bArray2Str(sentenceChecksum).toUpperCase(),
-                    calcChecksum, Long.toHexString(calcChecksum).toUpperCase());
-            LOG.trace("\"{}\" is {} equal to \"{}\"", calcChecksum, ((calcChecksum == pktChecksum) ? "" : "not"),
-                    pktChecksum);
         }
 
         return (pktChecksum == calcChecksum);
@@ -516,9 +442,7 @@ public final class AISSentence implements Sentence {
      */
     public static String createSentenceStringFromBinaryString(String rawData) {
         String sentenceString = "!AIVDM,1,1,,A," + rawData + ",0*";
-        LOG.trace("sentence before checksum: {}", sentenceString);
         sentenceString += Integer.toHexString(AISSentence.getChecksum(sentenceString));
-        LOG.trace("sentence after checksum: {}", sentenceString);
 
         return sentenceString;
     }
@@ -771,7 +695,6 @@ public final class AISSentence implements Sentence {
         String substring = null;
 
         if (truncIndex != -1) {
-            LOG.trace("Truncating: {}", s);
             substring = s.substring(0, truncIndex);
         }
 
@@ -787,34 +710,18 @@ public final class AISSentence implements Sentence {
     private static int getSentenceTruncIndex(String s) {
         int truncIndex = 0;
 
-        LOG.trace("Evaluating \"{}\" for truncation point.", s);
-
-        // String [] sansTagBlock = s.split( "\\\\!" );
-        //
-        // Matcher m = AISsentence.PREAMBLE_PATTERN.matcher( ( sansTagBlock.length > 1)
-        // ?
-        // sansTagBlock[1] : sansTagBlock[0] );
-
         Matcher m = AISSentence.PREAMBLE_PATTERN.matcher(s);
         if (m.find()) {
             if (s.contains("\n")) {
-                LOG.trace("String is terminated by a newline");
                 truncIndex = s.indexOf("\n");
             } else if (s.contains("\r")) {
-                LOG.trace("String is terminated by a carriage return");
                 truncIndex = s.indexOf("\r");
             } else if (m.find()) {
                 truncIndex = s.indexOf(m.group(0), 1);
-                LOG.trace("Truncating based on preamble");
-                if (LOG.isTraceEnabled())
-                    LOG.trace("Matched string for index is: \"{}\"", m.group(0));
             } else {
-                LOG.trace("Line should not be truncated.");
                 truncIndex = -1;
             }
         }
-
-        LOG.trace("Truncation index set to {}", truncIndex);
 
         return truncIndex;
     }
@@ -837,10 +744,8 @@ public final class AISSentence implements Sentence {
 
         byte[] compositeMsg = null;
 
-        LOG.trace("Concatenating {} sentences.", sentences.length);
         for (AISSentence sentence : sentences) {
             if (sentence == null) {
-                LOG.warn("Skipping null sentence in {} length array of sentences.", sentences.length);
                 continue;
             } else if (!sentence.isParsed())
                 sentence.process();
@@ -983,14 +888,10 @@ public final class AISSentence implements Sentence {
          * @return the completed Preamble object
          */
         public static Preamble parse(Preamble p, String rawPreamble) {
-            LOG.trace("Parsing {}", rawPreamble);
             Matcher m = PREAMBLE_PATTERN.matcher(rawPreamble);
             if (m.find()) {
                 String parsed = m.group(0);
                 p.parsed = ByteArrayUtils.str2bArray(parsed);
-                if (LOG.isTraceEnabled())
-                    LOG.trace("Found {} matcher groups: {}=({})({})({})({})", m.groupCount(),
-                            m.group(), m.group(1), m.group(2), m.group(4), m.group(5));
                 p.firstChar = m.group(1).charAt(0);
 
                 if (p.firstChar == '!')
@@ -998,8 +899,6 @@ public final class AISSentence implements Sentence {
                 else if (m.group(1).equals("$"))
                     p.isEncapsulated = false;
                 else {
-                    if (LOG.isTraceEnabled())
-                        LOG.trace("Unrecognized starting character in address field: {}", m.group(1));
                     p.isEncapsulated = false;
                 }
 
@@ -1019,14 +918,10 @@ public final class AISSentence implements Sentence {
                     p.talker = Talker.valueOf(m.group(2).toUpperCase());
                 } else {
                     p.talker = null;
-                    if (LOG.isTraceEnabled())
-                        LOG.trace("Unrecognized/invalid talker type: {}", m.group(2));
                 }
 
                 p.format = ByteArrayUtils.str2bArray(m.group(4));
                 p.isQuery = m.group(5).equals("Q");
-            } else {
-                LOG.trace("Preamble {} appears to be invalid and does not match the format: {}", rawPreamble, PREAMBLE);
             }
 
             return p;

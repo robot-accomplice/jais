@@ -21,8 +21,6 @@ import jais.messages.enums.AISMessageType;
 import jais.AISSentence;
 import jais.messages.enums.EPFDFixType;
 import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -30,8 +28,6 @@ import org.apache.logging.log4j.Logger;
  */
 @Getter
 public class UTCDateResponse extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(UTCDateResponse.class);
 
     private int year;
     private int month;
@@ -48,8 +44,8 @@ public class UTCDateResponse extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param sentences the AISSentences from which this message should be composed
      */
     public UTCDateResponse(String source, AISSentence... sentences) {
         super(source, sentences);
@@ -57,9 +53,9 @@ public class UTCDateResponse extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param type
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param type the AISMessageType of the message
+     * @param sentences the AISSentences from which this message should be composed
      */
     public UTCDateResponse(String source, AISMessageType type, AISSentence... sentences) {
         super(source, type, sentences);
@@ -113,8 +109,6 @@ public class UTCDateResponse extends AISMessageBase {
                     if (bits.size() >= field.getStartBit()) {
                         int epfdCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                        if (LOG.isDebugEnabled())
-                            LOG.debug("Retrieving EPFDFixType for code: {}", epfdCode);
                         this.epfd = EPFDFixType.getForCode(epfdCode);
                     }
                     break;
@@ -127,8 +121,7 @@ public class UTCDateResponse extends AISMessageBase {
                         this.radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Encountered unhandled field type of : {}", field);
+                    // ignore field
             }
         }
     }
@@ -136,6 +129,7 @@ public class UTCDateResponse extends AISMessageBase {
     /**
      *
      */
+    @Getter
     private enum UTCDateResponseFieldMap implements FieldMap {
 
         YEAR(38, 51),
@@ -163,24 +157,6 @@ public class UTCDateResponse extends AISMessageBase {
         UTCDateResponseFieldMap(int startBit, int endBit) {
             this.startBit = startBit;
             this.endBit = endBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getStartBit() {
-            return this.startBit;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @Override
-        public int getEndBit() {
-            return this.endBit;
         }
     }
 }

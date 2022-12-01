@@ -25,8 +25,6 @@ import lombok.Setter;
 
 import java.lang.reflect.Constructor;
 import java.util.BitSet;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -35,8 +33,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public abstract class BinaryAddressedMessageBase extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(BinaryAddressedMessageBase.class);
 
     private int seqno;
     private int destMmsi;
@@ -119,8 +115,6 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
 
         if (this.subType != null) {
             try {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Creating a new {} instance.", this.subType.getDescription());
 
                 Constructor<? extends BinaryAddressedMessageBase> con = this.subType.getMsgClass()
                         .getDeclaredConstructor(AISSentence[].class);
@@ -134,13 +128,9 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
 
                 message.setType(super.getType());
                 message.setSubType(this.subType);
-            } catch (ReflectiveOperationException roe) {
-                LOG.trace("Reflection failure: {}", roe.getMessage(), roe);
-            } catch (SecurityException se) {
-                LOG.trace("SecurityException: {}", se.getMessage(), se);
+            } catch (ReflectiveOperationException | SecurityException e) {
+                // do nothing
             }
-        } else {
-            LOG.trace("Unable to determine message subtype for DAC:{} and FID: {}", dac, fid);
         }
 
         return message;

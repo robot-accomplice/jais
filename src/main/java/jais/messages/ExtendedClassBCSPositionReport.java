@@ -25,8 +25,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.locationtech.spatial4j.shape.Point;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -35,8 +33,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class ExtendedClassBCSPositionReport extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(ExtendedClassBCSPositionReport.class);
 
     private int speed;
     private boolean accurate;
@@ -212,8 +208,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
                         assigned = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Ignoring field: {}", field.name());
+                    // ignore field
             }
         }
     }

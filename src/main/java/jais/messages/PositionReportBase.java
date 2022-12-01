@@ -25,8 +25,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.locationtech.spatial4j.shape.Point;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -35,8 +33,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public abstract class PositionReportBase extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(PositionReportBase.class);
 
     // bit positions are off spec by 1 because the BitSet counts from 0 rather than
     // 1
@@ -55,9 +51,9 @@ public abstract class PositionReportBase extends AISMessageBase {
     private int radio; // bits 149-167, Radio Status
 
     /**
-     * 
-     * @param source
-     * @param sentences
+     *
+     * @param source The name of the source of the AISSentence(s)
+     * @param sentences the AISSentences from which this message should be composed
      */
     public PositionReportBase(String source, AISSentence... sentences) {
         super(source, sentences);
@@ -65,9 +61,9 @@ public abstract class PositionReportBase extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param messageType
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param messageType the AISMessageType of the message
+     * @param sentences the AISSentences from which this message should be composed
      */
     public PositionReportBase(String source, AISMessageType messageType, AISSentence... sentences) {
         super(source, messageType, sentences);
@@ -75,7 +71,7 @@ public abstract class PositionReportBase extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return a boolean indicating whether or not this message type contains positional information
      */
     @Override
     public boolean hasPosition() {
@@ -84,7 +80,7 @@ public abstract class PositionReportBase extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return a Point representing the current location of the vessel
      */
     @Override
     public Point getPosition() {
@@ -97,7 +93,7 @@ public abstract class PositionReportBase extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return a boolean indicating whether or not the position information is valid
      */
     public boolean isPositionValid() {
         return ((lon >= -180 && lon <= 180) && (lat >= -90 && lat <= 90));
@@ -105,7 +101,7 @@ public abstract class PositionReportBase extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return a boolean indicating whether or not the course information is valid
      */
     public boolean isCourseValid() {
         return this.courseOverGround < 3600;
@@ -113,7 +109,7 @@ public abstract class PositionReportBase extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return a boolean indicating whether or not the speed information is valid
      */
     public boolean isSpeedValid() {
         return speed < 1023;
@@ -121,7 +117,7 @@ public abstract class PositionReportBase extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return a boolean indicating whether or not the heading information is valid
      */
     public boolean isHeadingValid() {
         return heading < 360;
@@ -129,7 +125,7 @@ public abstract class PositionReportBase extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return a boolean indicating whether or not the rate of turn information is valid
      */
     public boolean isTurnValid() {
         return rateOfTurn > -128;
@@ -201,9 +197,7 @@ public abstract class PositionReportBase extends AISMessageBase {
                         radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Encountered unhandled field type of : {}", field);
-                    break;
+                    // ignore field
             }
         }
     }

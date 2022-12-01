@@ -28,8 +28,6 @@ import lombok.Setter;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -38,8 +36,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class StaticAndVoyageRelatedData extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(StaticAndVoyageRelatedData.class);
 
     private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
             .withZone(ZoneOffset.UTC.normalized());
@@ -64,8 +60,8 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param sentences the AISSentences from which this message should be composed
      */
     public StaticAndVoyageRelatedData(String source, AISSentence... sentences) {
         super(source, sentences);
@@ -73,9 +69,9 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param type
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param type the AISMessageType of the message
+     * @param sentences the AISSentences from which this message should be composed
      */
     public StaticAndVoyageRelatedData(String source, AISMessageType type, AISSentence... sentences) {
         super(source, type, sentences);
@@ -83,7 +79,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return A String representation of the vessel callsign
      */
     public String getCallsign() {
         return ByteArrayUtils.bArray2Str(this.callsign);
@@ -91,7 +87,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return a String representation of the ship's name
      */
     public String getShipName() {
         return ByteArrayUtils.bArray2Str(this.shipName);
@@ -99,7 +95,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return a ZonedDateTime representation of the ship's ETA
      */
     public ZonedDateTime getETA() {
         StringBuilder eta = new StringBuilder();
@@ -169,7 +165,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
         try {
             dt = ZonedDateTime.parse(eta.toString(), ETA_FORMATTER);
         } catch (Exception e) {
-            LOG.warn("Invalid ETA, setting to epoch");
+            // invalid ETA, set to epoch
             dt = ZonedDateTime.parse("1970/01/01 00:00", ETA_FORMATTER);
         }
 
@@ -178,7 +174,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return a String representation of the programmed destination
      */
     public String getDestination() {
         if (this.destination == null)
@@ -188,7 +184,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return a boolean representation of the inverse of the message dte value
      */
     public boolean dteReady() {
         return !this.dte;
@@ -227,7 +223,6 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
                     if (bits.size() >= field.getStartBit())
                         this.shipType = ShipType.getForCode(shipCode);
                     if (this.shipType == null) {
-                        LOG.debug("No ShipType for {}", shipCode);
                         this.shipType = ShipType.OTHER_NO_INFO;
                     }
                     break;
@@ -281,14 +276,10 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
                 case DTE:
                     if (field.getStartBit() < bits.size()) {
                         dte = bits.get(field.getStartBit());
-                    } else {
-                        if (LOG.isDebugEnabled())
-                            LOG.debug("Reached end of message before we could retrieve DTE value!");
                     }
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Encountered unhandled field type of : {}", field);
+                    // ignore field
             }
         }
     }
@@ -323,8 +314,8 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the index of the first bit to include in the decoding of this field
+         * @param endBit the index of the last bit to include in the decoding of this field
          */
         StaticAndVoyageFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

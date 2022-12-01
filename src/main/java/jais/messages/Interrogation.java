@@ -22,9 +22,6 @@ import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
@@ -32,8 +29,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class Interrogation extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(Interrogation.class);
 
     private int mmsi1; // interrogated mmsi
     private int type1_1; // first message type
@@ -46,8 +41,8 @@ public class Interrogation extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param sentences the AISSentences from which this message should be composed
      */
     public Interrogation(String source, AISSentence... sentences) {
         super(source, sentences);
@@ -55,9 +50,9 @@ public class Interrogation extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param type
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param type the AISMessageType of the message
+     * @param sentences the AISSentences from which this message should be composed
      */
     public Interrogation(String source, AISMessageType type, AISSentence... sentences) {
         super(source, type, sentences);
@@ -65,7 +60,7 @@ public class Interrogation extends AISMessageBase {
 
     /**
      *
-     * @return
+     * @return the MMSI of the source of the interrogation
      */
     public int getSourceMmsi() {
         return super.getMmsi();
@@ -113,8 +108,7 @@ public class Interrogation extends AISMessageBase {
                         offset2_1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Ignoring field: {}", field.name());
+                    // ignore field
             }
         }
     }

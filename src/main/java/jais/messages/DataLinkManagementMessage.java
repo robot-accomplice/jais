@@ -21,8 +21,6 @@ import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import lombok.Setter;
 import jais.messages.enums.AISMessageType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -31,8 +29,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class DataLinkManagementMessage extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(DataLinkManagementMessage.class);
 
     private int offset1 = -1;
     private int slots1 = -1;
@@ -148,8 +144,7 @@ public class DataLinkManagementMessage extends AISMessageBase {
                                 field.getEndBit());
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Ignoring field: {}", field.name());
+                    // ignore field
             }
         }
     }

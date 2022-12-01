@@ -23,8 +23,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.locationtech.spatial4j.shape.Point;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -33,8 +31,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class BaseStationReport extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(BaseStationReport.class);
 
     private int year;
     private int month;
@@ -149,9 +145,7 @@ public class BaseStationReport extends AISMessageBase {
                         radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Encountered unhandled field type of : {}",
-                                field);
+                    // ignore field
             }
         }
     }

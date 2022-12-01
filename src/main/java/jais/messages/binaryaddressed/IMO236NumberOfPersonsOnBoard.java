@@ -22,16 +22,12 @@ import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import jais.messages.enums.BinaryAddressedMessageType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class IMO236NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(IMO236NumberOfPersonsOnBoard.class);
 
     private int persons;
 
@@ -65,8 +61,6 @@ public class IMO236NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
             if (field == IMO236NumberOfPersonsOnBoardFieldMap.PERSONS) {
                 persons = AISMessageDecoder.decodeUnsignedInt(bits,
                         field.getStartBit(), field.getEndBit());
-            } else {
-                LOG.warn("Ignoring field: {}", field.name());
             }
         }
     }

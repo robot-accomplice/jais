@@ -24,20 +24,12 @@ import lombok.Getter;
 import java.time.ZoneOffset;
 import org.locationtech.spatial4j.shape.Point;
 import java.time.ZonedDateTime;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public interface AISMessage {
-
-    /**
-     * Logger
-     */
-    Logger LOG = LogManager.getLogger(AISMessage.class);
-
 
     /**
      *
@@ -67,7 +59,6 @@ public interface AISMessage {
      * @return a boolean indicating whether or not the provided IMO is valid
      */
     static boolean isValidImo(long imo) {
-        LOG.info("Validating IMO: {}", imo);
 
         boolean valid = (Long.toString(imo).length() == 7);
 
@@ -76,8 +67,6 @@ public interface AISMessage {
             Integer[] digits = new Integer[7];
             for (char c : Long.toString(imo).toCharArray()) {
                 digits[d] = Integer.valueOf("" + c);
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Digit at position: {} is {}", d, digits[d]);
                 d++;
             }
 
@@ -91,12 +80,8 @@ public interface AISMessage {
             int sum = 0;
             for (int i = 0; i < 6; i++)
                 sum += digits[i];
-            if (LOG.isDebugEnabled())
-                LOG.debug("Sum of products is : {}", sum);
 
             valid = (sum % 10 == digits[6]);
-
-            LOG.info("Modulus of sum divided by 10 is: {} vs {}", sum % 10, digits[6]);
         }
 
         return valid;

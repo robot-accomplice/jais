@@ -21,16 +21,12 @@ import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import jais.messages.enums.BinaryAddressedMessageType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class IMO289DangerousCargoIndication extends BinaryAddressedMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(IMO289DangerousCargoIndication.class);
 
     /**
      *
@@ -46,13 +42,6 @@ public class IMO289DangerousCargoIndication extends BinaryAddressedMessageBase {
     @Override
     public final void decode() {
         super.decode();
-
-        for (IMO289DangerousCargoIndicationFieldMap field : IMO289DangerousCargoIndicationFieldMap.values()) {
-            switch (field) {
-                default:
-                    LOG.warn("Ignoring field: {}", field.name());
-            }
-        }
     }
 
     /**

@@ -25,8 +25,6 @@ import lombok.Setter;
 
 import org.locationtech.spatial4j.shape.Point;
 import jais.messages.AISMessageDecoder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -35,8 +33,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(IMO289ClearanceTimeToEnterPort.class);
 
     private int linkageId;
     private int month;
@@ -105,7 +101,9 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
                         field.getStartBit(), field.getEndBit());
                 case LAT -> this.lat = AISMessageDecoder.decodeLatitude(this.bits,
                         field.getStartBit(), field.getEndBit());
-                default -> LOG.warn("Ignoring field: {}", field.name());
+                default -> {
+                    // ignore field
+                }
             }
         }
     }

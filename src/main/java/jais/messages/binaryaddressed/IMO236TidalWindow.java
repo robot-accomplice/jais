@@ -22,8 +22,6 @@ import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import lombok.Setter;
 import jais.messages.enums.BinaryAddressedMessageType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -33,8 +31,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class IMO236TidalWindow extends BinaryAddressedMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(IMO236TidalWindow.class);
 
     private int month;
     private int day;
@@ -70,9 +66,6 @@ public class IMO236TidalWindow extends BinaryAddressedMessageBase {
         // remaining data after we decode the month and day -- may use a public
         // static inner class to represent the tidal information and just store
         // the array
-        for (IMO236TidalWindowFieldMap field : IMO236TidalWindowFieldMap.values()) {
-            LOG.warn("Ignoring field: {}", field.name());
-        }
     }
 
     /**

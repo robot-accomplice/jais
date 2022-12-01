@@ -1,18 +1,14 @@
 package jais;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public final class Checksum {
 
-    private final static Logger LOG = LogManager.getLogger(Checksum.class);
     private final static char CHECKSUM_DELIMITER = '*';
 
     int crc;
 
     /**
      * 
-     * @param crc
+     * @param crc the integer CRC value to use in the creation of the object
      */
     private Checksum(int crc) {
         this.crc = crc;
@@ -20,8 +16,8 @@ public final class Checksum {
 
     /**
      * 
-     * @param c
-     * @return
+     * @param c the target Checksum object for the comparison
+     * @return boolean indicating whether or not the passed in object is equal to the current Crc object
      */
     public boolean equals(Checksum c) {
         return c.getCRC() == this.crc;
@@ -34,15 +30,10 @@ public final class Checksum {
      * @return a generated int checksum for the provided char []
      */
     public static Checksum generateChecksum(char[] source) {
-        if (LOG.isDebugEnabled())
-            LOG.debug("Generating checksum for String \"{}\"", new String(source));
 
         int crc = 0;
         for (char aSource : source)
             crc ^= aSource;
-
-        if (LOG.isDebugEnabled())
-            LOG.debug("Generated CRC = {}(int)/{}(hex)", crc, Integer.toHexString(crc));
 
         return new Checksum(crc);
     }
@@ -67,8 +58,6 @@ public final class Checksum {
      */
     public static Checksum parse(String data) {
         int index = data.indexOf(String.valueOf(CHECKSUM_DELIMITER));
-        if (LOG.isDebugEnabled())
-            LOG.debug("Index: {}", index);
         if (index < 0) {
             index = data.length() - 1;
         }
@@ -80,13 +69,11 @@ public final class Checksum {
 
     /**
      * 
-     * @param data
-     * @return
+     * @param data the data from which the checksum value must be parsed
+     * @return the Checksum object that results from the successful parsing of the passed in data
      */
     public static Checksum parse(byte[] data) {
         int index = ByteArrayUtils.indexOf(data, CHECKSUM_DELIMITER);
-        if (LOG.isDebugEnabled())
-            LOG.debug("Index: {}", index);
         if (index < 0) {
             index = data.length - 1;
         }
@@ -130,28 +117,18 @@ public final class Checksum {
 
         try {
             calcChecksum = parse(trimmed);
-            LOG.debug("Generated checksum {}", calcChecksum.toHexString());
         } catch (NumberFormatException nfe) {
-            if (LOG.isDebugEnabled())
-                LOG.debug("Cannot produce a checksum from  \"{}\"", ByteArrayUtils.bArray2Str(trimmed));
+            // can't parse checksum
             return false;
         }
 
         try {
             pktChecksum = new Checksum(Integer.parseUnsignedInt(ByteArrayUtils.bArray2Str(packetChecksum), 16));
         } catch (NumberFormatException nfe) {
-            if (LOG.isInfoEnabled())
-                LOG.info("Cannot parse \"{}\" into a valid int", ByteArrayUtils.bArray2Str(packetChecksum));
+            // cannot generate checksum
             return false;
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Comparing: \"{}/{}\" to \"{}/{}\"", pktChecksum, ByteArrayUtils
-                    .bArray2Str(packetChecksum).toUpperCase(),
-                    calcChecksum, calcChecksum.toHexString());
-            LOG.debug("\"{}\" is {} equal to \"{}\"", calcChecksum, (calcChecksum.equals(pktChecksum) ? "" : "not"),
-                    pktChecksum);
-        }
 
         return pktChecksum.equals(calcChecksum);
     }

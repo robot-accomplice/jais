@@ -25,8 +25,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.locationtech.spatial4j.shape.Point;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -35,8 +33,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class AidToNavigationReport extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(AidToNavigationReport.class);
 
     private NavaidType navaidType;
     private String name;
@@ -174,8 +170,7 @@ public class AidToNavigationReport extends AISMessageBase {
                         nameExtension = AISMessageDecoder.decodeToString(bits, field.getStartBit(), bits.size() - 1);
                     break;
                 default:
-                    if (LOG.isTraceEnabled())
-                        LOG.trace("Ignoring field: {}", field.name());
+                    // ignore field
             }
         }
     }

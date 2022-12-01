@@ -22,8 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import jais.messages.enums.AISMessageType;
 import java.util.BitSet;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -32,8 +30,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class SingleSlotBinaryMessage extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(SingleSlotBinaryMessage.class);
 
     private boolean addressed;
     private boolean structured;
@@ -44,8 +40,8 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param sentences
+     * @param source the name of the source of the AISSentence(s)
+     * @param sentences the AISSentence(s) from which the message should be composed
      */
     public SingleSlotBinaryMessage(String source, AISSentence... sentences) {
         super(source, sentences);
@@ -53,9 +49,9 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param type
-     * @param sentences
+     * @param source the name of the source of the AISSentence(s)
+     * @param type the AISMessageType of the sentence (used in the creation of messages with subtypes)
+     * @param sentences the AISSentence(s) from which the message should be composed
      */
     public SingleSlotBinaryMessage(String source, AISMessageType type, AISSentence... sentences) {
         super(source, type, sentences);
@@ -107,16 +103,10 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
                     } else if (bits.size() >= 40) {
                         if (bits.size() >= field.getStartBit())
                             data = bits.get(40, bits.size());
-                    } else {
-                        LOG.trace("Invalid bit count.  BitVector size: {}, BitVector length: {}", bits.size(),
-                                bits.length());
                     }
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Setting data to {} bits", data.length());
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Ignoring field: {}", field.name());
+                    // ignore field
             }
         }
     }
@@ -150,8 +140,8 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the first bit that should be considered for the decoding of the given field
+         * @param endBit the last bit that should be considered for the decoding of the given field
          */
         SingleSlotBinaryMessageFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

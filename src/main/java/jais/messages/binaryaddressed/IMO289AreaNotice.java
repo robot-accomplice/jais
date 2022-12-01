@@ -21,16 +21,12 @@ import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import jais.messages.enums.BinaryAddressedMessageType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class IMO289AreaNotice extends BinaryAddressedMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(IMO289AreaNotice.class);
 
     /**
      *
@@ -52,9 +48,6 @@ public class IMO289AreaNotice extends BinaryAddressedMessageBase {
         // remaining data after we decode the duration -- may use a public
         // static inner class to represent the sub-area information and just store
         // the array
-        for (IMO289AreaNoticeFieldMap field : IMO289AreaNoticeFieldMap.values()) {
-            LOG.warn("Ignoring field: {}", field.name());
-        }
     }
 
     /**

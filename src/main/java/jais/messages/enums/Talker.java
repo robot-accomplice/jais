@@ -15,9 +15,6 @@
  */
 package jais.messages.enums;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  *
  * @author vermi
@@ -114,11 +111,10 @@ public enum Talker {
     ZV("Radio Update");
 
     public final String description;
-    public final static Logger LOG = LogManager.getLogger(Talker.class);
 
     /**
      * 
-     * @param description
+     * @param description the long name/description of this Talker
      */
     Talker(String description) {
         this.description = description;
@@ -126,8 +122,8 @@ public enum Talker {
 
     /**
      * 
-     * @param code
-     * @return
+     * @param code the short code for a Talker
+     * @return a boolean indicating whether or not the talker is known
      */
     public static boolean isKnown(String code) {
         if (code == null)

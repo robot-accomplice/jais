@@ -22,9 +22,6 @@ import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
@@ -32,8 +29,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class BinaryAcknowledge extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(BinaryAddressedMessageBase.class);
 
     private int mmsi1;
     private int mmsi2;
@@ -93,8 +88,7 @@ public class BinaryAcknowledge extends AISMessageBase {
                         mmsi4 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Ignoring field: {}", field.name());
+                    // ignore field
             }
         }
     }

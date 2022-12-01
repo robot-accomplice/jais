@@ -24,8 +24,6 @@ import lombok.Setter;
 
 import org.locationtech.spatial4j.shape.Point;
 import java.util.BitSet;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -34,8 +32,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(DGNSSBroadcastBinaryMessage.class);
 
     private float lon;
     private float lat;
@@ -106,8 +102,7 @@ public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
                     }
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Ignoring field: {}", field.name());
+                    // ignore field
             }
         }
     }

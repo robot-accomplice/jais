@@ -26,9 +26,6 @@ import jais.messages.enums.TransmitMode;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
@@ -36,8 +33,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class GroupAssignmentCommand extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(GroupAssignmentCommand.class);
 
     private float neLon;
     private float neLat;
@@ -51,8 +46,8 @@ public class GroupAssignmentCommand extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param sentences the AISSentences from which this message should be composed
      */
     public GroupAssignmentCommand(String source, AISSentence... sentences) {
         super(source, sentences);
@@ -60,9 +55,9 @@ public class GroupAssignmentCommand extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param type
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param type the AISMessageType of the message
+     * @param sentences the AISSentences from which this message should be composed
      */
     public GroupAssignmentCommand(String source, AISMessageType type, AISSentence... sentences) {
         super(source, type, sentences);
@@ -116,8 +111,7 @@ public class GroupAssignmentCommand extends AISMessageBase {
                         quietTime = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Ignoring field: {}", field.name());
+                    // ignore field
             }
         }
     }

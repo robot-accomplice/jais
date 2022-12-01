@@ -24,8 +24,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.locationtech.spatial4j.shape.Point;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -34,8 +32,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class LongRangeAISBroadcastMessage extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(LongRangeAISBroadcastMessage.class);
 
     private boolean accurate;
     private boolean raim;
@@ -48,18 +44,18 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param sentences the AISSentences from which this message should be composed
      */
     public LongRangeAISBroadcastMessage(String source, AISSentence... sentences) {
         super(source, sentences);
     }
 
     /**
-     * 
-     * @param source
-     * @param type
-     * @param sentences
+     *
+     * @param source The name of the source of the AISSentence(s)
+     * @param type the AISMessageType of the message
+     * @param sentences the AISSentences from which this message should be composed
      */
     public LongRangeAISBroadcastMessage(String source, AISMessageType type, AISSentence... sentences) {
         super(source, type, sentences);
@@ -67,7 +63,7 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return a boolean indicating whether or not the message contains positional information
      */
     @Override
     public boolean hasPosition() {
@@ -76,7 +72,7 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
 
     /**
      * 
-     * @return
+     * @return a Point representing the position of the vessel
      */
     @Override
     public Point getPosition() {
@@ -131,8 +127,7 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
                         gnss = !bits.get(field.getStartBit());
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Ignoring field: {}", field.name());
+                    // ignore field
             }
         }
     }

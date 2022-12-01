@@ -23,8 +23,6 @@ import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import jais.messages.enums.BinaryAddressedMessageType;
 import jais.messages.enums.CargoUnitCode;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -32,8 +30,6 @@ import org.apache.logging.log4j.Logger;
  */
 @Getter
 public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(IMO236DangerousCargoIndication.class);
 
     private String lastPort;
     private int lastMonth;
@@ -104,7 +100,9 @@ public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
                             field.getStartBit(), field.getEndBit());
                     this.cargoUnit = CargoUnitCode.getForCode(cargoCode);
                 }
-                default -> LOG.warn("Ignoring field: {}", field.name());
+                default -> {
+                    // ignore field;
+                }
             }
         }
     }

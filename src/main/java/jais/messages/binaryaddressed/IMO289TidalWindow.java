@@ -22,16 +22,11 @@ import jais.messages.enums.BinaryAddressedMessageType;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class IMO289TidalWindow extends BinaryAddressedMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(IMO289TidalWindow.class);
 
     /**
      *
@@ -47,10 +42,6 @@ public class IMO289TidalWindow extends BinaryAddressedMessageBase {
     @Override
     public final void decode() {
         super.decode();
-
-        for (IMO289TidalWindowFieldMap field : IMO289TidalWindowFieldMap.values()) {
-            LOG.warn("Ignoring field: {}", field.name());
-        }
     }
 
     /**

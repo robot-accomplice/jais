@@ -21,8 +21,6 @@ import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import lombok.Setter;
 import jais.messages.enums.AISMessageType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -31,8 +29,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class AssignmentModeCommand extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(AssignmentModeCommand.class);
 
     private int mmsi1;
     private int offset1;
@@ -95,8 +91,7 @@ public class AssignmentModeCommand extends AISMessageBase {
                                 field.getEndBit());
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Ignoring field: {}", field.name());
+                    // ignore field
             }
         }
     }

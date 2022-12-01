@@ -23,9 +23,6 @@ import jais.messages.enums.ShipType;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
@@ -33,8 +30,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class StaticDataReport extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(StaticDataReport.class);
 
     private int partNo;
     private String shipName;
@@ -49,8 +44,8 @@ public class StaticDataReport extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param sentences the AISSentences from which this message should be composed
      */
     public StaticDataReport(String source, AISSentence... sentences) {
         super(source, sentences);
@@ -58,9 +53,9 @@ public class StaticDataReport extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param type
-     * @param sentences
+     * @param source The name of the source of the AISSentence(s)
+     * @param type the AISMessageType of the message
+     * @param sentences the AISSentences from which this message should be composed
      */
     public StaticDataReport(String source, AISMessageType type, AISSentence... sentences) {
         super(source, type, sentences);
@@ -120,8 +115,7 @@ public class StaticDataReport extends AISMessageBase {
                                 field.getEndBit());
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Ignoring field: {}", field.name());
+                    // ignore field
             }
         }
     }
@@ -150,8 +144,8 @@ public class StaticDataReport extends AISMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit the index of the first bit to include in the decoding of this field
+         * @param endBit the index of the last bit to include in the decoding of this field
          */
         StaticDataReportFieldMap(int startBit, int endBit) {
             this.startBit = startBit;

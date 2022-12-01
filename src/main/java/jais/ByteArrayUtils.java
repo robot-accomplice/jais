@@ -6,12 +6,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public final class ByteArrayUtils {
 
-    public final static Logger LOG = LogManager.getLogger(ByteArrayUtils.class);
     public final static Charset DEFAULT_CHARSET = StandardCharsets.US_ASCII;
 
     /**
@@ -141,31 +138,16 @@ public final class ByteArrayUtils {
         char[] chars = bArray2cArray(bytes, cs);
 
         for (int i = chars.length - 1; i > -1; i--) {
-            if (LOG.isTraceEnabled())
-                LOG.trace("Character at position {} is {}", i, chars[i]);
 
             switch (chars[i]) {
                 case '\n':
-                    if (LOG.isTraceEnabled())
-                        LOG.trace("Found newline");
-                    break;
                 case '\r':
-                    if (LOG.isTraceEnabled())
-                        LOG.trace("Found carriage return");
-                    break;
                 case '\t':
-                    if (LOG.isTraceEnabled())
-                        LOG.trace("Found tab");
-                    break;
                 case ' ':
-                    if (LOG.isTraceEnabled())
-                        LOG.trace("Found space");
                     break;
                 default:
-                    if (LOG.isTraceEnabled())
-                        LOG.trace("Found non-whitespace character {} at position {}", chars[i], i);
                     return Arrays.copyOfRange(bytes, 0, i + 1); // because the "to" value in Arrays.copyOfRange is
-                                                                // EXclusive
+                                                                          // EXclusive
             }
         }
 

@@ -22,8 +22,6 @@ import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import jais.messages.enums.BinaryAddressedMessageType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -31,8 +29,6 @@ import org.apache.logging.log4j.Logger;
  */
 @Getter
 public class IMO289TextDescription extends BinaryAddressedMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(IMO289TextDescription.class);
 
     private int linkageId;
     private String description;
@@ -58,7 +54,9 @@ public class IMO289TextDescription extends BinaryAddressedMessageBase {
                         field.getStartBit(), field.getEndBit());
                 case DESCRIPTION -> description = AISMessageDecoder.decodeToString(bits,
                         field.getStartBit(), bits.size() - 1);
-                default -> LOG.warn("Ignoring field: {}", field.name());
+                default -> {
+                    // ignore field
+                }
             }
         }
     }

@@ -30,9 +30,7 @@ import java.time.ZonedDateTime;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
 import java.util.Optional;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -40,8 +38,6 @@ import org.apache.logging.log4j.Logger;
  */
 @Data
 public abstract class AISMessageBase implements AISMessage {
-
-    private final static Logger LOG = LogManager.getLogger(AISMessageBase.class);
 
     private int mmsi;
     private MMSIType mmsiType;

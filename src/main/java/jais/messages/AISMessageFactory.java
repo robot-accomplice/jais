@@ -23,16 +23,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 public class AISMessageFactory {
-
-    private final static Logger LOG = LogManager.getLogger(AISMessageFactory.class);
 
     /**
      *
@@ -74,10 +70,8 @@ public class AISMessageFactory {
     public static Optional<AISMessage> create(String source, boolean strict, AISSentence... sentences) {
         try {
             if (sentences == null || sentences.length < 1) {
-                LOG.trace("sentences array is null or empty!");
                 return Optional.empty();
             }
-            LOG.debug("Decoding message from {} string(s). Strict is set to {}", sentences.length, strict);
 
             byte[] compositeBytes;
             if (sentences.length == 1) {
@@ -89,21 +83,15 @@ public class AISMessageFactory {
             }
 
             if (compositeBytes == null || compositeBytes.length == 0) {
-                LOG.trace("Failed to parse 6-bit armored string from {} sentences", sentences.length);
                 return Optional.empty();
             }
 
             String compositeMsg = ByteArrayUtils.bArray2Str(compositeBytes);
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("Composite message is: {}", compositeMsg);
-
             // we need the message type in order to invoke the reflective constructor
             Optional<AISMessageType> mType = AISMessageDecoder.decodeMessageType(compositeMsg);
 
             if (mType.isPresent()) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Creating a new {} instance.", mType.get().getDescription());
 
                 AISMessage message;
                 switch (mType.get()) {
@@ -143,9 +131,7 @@ public class AISMessageFactory {
                             message = new LongRangeAISBroadcastMessage(source, sentences);
                     case BINARY_BROADCAST_MESSAGE -> message = new BinaryBroadcastMessage(source, sentences);
                     default -> {
-                        if (LOG.isWarnEnabled())
-                            LOG.warn("{} - Unknown or invalid message type:  {}", source, mType.get());
-                        LOG.debug("{} - AIS Packet String: \"{}\"", source, compositeMsg);
+                        // invalid, unknown message type
                         return Optional.empty();
                     }
                 }
@@ -154,11 +140,9 @@ public class AISMessageFactory {
 
                 return Optional.of(message);
             } else {
-                LOG.trace("MessageType is null for message {}", compositeMsg);
                 return Optional.empty();
             }
         } catch (NullPointerException npe) {
-            LOG.error("Encountered an NPE:", npe);
             return Optional.empty();
         }
     }

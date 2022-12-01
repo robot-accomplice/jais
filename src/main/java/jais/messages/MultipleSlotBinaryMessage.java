@@ -22,8 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import jais.messages.enums.AISMessageType;
 import java.util.BitSet;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -32,8 +30,6 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class MultipleSlotBinaryMessage extends AISMessageBase {
-
-    private final static Logger LOG = LogManager.getLogger(MultipleSlotBinaryMessage.class);
 
     private boolean addressed;
     private boolean structured;
@@ -45,21 +41,21 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
 
     /**
      *
-     * @param source
-     * @param packets
+     * @param source The name of the source of the AISSentence(s)
+     * @param sentences the AISSentences from which this message should be composed
      */
-    public MultipleSlotBinaryMessage(String source, AISSentence... packets) {
-        super(source, packets);
+    public MultipleSlotBinaryMessage(String source, AISSentence... sentences) {
+        super(source, sentences);
     }
 
     /**
      *
-     * @param source
-     * @param type
-     * @param packets
+     * @param source The name of the source of the AISSentence(s)
+     * @param type the AISMessageType of the message
+     * @param sentences the AISSentences from which this message should be composed
      */
-    public MultipleSlotBinaryMessage(String source, AISMessageType type, AISSentence... packets) {
-        super(source, type, packets);
+    public MultipleSlotBinaryMessage(String source, AISMessageType type, AISSentence... sentences) {
+        super(source, type, sentences);
     }
 
     /**
@@ -105,9 +101,6 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
                         data = bits.get(56, (bits.size() - 76));
                     } else if (bits.length() > 61) {
                         data = bits.get(40, bits.size());
-                    } else {
-                        LOG.trace("Invalid bit count.  BitVector size: " + bits.size()
-                                + ", BitVector length: " + bits.length());
                     }
                     break;
                 case RADIO:
@@ -115,8 +108,7 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
                             bits.size() - 21, bits.size() + 1);
                     break;
                 default:
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Ignoring field: {}", field.name());
+                    // ignore field
             }
         }
     }
@@ -140,8 +132,8 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
 
         /**
          *
-         * @param startBit
-         * @param endBit
+         * @param startBit The first bit to include for decoding of the current field
+         * @param endBit The last bit to include for decoding of the current field
          */
         MultipleSlotBinaryMessageFieldMap(int startBit, int endBit) {
             this.startBit = startBit;
