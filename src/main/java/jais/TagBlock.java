@@ -19,8 +19,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.regex.Pattern;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import lombok.Data;
 
@@ -50,7 +48,6 @@ import lombok.Data;
 @Data
 public final class TagBlock {
 
-    public final static Logger LOG = LogManager.getLogger(TagBlock.class);
     public final static String TAGBLOCK_STRING = "\\\\(([cdgnrst]:[A-Za-z0-9\\\\-]+,?)+)\\*([A-Za-z0-9]{2})\\\\";
     public final static Pattern TAGBLOCK_PATTERN = Pattern.compile(TAGBLOCK_STRING);
 
@@ -160,9 +157,7 @@ public final class TagBlock {
      */
     public static TagBlock build(byte[] source) {
         if (source.length > 15) {
-            byte [] newSource = Arrays.copyOfRange(source, 0, 15);
-            LOG.debug("Truncating over-sized source from {} to {}", newSource);
-            source = newSource;
+            source = Arrays.copyOfRange(source, 0, 15);
         }
 
         TagBlock tb = new TagBlock();
@@ -185,13 +180,10 @@ public final class TagBlock {
      *         source information
      */
     public static TagBlock parse(String rawTagBlock, byte[] source) {
-        LOG.debug("Parsing {}", rawTagBlock);
         TagBlock tb = new TagBlock();
 
         // substring starts at 1 to remove leading \
         for (String part : ByteArrayUtils.fastSplit(rawTagBlock.substring(1, rawTagBlock.indexOf("*")))) {
-            if (LOG.isDebugEnabled())
-                LOG.debug("Processing: {}", part);
             String[] tag = ByteArrayUtils.fastSplit(part, ':');
 
             switch (tag[0]) {
@@ -199,14 +191,9 @@ public final class TagBlock {
                     tb.setTimestamp(Long.parseLong(tag[1]));
                     break;
                 case "d":
-                    if (tag[1].length() > 15)
-                        LOG.debug("Length of destination String \"{}\" exceeds 15 character limit", tag[1]);
-
                     tb.setDestination(ByteArrayUtils.str2bArray(tag[1]));
                     break;
                 case "g":
-                    if (tag[1].length() > 15)
-                        LOG.debug("Length of sentence grouping String \"{}\" exceeds 15 character limit", tag[1]);
                     tb.setSentenceGrouping(ByteArrayUtils.str2bArray(tag[1]));
                     break;
                 case "n":
@@ -217,15 +204,11 @@ public final class TagBlock {
                     break;
                 case "s":
                     if (source == null) {
-                        if (tag[1].length() > 15)
-                            LOG.debug("Length of source String \"{}\" exceeds 15 character limit", tag[1]);
                         source = ByteArrayUtils.str2bArray(tag[1]);
                     }
                     break;
                 case "t":
                     tb.setTextStr(ByteArrayUtils.str2bArray(tag[1]));
-                    if (tag[1].length() > 15)
-                        LOG.debug("Length of text String \"{}\" exceeds 15 character limit", tag[1]);
                     break;
             }
         }
@@ -233,7 +216,6 @@ public final class TagBlock {
         if (source != null) {
             if (source.length > 15) {
                 source = Arrays.copyOfRange(source, 0, 15);
-                LOG.debug("Truncating oversized source 15 characters");
             }
             tb.setSource(source);
         }
