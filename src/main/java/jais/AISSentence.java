@@ -31,12 +31,14 @@ import jais.messages.enums.Manufacturer;
 import jais.messages.enums.SentenceType;
 import jais.messages.enums.Talker;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
 @Getter
+@Setter
 public final class AISSentence implements Sentence {
 
     // reserved characters
