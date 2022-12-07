@@ -294,6 +294,19 @@ public class AISMessageDecoder {
     }
 
     /**
+     * 
+     * @param bits     the bitset from which we wish to decode the turn data
+     * @param startBit the starting bit where the turn data is located
+     * @param endBit   the ending bit where the turn data is located
+     * @return a float representing the turn value of the messsage
+     */
+    public static int decodeHeading(BitSet bits, int startBit, int endBit) {
+        int heading = decodeUnsignedInt(bits, startBit, endBit);
+
+        return (heading > 360) ? 511 : heading;
+    }
+
+    /**
      *
      * @param bits     the BitSet from which we want to decode the speed
      * @param startBit the starting bit where the speed data is located

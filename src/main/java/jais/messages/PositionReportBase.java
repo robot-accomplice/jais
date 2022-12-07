@@ -173,7 +173,7 @@ public abstract class PositionReportBase extends AISMessageBase {
                     break;
                 case HEADING:
                     if (bits.size() >= field.getStartBit())
-                        heading = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        heading = AISMessageDecoder.decodeHeading(bits, field.getStartBit(), field.getEndBit());
                     break;
                 case SECOND:
                     if (bits.size() >= field.getStartBit())
