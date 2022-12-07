@@ -64,11 +64,11 @@ public class Vessel implements Cloneable {
     private boolean dte;
     private NavigationStatus navigationStatus = NavigationStatus.NOT_DEFINED;
     private float rateOfTurn;
-    private float speed;
+    private float speed = 102.3f;
     private boolean accuracy = false;
-    private float lon;
-    private float lat;
-    private float courseOverGround;
+    private float lon = -181f;
+    private float lat = -91f;
+    private float courseOverGround = 360f;
     private int heading = 511;
     private int second;
     private ManeuverType maneuver = ManeuverType.NOT_AVAILABLE;
