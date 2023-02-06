@@ -321,9 +321,7 @@ public class AISMessageDecoder {
             return -1f;
         }
         return switch (i) {
-            case 1023 ->
-                // speed unavailable
-                -1f;
+            case 1023 -> 102.3f; // speed unavailable
             case 1022 -> 102.2f;
             default -> i / 10.f;
         };
