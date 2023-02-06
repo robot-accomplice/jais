@@ -22,7 +22,7 @@ public final class ByteArrayUtils {
         if (bytes == null || bytes.length == 0)
             return null;
         return bArray2Str(bytes, DEFAULT_CHARSET);
-    }
+    }   
 
     /**
      * Decodes a byte [] into a String using the provided Charset
