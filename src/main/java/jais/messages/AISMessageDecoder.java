@@ -151,7 +151,10 @@ public class AISMessageDecoder {
     }
 
     /**
-     * decode integers in twos-complement form
+     * decode signed integers in twos-complement form.  If the number is negative
+     * first bit must be set to on/true and the rest of the bits are inverted, meaning 
+     * that a off/false bit is counted and a true or on bit is not, the bits are
+     * 
      *
      * @param bits     the BitSet containing our signed int
      * @param startBit the starting bit where our int is located
@@ -295,10 +298,10 @@ public class AISMessageDecoder {
 
     /**
      * 
-     * @param bits     the bitset from which we wish to decode the turn data
-     * @param startBit the starting bit where the turn data is located
-     * @param endBit   the ending bit where the turn data is located
-     * @return a float representing the turn value of the messsage
+     * @param bits     the bitset from which we wish to decode the heading data
+     * @param startBit the starting bit where the heading data is located
+     * @param endBit   the ending bit where the heading data is located
+     * @return an int representing the heading value of the messsage
      */
     public static int decodeHeading(BitSet bits, int startBit, int endBit) {
         int heading = decodeUnsignedInt(bits, startBit, endBit);
