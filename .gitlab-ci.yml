@@ -2,6 +2,7 @@ image: maven
 
 stages: # List of stages for jobs, and their order of execution
   - test
+  - report
   - build
   - publish
 
@@ -9,7 +10,29 @@ unit-test-job:
   stage: test
   script:
     - echo "Running unit tests..."
-    - mvn clean test
+    - mvn org.jacoco:jacoco-maven-plugin:prepare-agent test jacaco:report
+  artifacts:
+    when: always
+    paths:
+      - target/site/jacoco/jacoco.xml
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+        - target/failsafe-reports/TEST-*.xml
+
+coverage:
+  stage: report
+  image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
+  allow_failure: true
+  script:
+    - python /opt/cover2cover.py target/site/jacoco/jacoco.xml $CI_PROJECT_DIR/src/main/java/ > target/site/cobertura.xml
+  needs: ["unit-test-job"]
+  artifacts:
+    when: always
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: target/site/cobertura.xml
 
 package:
   stage: build

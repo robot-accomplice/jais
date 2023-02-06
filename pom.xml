@@ -95,7 +95,8 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>jais.Application</mainClass>
+                                    <mainClass>
+                                        jais.Application</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
@@ -114,7 +115,8 @@
                             <goal>sign</goal>
                         </goals>
                         <configuration>
-                            <keyname>${gpg.keyname}</keyname>
+                            <keyname>
+                                ${gpg.keyname}</keyname>
                             <passphraseServerId>${gpg.keyname}</passphraseServerId>
                         </configuration>
                     </execution>
@@ -126,16 +128,51 @@
                 <version>2.22.2</version>
                 <configuration>
                     <systemPropertyVariables>
-                        <log4j.configurationFile>src/main/resources/build-log4j2.xml</log4j.configurationFile>
+                        <log4j.configurationFile>
+                            src/main/resources/build-log4j2.xml</log4j.configurationFile>
                     </systemPropertyVariables>
+                    <forkCount>
+                        1</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <skipTests>false</skipTests>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.8</version>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.2</version>
                 <configuration>
                     <archive>
-                        <index>true</index>
+                        <index>
+                            true</index>
                         <manifest>
                             <mainClass>jais.Application</mainClass>
                             <packageName>jais</packageName>
@@ -144,10 +181,12 @@
                             <classpathPrefix />
                         </manifest>
                         <manifestEntries>
-                            <mode>development</mode>
+                            <mode>
+                                development</mode>
                             <url>${project.url}</url>
                             <user>${user.name}</user>
-                            <java-version>${java.version}</java-version>
+                            <java-version>
+                                ${java.version}</java-version>
                             <java-vendor>${java.vendor}</java-vendor>
                         </manifestEntries>
                     </archive>
@@ -157,9 +196,11 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.10.1</version>
                 <configuration>
-                    <showDeprecation>true</showDeprecation>
+                    <showDeprecation>
+                        true</showDeprecation>
                     <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <target>
+                        ${maven.compiler.target}</target>
                     <compilerArgument>-Xlint:unchecked</compilerArgument>
                 </configuration>
             </plugin>
@@ -204,7 +245,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <serverId>ossrh</serverId>
+                    <serverId>
+                        ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
