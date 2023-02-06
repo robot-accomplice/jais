@@ -10,7 +10,7 @@ unit-test-job:
   stage: test
   script:
     - echo "Running unit tests..."
-    - mvn org.jacoco:jacoco-maven-plugin:prepare-agent test jacaco:report
+    - mvn org.jacoco:jacoco-maven-plugin:prepare-agent test jacoco:report
   artifacts:
     when: always
     paths:
