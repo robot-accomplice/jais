@@ -30,6 +30,18 @@ import java.util.Optional;
  */
 public class AISMessageFactory {
 
+
+    /**
+     *
+     * @param source          the source of the message
+     * @param sentenceStrings the array of packet strings from which we will compose
+     *                        our AISMessage
+     * @return An Optional which may contain the decoded AISMessage
+     */
+    public static Optional<AISMessage> create(String source, String ...sentenceStrings) {
+            return create(source, false, sentenceStrings);
+    }
+
     /**
      *
      * @param source          the source of the message
