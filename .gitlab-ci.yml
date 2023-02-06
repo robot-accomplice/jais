@@ -37,7 +37,7 @@ coverage:
 package:
   stage: build
   script:
-    - mvn package
+    - mvn clean package -U -Dmaven.test.skip=true
 
 pages:
   stage: publish
