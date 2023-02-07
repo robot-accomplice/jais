@@ -25,10 +25,6 @@ import jais.messages.enums.ShipType;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
@@ -36,9 +32,6 @@ import java.time.format.DateTimeFormatter;
 @Getter
 @Setter
 public class StaticAndVoyageRelatedData extends AISMessageBase {
-
-    private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
-            .withZone(ZoneOffset.UTC.normalized());
 
     private int version;
     private int imo;
@@ -50,8 +43,8 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
     private int toPort;
     private int toStarboard;
     private EPFDFixType epfd;
-    private int month = 1;
-    private int day = 1;
+    private int month;
+    private int day;
     private int hour;
     private int minute;
     private float draught;
@@ -97,79 +90,8 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      *
      * @return a ZonedDateTime representation of the ship's ETA
      */
-    public ZonedDateTime getETA() {
-        StringBuilder eta = new StringBuilder();
-        ZonedDateTime dt = ZonedDateTime.now().toInstant().atZone(ZoneOffset.UTC.normalized());
-        int year = dt.getYear();
-        int month = dt.getMonthValue();
-
-        if (this.month > 0) {
-            // properly formatted month
-            if (this.month < 10) {
-                eta.append("0").append(this.month);
-            } else if (this.month > 12) {
-                eta.append("12");
-                month = 12; // use this to validate the days later
-            } else {
-                eta.append(this.month);
-            }
-            eta.append("/");
-
-            // assume next year
-            if (this.month < month) {
-                year++;
-            }
-
-            // prepend datetime string with YYYY/
-            eta.insert(0, year).insert(4, "/");
-
-            // recreate the Calendar object based on the validated month
-            dt = dt.withMonth(month).withYear(year);
-
-            // Get the number of days in that month
-            int daysInMonth = dt.getMonth().maxLength();
-
-            // properly formatted day
-            if (this.day < 1) {
-                eta.append("01");
-            } else if (this.day < 10) {
-                eta.append("0").append(this.day);
-            } else eta.append(Math.min(this.day, daysInMonth));
-            eta.append(" ");
-
-            // properly formatted hour
-            if (this.hour < 1) {
-                eta.append("00");
-            } else if (this.hour < 10) {
-                eta.append("0").append(this.hour);
-            } else if (this.hour >= 24) {
-                eta.append("00");
-            } else {
-                eta.append(this.hour);
-            }
-            eta.append(":");
-
-            // properly formatted minute
-            if (this.minute < 1 || minute > 59) {
-                eta.append("00");
-            } else if (this.minute < 10) {
-                eta.append("0").append(this.minute);
-            } else {
-                eta.append(this.minute);
-            }
-        } else {
-            // default to epoch if month is invalid
-            eta.append("1970/01/01 00:00");
-        }
-
-        try {
-            dt = ZonedDateTime.parse(eta.toString(), ETA_FORMATTER);
-        } catch (Exception e) {
-            // invalid ETA, set to epoch
-            dt = ZonedDateTime.parse("1970/01/01 00:00", ETA_FORMATTER);
-        }
-
-        return dt;
+    public String getETA() {
+        return String.format("%02d-%02d %02d:%02d", month, day, hour, minute);
     }
 
     /**

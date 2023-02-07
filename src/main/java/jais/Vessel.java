@@ -15,10 +15,6 @@
  */
 package jais;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
 import jais.messages.ExtendedClassBCSPositionReport;
 import jais.messages.PositionReportBase;
 import jais.messages.StandardClassBCSPositionReport;
@@ -40,9 +36,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Vessel implements Cloneable {
-
-    private final static DateTimeFormatter ETA_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
-            .withZone(ZoneOffset.UTC.normalized());
 
     private Identifier id;
     private int version;
@@ -75,7 +68,7 @@ public class Vessel implements Cloneable {
     private boolean raim = false;
     private int repeat;
     private int radio;
-    private ZonedDateTime eta = ZonedDateTime.parse("1970/01/01 00:00", ETA_FORMATTER);
+    private String eta;
     private long currentMessageTimestamp;
     private long currentPositionTimestamp;
     private long previousPositionTimestamp;
