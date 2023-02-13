@@ -76,6 +76,11 @@ public class Vessel implements Cloneable {
     private long messageCount = 1;
 
     /**
+     * No argument constructor for increased flexibility
+     */
+    public Vessel() {}
+
+    /**
      * Creates a new Vessel object based on a StandardClassBCSPositionReport
      *
      * @param report a valid StandardClassBCSPositionReport
