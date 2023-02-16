@@ -20,6 +20,12 @@ unit-test-job:
         - target/surefire-reports/TEST-*.xml
         - target/failsafe-reports/TEST-*.xml
 
+sast:
+  stage: test
+  artifacts:
+    reports:
+      sast: gl-sast-report.json
+
 coverage:
   stage: report
   image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
@@ -43,15 +49,26 @@ package:
   script:
     - mvn clean package -U -Dmaven.test.skip=true
 
-pages:
-  stage: publish
-  only:
-    - main
-  image: ruby:2.7
+include:
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+
+secret_detection:
+  extends: .secret-analyzer
+  rules:
+    - if: $SECRET_DETECTION_DISABLED
+      when: never
+    - if: $CI_COMMIT_BRANCH
+  variables:
+    GET_VULNERABILITY_COUNT: "cat gl-secret-detection-report.json | jq --raw-output '.vulnerabilities | length'"
+    SECRET_DETECTION_HISTORIC_SCAN: "true"
   script:
-    - gem install bundler
-    - bundle install
-    - bundle exec jekyll build -d public
-  artifacts:
-    paths:
-      - public
+    - if [ -n "$CI_COMMIT_TAG" ]; then echo "Skipping Secret Detection for tags. No code changes have occurred."; exit 0; fi
+    - apk add jq
+    - if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then echo "Running Secret Detection on default branch."; /analyzer run; exit $(eval "$GET_VULNERABILITY_COUNT"); fi
+    - git fetch origin $CI_DEFAULT_BRANCH $CI_COMMIT_REF_NAME
+    - git log --left-right --cherry-pick --pretty=format:"%H" refs/remotes/origin/$CI_DEFAULT_BRANCH...refs/remotes/origin/$CI_COMMIT_REF_NAME > "$CI_COMMIT_SHA"_commit_list.txt
+    - export SECRET_DETECTION_COMMITS_FILE="$CI_COMMIT_SHA"_commit_list.txt
+    - /analyzer run
+    - rm "$CI_COMMIT_SHA"_commit_list.txt
+    - exit $(eval "$GET_VULNERABILITY_COUNT")
