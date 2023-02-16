@@ -36,13 +36,17 @@ coverage:
 
 package:
   stage: build
+  artifacts:
+    paths:
+      - /target/jais.jar
+      - /target/jais-javadoc.jar
   script:
     - mvn clean package -U -Dmaven.test.skip=true
 
 pages:
   stage: publish
   only:
-    - master
+    - main
   image: ruby:2.7
   script:
     - gem install bundler
