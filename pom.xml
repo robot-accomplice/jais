@@ -95,8 +95,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>
-                                        jais.Application</mainClass>
+                                    <mainClass>jais.Application</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
@@ -168,8 +167,7 @@
                 <version>3.3.0</version>
                 <configuration>
                     <archive>
-                        <index>
-                            true</index>
+                        <index>true</index>
                         <manifest>
                             <mainClass>jais.Application</mainClass>
                             <packageName>jais</packageName>
@@ -178,12 +176,10 @@
                             <classpathPrefix />
                         </manifest>
                         <manifestEntries>
-                            <mode>
-                                development</mode>
+                            <mode>development</mode>
                             <url>${project.url}</url>
                             <user>${user.name}</user>
-                            <java-version>
-                                ${java.version}</java-version>
+                            <java-version>${java.version}</java-version>
                             <java-vendor>${java.vendor}</java-vendor>
                         </manifestEntries>
                     </archive>
@@ -193,11 +189,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <showDeprecation>
-                        true</showDeprecation>
+                    <showDeprecation>true</showDeprecation>
                     <source>${maven.compiler.source}</source>
-                    <target>
-                        ${maven.compiler.target}</target>
+                    <target>${maven.compiler.target}</target>
                     <compilerArgument>-Xlint:unchecked</compilerArgument>
                 </configuration>
             </plugin>
