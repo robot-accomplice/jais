@@ -39,7 +39,7 @@ public class Console extends Application {
     @Override
     public void start( Stage stage ) {
         try {
-            stage.setTitle("AIS Decoder Console ");
+            stage.setTitle("JAIS Message Decoder Console ");
             Scene scene = new Scene(FXMLLoader.load(getClass().getResource(FXML_PATH)));
             stage.setScene(scene);
             stage.show();
