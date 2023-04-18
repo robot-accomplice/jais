@@ -196,6 +196,8 @@ public final class TagBlock {
             }
         }
 
+        tb.setChecksum(rawTagBlock.substring(rawTagBlock.indexOf("*") + 1, rawTagBlock.length() - 1).getBytes());
+
         tb.setParsed(true);
         tb.setRawTagBlock(ByteArrayUtils.str2bArray(tb.toString()));
 
@@ -216,7 +218,7 @@ public final class TagBlock {
         // s source id, alphanumeric (<= 15 chars)
         // t text string
 
-        StringBuilder tbs = new StringBuilder("\\");
+        StringBuilder tbs = new StringBuilder();
 
         if (this.sentenceGrouping != null && this.sentenceGrouping.length != 0) {
             if (tbs.length() > 1)
@@ -254,15 +256,12 @@ public final class TagBlock {
             tbs.append("t").append(ByteArrayUtils.bArray2Str(this.textStr));
         }
 
-        tbs.append("*");
-        if (this.checksum == null || this.checksum.length == 0) {
-            tbs.append("*").append(Checksum.generateChecksum(tbs.toString()));
-        }else {
-            tbs.append(new String(this.getChecksum()));
-        }
+        // checksum is only relevant to the content within the paired backslashes
+        String checksum = (this.checksum == null || this.checksum.length == 0) ?
+                Checksum.generateChecksum(tbs.toString()).toHexString() : ByteArrayUtils.bArray2Str(this.checksum);
 
-        tbs.append("\\");
+        tbs.append("*").append(checksum).append("\\");
 
-        return tbs.toString();
+        return "\\" + tbs.toString();
     }
 }
