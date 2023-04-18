@@ -94,17 +94,14 @@ public class ConsoleController implements Initializable {
                     appendLineToOutput(BORDER_SINGLE);
                     appendLineToOutput("\tsource           : " + ByteArrayUtils.bArray2Str(tb.getSource()));
                     appendLineToOutput("\tdestination      : " + ((tb.destination == null) ? "null"
-                            : ByteArrayUtils
-                                    .bArray2Str(tb.destination)));
+                            : ByteArrayUtils.bArray2Str(tb.destination)));
                     appendLineToOutput("\ttimestamp        : " + tb.getTimestamp());
                     appendLineToOutput("\trelative time    : " + tb.getRelativeTime());
                     appendLineToOutput("\tsentence grouping: " + ((tb.sentenceGrouping == null) ? "null"
-                            : ByteArrayUtils
-                                    .bArray2Str(tb.sentenceGrouping)));
+                            : ByteArrayUtils.bArray2Str(tb.sentenceGrouping)));
                     appendLineToOutput("\tline count       : " + tb.getLineCount());
                     appendLineToOutput("\ttext string      : " + ((tb.textStr == null) ? "null"
-                            : ByteArrayUtils
-                                    .bArray2Str(tb.textStr)));
+                            : ByteArrayUtils.bArray2Str(tb.textStr)));
                 } else {
                     appendLineToOutput("TagBlock: ");
                     appendLineToOutput(BORDER_SINGLE);
