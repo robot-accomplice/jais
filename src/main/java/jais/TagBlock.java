@@ -63,7 +63,7 @@ public final class TagBlock {
     // g sentence grouping, numeric string (e.g. \g:1-1-1234 or \g:1-2-1234
     byte[] sentenceGrouping;
     // n line count, positive int
-    int lineCount = 1;
+    int lineCount;
     // r relative time, positive int
     long relativeTime;
     // s source id, alphanumeric (<= 15 chars)
@@ -216,7 +216,7 @@ public final class TagBlock {
         // s source id, alphanumeric (<= 15 chars)
         // t text string
 
-        StringBuilder tbs = new StringBuilder();
+        StringBuilder tbs = new StringBuilder("\\");
 
         if (this.sentenceGrouping != null && this.sentenceGrouping.length != 0) {
             if (tbs.length() > 1)
@@ -254,11 +254,14 @@ public final class TagBlock {
             tbs.append("t").append(ByteArrayUtils.bArray2Str(this.textStr));
         }
 
-        tbs = new StringBuilder("\\").append(tbs).append("*")
-                .append(Checksum.parse(tbs.toString())).append("\\");
+        tbs.append("*");
+        if (this.checksum == null || this.checksum.length == 0) {
+            tbs.append("*").append(Checksum.generateChecksum(tbs.toString()));
+        }else {
+            tbs.append(new String(this.getChecksum()));
+        }
 
-        // add checksum and close
-        this.rawTagBlock = ByteArrayUtils.str2bArray(tbs.toString());
+        tbs.append("\\");
 
         return tbs.toString();
     }
