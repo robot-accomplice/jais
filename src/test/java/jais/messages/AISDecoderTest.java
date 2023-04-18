@@ -67,7 +67,7 @@ public class AISDecoderTest {
 
     /**
      * 
-     * @throws java.io.IOException
+     * @throws java.io.IOException if we are unable to load the test sentences
      */
     @BeforeAll
     public static void setup() throws IOException {
@@ -77,7 +77,7 @@ public class AISDecoderTest {
 
     /**
      *
-     * @param sentences
+     * @param sentences the AIS Sentences we want to decode
      */
     private void decodeSentences(AISSentence... sentences) {
 
