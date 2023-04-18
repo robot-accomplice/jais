@@ -63,7 +63,7 @@ public final class TagBlock {
     // g sentence grouping, numeric string (e.g. \g:1-1-1234 or \g:1-2-1234
     byte[] sentenceGrouping;
     // n line count, positive int
-    int lineCount;
+    int lineCount = 1;
     // r relative time, positive int
     long relativeTime;
     // s source id, alphanumeric (<= 15 chars)
@@ -175,11 +175,10 @@ public final class TagBlock {
      * source value.
      *
      * @param rawTagBlock a String containing the unparsed TagBlock data
-     * @param source      a byte [] representation of the packet's source
      * @return a new TagBlock object based on the parsing of the provided String and
      *         source information
      */
-    public static TagBlock parse(String rawTagBlock, byte[] source) {
+    public static TagBlock parse(String rawTagBlock) {
         TagBlock tb = new TagBlock();
 
         // substring starts at 1 to remove leading \
@@ -187,52 +186,20 @@ public final class TagBlock {
             String[] tag = ByteArrayUtils.fastSplit(part, ':');
 
             switch (tag[0]) {
-                case "c":
-                    tb.setTimestamp(Long.parseLong(tag[1]));
-                    break;
-                case "d":
-                    tb.setDestination(ByteArrayUtils.str2bArray(tag[1]));
-                    break;
-                case "g":
-                    tb.setSentenceGrouping(ByteArrayUtils.str2bArray(tag[1]));
-                    break;
-                case "n":
-                    tb.setLineCount(Integer.parseInt(tag[1]));
-                    break;
-                case "r":
-                    tb.setRelativeTime(Long.parseLong(tag[1]));
-                    break;
-                case "s":
-                    if (source == null) {
-                        source = ByteArrayUtils.str2bArray(tag[1]);
-                    }
-                    break;
-                case "t":
-                    tb.setTextStr(ByteArrayUtils.str2bArray(tag[1]));
-                    break;
+                case "c" -> tb.setTimestamp(Long.parseLong(tag[1]));
+                case "d" -> tb.setDestination(ByteArrayUtils.str2bArray(tag[1]));
+                case "g" -> tb.setSentenceGrouping(ByteArrayUtils.str2bArray(tag[1]));
+                case "n" -> tb.setLineCount(Integer.parseInt(tag[1]));
+                case "r" -> tb.setRelativeTime(Long.parseLong(tag[1]));
+                case "s" -> tb.setSource(ByteArrayUtils.str2bArray(tag[1]));
+                case "t" -> tb.setTextStr(ByteArrayUtils.str2bArray(tag[1]));
             }
-        }
-
-        if (source != null) {
-            if (source.length > 15) {
-                source = Arrays.copyOfRange(source, 0, 15);
-            }
-            tb.setSource(source);
         }
 
         tb.setParsed(true);
         tb.setRawTagBlock(ByteArrayUtils.str2bArray(tb.toString()));
 
         return tb;
-    }
-
-    /**
-     *
-     * @param rawTagBlock parses the provided String and returns a TagBlock object
-     * @return a TagBlock based on parsing of the incoming String
-     */
-    public static TagBlock parse(String rawTagBlock) {
-        return parse(rawTagBlock, null);
     }
 
     /**

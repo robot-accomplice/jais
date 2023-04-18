@@ -225,7 +225,7 @@ public final class AISSentence implements Sentence {
                 this.tagBlock = TagBlock.parse(m.group(0));
                 this.source = this.tagBlock.getSource();
             } else
-                this.tagBlock = TagBlock.parse(m.group(0), this.source);
+                this.tagBlock = TagBlock.parse(m.group(0));
 
             this.sentenceBody = ByteArrayUtils.str2bArray(rawSentence.substring(m.end()));
         } else if (addTagBlock) {
@@ -477,15 +477,6 @@ public final class AISSentence implements Sentence {
     }
 
     /**
-     * Returns the unparsed, non-decoded raw AISsentence contents as a byte []
-     *
-     * @return the byte [] containing the raw, non-decoded AISsentence data
-     */
-    public byte[] getRawSentence() {
-        return this.rawSentence;
-    }
-
-    /**
      * Generates a String representation of the AISsentence with a pre-pended
      * TagBlock
      * String which contains only
@@ -565,35 +556,6 @@ public final class AISSentence implements Sentence {
      */
     public byte[] getSentenceBodyAsByteArray() {
         return this.sentenceBody;
-    }
-
-    /**
-     * Returns the parsed count of fill bits from the AIS sentence String
-     *
-     * @return an int representing the number of fillbits specified in the AIS
-     *         sentence String
-     */
-    public int getFillBits() {
-        return this.fillBits;
-    }
-
-    /**
-     * Returns the parsed or generated checksum from the AIS sentence
-     *
-     * @return a byte array representation of the sentence checksum
-     */
-    public byte[] getChecksum() {
-        return this.checksum;
-    }
-
-    /**
-     * Returns the time at which this AISsentence object was instantiated
-     *
-     * @return a long representing the time at which we instantiated this instance
-     *         of AISsentence
-     */
-    public long getTimeReceived() {
-        return this.timeReceived;
     }
 
     /**
