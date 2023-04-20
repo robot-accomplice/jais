@@ -32,6 +32,7 @@ import jais.messages.enums.SentenceType;
 import jais.messages.enums.Talker;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.logging.log4j.core.pattern.NotANumber;
 
 /**
  *
@@ -267,14 +268,29 @@ public final class AISSentence implements Sentence {
             case 6:
                 this.binaryString = this.sentenceParts[5]; // only the binary string
             case 5:
-                this.radioChannelCode = ByteArrayUtils.bArray2cArray(this.sentenceParts[4])[0];
+                try {
+                    this.radioChannelCode = ByteArrayUtils.bArray2cArray(this.sentenceParts[4])[0];
+                } catch (Throwable t) {
+                    this.radioChannelCode = 'A';
+                }
             case 4:
-                System.out.println(rawParts[3]);
-                this.sequentialMessageId = Integer.parseInt(rawParts[3]);
+                try {
+                    this.sequentialMessageId = Integer.parseInt(rawParts[3]);
+                } catch(NumberFormatException nfe) {
+                    this.sequentialMessageId = 1;
+                }
             case 3:
-                this.fragmentNumber = Integer.parseInt(rawParts[2]);
+                try {
+                    this.fragmentNumber = Integer.parseInt(rawParts[2]);
+                } catch(NumberFormatException nfe) {
+                    this.fragmentNumber = 1;
+                }
             case 2:
-                this.fragmentCount = Integer.parseInt(rawParts[1]);
+                try {
+                    this.fragmentCount = (rawParts[1].isEmpty()) ? 1 : Integer.parseInt(rawParts[1]);
+                } catch(NumberFormatException nfe) {
+                    this.fragmentCount = 1;
+                }
             case 1:
                 this.preamble = new Preamble(this.sentenceParts[0]);
                 break;
