@@ -31,6 +31,7 @@ public enum Talker {
     AS("AIS Station (ITU_R M1371 - Limited Base Station)"),
     AT("AIS Transmitting Station"),
     AX("AIS Simplex Repeater Station"),
+    B2("Blockchain Based Vehicular Data"),
     BI("Bilge Systems"),
     BN("Bridge Navigational Watch Alarm System"),
     BS("Unknown Talker Type"),
