@@ -227,7 +227,8 @@ public final class AISSentence implements Sentence {
             } else
                 this.tagBlock = TagBlock.parse(m.group(0));
 
-            this.sentenceBody = ByteArrayUtils.str2bArray(rawSentence.substring(m.end()));
+            rawSentence = rawSentence.substring(m.end());
+            this.sentenceBody = ByteArrayUtils.str2bArray(rawSentence);
         } else if (addTagBlock) {
             if (this.source != null && this.source.length != 0)
                 this.tagBlock = TagBlock.build(this.source);
@@ -240,7 +241,8 @@ public final class AISSentence implements Sentence {
         if (this.sentenceParts == null)
             this.sentenceParts = ByteArrayUtils.fastSplit(this.sentenceBody, FIELD_DELIMITER);
 
-        switch (this.sentenceParts.length) {
+        String[] rawParts = ByteArrayUtils.fastSplit(rawSentence);
+        switch (rawParts.length) {
             case 10:
             case 9:
             case 8:
@@ -264,6 +266,17 @@ public final class AISSentence implements Sentence {
                 }
             case 6:
                 this.binaryString = this.sentenceParts[5]; // only the binary string
+            case 5:
+                this.radioChannelCode = ByteArrayUtils.bArray2cArray(this.sentenceParts[4])[0];
+            case 4:
+                System.out.println(rawParts[3]);
+                this.sequentialMessageId = Integer.parseInt(rawParts[3]);
+            case 3:
+                this.fragmentNumber = Integer.parseInt(rawParts[2]);
+            case 2:
+                this.fragmentCount = Integer.parseInt(rawParts[1]);
+            case 1:
+                this.preamble = new Preamble(this.sentenceParts[0]);
                 break;
             default:
         }
