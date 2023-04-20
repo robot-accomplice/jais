@@ -32,7 +32,6 @@ import jais.messages.enums.SentenceType;
 import jais.messages.enums.Talker;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.logging.log4j.core.pattern.NotANumber;
 
 /**
  *
