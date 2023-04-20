@@ -48,7 +48,7 @@ import lombok.Data;
 @Data
 public final class TagBlock {
 
-    public final static String TAGBLOCK_STRING = "\\\\(([cdgnrst]:[A-Za-z0-9\\\\-]+,?)+)\\*([A-Za-z0-9]{2})\\\\";
+    public final static String TAGBLOCK_STRING = "\\\\(([cdgnrst]:([A-Za-z0-9\\\\)\\\\-\\\\(\\\\.])+,?)+)\\*([A-Za-z0-9]{2})\\\\";
     public final static Pattern TAGBLOCK_PATTERN = Pattern.compile(TAGBLOCK_STRING);
 
     boolean parsed;
@@ -262,6 +262,6 @@ public final class TagBlock {
 
         tbs.append("*").append(checksum).append("\\");
 
-        return "\\" + tbs.toString();
+        return "\\" + tbs;
     }
 }
