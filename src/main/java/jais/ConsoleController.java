@@ -118,10 +118,16 @@ public class ConsoleController implements Initializable {
                 appendLineToOutput("\ttalker       : " + pre.talker.description);
                 if (pre.manufacturer == null)
                     appendLineToOutput("\tmanufacturer : null");
-                else
+                else {
                     appendLineToOutput("\tmanufacturer : " + pre.manufacturer.fullName);
+                }
                 appendLineToOutput("\tvalid sentence: " + sentence.isValid());
                 sentences[i] = sentence;
+            }
+            appendLineToOutput("\tfragments req     : " + sentences[0].getFragmentCount());
+            appendLineToOutput("\tfragments provided:");
+            for (AISSentence s : sentences) {
+                appendLineToOutput("\t" + s.getFragmentNumber());
             }
             appendLineToOutput(BORDER_SINGLE);
 
