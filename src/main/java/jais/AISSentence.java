@@ -263,15 +263,17 @@ public final class AISSentence implements Sentence {
             case 6:
                 this.binaryString = this.sentenceParts[5]; // the 6-bit encoded string
             case 5:
-                if (this.sentenceParts[4].length > 0)
+                if (this.sentenceParts[4] != null && this.sentenceParts[4].length > 0)
                     this.radioChannelCode = ByteArrayUtils.bArray2cArray(this.sentenceParts[4])[0];
             case 4:
-                if (this.sentenceParts[3].length > 0)
+                if (this.sentenceParts[3] != null && this.sentenceParts[3].length > 0)
                     this.sequentialMessageId = Integer.parseInt(ByteArrayUtils.bArray2Str(this.sentenceParts[3]));
             case 3:
-                this.fragmentNumber = Integer.parseInt(ByteArrayUtils.bArray2Str(this.sentenceParts[2]));
+                if(this.sentenceParts[2] != null && this.sentenceParts[2].length > 0)
+                    this.fragmentNumber = Integer.parseInt(ByteArrayUtils.bArray2Str(this.sentenceParts[2]));
             case 2:
-                this.fragmentCount = Integer.parseInt(ByteArrayUtils.bArray2Str(this.sentenceParts[1]));
+                if(this.sentenceParts[1] != null && this.sentenceParts[1].length > 0)
+                    this.fragmentCount = Integer.parseInt(ByteArrayUtils.bArray2Str(this.sentenceParts[1]));
             case 1:
                 this.preamble = new Preamble(this.sentenceParts[0]);
                 break;
