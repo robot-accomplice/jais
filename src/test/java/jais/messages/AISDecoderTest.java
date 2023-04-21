@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
@@ -374,19 +373,19 @@ public class AISDecoderTest {
             }
         }
 
-        LOG.info("============================================================================================");
-        LOG.info("Average sentence process time across {} runs for {} messages    :  {} ms",
+        System.out.println("============================================================================================");
+        System.out.printf("Overall average sentence process time across %d runs for %d messages :  %f ms\n",
                 RUN_COUNT, TEST_SENTENCES.length, processTotalTime / (1000f * 1000000f));
-        LOG.info("Average per sentence process time across {} runs                 :  {} ms",
+        System.out.printf("Running average per sentence process time across %d runs             :  %f ms\n",
                 RUN_COUNT, processPerMsgTime / (1000f * 1000000f));
 
-        LOG.info("Average message decode time across {} runs for {} messages    :  {} ms",
+        System.out.printf("Overall average message decode time across %d runs for %d messages   :  %f ms\n",
                 RUN_COUNT, TEST_SENTENCES.length, decodeTotalTime / (1000f * 1000000f));
-        LOG.info("Average per message decode time across {} runs                 :  {} ms",
+        System.out.printf("Running average per message decode time across %d runs               :  %f ms\n",
                 RUN_COUNT, decodePerMsgTime / (1000f * 1000000f));
-        LOG.info("============================================================================================");
+        System.out.println("============================================================================================");
 
-        counts.keySet().forEach((type) -> LOG.printf(Level.INFO, "%2d x %s", counts.get(type), type));
+        counts.keySet().forEach((type) -> System.out.printf("%2d x %s\n", counts.get(type), type));
     }
 
     /**
