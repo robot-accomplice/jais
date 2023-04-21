@@ -223,7 +223,8 @@ public final class AISSentence implements Sentence {
         if (m.find()) {
             if (this.source == null || this.source.length == 0) {
                 this.tagBlock = TagBlock.parse(m.group(0));
-                this.source = this.tagBlock.getSource();
+                this.source = (this.tagBlock.getSource() != null) ?
+                        this.tagBlock.getSource() : AISSentence.DEFAULT_SOURCE.getBytes();
             } else
                 this.tagBlock = TagBlock.parse(m.group(0));
 
@@ -238,22 +239,17 @@ public final class AISSentence implements Sentence {
             this.sentenceBody = this.rawSentence;
         }
 
-        if (this.sentenceParts == null)
+        if (this.sentenceParts == null || this.sentenceParts.length < 7)
             this.sentenceParts = ByteArrayUtils.fastSplit(this.sentenceBody, FIELD_DELIMITER);
 
-        String[] rawParts = ByteArrayUtils.fastSplit(rawSentence);
-        switch (rawParts.length) {
+        switch (this.sentenceParts.length) {
             case 10:
             case 9:
             case 8:
             case 7:
                 if (this.sentenceParts[6] != null && this.sentenceParts[6].length > 0) {
-                    try {
-                        byte[] firstByte = { this.sentenceParts[6][0] };
-                        this.fillBits = Integer.parseInt(ByteArrayUtils.bArray2Str(firstByte));
-                    } catch (NumberFormatException nfe) {
-                        // ignore
-                    }
+                    byte[] firstByte = { this.sentenceParts[6][0] };
+                    this.fillBits = ByteArrayUtils.getInt(firstByte, 0);
 
                     int csIndex = ByteArrayUtils.indexOf(this.sentenceParts[6], CHECKSUM_DELIMITER);
                     if (csIndex != -1) {
@@ -265,31 +261,17 @@ public final class AISSentence implements Sentence {
                     }
                 }
             case 6:
-                this.binaryString = this.sentenceParts[5]; // only the binary string
+                this.binaryString = this.sentenceParts[5]; // the 6-bit encoded string
             case 5:
-                try {
+                if (this.sentenceParts[4].length > 0)
                     this.radioChannelCode = ByteArrayUtils.bArray2cArray(this.sentenceParts[4])[0];
-                } catch (Throwable t) {
-                    this.radioChannelCode = 'A';
-                }
             case 4:
-                try {
-                    this.sequentialMessageId = Integer.parseInt(rawParts[3]);
-                } catch(NumberFormatException nfe) {
-                    this.sequentialMessageId = 1;
-                }
+                if (this.sentenceParts[3].length > 0)
+                    this.sequentialMessageId = Integer.parseInt(ByteArrayUtils.bArray2Str(this.sentenceParts[3]));
             case 3:
-                try {
-                    this.fragmentNumber = Integer.parseInt(rawParts[2]);
-                } catch(NumberFormatException nfe) {
-                    this.fragmentNumber = 1;
-                }
+                this.fragmentNumber = Integer.parseInt(ByteArrayUtils.bArray2Str(this.sentenceParts[2]));
             case 2:
-                try {
-                    this.fragmentCount = (rawParts[1].isEmpty()) ? 1 : Integer.parseInt(rawParts[1]);
-                } catch(NumberFormatException nfe) {
-                    this.fragmentCount = 1;
-                }
+                this.fragmentCount = Integer.parseInt(ByteArrayUtils.bArray2Str(this.sentenceParts[1]));
             case 1:
                 this.preamble = new Preamble(this.sentenceParts[0]);
                 break;
