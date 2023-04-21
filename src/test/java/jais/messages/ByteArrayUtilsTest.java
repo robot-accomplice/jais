@@ -18,9 +18,9 @@ public class ByteArrayUtilsTest {
     @Test
     public void testStr2bArray() {
         byte[] bytes = ByteArrayUtils.str2bArray("15NHl8500pqSdR8A7jnq9oRF0<<P");
-        for (int i = 0; i < bytes.length; i++) {
-            System.out.print(bytes[i] + ", ");
+        for (byte aByte : bytes) {
+            System.out.print(aByte + ", ");
         }
+        System.out.println();
     }
-    
 }
