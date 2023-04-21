@@ -193,6 +193,19 @@ public final class ByteArrayUtils {
     }
 
     /**
+     * Attempts to convert a byte [] into an int, if there are insufficient bytes, the fallback value
+     * is returned instead
+     *
+     * @param bytes the byte array we want to convert to an int
+     * @param fallback an int representation of the provided byte []
+     * @return an int containing either the converted value or the fallback value specified at invocation
+     */
+    public static int getInt(byte[] bytes, int fallback) {
+        if (bytes == null || bytes.length < 4) return fallback;
+        return ByteBuffer.wrap(bytes).getInt();
+    }
+
+    /**
      * Returns the index of the first occurrence of char c in byte [] ba or -1
      * the char is not present
      *
