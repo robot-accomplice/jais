@@ -439,10 +439,10 @@ public class Vessel implements Cloneable {
                     "callsign": "%s",
                     "shipname": "%s",
                     "shipType": "%s",
-                    "toBow": %f,
-                    "toPort": %f,
-                    "toStern": %f,
-                    "toStarboard": %f,
+                    "toBow": %d,
+                    "toPort": %d,
+                    "toStern": %d,
+                    "toStarboard": %d,
                     "epfd": "%s",
                     "month": %d,
                     "day": %d,
@@ -459,8 +459,8 @@ public class Vessel implements Cloneable {
                     "lon": %f,
                     "lat": %f,
                     "courseOverGround": %f,
-                    "heading": %f,
-                    "maneuver": %f,
+                    "heading": %d,
+                    "maneuver": %s,
                     "raim": %b,
                     "repeat": %d,
                     "radio": %d,
@@ -469,42 +469,36 @@ public class Vessel implements Cloneable {
                     "currentPositionTimestamp": %d,
                     "previousPositionTimestamp": %d,
                     "currentStaticTimestamp": %d,
-                    "timeSent", %d,
+                    "timeSent": %d,
                     "currentPositionSource": "%s",
                     "currentStaticSource": "%s"
                 }
             """,
-                getId().getMmsi(), getId().getSource(), this.getVersion(), this.getImo(),
-                this.getCallsign(), this.getShipName(), this.getShipType(), this.getToBow(),
-                this.getToPort(), this.getToStern(), this.getToStarboard(), this.getEpfd(), this.getMonth(),
+                getId().mmsi(), getId().source(), this.getVersion(), this.getImo(),
+                this.getCallsign(), this.getShipName(), this.getShipType().name(), this.getToBow(),
+                this.getToPort(), this.getToStern(), this.getToStarboard(), this.getEpfd().name(), this.getMonth(),
                 this.getDay(), this.getHour(), this.getMinute(), this.getSecond(), this.getDraught(),
-                this.getDestination(), this.isDte(), this.getNavigationStatus(), this.getRateOfTurn(), this.getSpeed(),
+                this.getDestination(), this.isDte(), this.getNavigationStatus().name(), this.getRateOfTurn(), this.getSpeed(),
                 this.isAccuracy(), this.getLon(), this.getLat(), this.getCourseOverGround(), this.getHeading(),
-                this.getManeuver(), this.isRaim(), this.getRepeat(), this.getRadio(), this.getEta(),
+                this.getManeuver().name(), this.isRaim(), this.getRepeat(), this.getRadio(), this.getEta(),
                 this.getCurrentMessageTimestamp(), this.getCurrentPositionTimestamp(),
-                this.getPreviousPositionTimestamp(), this.getTimeSent(), ByteArrayUtils.bArray2Str(this.getCurrentPositionSource()),
+                this.getPreviousPositionTimestamp(), this.getCurrentStaticTimestamp(), this.getTimeSent(),
+                ByteArrayUtils.bArray2Str(this.getCurrentPositionSource()),
                 ByteArrayUtils.bArray2Str(this.getCurrentStaticSource())
         );
     }
 
     /**
-     * A unique vessel identifier based on a combination of the vessel MMSI and the
-     * provided data source
-     */
-    @Data
-    public static class Identifier {
-
-        private final int mmsi;
-        private final String source;
+         * A unique vessel identifier based on a combination of the vessel MMSI and the
+         * provided data source
+         */
+        public record Identifier(int mmsi, String source) {
 
         /**
-         *
-         * @param mmsi The MMSI portion of the identifier
+         * @param mmsi   The MMSI portion of the identifier
          * @param source The data source portion of the identifier
          */
-        public Identifier(int mmsi, String source) {
-            this.mmsi = mmsi;
-            this.source = source;
+        public Identifier {
         }
     }
 }
