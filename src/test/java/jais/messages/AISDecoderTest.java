@@ -236,6 +236,26 @@ public class AISDecoderTest {
         Assertions.assertEquals(0, staDecoded.getMinute());
     }
 
+    @Test
+    public void testVesselCreation() {
+        final String[] statStr = {
+                "!AIVDM,2,1,1,B,55O5v842<<>1L=SSK7<aDhTF222222222222220PB`N;;6GT0B0QC31H0j0D,0*59",
+                "!AIVDM,2,2,1,B,liH0CPj8880,2*1A"
+        };
+        LOG.info("Testing with sentences: {}", (Object[]) statStr);
+        Optional<AISMessage> staMsg = AISMessageFactory.create("UnitTest", new AISSentence(statStr[0]),
+                new AISSentence(statStr[1]));
+        Assertions.assertNotNull(staMsg, "Optional for decoded message was null!");
+        Assertions.assertTrue(staMsg.isPresent(), "Optional for decoded message is not present!");
+        AISMessage aisMsg = staMsg.get();
+        Assertions.assertEquals(aisMsg.getType(), AISMessageType.STATIC_AND_VOYAGE_RELATED_DATA);
+        aisMsg.decode();
+
+        Vessel v = new Vessel((StaticAndVoyageRelatedData)aisMsg);
+
+        System.out.println(v);
+    }
+
     /**
      * Tests basic AIS decoding
      *
