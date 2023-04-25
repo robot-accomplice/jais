@@ -140,46 +140,46 @@ public abstract class PositionReportBase extends AISMessageBase {
 
         for (PositionFieldMap field : PositionFieldMap.values()) {
             switch (field) {
-                case STATUS:
+                case STATUS -> {
                     if (bits.size() >= field.getStartBit()) {
                         int nsId = AISMessageDecoder.decodeUnsignedInt(super.bits, field.getStartBit(),
                                 field.getEndBit());
                         status = NavigationStatus.getForCode(nsId);
                     }
-                    break;
-                case RATE_OF_TURN:
+                }
+                case RATE_OF_TURN -> {
                     if (bits.size() >= field.getStartBit())
                         rateOfTurn = AISMessageDecoder.decodeTurn(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SPEED:
+                }
+                case SPEED -> {
                     if (bits.size() >= field.getStartBit())
                         speed = AISMessageDecoder.decodeSpeed(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case ACCURACY:
+                }
+                case ACCURACY -> {
                     if (bits.size() >= field.getStartBit())
                         accuracy = bits.get(field.getEndBit());
-                    break;
-                case LON:
+                }
+                case LON -> {
                     if (bits.size() >= field.getStartBit())
                         lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case LAT:
+                }
+                case LAT -> {
                     if (bits.size() >= field.getStartBit())
                         lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case COURSE_OVER_GROUND:
+                }
+                case COURSE_OVER_GROUND -> {
                     if (bits.size() >= field.getStartBit())
                         courseOverGround = AISMessageDecoder.decodeCourse(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case HEADING:
+                }
+                case HEADING -> {
                     if (bits.size() >= field.getStartBit())
                         heading = AISMessageDecoder.decodeHeading(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SECOND:
+                }
+                case SECOND -> {
                     if (bits.size() >= field.getStartBit())
                         second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case MANEUVER:
+                }
+                case MANEUVER -> {
                     if (bits.size() >= field.getStartBit()) {
                         int mId = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                         maneuver = ManeuverType.getForCode(mId);
@@ -187,17 +187,18 @@ public abstract class PositionReportBase extends AISMessageBase {
                             maneuver = ManeuverType.NOT_AVAILABLE;
                         }
                     }
-                    break;
-                case RAIM:
+                }
+                case RAIM -> {
                     if (bits.size() >= field.getStartBit())
                         raim = bits.get(field.getEndBit());
-                    break;
-                case RADIO:
+                }
+                case RADIO -> {
                     if (bits.size() >= field.getStartBit())
                         radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                default:
-                    // ignore field
+                }
+                default -> {
+                }
+                // ignore field
             }
         }
     }
