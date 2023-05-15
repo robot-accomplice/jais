@@ -28,7 +28,7 @@ import lombok.Data;
  * message preamble (see example below) and provide a spec compliant way of
  * providing metadata about the AIS packet that travels with the packet.
  * Supported fields include:
- * t - timestamp : in c unix time and represented as a positive integer
+ * c - timestamp : in c unix time and represented as a positive integer
  * d - destination : a string of 15 characters or less indicating a destination
  * g - sentence grouping: a numeric string used to indicate when messages are
  * associated and their proper message order
