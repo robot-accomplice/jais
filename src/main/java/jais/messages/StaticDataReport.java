@@ -70,52 +70,51 @@ public class StaticDataReport extends AISMessageBase {
 
         for (StaticDataReportFieldMap field : StaticDataReportFieldMap.values()) {
             switch (field) {
-                case PART_NUMBER:
+                case PART_NUMBER -> {
                     if (bits.size() >= field.getStartBit())
                         this.partNo = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SHIP_NAME:
+                }
+                case SHIP_NAME -> {
                     if (bits.size() >= field.getStartBit())
                         this.shipName = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SHIP_TYPE:
+                }
+                case SHIP_TYPE -> {
                     if (bits.size() >= field.getStartBit()) {
                         int stCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                         this.shipType = ShipType.getForCode(stCode);
                     }
-                    break;
-                case VENDOR_ID:
+                }
+                case VENDOR_ID -> {
                     if (bits.size() >= field.getStartBit())
                         this.vendorId = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case CALL_SIGN:
+                }
+                case CALL_SIGN -> {
                     if (bits.size() >= field.getStartBit())
                         this.callSign = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TO_BOW:
+                }
+                case TO_BOW -> {
                     if (bits.size() >= field.getStartBit())
                         this.toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TO_STERN:
+                }
+                case TO_STERN -> {
                     if (bits.size() >= field.getStartBit())
                         this.toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case TO_PORT:
+                }
+                case TO_PORT -> {
                     if (bits.size() >= field.getStartBit())
                         this.toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TO_STARBOARD:
-                    this.toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
-                            field.getEndBit());
-                    break;
-                case MOTHERSHIP_MMSI:
+                }
+                case TO_STARBOARD -> this.toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                        field.getEndBit());
+                case MOTHERSHIP_MMSI -> {
                     if (bits.size() >= field.getStartBit())
                         this.mothershipMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                default:
-                    // ignore field
+                }
+                default -> {
+                }
+                // ignore field
             }
         }
     }
