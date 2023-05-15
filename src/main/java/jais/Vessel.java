@@ -23,7 +23,6 @@ import jais.messages.enums.EPFDFixType;
 import jais.messages.enums.ManeuverType;
 import jais.messages.enums.NavigationStatus;
 import jais.messages.enums.ShipType;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,7 +39,7 @@ public class Vessel implements Cloneable {
     private Identifier id;
     private int version;
     private int imo;
-    private byte[] callsign;
+    private byte[] callSign;
     private byte[] shipName;
     private ShipType shipType = ShipType.NOT_AVAILABLE;
     private int toBow;
@@ -59,8 +58,8 @@ public class Vessel implements Cloneable {
     private float rateOfTurn;
     private float speed = 102.3f;
     private boolean accuracy = false;
-    private float lon = -181f;
-    private float lat = -91f;
+    private double lon = -181f;
+    private double lat = -91f;
     private float courseOverGround = 360f;
     private int heading = 511;
     private int second;
@@ -170,7 +169,7 @@ public class Vessel implements Cloneable {
         this.imo = savrd.getImo();
         this.shipType = savrd.getShipType();
         this.shipName = (savrd.getShipName() == null) ? null : ByteArrayUtils.str2bArray(savrd.getShipName());
-        this.callsign = (savrd.getCallsign() == null) ? null : ByteArrayUtils.str2bArray(savrd.getCallsign());
+        this.callSign = (savrd.getCallsign() == null) ? null : ByteArrayUtils.str2bArray(savrd.getCallsign());
         this.destination = (savrd.getDestination() == null) ? null : ByteArrayUtils.str2bArray(savrd.getDestination());
         this.draught = savrd.getDraught();
         this.eta = savrd.getETA();
@@ -281,7 +280,7 @@ public class Vessel implements Cloneable {
         this.imo = savrd.getImo();
         this.shipType = savrd.getShipType();
         this.shipName = (savrd.getShipName() == null) ? null : ByteArrayUtils.str2bArray(savrd.getShipName());
-        this.callsign = (savrd.getCallsign() == null) ? null : ByteArrayUtils.str2bArray(savrd.getCallsign());
+        this.callSign = (savrd.getCallsign() == null) ? null : ByteArrayUtils.str2bArray(savrd.getCallsign());
         this.destination = (savrd.getDestination() == null) ? null : ByteArrayUtils.str2bArray(savrd.getDestination());
         this.draught = savrd.getDraught();
         this.eta = savrd.getETA();
@@ -312,7 +311,7 @@ public class Vessel implements Cloneable {
 
         clone.id = this.id;
         clone.accuracy = this.accuracy;
-        clone.callsign = this.callsign;
+        clone.callSign = this.callSign;
         clone.courseOverGround = this.courseOverGround;
         clone.day = this.day;
         clone.destination = this.destination;
@@ -357,8 +356,8 @@ public class Vessel implements Cloneable {
      * @return the callsign value of whatever StaticAndVoyageRelatedData message may
      *         have been used to populate this object
      */
-    public String getCallsign() {
-        return (this.callsign == null) ? null : ByteArrayUtils.bArray2Str(this.callsign);
+    public String getCallSign() {
+        return (this.callSign == null) ? null : ByteArrayUtils.bArray2Str(this.callSign);
     }
 
     /**
@@ -436,8 +435,8 @@ public class Vessel implements Cloneable {
                     },
                     "version": %d,
                     "imo": %d,
-                    "callsign": "%s",
-                    "shipname": "%s",
+                    "callSign": "%s",
+                    "shipName": "%s",
                     "shipType": "%s",
                     "toBow": %d,
                     "toPort": %d,
@@ -475,7 +474,7 @@ public class Vessel implements Cloneable {
                 }
             """,
                 getId().mmsi(), getId().source(), this.getVersion(), this.getImo(),
-                this.getCallsign(), this.getShipName(), this.getShipType().name(), this.getToBow(),
+                this.getCallSign(), this.getShipName(), this.getShipType().name(), this.getToBow(),
                 this.getToPort(), this.getToStern(), this.getToStarboard(), this.getEpfd().name(), this.getMonth(),
                 this.getDay(), this.getHour(), this.getMinute(), this.getSecond(), this.getDraught(),
                 this.getDestination(), this.isDte(), this.getNavigationStatus().name(), this.getRateOfTurn(), this.getSpeed(),
