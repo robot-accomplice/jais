@@ -40,8 +40,8 @@ public abstract class PositionReportBase extends AISMessageBase {
     private float rateOfTurn; // bits 42-49
     private float speed; // bits 50-59, represented in knots
     private boolean accuracy; // bit 60
-    private float lon = -91; // bits 61-88
-    private float lat = -181; // 89-115
+    private double lon = -91; // bits 61-88
+    private double lat = -181; // 89-115
     private float courseOverGround; // bits 116-127, 0.1 degree precision, relative to true north
     private int heading = 511; // bits 128-136, 0-359 degrees, 511 means not available
     private int second; // bits 137-142, timestamp in seconds since epoch

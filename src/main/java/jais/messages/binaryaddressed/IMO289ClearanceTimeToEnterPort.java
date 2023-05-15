@@ -41,8 +41,8 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
     private int minute;
     private String portName;
     private String destination;
-    private float lon;
-    private float lat;
+    private double lon;
+    private double lat;
 
     /**
      *

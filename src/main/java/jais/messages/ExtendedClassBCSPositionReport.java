@@ -36,8 +36,8 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
 
     private int speed;
     private boolean accurate;
-    private float lon;
-    private float lat;
+    private double lon;
+    private double lat;
     private float courseOverGround;
     private int heading;
     private int second;
@@ -132,83 +132,84 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
 
         for (ExtendedClassBCSPositionReportFieldMap field : ExtendedClassBCSPositionReportFieldMap.values()) {
             switch (field) {
-                case SPEED:
+                case SPEED -> {
                     if (bits.size() >= field.getStartBit())
                         speed = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case ACCURATE:
+                }
+                case ACCURATE -> {
                     if (bits.size() >= field.getStartBit())
                         accurate = bits.get(field.getStartBit());
-                    break;
-                case LON:
+                }
+                case LON -> {
                     if (bits.size() >= field.getStartBit())
                         lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case LAT:
+                }
+                case LAT -> {
                     if (bits.size() >= field.getStartBit())
                         lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case COURSE:
+                }
+                case COURSE -> {
                     if (bits.size() >= field.getStartBit())
                         courseOverGround = AISMessageDecoder.decodeCourse(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case HEADING:
+                }
+                case HEADING -> {
                     if (bits.size() >= field.getStartBit())
                         heading = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SECOND:
+                }
+                case SECOND -> {
                     if (bits.size() >= field.getStartBit())
                         second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SHIP_NAME:
+                }
+                case SHIP_NAME -> {
                     if (bits.size() >= field.getStartBit())
                         shipName = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SHIP_TYPE:
+                }
+                case SHIP_TYPE -> {
                     if (bits.size() >= field.getStartBit()) {
                         int shipCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
                         shipType = ShipType.getForCode(shipCode);
                     }
-                    break;
-                case TO_BOW:
+                }
+                case TO_BOW -> {
                     if (bits.size() >= field.getStartBit())
                         toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TO_STERN:
+                }
+                case TO_STERN -> {
                     if (bits.size() >= field.getStartBit())
                         toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TO_PORT:
+                }
+                case TO_PORT -> {
                     if (bits.size() >= field.getStartBit())
                         toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TO_STARBOARD:
+                }
+                case TO_STARBOARD -> {
                     if (bits.size() >= field.getStartBit())
                         toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case EPFD:
+                }
+                case EPFD -> {
                     if (bits.size() >= field.getStartBit()) {
                         int epfdCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
                         epfd = EPFDFixType.getForCode(epfdCode);
                     }
-                    break;
-                case RAIM:
+                }
+                case RAIM -> {
                     if (bits.size() >= field.getStartBit())
                         raim = bits.get(field.getStartBit());
-                    break;
-                case DTE:
+                }
+                case DTE -> {
                     if (bits.size() >= field.getStartBit())
                         dte = bits.get(field.getStartBit());
-                    break;
-                case ASSIGNED:
+                }
+                case ASSIGNED -> {
                     if (bits.size() >= field.getStartBit())
                         assigned = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                default:
-                    // ignore field
+                }
+                default -> {
+                }
+                // ignore field
             }
         }
     }

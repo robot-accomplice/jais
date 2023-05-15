@@ -15,9 +15,9 @@ public class GGATiming extends NMEASentenceBase {
 
     private String rawSentence;
     private float fixTaken;
-    private float lat;
+    private double lat;
     private char latDir;
-    private float lon;
+    private double lon;
     private char lonDir;
     private EFixQuality fixQuality;
     private int satellitesTracked;

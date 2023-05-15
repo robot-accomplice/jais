@@ -33,8 +33,8 @@ import java.util.BitSet;
 @Setter
 public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
 
-    private float lon;
-    private float lat;
+    private double lon;
+    private double lat;
     private BitSet data;
 
     /**

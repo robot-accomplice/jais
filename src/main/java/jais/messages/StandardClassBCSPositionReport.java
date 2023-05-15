@@ -33,8 +33,8 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     private int speed;
     private boolean accuracy;
-    private float lon;
-    private float lat;
+    private double lon;
+    private double lat;
     private float courseOverGround;
     private int heading;
     private int second;

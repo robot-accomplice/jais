@@ -36,8 +36,8 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
     private boolean accurate;
     private boolean raim;
     private NavigationStatus navStatus;
-    private float lon;
-    private float lat;
+    private double lon;
+    private double lat;
     private int speed;
     private int course;
     private boolean gnss;

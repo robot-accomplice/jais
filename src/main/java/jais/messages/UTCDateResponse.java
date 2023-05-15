@@ -36,8 +36,8 @@ public class UTCDateResponse extends AISMessageBase {
     private int minute;
     private int second;
     private boolean accurate;
-    private float lon;
-    private float lat;
+    private double lon;
+    private double lat;
     private EPFDFixType epfd;
     private boolean raim;
     private int radio;

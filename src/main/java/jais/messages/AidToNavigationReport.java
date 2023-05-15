@@ -37,8 +37,8 @@ public class AidToNavigationReport extends AISMessageBase {
     private NavaidType navaidType;
     private String name;
     private boolean accurate;
-    private float lon;
-    private float lat;
+    private double lon;
+    private double lat;
     private int toBow;
     private int toStern;
     private int toPort;

@@ -35,8 +35,8 @@ public class IMO236TidalWindow extends BinaryAddressedMessageBase {
     private int month;
     private int day;
     private String[] tidals;
-    private float lat;
-    private float lon;
+    private double lat;
+    private double lon;
     private int fromHour;
     private int fromMinute;
     private int toHour;
