@@ -35,7 +35,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
     private int version;
     private int imo;
-    private byte[] callsign;
+    private byte[] callSign;
     private byte[] shipName;
     private ShipType shipType = ShipType.OTHER_NO_INFO;
     private int toBow;
@@ -75,7 +75,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      * @return A String representation of the vessel callsign
      */
     public String getCallsign() {
-        return ByteArrayUtils.bArray2Str(this.callsign);
+        return ByteArrayUtils.bArray2Str(this.callSign);
     }
 
     /**
@@ -121,87 +121,88 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
 
         for (StaticAndVoyageFieldMap field : StaticAndVoyageFieldMap.values()) {
             switch (field) {
-                case VERSION:
+                case VERSION -> {
                     if (bits.size() >= field.getStartBit())
                         this.version = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case IMO:
+                }
+                case IMO -> {
                     if (bits.size() >= field.getStartBit())
                         this.imo = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case CALL_SIGN:
+                }
+                case CALL_SIGN -> {
                     if (bits.size() >= field.getStartBit())
-                        this.callsign = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(),
+                        this.callSign = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case SHIP_NAME:
+                }
+                case SHIP_NAME -> {
                     if (bits.size() >= field.getStartBit())
                         this.shipName = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case SHIP_TYPE:
+                }
+                case SHIP_TYPE -> {
                     int shipCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     if (bits.size() >= field.getStartBit())
                         this.shipType = ShipType.getForCode(shipCode);
                     if (this.shipType == null) {
                         this.shipType = ShipType.OTHER_NO_INFO;
                     }
-                    break;
-                case TO_BOW:
+                }
+                case TO_BOW -> {
                     if (bits.size() >= field.getStartBit())
                         toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TO_STERN:
+                }
+                case TO_STERN -> {
                     if (bits.size() >= field.getStartBit())
                         toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TO_PORT:
+                }
+                case TO_PORT -> {
                     if (bits.size() >= field.getStartBit())
                         toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TO_STARBOARD:
+                }
+                case TO_STARBOARD -> {
                     if (bits.size() >= field.getStartBit())
                         toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case EPFD:
+                }
+                case EPFD -> {
                     int epfdCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     if (bits.size() >= field.getStartBit())
                         epfd = EPFDFixType.getForCode(epfdCode);
-                    break;
-                case ETA_MONTH:
+                }
+                case ETA_MONTH -> {
                     if (bits.size() >= field.getStartBit())
                         month = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case ETA_DAY:
+                }
+                case ETA_DAY -> {
                     if (bits.size() >= field.getStartBit())
                         day = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case ETA_HOUR:
+                }
+                case ETA_HOUR -> {
                     if (bits.size() >= field.getStartBit())
                         hour = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case ETA_MINUTE:
+                }
+                case ETA_MINUTE -> {
                     if (bits.size() >= field.getStartBit())
                         minute = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case DRAUGHT:
+                }
+                case DRAUGHT -> {
                     if (bits.size() >= field.getStartBit())
                         draught = AISMessageDecoder.decodeDraught(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case DESTINATION:
+                }
+                case DESTINATION -> {
                     if (bits.size() >= field.getStartBit())
                         destination = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case DTE:
+                }
+                case DTE -> {
                     if (field.getStartBit() < bits.size()) {
                         dte = bits.get(field.getStartBit());
                     }
-                    break;
-                default:
-                    // ignore field
+                }
+                default -> {
+                }
+                // ignore field
             }
         }
     }
