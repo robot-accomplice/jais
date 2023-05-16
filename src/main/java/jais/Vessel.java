@@ -169,7 +169,7 @@ public class Vessel implements Cloneable {
         this.imo = savrd.getImo();
         this.shipType = savrd.getShipType();
         this.shipName = (savrd.getShipName() == null) ? null : ByteArrayUtils.str2bArray(savrd.getShipName());
-        this.callSign = (savrd.getCallsign() == null) ? null : ByteArrayUtils.str2bArray(savrd.getCallsign());
+        this.callSign = (savrd.getCallSign() == null) ? null : ByteArrayUtils.str2bArray(savrd.getCallSign());
         this.destination = (savrd.getDestination() == null) ? null : ByteArrayUtils.str2bArray(savrd.getDestination());
         this.draught = savrd.getDraught();
         this.eta = savrd.getETA();
@@ -280,7 +280,7 @@ public class Vessel implements Cloneable {
         this.imo = savrd.getImo();
         this.shipType = savrd.getShipType();
         this.shipName = (savrd.getShipName() == null) ? null : ByteArrayUtils.str2bArray(savrd.getShipName());
-        this.callSign = (savrd.getCallsign() == null) ? null : ByteArrayUtils.str2bArray(savrd.getCallsign());
+        this.callSign = (savrd.getCallSign() == null) ? null : ByteArrayUtils.str2bArray(savrd.getCallSign());
         this.destination = (savrd.getDestination() == null) ? null : ByteArrayUtils.str2bArray(savrd.getDestination());
         this.draught = savrd.getDraught();
         this.eta = savrd.getETA();

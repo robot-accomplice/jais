@@ -74,7 +74,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
      *
      * @return A String representation of the vessel callsign
      */
-    public String getCallsign() {
+    public String getCallSign() {
         return ByteArrayUtils.bArray2Str(this.callSign);
     }
 

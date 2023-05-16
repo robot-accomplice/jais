@@ -183,7 +183,7 @@ public class ConsoleController implements Initializable {
                         StaticAndVoyageRelatedData savrd = (StaticAndVoyageRelatedData) msg;
                         appendLineToOutput("AIS Version  : " + savrd.getVersion());
                         appendLineToOutput("IMO Number   : " + savrd.getImo());
-                        appendLineToOutput("Call Sign    : " + savrd.getCallsign());
+                        appendLineToOutput("Call Sign    : " + savrd.getCallSign());
                         appendLineToOutput("Ship Name    : " + savrd.getShipName());
                         appendLineToOutput("Ship Type    : " + savrd.getShipType());
                         appendLineToOutput("To Bow       : " + savrd.getToBow());

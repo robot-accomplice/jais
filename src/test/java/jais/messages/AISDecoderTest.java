@@ -219,7 +219,7 @@ public class AISDecoderTest {
         aisMsg.decode();
         StaticAndVoyageRelatedData staDecoded = (StaticAndVoyageRelatedData) aisMsg;
         Assertions.assertEquals(368148000, staDecoded.getMmsi());
-        Assertions.assertEquals("WCX8613", staDecoded.getCallsign());
+        Assertions.assertEquals("WCX8613", staDecoded.getCallSign());
         Assertions.assertEquals("JULIE", staDecoded.getShipName());
         Assertions.assertEquals(ShipType.TOWING_LONG_OR_WIDE, staDecoded.getShipType());
         Assertions.assertEquals(149, staDecoded.getToBow());
