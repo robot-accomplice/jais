@@ -196,9 +196,6 @@ public abstract class PositionReportBase extends AISMessageBase {
                     if (bits.size() >= field.getStartBit())
                         radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                 }
-                default -> {
-                }
-                // ignore field
             }
         }
     }

@@ -66,33 +66,31 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
 
         for (SingleSlotBinaryMessageFieldMap field : SingleSlotBinaryMessageFieldMap.values()) {
             switch (field) {
-                case ADDRESSED:
+                case ADDRESSED -> {
                     if (bits.size() >= field.getStartBit())
                         addressed = bits.get(field.getStartBit());
-                    break;
-                case STRUCTURED:
-                    structured = bits.get(field.getStartBit());
-                    break;
-                case DESTINATION_MMSI:
+                }
+                case STRUCTURED -> structured = bits.get(field.getStartBit());
+                case DESTINATION_MMSI -> {
                     if (this.addressed) {
                         if (bits.size() >= field.getStartBit())
                             destMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                     field.getEndBit());
                     }
-                    break;
-                case DAC:
+                }
+                case DAC -> {
                     if (this.structured) {
                         if (bits.size() >= field.getStartBit())
                             dac = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     }
-                    break;
-                case FID:
+                }
+                case FID -> {
                     if (this.structured) {
                         if (bits.size() >= field.getStartBit())
                             fid = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     }
-                    break;
-                case DATA:
+                }
+                case DATA -> {
                     data = new BitSet(bits.size());
                     if (this.addressed && bits.size() >= 70) {
                         if (bits.size() >= field.getStartBit())
@@ -104,9 +102,7 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
                         if (bits.size() >= field.getStartBit())
                             data = bits.get(40, bits.size());
                     }
-                    break;
-                default:
-                    // ignore field
+                }
             }
         }
     }

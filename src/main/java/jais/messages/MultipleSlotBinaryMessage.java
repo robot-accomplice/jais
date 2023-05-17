@@ -67,34 +67,34 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
 
         for (MultipleSlotBinaryMessageFieldMap field : MultipleSlotBinaryMessageFieldMap.values()) {
             switch (field) {
-                case ADDRESSED:
+                case ADDRESSED -> {
                     if (bits.size() >= field.getStartBit())
                         addressed = bits.get(field.getStartBit());
-                    break;
-                case STRUCTURED:
+                }
+                case STRUCTURED -> {
                     if (bits.size() >= field.getStartBit())
                         structured = bits.get(field.getStartBit());
-                    break;
-                case DESTINATION_MMSI:
+                }
+                case DESTINATION_MMSI -> {
                     if (addressed) {
                         if (bits.size() >= field.getStartBit())
                             destMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                     field.getEndBit());
                     }
-                    break;
-                case DAC:
+                }
+                case DAC -> {
                     if (structured) {
                         if (bits.size() >= field.getStartBit())
                             dac = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     }
-                    break;
-                case FID:
+                }
+                case FID -> {
                     if (structured) {
                         if (bits.size() >= field.getStartBit())
                             fid = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     }
-                    break;
-                case DATA:
+                }
+                case DATA -> {
                     if (addressed && bits.length() >= 160) {
                         data = bits.get(70, (bits.size() - 90));
                     } else if (structured && bits.length() >= 166) {
@@ -102,13 +102,9 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
                     } else if (bits.length() > 61) {
                         data = bits.get(40, bits.size());
                     }
-                    break;
-                case RADIO:
-                    radio = AISMessageDecoder.decodeUnsignedInt(bits,
-                            bits.size() - 21, bits.size() + 1);
-                    break;
-                default:
-                    // ignore field
+                }
+                case RADIO -> radio = AISMessageDecoder.decodeUnsignedInt(bits,
+                        bits.size() - 21, bits.size() + 1);
             }
         }
     }

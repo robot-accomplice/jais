@@ -69,59 +69,57 @@ public class UTCDateResponse extends AISMessageBase {
 
         for (UTCDateResponseFieldMap field : UTCDateResponseFieldMap.values()) {
             switch (field) {
-                case YEAR:
+                case YEAR -> {
                     if (bits.size() >= field.getStartBit())
                         this.year = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case MONTH:
+                }
+                case MONTH -> {
                     if (bits.size() >= field.getStartBit())
                         this.month = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case DAY:
+                }
+                case DAY -> {
                     if (bits.size() >= field.getStartBit())
                         this.day = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case HOUR:
+                }
+                case HOUR -> {
                     if (bits.size() >= field.getStartBit())
                         this.hour = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case MINUTE:
+                }
+                case MINUTE -> {
                     if (bits.size() >= field.getStartBit())
                         this.minute = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SECOND:
+                }
+                case SECOND -> {
                     if (bits.size() >= field.getStartBit())
                         this.second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case ACCURACY:
+                }
+                case ACCURACY -> {
                     if (bits.size() >= field.getStartBit())
                         this.accurate = bits.get(field.getStartBit());
-                    break;
-                case LON:
+                }
+                case LON -> {
                     if (bits.size() >= field.getStartBit())
                         this.lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case LAT:
+                }
+                case LAT -> {
                     if (bits.size() >= field.getStartBit())
                         this.lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case EPFD:
+                }
+                case EPFD -> {
                     if (bits.size() >= field.getStartBit()) {
                         int epfdCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
                         this.epfd = EPFDFixType.getForCode(epfdCode);
                     }
-                    break;
-                case RAIM:
+                }
+                case RAIM -> {
                     if (bits.size() >= field.getStartBit())
                         this.raim = bits.get(field.getStartBit());
-                    break;
-                case RADIO:
+                }
+                case RADIO -> {
                     if (bits.size() >= field.getStartBit())
                         this.radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                default:
-                    // ignore field
+                }
             }
         }
     }

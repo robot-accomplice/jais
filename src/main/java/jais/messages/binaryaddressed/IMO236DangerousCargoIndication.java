@@ -100,9 +100,6 @@ public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
                             field.getStartBit(), field.getEndBit());
                     this.cargoUnit = CargoUnitCode.getForCode(cargoCode);
                 }
-                default -> {
-                    // ignore field;
-                }
             }
         }
     }

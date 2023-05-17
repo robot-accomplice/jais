@@ -64,34 +64,32 @@ public class AssignmentModeCommand extends AISMessageBase {
 
         for (AssignmentModeCommandFieldMap field : AssignmentModeCommandFieldMap.values()) {
             switch (field) {
-                case MMSI1:
+                case MMSI1 -> {
                     if (bits.size() >= field.getStartBit())
                         mmsi1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case OFFSET1:
+                }
+                case OFFSET1 -> {
                     if (bits.size() >= field.getStartBit())
                         offset1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case INCREMENT1:
+                }
+                case INCREMENT1 -> {
                     if (bits.size() >= field.getStartBit())
                         increment1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case MMSI2:
+                }
+                case MMSI2 -> {
                     if (bits.size() >= field.getStartBit())
                         mmsi2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case OFFSET2:
+                }
+                case OFFSET2 -> {
                     if (bits.size() >= field.getStartBit())
                         offset2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case INCREMENT2:
+                }
+                case INCREMENT2 -> {
                     if (bits.size() >= field.getStartBit())
                         increment2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                default:
-                    // ignore field
+                }
             }
         }
     }

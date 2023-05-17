@@ -75,40 +75,38 @@ public class Interrogation extends AISMessageBase {
 
         for (InterrogationFieldMap field : InterrogationFieldMap.values()) {
             switch (field) {
-                case MMSI1:
+                case MMSI1 -> {
                     if (bits.size() >= field.getStartBit())
                         mmsi1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TYPE1_1:
+                }
+                case TYPE1_1 -> {
                     if (bits.size() >= field.getStartBit())
                         type1_1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case OFFSET1_1:
+                }
+                case OFFSET1_1 -> {
                     if (bits.size() >= field.getStartBit())
                         offset1_1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TYPE1_2:
+                }
+                case TYPE1_2 -> {
                     if (bits.size() >= field.getStartBit())
                         type1_2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case OFFSET1_2:
+                }
+                case OFFSET1_2 -> {
                     if (bits.size() >= field.getStartBit())
                         offset1_2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case MMSI2:
+                }
+                case MMSI2 -> {
                     if (bits.size() >= field.getStartBit())
                         mmsi2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TYPE2_1:
+                }
+                case TYPE2_1 -> {
                     if (bits.size() >= field.getStartBit())
                         type2_1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case OFFSET2_1:
+                }
+                case OFFSET2_1 -> {
                     if (bits.size() >= field.getStartBit())
                         offset2_1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                default:
-                    // ignore field
+                }
             }
         }
     }

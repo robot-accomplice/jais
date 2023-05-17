@@ -101,76 +101,74 @@ public class AidToNavigationReport extends AISMessageBase {
 
         for (AidToNavigationReportFieldMap field : AidToNavigationReportFieldMap.values()) {
             switch (field) {
-                case NAVAID_TYPE:
+                case NAVAID_TYPE -> {
                     if (bits.size() >= field.getStartBit()) {
                         int navCode = AISMessageDecoder.decodeSignedInt(bits, field.getStartBit(), field.getEndBit());
                         navaidType = NavaidType.getForCode(navCode);
                     }
-                    break;
-                case NAME:
+                }
+                case NAME -> {
                     if (bits.size() >= field.getStartBit())
                         name = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case ACCURATE:
+                }
+                case ACCURATE -> {
                     if (bits.size() >= field.getStartBit())
                         accurate = bits.get(field.getStartBit());
-                    break;
-                case LON:
+                }
+                case LON -> {
                     if (bits.size() >= field.getStartBit())
                         lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case LAT:
+                }
+                case LAT -> {
                     if (bits.size() >= field.getStartBit())
                         lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TO_BOW:
+                }
+                case TO_BOW -> {
                     if (bits.size() >= field.getStartBit())
                         toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TO_STERN:
+                }
+                case TO_STERN -> {
                     if (bits.size() >= field.getStartBit())
                         toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TO_PORT:
+                }
+                case TO_PORT -> {
                     if (bits.size() >= field.getStartBit())
                         toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TO_STARBOARD:
+                }
+                case TO_STARBOARD -> {
                     if (bits.size() >= field.getStartBit())
                         toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case EPFD:
+                }
+                case EPFD -> {
                     int epfdCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     if (bits.size() >= field.getStartBit())
                         epfd = EPFDFixType.getForCode(epfdCode);
-                    break;
-                case SECOND:
+                }
+                case SECOND -> {
                     if (bits.size() >= field.getStartBit())
                         second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case OFF_POSITION:
+                }
+                case OFF_POSITION -> {
                     if (bits.size() >= field.getStartBit())
                         offPosition = bits.get(field.getStartBit());
-                    break;
-                case REGIONAL_RESERVED:
+                }
+                case REGIONAL_RESERVED -> {
                     if (bits.size() >= field.getStartBit())
                         regional = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case RAIM:
+                }
+                case RAIM -> {
                     if (bits.size() >= field.getStartBit())
                         raim = bits.get(field.getStartBit());
-                    break;
-                case VIRTUAL_AID:
+                }
+                case VIRTUAL_AID -> {
                     if (bits.size() >= field.getStartBit())
                         virtualAid = bits.get(field.getStartBit());
-                    break;
-                case NAME_EXTENSION:
+                }
+                case NAME_EXTENSION -> {
                     if (bits.size() >= field.getStartBit())
                         nameExtension = AISMessageDecoder.decodeToString(bits, field.getStartBit(), bits.size() - 1);
-                    break;
-                default:
-                    // ignore field
+                }
             }
         }
     }

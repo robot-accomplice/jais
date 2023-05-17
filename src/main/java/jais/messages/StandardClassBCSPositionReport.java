@@ -129,73 +129,71 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
         for (StandardClassBCSPositionReportFieldMap field : StandardClassBCSPositionReportFieldMap.values()) {
             switch (field) {
-                case SPEED:
+                case SPEED -> {
                     if (bits.size() >= field.getStartBit())
                         this.speed = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case ACCURACY:
+                }
+                case ACCURACY -> {
                     if (bits.size() >= field.getStartBit())
                         this.accuracy = bits.get(field.getStartBit());
-                    break;
-                case LON:
+                }
+                case LON -> {
                     if (bits.size() >= field.getStartBit())
                         this.lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case LAT:
+                }
+                case LAT -> {
                     if (bits.size() >= field.getStartBit())
                         this.lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case COURSE_OVER_GROUND:
+                }
+                case COURSE_OVER_GROUND -> {
                     if (bits.size() >= field.getStartBit())
                         this.courseOverGround = AISMessageDecoder.decodeCourse(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case HEADING:
+                }
+                case HEADING -> {
                     if (bits.size() >= field.getStartBit())
                         this.heading = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case SECOND:
+                }
+                case SECOND -> {
                     if (bits.size() >= field.getStartBit())
                         this.second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case CS:
+                }
+                case CS -> {
                     if (bits.size() >= field.getStartBit())
                         this.cs = bits.get(field.getStartBit());
-                    break;
-                case DISPLAY:
+                }
+                case DISPLAY -> {
                     if (bits.size() >= field.getStartBit())
                         this.display = bits.get(field.getStartBit());
-                    break;
-                case DSC:
+                }
+                case DSC -> {
                     if (bits.size() >= field.getStartBit())
                         this.dsc = bits.get(field.getStartBit());
-                    break;
-                case MSG22:
+                }
+                case MSG22 -> {
                     if (bits.size() >= field.getStartBit())
                         this.msg22 = bits.get(field.getStartBit());
-                    break;
-                case ASSIGNED:
+                }
+                case ASSIGNED -> {
                     if (bits.size() >= field.getStartBit())
                         this.assigned = bits.get(field.getStartBit());
-                    break;
-                case RAIM:
+                }
+                case RAIM -> {
                     if (bits.size() >= field.getStartBit())
                         this.raim = bits.get(field.getStartBit());
-                    break;
-                case BAND:
+                }
+                case BAND -> {
                     if (bits.size() >= field.getStartBit())
                         this.band = bits.get(field.getStartBit());
-                    break;
-                case RADIO:
+                }
+                case RADIO -> {
                     if (bits.size() >= field.getStartBit())
                         this.radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                default:
-                    // ignore field
+                }
             }
 
         }

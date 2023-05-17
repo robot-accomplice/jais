@@ -74,77 +74,71 @@ public class DataLinkManagementMessage extends AISMessageBase {
 
         for (DataLinkManagementMessageFieldMap field : DataLinkManagementMessageFieldMap.values()) {
             switch (field) {
-                case OFFSET1:
-                    this.offset1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SLOTS1:
-                    this.slots1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TIMEOUT1:
-                    this.timeout1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case INCREMENT1:
-                    this.increment1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case OFFSET2:
+                case OFFSET1 ->
+                        this.offset1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                case SLOTS1 ->
+                        this.slots1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                case TIMEOUT1 ->
+                        this.timeout1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                case INCREMENT1 ->
+                        this.increment1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                case OFFSET2 -> {
                     if (bits.size() >= field.getStartBit())
                         this.offset2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case SLOTS2:
+                }
+                case SLOTS2 -> {
                     if (bits.size() >= field.getStartBit())
                         this.slots2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TIMEOUT2:
+                }
+                case TIMEOUT2 -> {
                     if (bits.size() >= field.getStartBit())
                         this.timeout2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case INCREMENT2:
+                }
+                case INCREMENT2 -> {
                     if (bits.size() >= field.getStartBit())
                         this.increment2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case OFFSET3:
+                }
+                case OFFSET3 -> {
                     if (bits.size() >= field.getStartBit())
                         this.offset3 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case SLOTS3:
+                }
+                case SLOTS3 -> {
                     if (bits.size() >= field.getStartBit())
                         this.slots3 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TIMEOUT3:
+                }
+                case TIMEOUT3 -> {
                     if (bits.size() >= field.getStartBit())
                         this.timeout3 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case INCREMENT3:
+                }
+                case INCREMENT3 -> {
                     if (bits.size() >= field.getStartBit())
                         this.increment3 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case OFFSET4:
+                }
+                case OFFSET4 -> {
                     if (bits.size() >= field.getStartBit())
                         this.offset4 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case SLOTS4:
+                }
+                case SLOTS4 -> {
                     if (bits.size() >= field.getStartBit())
                         this.slots4 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case TIMEOUT4:
+                }
+                case TIMEOUT4 -> {
                     if (bits.size() >= field.getStartBit())
                         this.timeout4 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                case INCREMENT4:
+                }
+                case INCREMENT4 -> {
                     if (bits.size() >= field.getStartBit())
                         this.increment4 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
-                    break;
-                default:
-                    // ignore field
+                }
             }
         }
     }

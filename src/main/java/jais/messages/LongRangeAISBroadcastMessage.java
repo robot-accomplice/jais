@@ -92,42 +92,40 @@ public class LongRangeAISBroadcastMessage extends AISMessageBase {
 
         for (LongRangeAISBroadcastMessageFieldMap field : LongRangeAISBroadcastMessageFieldMap.values()) {
             switch (field) {
-                case ACCURATE:
+                case ACCURATE -> {
                     if (bits.size() >= field.getStartBit())
                         accurate = bits.get(field.getStartBit());
-                    break;
-                case RAIM:
+                }
+                case RAIM -> {
                     if (bits.size() >= field.getStartBit())
                         raim = bits.get(field.getStartBit());
-                    break;
-                case NAVIGATION_STATUS:
+                }
+                case NAVIGATION_STATUS -> {
                     if (bits.size() >= field.getStartBit()) {
                         int nsCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                         navStatus = NavigationStatus.getForCode(nsCode);
                     }
-                    break;
-                case LON:
+                }
+                case LON -> {
                     if (bits.size() >= field.getStartBit())
                         lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case LAT:
+                }
+                case LAT -> {
                     if (bits.size() >= field.getStartBit())
                         lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SPEED:
+                }
+                case SPEED -> {
                     if (bits.size() >= field.getStartBit())
                         speed = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case COURSE:
+                }
+                case COURSE -> {
                     if (bits.size() >= field.getStartBit())
                         course = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case GNSS:
+                }
+                case GNSS -> {
                     if (bits.size() >= field.getStartBit())
                         gnss = !bits.get(field.getStartBit());
-                    break;
-                default:
-                    // ignore field
+                }
             }
         }
     }

@@ -71,24 +71,22 @@ public class BinaryAcknowledge extends AISMessageBase {
 
         for (BinaryAcknowledgeFieldMap field : BinaryAcknowledgeFieldMap.values()) {
             switch (field) {
-                case MMSI1:
+                case MMSI1 -> {
                     if (bits.size() >= field.getStartBit())
                         mmsi1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case MMSI2:
+                }
+                case MMSI2 -> {
                     if (bits.size() >= field.getStartBit())
                         mmsi2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case MMSI3:
+                }
+                case MMSI3 -> {
                     if (bits.size() >= field.getStartBit())
                         mmsi3 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case MMSI4:
+                }
+                case MMSI4 -> {
                     if (bits.size() >= field.getStartBit())
                         mmsi4 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                default:
-                    // ignore field
+                }
             }
         }
     }
