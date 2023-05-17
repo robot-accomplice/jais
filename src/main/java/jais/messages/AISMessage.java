@@ -66,7 +66,7 @@ public interface AISMessage {
             int d = 0;
             Integer[] digits = new Integer[7];
             for (char c : Long.toString(imo).toCharArray()) {
-                digits[d] = Integer.valueOf("" + c);
+                digits[d] = Integer.valueOf(String.valueOf(c));
                 d++;
             }
 
