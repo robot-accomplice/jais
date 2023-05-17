@@ -268,25 +268,24 @@ public abstract class AISMessageBase implements AISMessage {
     public void decode() {
         this.decodedFieldMap.put("timereceived", getTimeReceived());
 
-        this.compositeMsg = AISSentence.concatenate(getSentences());
+//        this.compositeMsg = AISSentence.concatenate(getSentences());
+//
+//        this.bits = AISMessageDecoder.byteArrayToBitSet(this.compositeMsg);
 
-        this.bits = AISMessageDecoder.byteArrayToBitSet(this.compositeMsg);
+        this.bits = AISMessageDecoder.sentencesToBitSet(this.getSentences());
 
         for (AISFieldMap field : AISFieldMap.values()) {
             switch (field) {
-                case TYPE:
+                case TYPE -> {
                     if (this.decodedFieldMap.get("messagetype") == null) {
                         Optional<AISMessageType> mType = AISMessageDecoder.decodeMessageType(this.bits);
                         mType.ifPresent(aisMessageType -> this.messageType = aisMessageType);
                     }
-                    break;
-                case REPEAT:
-                    this.repeat = AISMessageDecoder.decodeUnsignedInt(this.bits, field.getStartBit(),
-                            field.getEndBit());
-                    break;
-                case MMSI:
-                    this.mmsi = AISMessageDecoder.decodeUnsignedInt(this.bits, field.getStartBit(), field.getEndBit());
-                    break;
+                }
+                case REPEAT -> this.repeat = AISMessageDecoder.decodeUnsignedInt(this.bits, field.getStartBit(),
+                        field.getEndBit());
+                case MMSI ->
+                        this.mmsi = AISMessageDecoder.decodeUnsignedInt(this.bits, field.getStartBit(), field.getEndBit());
             }
         }
     }
