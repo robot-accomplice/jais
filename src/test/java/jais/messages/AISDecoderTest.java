@@ -427,7 +427,7 @@ public class AISDecoderTest {
     public void testAISSentenceGenerationFromBinaryString() {
         final String binString = "15P<mB003?L02DPGIfh:F`A<0000";
         LOG.info("*** testAISSentenceGenerationFromBinaryString()");
-        AISSentence p = AISSentence.createFromBinaryString(binString, "TEST").process();
+        AISSentence p = AISSentence.createFromPayload(binString, "TEST").process();
         try {
             Assertions.assertTrue(p.isValid(), binString + " is NOT valid.");
         } catch (Exception e) {

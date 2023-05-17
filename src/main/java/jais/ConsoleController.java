@@ -85,7 +85,7 @@ public class ConsoleController implements Initializable {
             for (int i = 0; i < sentenceStrings.length; i++) {
                 AISSentence sentence = (AISSentence.validatePreamble(sentenceStrings[i]))
                         ? new AISSentence(sentenceStrings[i])
-                        : AISSentence.createFromBinaryString(sentenceStrings[i], null);
+                        : AISSentence.createFromPayload(sentenceStrings[i], null);
                 sentence.process();
                 appendLineToOutput(BORDER_SINGLE);
                 TagBlock tb = sentence.getTagBlock();
@@ -107,7 +107,7 @@ public class ConsoleController implements Initializable {
                     appendLineToOutput(BORDER_SINGLE);
                     appendLineToOutput("\t- none -");
                 }
-                Preamble pre = Preamble.parse(sentence.getRawSentence());
+                Preamble pre = Preamble.parse(sentence.getUnparsedSentence());
                 appendLineToOutput(BORDER_SINGLE);
                 appendLineToOutput("Preamble: " + ByteArrayUtils.bArray2Str(pre.parsed));
                 appendLineToOutput(BORDER_SINGLE);
@@ -131,7 +131,7 @@ public class ConsoleController implements Initializable {
             }
             appendLineToOutput(BORDER_SINGLE);
 
-            Optional<AISMessage> msgOpt = AISMessageFactory.create("CONSOLE", false, sentences);
+            Optional<AISMessage> msgOpt = AISMessageFactory.create("CONSOLE", sentences);
             if (msgOpt.isPresent()) {
                 AISMessage msg = msgOpt.get();
                 // from AISMessageBase

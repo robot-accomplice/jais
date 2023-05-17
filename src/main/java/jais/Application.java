@@ -67,7 +67,7 @@ public class Application {
                 System.out.println("READ: " + s);
                 AISSentence packet = (AISSentence.validatePreamble(s))
                         ? new AISSentence(s, inputFilePath)
-                        : AISSentence.createFromBinaryString(s, inputFilePath);
+                        : AISSentence.createFromPayload(s, inputFilePath);
                 Optional<AISMessage> msg = AISMessageFactory.create(inputFilePath, packet);
                 if (msg.isPresent()) {
                     try {
@@ -191,7 +191,7 @@ public class Application {
                             StandardOpenOption.WRITE, StandardOpenOption.APPEND);
                     LOG.info("WROTE: " + msgSb);
                 }
-                default -> LOG.warn("Skipping " + message.getType().name() + " message");
+                default -> LOG.warn("Skipping {} message", message.getType().name());
             }
         }
     }

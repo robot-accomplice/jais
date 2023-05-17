@@ -69,9 +69,9 @@ public final class AISSentence implements Sentence {
     private int fragmentNumber = 1;
     private int sequentialMessageId = -1;
     private char radioChannelCode;
-    private final byte[] rawSentence; // the unparsed initial string
-    private byte[] binaryString; // the binary string
-    private byte[] sentenceBody; // the message without the tagblock
+    private final byte[] unparsedSentence;
+    private byte[] payload;
+    private byte[] sentenceWithoutTagBlock;
     private int fillBits;
     private byte[] checksum;
     private final long timeReceived = ZonedDateTime.now(ZoneOffset.UTC.normalized()).toInstant().toEpochMilli();
@@ -83,24 +83,24 @@ public final class AISSentence implements Sentence {
     /**
      * Constructor
      *
-     * @param rawSentence byte[] composed of the characters from the original
+     * @param unparsedSentence byte[] composed of the characters from the original
      *                    non-decoded String representing a complete or partial AIS
      *                    message
      */
-    public AISSentence(byte[] rawSentence) {
-        this(rawSentence, ByteArrayUtils.str2bArray(DEFAULT_SOURCE));
+    public AISSentence(byte[] unparsedSentence) {
+        this(unparsedSentence, ByteArrayUtils.str2bArray(DEFAULT_SOURCE));
     }
 
     /**
      * Constructor
      *
-     * @param rawSentence byte[] composed of the characters from the original
+     * @param unparsedSentence byte[] composed of the characters from the original
      *                    non-decoded String representing a complete or partial AIS
      *                    message
      * @param source      byte[] for the named source of the AIS sentence
      */
-    public AISSentence(byte[] rawSentence, byte[] source) {
-        this.rawSentence = ByteArrayUtils.trimByteArray(rawSentence);
+    public AISSentence(byte[] unparsedSentence, byte[] source) {
+        this.unparsedSentence = ByteArrayUtils.trimByteArray(unparsedSentence);
         this.source = ByteArrayUtils.trimByteArray(source);
     }
 
@@ -118,13 +118,13 @@ public final class AISSentence implements Sentence {
     /**
      * Constructor
      *
-     * @param rawSentence String representing the original 6 bit encoded String
+     * @param unparsedSentence String representing the original 6 bit encoded String
      *                    representing a complete or
      *                    partial AIS message
      * @param source      String representing the named source of this AIS sentence
      */
-    public AISSentence(String rawSentence, String source) {
-        this.rawSentence = ByteArrayUtils.str2bArray(rawSentence);
+    public AISSentence(String unparsedSentence, String source) {
+        this.unparsedSentence = ByteArrayUtils.str2bArray(unparsedSentence);
         this.source = ByteArrayUtils.str2bArray(Objects.requireNonNullElse(source, DEFAULT_SOURCE));
     }
 
@@ -209,17 +209,17 @@ public final class AISSentence implements Sentence {
      *         malformed
      */
     public AISSentence process(boolean addTagBlock) {
-        String rawSentence;
+        String unparsedSentence;
 
-        if (this.rawSentence == null) {
+        if (this.unparsedSentence == null) {
             return this;
-        } else if (this.rawSentence.length == 0) {
+        } else if (this.unparsedSentence.length == 0) {
             return this;
         } else {
-            rawSentence = ByteArrayUtils.bArray2Str(ByteArrayUtils.trimByteArray(this.rawSentence));
+            unparsedSentence = ByteArrayUtils.bArray2Str(ByteArrayUtils.trimByteArray(this.unparsedSentence));
         }
 
-        Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher(rawSentence);
+        Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher(unparsedSentence);
         if (m.find()) {
             if (this.source == null || this.source.length == 0) {
                 this.tagBlock = TagBlock.parse(m.group(0));
@@ -228,19 +228,19 @@ public final class AISSentence implements Sentence {
             } else
                 this.tagBlock = TagBlock.parse(m.group(0));
 
-            rawSentence = rawSentence.substring(m.end());
-            this.sentenceBody = ByteArrayUtils.str2bArray(rawSentence);
+            unparsedSentence = unparsedSentence.substring(m.end());
+            this.sentenceWithoutTagBlock = ByteArrayUtils.str2bArray(unparsedSentence);
         } else if (addTagBlock) {
             if (this.source != null && this.source.length != 0)
                 this.tagBlock = TagBlock.build(this.source);
-            this.sentenceBody = this.rawSentence;
+            this.sentenceWithoutTagBlock = this.unparsedSentence;
         } else {
             // no TagBlock found and addTagBlock is false
-            this.sentenceBody = this.rawSentence;
+            this.sentenceWithoutTagBlock = this.unparsedSentence;
         }
 
         if (this.sentenceParts == null || this.sentenceParts.length < 7)
-            this.sentenceParts = ByteArrayUtils.fastSplit(this.sentenceBody, FIELD_DELIMITER);
+            this.sentenceParts = ByteArrayUtils.fastSplit(this.sentenceWithoutTagBlock, FIELD_DELIMITER);
 
         switch (this.sentenceParts.length) {
             case 10:
@@ -261,7 +261,7 @@ public final class AISSentence implements Sentence {
                     }
                 }
             case 6:
-                this.binaryString = this.sentenceParts[5]; // the 6-bit encoded string
+                this.payload = this.sentenceParts[5]; // the 6-bit encoded string
             case 5:
                 if (this.sentenceParts[4] != null && this.sentenceParts[4].length > 0)
                     this.radioChannelCode = ByteArrayUtils.bArray2cArray(this.sentenceParts[4])[0];
@@ -300,7 +300,7 @@ public final class AISSentence implements Sentence {
             if (this.sentenceParts == null)
                 process();
 
-            if (this.sentenceBody.length > 82)
+            if (this.sentenceWithoutTagBlock.length > 82)
                 return false; // invalid sentence length
             if (this.sentenceParts.length == 0)
                 return false; // split failed
@@ -320,11 +320,11 @@ public final class AISSentence implements Sentence {
             }
 
             // if we don't have any bad characters validate the checksum
-            int csIndex = ByteArrayUtils.indexOf(this.sentenceBody, CHECKSUM_DELIMITER) + 1;
+            int csIndex = ByteArrayUtils.indexOf(this.sentenceWithoutTagBlock, CHECKSUM_DELIMITER) + 1;
 
             if (csIndex > 0) {
                 // validate checksum
-                if (!validateChecksum(this.sentenceBody, this.checksum)) {
+                if (!validateChecksum(this.sentenceWithoutTagBlock, this.checksum)) {
                     return false;
                 }
             } else {
@@ -454,7 +454,7 @@ public final class AISSentence implements Sentence {
      * @return a generated String representation of a complete AIS sentence (with
      *         prefix, suffix, checksum, etc)
      */
-    public static String createSentenceStringFromBinaryString(String rawData) {
+    public static String createSentenceStringFrompayload(String rawData) {
         String sentenceString = "!AIVDM,1,1,,A," + rawData + ",0*";
         sentenceString += Integer.toHexString(AISSentence.getChecksum(sentenceString));
 
@@ -469,8 +469,8 @@ public final class AISSentence implements Sentence {
      * @param rawData The binary encoded String
      * @return an AISsentence object based on the provided binary string
      */
-    public static AISSentence createFromBinaryString(String rawData) {
-        return createFromBinaryString(rawData, null);
+    public static AISSentence createFromPayload(String rawData) {
+        return createFromPayload(rawData, null);
     }
 
     /**
@@ -482,10 +482,10 @@ public final class AISSentence implements Sentence {
      *                originated
      * @return an AISsentence object based on the provided binary string
      */
-    public static AISSentence createFromBinaryString(String rawData, String source) {
+    public static AISSentence createFromPayload(String rawData, String source) {
         if (source == null)
             source = "UNKNOWN";
-        return new AISSentence(createSentenceStringFromBinaryString(rawData), source);
+        return new AISSentence(createSentenceStringFrompayload(rawData), source);
     }
 
     /**
@@ -501,7 +501,7 @@ public final class AISSentence implements Sentence {
         TagBlock tb = new TagBlock();
         tb.setSource(this.source);
         tb.setTimestamp(this.timeReceived);
-        return generateTagBlockSentenceString(this.rawSentence, tb);
+        return generateTagBlockSentenceString(this.unparsedSentence, tb);
     }
 
     /**
@@ -518,7 +518,7 @@ public final class AISSentence implements Sentence {
         tb.setSource(this.source);
         tb.setTimestamp(this.timeReceived);
         tb.setTextStr(text);
-        return generateTagBlockSentenceString(this.rawSentence, tb);
+        return generateTagBlockSentenceString(this.unparsedSentence, tb);
     }
 
     /**
@@ -556,8 +556,8 @@ public final class AISSentence implements Sentence {
      *
      * @return the raw binary string in the form of a byte array
      */
-    public byte[] getBinaryStringAsByteArray() {
-        return this.binaryString;
+    public byte[] getPayloadAsByteArray() {
+        return this.payload;
     }
 
     /**
@@ -566,8 +566,8 @@ public final class AISSentence implements Sentence {
      * @return the raw body (binary string portion) of the sentence in the form of a
      *         byte array
      */
-    public byte[] getSentenceBodyAsByteArray() {
-        return this.sentenceBody;
+    public byte[] getsentenceWithoutTagBlockAsByteArray() {
+        return this.sentenceWithoutTagBlock;
     }
 
     /**
@@ -715,7 +715,7 @@ public final class AISSentence implements Sentence {
         if (sentences.length == 1) {
             if (!sentences[0].isParsed())
                 sentences[0].process();
-            return sentences[0].getBinaryStringAsByteArray();
+            return sentences[0].getPayloadAsByteArray();
         }
 
         byte[] compositeMsg = null;
@@ -726,7 +726,7 @@ public final class AISSentence implements Sentence {
             } else if (!sentence.isParsed())
                 sentence.process();
 
-            byte[] bytes = sentence.getBinaryStringAsByteArray();
+            byte[] bytes = sentence.getPayloadAsByteArray();
             if (compositeMsg == null)
                 compositeMsg = bytes;
             else {
@@ -754,10 +754,10 @@ public final class AISSentence implements Sentence {
         if (!(o instanceof AISSentence that))
             return false;
 
-        if (that.getRawSentence() == null)
+        if (that.getUnparsedSentence() == null)
             return false;
 
-        return (Arrays.equals(that.getRawSentence(), this.rawSentence)
+        return (Arrays.equals(that.getUnparsedSentence(), this.unparsedSentence)
                 && Arrays.equals(that.getSource(), this.source));
     }
 
@@ -769,7 +769,7 @@ public final class AISSentence implements Sentence {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 79 * hash + (this.rawSentence != null ? Arrays.hashCode(this.rawSentence) : 0);
+        hash = 79 * hash + (this.unparsedSentence != null ? Arrays.hashCode(this.unparsedSentence) : 0);
         hash = 79 * hash + (this.source != null ? Arrays.hashCode(this.source) : 0);
         return hash;
     }
@@ -784,8 +784,8 @@ public final class AISSentence implements Sentence {
 
         sentenceMap.put("tagblock", this.tagBlock);
         sentenceMap.put("preamble", this.preamble);
-        sentenceMap.put("raw_message", this.binaryString);
-        sentenceMap.put("raw_sentence", this.rawSentence);
+        sentenceMap.put("raw_message", this.payload);
+        sentenceMap.put("unparsed_sentence", this.unparsedSentence);
         sentenceMap.put("time_received", this.timeReceived);
         sentenceMap.put("source", this.source);
         sentenceMap.put("fragment_count", this.fragmentCount);
