@@ -35,26 +35,60 @@ public class AISMessageDecoder {
     public final static int CHAR_RANGE_B_MIN = 96;
     public final static int CHAR_RANGE_B_MAX = 119;
 
-    /**
-     *
-     * @param rawMessage a byte array containing the raw message we intend to decode
-     * @return a BitSet representing the decoded message
-     */
-    public static BitSet byteArrayToBitSet(byte[] rawMessage) {
-        return byteArrayToBitSet(rawMessage, AISSentence.DEFAULT_CHARSET);
+    public static BitSet sentencesToBitSet(AISSentence ...sentences) {
+        return sentencesToBitSet(AISSentence.DEFAULT_CHARSET, sentences);
+    }
+
+    public static BitSet sentencesToBitSet(Charset charset, AISSentence ...sentences) {
+        int totalPayloadSize = 0;
+        int totalFillBits = 0;
+        for (AISSentence s : sentences) {
+            totalFillBits += s.getFillBits();
+            totalPayloadSize += s.getPayload().length;
+        }
+
+        BitSet bits = new BitSet((8 * totalPayloadSize) + totalFillBits);
+        int bIndex = 0;
+        for (AISSentence s : sentences) {
+            char[] sChars = charset.decode(ByteBuffer.wrap(s.getPayload())).array();
+            for (char c : sChars) {
+                int oc = encodedToSixBitInt(c);
+                if (oc == -1) { // invalid character
+                    bits.clear();
+                    break;
+                } else {
+                    for (int bPos = 5; bPos >= 0; bPos--)
+                        bits.set(bIndex++, 0 < (oc & (1 << bPos)));
+                }
+            }
+            for (int i = 0; i < s.getFillBits(); i++) {
+                bits.set(bIndex++, false);
+            }
+        }
+
+        return bits;
     }
 
     /**
      *
-     * @param rawMessage a byte array containing the raw message we intend to decode
+     * @param payload a byte array containing the raw message we intend to decode
+     * @return a BitSet representing the decoded message
+     */
+    public static BitSet byteArrayToBitSet(byte[] payload) {
+        return byteArrayToBitSet(payload, AISSentence.DEFAULT_CHARSET);
+    }
+
+    /**
+     *
+     * @param payload a byte array containing the raw message we intend to decode
      * @param charset    the CharacterSet we want to use to perform the decoding
      * @return a BitSet representing the decoded message
      */
-    public static BitSet byteArrayToBitSet(byte[] rawMessage, Charset charset) {
+    public static BitSet byteArrayToBitSet(byte[] payload, Charset charset) {
 
-        char[] msgChars = charset.decode(ByteBuffer.wrap(rawMessage)).array();
+        char[] msgChars = charset.decode(ByteBuffer.wrap(payload)).array();
 
-        BitSet bits = new BitSet(8 * rawMessage.length / 6);
+        BitSet bits = new BitSet(8 * payload.length);
 
         int bIndex = 0;
         for (char c : msgChars) {
@@ -74,12 +108,12 @@ public class AISMessageDecoder {
 
     /**
      *
-     * @param rawMessage the String we want to convert to a BitSet
+     * @param payload the String we want to convert to a BitSet
      * @return a BitSet representing the contents of the String
      */
-    private static BitSet stringToBitSet(String rawMessage) {
+    private static BitSet stringToBitSet(String payload) {
 
-        char[] msgChars = rawMessage.toCharArray();
+        char[] msgChars = payload.toCharArray();
 
         BitSet bits = new BitSet(8 * msgChars.length / 6);
 
@@ -154,7 +188,6 @@ public class AISMessageDecoder {
      * decode signed integers in twos-complement form.  If the number is negative
      * first bit must be set to on/true and the rest of the bits are inverted, meaning 
      * that a off/false bit is counted and a true or on bit is not, the bits are
-     * 
      *
      * @param bits     the BitSet containing our signed int
      * @param startBit the starting bit where our int is located
