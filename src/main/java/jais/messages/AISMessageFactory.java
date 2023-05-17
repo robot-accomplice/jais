@@ -65,26 +65,15 @@ public class AISMessageFactory {
                 return Optional.empty();
             }
 
-            byte[] compositeBytes;
-            if (sentences.length == 1) {
-                if (!sentences[0].isParsed())
-                    sentences[0].process();
-                compositeBytes = sentences[0].getPayloadAsByteArray();
-            } else {
-                compositeBytes = AISSentence.concatenate(sentences);
-            }
-
+            byte[] compositeBytes = AISSentence.concatenate(sentences);
             if (compositeBytes == null || compositeBytes.length == 0) {
                 return Optional.empty();
             }
 
-            String compositeMsg = ByteArrayUtils.bArray2Str(compositeBytes);
-
             // we need the message type in order to invoke the reflective constructor
-            Optional<AISMessageType> mType = AISMessageDecoder.decodeMessageType(compositeMsg);
+            Optional<AISMessageType> mType = AISMessageDecoder.decodeMessageType(ByteArrayUtils.bArray2Str(compositeBytes));
 
             if (mType.isPresent()) {
-
                 AISMessage message;
                 switch (mType.get()) {
                     case POSITION_REPORT_CLASS_A -> message = new PositionReportClassA(source, sentences);
