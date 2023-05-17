@@ -268,10 +268,6 @@ public abstract class AISMessageBase implements AISMessage {
     public void decode() {
         this.decodedFieldMap.put("timereceived", getTimeReceived());
 
-//        this.compositeMsg = AISSentence.concatenate(getSentences());
-//
-//        this.bits = AISMessageDecoder.byteArrayToBitSet(this.compositeMsg);
-
         this.bits = AISMessageDecoder.sentencesToBitSet(this.getSentences());
 
         for (AISFieldMap field : AISFieldMap.values()) {
