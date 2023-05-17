@@ -30,7 +30,6 @@ import java.util.Optional;
  */
 public class AISMessageFactory {
 
-
     /**
      *
      * @param source          the source of the message
@@ -38,23 +37,7 @@ public class AISMessageFactory {
      *                        our AISMessage
      * @return An Optional which may contain the decoded AISMessage
      */
-    public static Optional<AISMessage> create(String source, String ...sentenceStrings) {
-            return create(source, false, sentenceStrings);
-    }
-
-    /**
-     *
-     * @param source          the source of the message
-     * @param strict          whether we want to strictly enforce NMEA rules (such
-     *                        as
-     *                        MMSI validity) when creating a message from the
-     *                        provided
-     *                        AISsentences
-     * @param sentenceStrings the array of packet strings from which we will compose
-     *                        our AISMessage
-     * @return An Optional which may contain the decoded AISMessage
-     */
-    public static Optional<AISMessage> create(String source, boolean strict, String... sentenceStrings) {
+    public static Optional<AISMessage> create(String source, String... sentenceStrings) {
         List<AISSentence> sentences = new ArrayList<>();
         AISSentence[] sentenceArray = null;
 
@@ -67,19 +50,16 @@ public class AISMessageFactory {
             }
         }
 
-        return (sentenceArray != null) ? create(source, strict, sentences.toArray(sentenceArray)) : Optional.empty();
+        return (sentenceArray != null) ? create(source, sentences.toArray(sentenceArray)) : Optional.empty();
     }
 
     /**
      *
      * @param source    the source of this message
-     * @param strict    whether we want to strictly enforce NMEA rules (such as MMSI
-     *                  validity) when creating a message from the provided
-     *                  AISsentences
      * @param sentences the AISsentences from which we will compose our AISMessage
      * @return An Optional which may contain our decoded AISMessage
      */
-    public static Optional<AISMessage> create(String source, boolean strict, AISSentence... sentences) {
+    public static Optional<AISMessage> create(String source, AISSentence... sentences) {
         try {
             if (sentences == null || sentences.length < 1) {
                 return Optional.empty();
@@ -89,7 +69,7 @@ public class AISMessageFactory {
             if (sentences.length == 1) {
                 if (!sentences[0].isParsed())
                     sentences[0].process();
-                compositeBytes = sentences[0].getBinaryStringAsByteArray();
+                compositeBytes = sentences[0].getPayloadAsByteArray();
             } else {
                 compositeBytes = AISSentence.concatenate(sentences);
             }
@@ -157,15 +137,5 @@ public class AISMessageFactory {
         } catch (NullPointerException npe) {
             return Optional.empty();
         }
-    }
-
-    /**
-     *
-     * @param source    the source of the message
-     * @param sentences the AISsentences from which we will compose the message
-     * @return An Optional which may contain the decoded AISMessage
-     */
-    public static Optional<AISMessage> create(String source, AISSentence... sentences) {
-        return create(source, true, sentences);
     }
 }
