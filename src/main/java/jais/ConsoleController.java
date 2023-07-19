@@ -32,6 +32,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.text.Font;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -266,5 +267,20 @@ public class ConsoleController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        /* nothing to do */ }
+        /* nothing to do */
+        Font fixedWidthFont = null;
+        String osName = System.getProperty("os.name");
+
+        System.out.printf("Selecting proper font for OS %s\n", osName);
+
+        if (osName.contains("Windows")) {
+            fixedWidthFont = new Font("Consolas", 12);
+        } else if (osName.contains("Mac OS")) {
+            fixedWidthFont = new Font( "Courier New", 11);
+        } else if (osName.contains("Linux")){
+            fixedWidthFont = new Font("Ubuntu Monospace", 12);
+        }
+        outputArea.setFont(fixedWidthFont);
+        inputArea.setFont(fixedWidthFont);
+    }
 }
