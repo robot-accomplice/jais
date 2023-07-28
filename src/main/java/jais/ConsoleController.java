@@ -276,7 +276,7 @@ public class ConsoleController implements Initializable {
         if (osName.contains("Windows")) {
             fixedWidthFont = new Font("Consolas", 12);
         } else if (osName.contains("Mac OS")) {
-            fixedWidthFont = new Font( "Courier New", 11);
+            fixedWidthFont = new Font( "Courier New Bold", 11);
         } else if (osName.contains("Linux")){
             fixedWidthFont = new Font("Ubuntu Monospace", 12);
         }
