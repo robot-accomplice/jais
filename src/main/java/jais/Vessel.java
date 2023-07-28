@@ -19,10 +19,7 @@ import jais.messages.ExtendedClassBCSPositionReport;
 import jais.messages.PositionReportBase;
 import jais.messages.StandardClassBCSPositionReport;
 import jais.messages.StaticAndVoyageRelatedData;
-import jais.messages.enums.EPFDFixType;
-import jais.messages.enums.ManeuverType;
-import jais.messages.enums.NavigationStatus;
-import jais.messages.enums.ShipType;
+import jais.messages.enums.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -76,6 +73,7 @@ public class Vessel implements Cloneable {
     private long messageCount = 1;
     private byte[] currentPositionSource;
     private byte[] currentStaticSource;
+    private VesselClass vesselClass = VesselClass.UNSPECIFIED;
 
     /**
      * No argument constructor for increased flexibility
@@ -100,6 +98,8 @@ public class Vessel implements Cloneable {
         this.repeat = report.getRepeat();
         this.speed = report.getSpeed();
         this.timeSent = report.getTimeSent();
+        this.vesselClass = VesselClass.B;
+        this.messageCount++;
     }
 
     /**
@@ -126,6 +126,8 @@ public class Vessel implements Cloneable {
         this.shipName = ByteArrayUtils.str2bArray(report.getShipName());
         this.shipType = report.getShipType();
         this.timeSent = report.getTimeSent();
+        this.vesselClass = VesselClass.B;
+        this.messageCount++;
     }
 
     /**
@@ -154,6 +156,8 @@ public class Vessel implements Cloneable {
         this.accuracy = report.isAccuracy();
         this.raim = report.isRaim();
         this.timeSent = report.getTimeSent();
+        this.vesselClass = VesselClass.A;
+        this.messageCount++;
     }
 
     /**
@@ -185,6 +189,7 @@ public class Vessel implements Cloneable {
         this.toStern = savrd.getToStern();
         this.version = savrd.getVersion();
         this.timeSent = savrd.getTimeSent();
+        this.vesselClass = VesselClass.A;
         this.messageCount++;
     }
 
@@ -214,6 +219,7 @@ public class Vessel implements Cloneable {
         this.accuracy = report.isAccuracy();
         this.raim = report.isRaim();
         this.timeSent = report.getTimeSent();
+        if (this.vesselClass == VesselClass.UNSPECIFIED) this.vesselClass = VesselClass.A;
         this.messageCount++;
     }
 
@@ -236,6 +242,7 @@ public class Vessel implements Cloneable {
         this.repeat = report.getRepeat();
         this.second = report.getSecond();
         this.speed = report.getSpeed();
+        if (this.vesselClass == VesselClass.UNSPECIFIED) this.vesselClass = VesselClass.B;
         this.messageCount++;
     }
 
@@ -265,6 +272,7 @@ public class Vessel implements Cloneable {
         this.epfd = report.getEpfd();
         this.shipName = (report.getShipName() == null) ? null : ByteArrayUtils.str2bArray(report.getShipName());
         this.shipType = report.getShipType();
+        if (this.vesselClass == VesselClass.UNSPECIFIED) this.vesselClass = VesselClass.B;
         this.messageCount++;
     }
 
@@ -296,6 +304,7 @@ public class Vessel implements Cloneable {
         this.toStern = savrd.getToStern();
         this.version = savrd.getVersion();
         this.timeSent = savrd.getTimeSent();
+        if (this.vesselClass == VesselClass.UNSPECIFIED) this.vesselClass = VesselClass.A;
         this.messageCount++;
     }
 
@@ -348,6 +357,8 @@ public class Vessel implements Cloneable {
         clone.currentStaticSource = this.currentStaticSource;
         clone.currentPositionSource = this.currentPositionSource;
         clone.currentStaticTimestamp = this.currentStaticTimestamp;
+        clone.vesselClass = this.vesselClass;
+        clone.messageCount = this.messageCount;
 
         return clone;
     }
