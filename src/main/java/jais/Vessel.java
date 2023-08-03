@@ -15,10 +15,7 @@
  */
 package jais;
 
-import jais.messages.ExtendedClassBCSPositionReport;
-import jais.messages.PositionReportBase;
-import jais.messages.StandardClassBCSPositionReport;
-import jais.messages.StaticAndVoyageRelatedData;
+import jais.messages.*;
 import jais.messages.enums.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -194,6 +191,27 @@ public class Vessel implements Cloneable {
     }
 
     /**
+     * Creates a new Vessel object based on a StaticDataReport object
+     *
+     * @param sdr The StaticDataReport object we want to use as a basis for the new Vessel object
+     */
+    public Vessel(StaticDataReport sdr) {
+        this.id = new Identifier(sdr.getMmsi(), sdr.getSource());
+        this.currentMessageTimestamp = sdr.getTimeReceived();
+        this.currentStaticTimestamp = sdr.getTimeReceived();
+        this.currentStaticSource = sdr.getSource().getBytes();
+        this.shipName = sdr.getShipName().getBytes();
+        this.callSign = sdr.getCallSign().getBytes();
+        this.shipType = sdr.getShipType();
+        this.toBow = sdr.getToBow();
+        this.toPort = sdr.getToPort();
+        this.toStarboard = sdr.getToStarboard();
+        this.toStern = sdr.getToStern();
+        this.vesselClass = VesselClass.B;
+        this.messageCount++;
+    }
+
+    /**
      * Updates the current instance of Vessel based on the fields contained within a
      * concrete extension of PositionReportBase
      *
@@ -283,6 +301,7 @@ public class Vessel implements Cloneable {
      * @param savrd the StaticAndVoyageRelatedData we want to use to update the Vessel object
      */
     public void addUpdateStaticReport(StaticAndVoyageRelatedData savrd) {
+        this.currentMessageTimestamp = savrd.getTimeReceived();
         this.currentStaticTimestamp = savrd.getTimeReceived();
         this.currentStaticSource = savrd.getSource().getBytes();
         this.imo = savrd.getImo();
@@ -305,6 +324,27 @@ public class Vessel implements Cloneable {
         this.version = savrd.getVersion();
         this.timeSent = savrd.getTimeSent();
         if (this.vesselClass == VesselClass.UNSPECIFIED) this.vesselClass = VesselClass.A;
+        this.messageCount++;
+    }
+
+    /**
+     * Updates the current instance of Vessel based on the fields contained within
+     * an instance of StaticDataReport
+     *
+     * @param sdr the StaticDataReport with which we want to update the Vessel object
+     */
+    public void addUpdateStaticDataReport(StaticDataReport sdr) {
+        this.currentMessageTimestamp = sdr.getTimeReceived();
+        this.currentStaticTimestamp = sdr.getTimeReceived();
+        this.currentStaticSource = sdr.getSource().getBytes();
+        this.shipName = (sdr.getShipName() == null) ? null : sdr.getShipName().getBytes();
+        this.callSign = (sdr.getCallSign() == null) ? null : sdr.getCallSign().getBytes();
+        this.shipType = sdr.getShipType();
+        this.toBow = sdr.getToBow();
+        this.toPort = sdr.getToPort();
+        this.toStarboard = sdr.getToStarboard();
+        this.toStern = sdr.getToStern();
+        if (this.vesselClass == VesselClass.UNSPECIFIED) this.vesselClass = VesselClass.B;
         this.messageCount++;
     }
 
