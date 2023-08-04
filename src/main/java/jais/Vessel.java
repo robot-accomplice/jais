@@ -86,7 +86,7 @@ public class Vessel implements Cloneable {
         this.id = new Identifier(report.getMmsi(), report.getSource());
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
-        this.currentPositionSource = report.getSource().getBytes();
+        this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
         this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
         this.lat = report.getLat();
@@ -108,7 +108,7 @@ public class Vessel implements Cloneable {
         this.id = new Identifier(report.getMmsi(), report.getSource());
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
-        this.currentPositionSource = report.getSource().getBytes();
+        this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
         this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
         this.lat = report.getLat();
@@ -138,7 +138,7 @@ public class Vessel implements Cloneable {
         this.id = new Identifier(report.getMmsi(), report.getSource());
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
-        this.currentPositionSource = report.getSource().getBytes();
+        this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
         this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
         this.lat = report.getLat();
@@ -166,7 +166,7 @@ public class Vessel implements Cloneable {
         this.id = new Identifier(savrd.getMmsi(), savrd.getSource());
         this.currentMessageTimestamp = savrd.getTimeReceived();
         this.currentStaticTimestamp = savrd.getTimeReceived();
-        this.currentStaticSource = savrd.getSource().getBytes();
+        this.currentStaticSource = (savrd.getSource() == null) ? null : savrd.getSource().getBytes();
         this.imo = savrd.getImo();
         this.shipType = savrd.getShipType();
         this.shipName = (savrd.getShipName() == null) ? null : ByteArrayUtils.str2bArray(savrd.getShipName());
@@ -199,9 +199,9 @@ public class Vessel implements Cloneable {
         this.id = new Identifier(sdr.getMmsi(), sdr.getSource());
         this.currentMessageTimestamp = sdr.getTimeReceived();
         this.currentStaticTimestamp = sdr.getTimeReceived();
-        this.currentStaticSource = sdr.getSource().getBytes();
-        this.shipName = sdr.getShipName().getBytes();
-        this.callSign = sdr.getCallSign().getBytes();
+        this.currentStaticSource = (sdr.getSource() == null) ? null : sdr.getSource().getBytes();
+        this.shipName = (sdr.getShipName() == null) ? null : sdr.getShipName().getBytes();
+        this.callSign = (sdr.getCallSign() == null) ? null : sdr.getCallSign().getBytes();
         this.shipType = sdr.getShipType();
         this.toBow = sdr.getToBow();
         this.toPort = sdr.getToPort();
@@ -222,7 +222,7 @@ public class Vessel implements Cloneable {
         this.currentMessageTimestamp = report.getTimeReceived();
         this.previousPositionTimestamp = this.currentMessageTimestamp;
         this.currentPositionTimestamp = report.getTimeReceived();
-        this.currentPositionSource = report.getSource().getBytes();
+        this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
         this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
         this.lat = report.getLat();
@@ -248,7 +248,7 @@ public class Vessel implements Cloneable {
      * @param report The StandardClassBCSPositionReport we want to use to update the Vessel object
      */
     public void addUpdatePositionReportClassB(StandardClassBCSPositionReport report) {
-        this.currentPositionSource = report.getSource().getBytes();
+        this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
         this.previousPositionTimestamp = this.currentMessageTimestamp;
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
@@ -275,7 +275,7 @@ public class Vessel implements Cloneable {
         this.previousPositionTimestamp = this.currentMessageTimestamp;
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
-        this.currentPositionSource = report.getSource().getBytes();
+        this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
         this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
         this.lat = report.getLat();
@@ -303,7 +303,7 @@ public class Vessel implements Cloneable {
     public void addUpdateStaticReport(StaticAndVoyageRelatedData savrd) {
         this.currentMessageTimestamp = savrd.getTimeReceived();
         this.currentStaticTimestamp = savrd.getTimeReceived();
-        this.currentStaticSource = savrd.getSource().getBytes();
+        this.currentStaticSource = (savrd.getSource() == null) ? null : savrd.getSource().getBytes();
         this.imo = savrd.getImo();
         this.shipType = savrd.getShipType();
         this.shipName = (savrd.getShipName() == null) ? null : ByteArrayUtils.str2bArray(savrd.getShipName());
@@ -336,7 +336,7 @@ public class Vessel implements Cloneable {
     public void addUpdateStaticDataReport(StaticDataReport sdr) {
         this.currentMessageTimestamp = sdr.getTimeReceived();
         this.currentStaticTimestamp = sdr.getTimeReceived();
-        this.currentStaticSource = sdr.getSource().getBytes();
+        this.currentStaticSource = (sdr.getSource() == null) ? null : sdr.getSource().getBytes();
         this.shipName = (sdr.getShipName() == null) ? null : sdr.getShipName().getBytes();
         this.callSign = (sdr.getCallSign() == null) ? null : sdr.getCallSign().getBytes();
         this.shipType = sdr.getShipType();
