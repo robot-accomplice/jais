@@ -50,6 +50,7 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
     private float draught;
     private byte[] destination;
     private boolean dte;
+    private boolean spare;
 
     /**
      *
@@ -150,54 +151,59 @@ public class StaticAndVoyageRelatedData extends AISMessageBase {
                 }
                 case TO_BOW -> {
                     if (bits.size() >= field.getStartBit())
-                        toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        this.toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                 }
                 case TO_STERN -> {
                     if (bits.size() >= field.getStartBit())
-                        toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        this.toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                 }
                 case TO_PORT -> {
                     if (bits.size() >= field.getStartBit())
-                        toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        this.toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                 }
                 case TO_STARBOARD -> {
                     if (bits.size() >= field.getStartBit())
-                        toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                        this.toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
                 }
                 case EPFD -> {
                     int epfdCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     if (bits.size() >= field.getStartBit())
-                        epfd = EPFDFixType.getForCode(epfdCode);
+                        this.epfd = EPFDFixType.getForCode(epfdCode);
                 }
                 case ETA_MONTH -> {
                     if (bits.size() >= field.getStartBit())
-                        month = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        this.month = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                 }
                 case ETA_DAY -> {
                     if (bits.size() >= field.getStartBit())
-                        day = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        this.day = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                 }
                 case ETA_HOUR -> {
                     if (bits.size() >= field.getStartBit())
-                        hour = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        this.hour = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                 }
                 case ETA_MINUTE -> {
                     if (bits.size() >= field.getStartBit())
-                        minute = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        this.minute = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                 }
                 case DRAUGHT -> {
                     if (bits.size() >= field.getStartBit())
-                        draught = AISMessageDecoder.decodeDraught(bits, field.getStartBit(), field.getEndBit());
+                        this.draught = AISMessageDecoder.decodeDraught(bits, field.getStartBit(), field.getEndBit());
                 }
                 case DESTINATION -> {
                     if (bits.size() >= field.getStartBit())
-                        destination = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(),
+                        this.destination = AISMessageDecoder.decodeToByteArray(bits, field.getStartBit(),
                                 field.getEndBit());
                 }
                 case DTE -> {
-                    if (field.getStartBit() < bits.size()) {
-                        dte = bits.get(field.getStartBit());
+                    if (bits.size() >= field.getStartBit()) {
+                        this.dte = bits.get(field.getStartBit());
+                    }
+                }
+                case SPARE -> {
+                    if (bits.size() >= field.getStartBit()) {
+                        this.spare = bits.get(field.getStartBit());
                     }
                 }
                 default -> {
