@@ -41,18 +41,17 @@ public class AISMessageDecoder {
 
     public static BitSet sentencesToBitSet(Charset charset, AISSentence ...sentences) {
         int totalPayloadSize = 0;
-        int totalFillBits = 0;
         for (AISSentence s : sentences) {
-            totalFillBits += s.getFillBits();
             totalPayloadSize += s.getPayload().length;
         }
 
-        BitSet bits = new BitSet((8 * totalPayloadSize) + totalFillBits);
+        BitSet bits = new BitSet(8 * totalPayloadSize);
         int bIndex = 0;
+
         for (AISSentence s : sentences) {
-            char[] sChars = charset.decode(ByteBuffer.wrap(s.getPayload())).array();
-            for (char c : sChars) {
-                int oc = encodedToSixBitInt(c);
+            char[] payload = charset.decode(ByteBuffer.wrap(s.getPayload())).array();
+            for (char c : payload) {
+                int oc = encodeToSixBitInt(c);
                 if (oc == -1) { // invalid character
                     bits.clear();
                     break;
@@ -92,7 +91,7 @@ public class AISMessageDecoder {
 
         int bIndex = 0;
         for (char c : msgChars) {
-            int oc = encodedToSixBitInt(c); // pull the current raw message char
+            int oc = encodeToSixBitInt(c); // pull the current raw message char
             if (oc == -1) {
                 // invalid character
                 bits.clear();
@@ -115,11 +114,11 @@ public class AISMessageDecoder {
 
         char[] msgChars = payload.toCharArray();
 
-        BitSet bits = new BitSet(8 * msgChars.length / 6);
+        BitSet bits = new BitSet(8 * msgChars.length);
 
         int bIndex = 0;
         for (char c : msgChars) {
-            int oc = encodedToSixBitInt(c); // pull the current raw message char
+            int oc = encodeToSixBitInt(c); // pull the current raw message char
             if (oc == -1) {
                 // invalid character
                 bits.clear();
@@ -138,7 +137,7 @@ public class AISMessageDecoder {
      * @param c the character we want to encode to a six bit int
      * @return the six bit int representation of the provided character
      */
-    private static int encodedToSixBitInt(char c) {
+    private static int encodeToSixBitInt(char c) {
         if (c <= CHAR_RANGE_A_MAX && c >= CHAR_RANGE_A_MIN)
             return c - CHAR_RANGE_A_MIN;
         else if (c <= CHAR_RANGE_B_MAX && c >= CHAR_RANGE_B_MIN)
