@@ -199,6 +199,8 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput("Draught      : " + savrd.getDraught());
                         appendLineToOutput("Destination  : " + savrd.getDestination());
                         appendLineToOutput("DTE Ready    : " + savrd.dteReady());
+                        appendLineToOutput("DTE Value    : " + savrd.isDte());
+                        appendLineToOutput("Spare        : " + savrd.isSpare());
                     }
                     case STANDARD_CLASS_B_CS_POSITION_REPORT -> {
                         StandardClassBCSPositionReport scbpr = (StandardClassBCSPositionReport) msg;
