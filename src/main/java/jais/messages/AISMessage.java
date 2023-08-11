@@ -99,7 +99,7 @@ public interface AISMessage {
      * @param courseOverGround the value to evaluate
      * @return a boolean indicating whether the course information is valid or not
      */
-    public static boolean isValidCourse(int courseOverGround) {
+    public static boolean isValidCourse(float courseOverGround) {
         return courseOverGround < 3600;
     }
 

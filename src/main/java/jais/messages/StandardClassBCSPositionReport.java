@@ -89,35 +89,39 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
     }
 
     /**
-     * 
+     * @deprecated use the static method AISMessage.isValidPosition instead
      * @return a boolean indicating whether or not the positional information is valid
      */
+    @Deprecated
     public boolean isPositionValid() {
-        return ((lon >= -180 && lon <= 180) && (lat >= -90 && lat <= 90));
+        return AISMessage.isValidPosition(this.lat, this.lon);
     }
 
     /**
-     * 
+     * @deprecated use the static method AISMessage.isValidCourse instead
      * @return a boolean indicating whether or not the course information is valid
      */
+    @Deprecated
     public boolean isCourseValid() {
-        return courseOverGround < 3600;
+        return AISMessage.isValidCourse(this.courseOverGround);
     }
 
     /**
-     * 
+     * @deprecated use the static method AISMessage.isValidSpeed instead
      * @return a boolean indicating whether or not the speed information is valid
      */
+    @Deprecated
     public boolean isSpeedValid() {
-        return speed < 1023;
+        return AISMessage.isValidSpeed(this.speed);
     }
 
     /**
-     * 
+     * @deprecated use the static method AISMessage.isValidHeading instead
      * @return a boolean indicating whether or not the heading information is valid
      */
+    @Deprecated
     public boolean isHeadingValid() {
-        return heading < 360;
+        return AISMessage.isValidHeading(this.heading);
     }
 
     /**

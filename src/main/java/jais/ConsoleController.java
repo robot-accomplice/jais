@@ -169,7 +169,7 @@ public class ConsoleController implements Initializable {
                         appendLineToOutput("Latitude : " + prb.getLat());
                         appendLineToOutput("Longitude: " + prb.getLon());
                         appendLineToOutput("Maneuver : " + prb.getManeuver());
-                        if (prb.isPositionValid())
+                        if (AISMessage.isValidPosition(prb.getLat(), prb.getLon()))
                             appendLineToOutput("Position : " + prb.getPosition());
                         else
                             appendLineToOutput("Position : INVALID");

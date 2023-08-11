@@ -84,49 +84,56 @@ public abstract class PositionReportBase extends AISMessageBase {
      */
     @Override
     public Point getPosition() {
-        if (super.position == null && isPositionValid()) {
-            super.position = CTX.getShapeFactory().pointLatLon(lat, lon);
+        if (super.position == null && AISMessage.isValidPosition(this.lat, this.lon)) {
+            super.position = CTX.getShapeFactory().pointLatLon(this.lat, this.lon);
         }
 
         return super.position;
     }
 
     /**
-     * 
+     *
+     * @deprecated use the static method AISMessage.isValidPosition instead
      * @return a boolean indicating whether or not the position information is valid
      */
+    @Deprecated
     public boolean isPositionValid() {
-        return ((lon >= -180 && lon <= 180) && (lat >= -90 && lat <= 90));
+        return AISMessage.isValidPosition(this.lat, this.lon);
     }
 
     /**
-     * 
+     *
+     * @deprecated use the static method AISMessage.isValidCourse instead
      * @return a boolean indicating whether or not the course information is valid
      */
+    @Deprecated
     public boolean isCourseValid() {
-        return this.courseOverGround < 3600;
+        return AISMessage.isValidCourse(this.courseOverGround);
     }
 
     /**
-     * 
+     * @deprecated use the static method AISMessage.isValidSpeed instead
      * @return a boolean indicating whether or not the speed information is valid
      */
+    @Deprecated
     public boolean isSpeedValid() {
         return AISMessage.isValidSpeed(this.speed);
     }
 
     /**
-     * 
+     * @deprecated use the static method AISMessage.isValidHeading instead
      * @return a boolean indicating whether or not the heading information is valid
      */
+    @Deprecated
     public boolean isHeadingValid() {
         return AISMessage.isValidHeading(heading);
     }
 
     /**
-     * 
+     * @deprecated use the static method AISMessage.isValidTurn instead
      * @return a boolean indicating whether or not the rate of turn information is valid
      */
+    @Deprecated
     public boolean isTurnValid() {
         return AISMessage.isValidTurn(this.rateOfTurn);
     }
