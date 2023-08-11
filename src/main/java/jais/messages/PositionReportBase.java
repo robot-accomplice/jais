@@ -112,7 +112,7 @@ public abstract class PositionReportBase extends AISMessageBase {
      * @return a boolean indicating whether or not the speed information is valid
      */
     public boolean isSpeedValid() {
-        return speed < 1023;
+        return AISMessage.isValidSpeed(this.speed);
     }
 
     /**
@@ -120,7 +120,7 @@ public abstract class PositionReportBase extends AISMessageBase {
      * @return a boolean indicating whether or not the heading information is valid
      */
     public boolean isHeadingValid() {
-        return heading < 360;
+        return AISMessage.isValidHeading(heading);
     }
 
     /**
@@ -128,7 +128,7 @@ public abstract class PositionReportBase extends AISMessageBase {
      * @return a boolean indicating whether or not the rate of turn information is valid
      */
     public boolean isTurnValid() {
-        return rateOfTurn > -128;
+        return AISMessage.isValidTurn(this.rateOfTurn);
     }
 
     /**

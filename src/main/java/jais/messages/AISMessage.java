@@ -89,6 +89,46 @@ public interface AISMessage {
 
     /**
      *
+     * @return a boolean indicating whether or not the position information is valid
+     */
+    static boolean isValidPosition(double lat, double lon) {
+        return ((lon >= -180 && lon <= 180) && (lat >= -90 && lat <= 90));
+    }
+
+    /**
+     * @param courseOverGround the value to evaluate
+     * @return a boolean indicating whether the course information is valid or not
+     */
+    public static boolean isValidCourse(int courseOverGround) {
+        return courseOverGround < 3600;
+    }
+
+    /**
+     * @param speed  the value to evaluate
+     * @return a boolean indicating whether the speed information is valid or not
+     */
+    static boolean isValidSpeed(float speed) {
+        return speed >= 0 && speed < 1023;
+    }
+
+    /**
+     * @param heading  the value to evaluate
+     * @return a boolean indicating whether the heading information is valid or not
+     */
+    static boolean isValidHeading(int heading) {
+        return heading >= 0 && heading < 360;
+    }
+
+    /**
+     * @param rateOfTurn  the value to evaluate
+     * @return a boolean indicating whether the rate of turn information is valid or not
+     */
+    static boolean isValidTurn(float rateOfTurn) {
+        return rateOfTurn > -128;
+    }
+
+    /**
+     *
      * @return a String containing the source of the message
      */
     String getSource();
