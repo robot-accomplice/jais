@@ -225,7 +225,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
         ACCURATE(56, 56),
         LON(57, 84),
         LAT(85, 111),
-        COURSE(123, 123),
+        COURSE(112, 123),
         HEADING(124, 132),
         SECOND(133, 138),
         RESERVED2(139, 142),
