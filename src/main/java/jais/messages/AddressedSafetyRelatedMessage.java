@@ -62,17 +62,12 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
 
         for (AddressedSafetyRelatedMessageFieldMap field : AddressedSafetyRelatedMessageFieldMap.values()) {
             switch (field) {
-                case DEST_MMSI:
-                    destMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case RETRANSMIT:
-                    retransmit = bits.get(field.getStartBit());
-                    break;
-                case TEXT:
-                    text = AISMessageDecoder.decodeString(bits, field.getStartBit(), bits.size() - 1);
-                    break;
-                case SPARE:
-                    break;
+                case DEST_MMSI ->
+                        destMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                case RETRANSMIT -> retransmit = bits.get(field.getStartBit());
+                case TEXT -> text = AISMessageDecoder.decodeString(bits, field.getStartBit(), bits.size() - 1);
+                case SPARE -> {
+                }
             }
         }
     }
