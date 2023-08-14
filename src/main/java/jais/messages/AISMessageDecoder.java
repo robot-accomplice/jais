@@ -388,7 +388,7 @@ public class AISMessageDecoder {
      * @param endBit   the ending bit where our String is located
      * @return the decoded String
      */
-    public static String decodeToString(BitSet bits, int startBit, int endBit) {
+    public static String decodeString(BitSet bits, int startBit, int endBit) {
 
         int capacity = (((endBit - startBit) / 6) + 1);
         if (capacity < 0) {
@@ -425,7 +425,7 @@ public class AISMessageDecoder {
      * @return the decoded byte array
      */
     public static byte[] decodeToByteArray(BitSet bits, int startBit, int endBit) {
-        String decoded = decodeToString(bits, startBit, endBit);
+        String decoded = decodeString(bits, startBit, endBit);
         if (decoded != null)
             return decoded.getBytes();
         else

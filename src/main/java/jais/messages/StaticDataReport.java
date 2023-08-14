@@ -76,7 +76,7 @@ public class StaticDataReport extends AISMessageBase {
                 }
                 case SHIP_NAME -> {
                     if (bits.size() >= field.getStartBit())
-                        this.shipName = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
+                        this.shipName = AISMessageDecoder.decodeString(bits, field.getStartBit(), field.getEndBit());
                 }
                 case SHIP_TYPE -> {
                     if (bits.size() >= field.getStartBit()) {
@@ -86,11 +86,11 @@ public class StaticDataReport extends AISMessageBase {
                 }
                 case VENDOR_ID -> {
                     if (bits.size() >= field.getStartBit())
-                        this.vendorId = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
+                        this.vendorId = AISMessageDecoder.decodeString(bits, field.getStartBit(), field.getEndBit());
                 }
                 case CALL_SIGN -> {
                     if (bits.size() >= field.getStartBit())
-                        this.callSign = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
+                        this.callSign = AISMessageDecoder.decodeString(bits, field.getStartBit(), field.getEndBit());
                 }
                 case TO_BOW -> {
                     if (bits.size() >= field.getStartBit())
