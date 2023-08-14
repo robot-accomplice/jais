@@ -24,6 +24,12 @@ import lombok.Getter;
 import java.time.ZoneOffset;
 import org.locationtech.spatial4j.shape.Point;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -125,6 +131,48 @@ public interface AISMessage {
      */
     static boolean isValidTurn(float rateOfTurn) {
         return rateOfTurn > -128;
+    }
+
+    static List<String> decodeDestination(String destination) {
+        final List<String> movements = new ArrayList<>();
+        final String regexStr = "(([A-Z]{2})*(\\^?)([A-Z0-9]{3,4})([<>]*))";
+        final Pattern re = Pattern.compile(regexStr);
+        final Matcher m = re.matcher(destination);
+
+        // Group 2 is the UNLOCODE
+        // Group 3 if present indicates GUID
+        // Group 4 is the Port code or GUID
+        // Group 5 is the action
+
+        String firstPort = "";
+        String lastAction = "";
+        while(m.find()) {
+            String actionString = "";
+            if (movements.isEmpty()) {
+                actionString = "From ";
+                firstPort = m.group(4);
+            }
+
+            if (m.group(2) != null) actionString += "UN/LOCODE " + m.group(2) + ", ";
+            actionString += "Port " + m.group(4);
+
+            switch (m.group(5)) {
+                case ">" -> actionString += ", travel to: ";
+                case "<>" -> actionString += ": operate within the area of ";
+                case "><" -> actionString += ": perform scheduled route to ";
+                case "<<" -> actionString += ": remain anchored/moored";
+                default -> {
+                    if (lastAction.equals(">") && m.group(4).equals(firstPort)) {
+                        actionString += ", to complete round trip";
+                    }
+                }
+            }
+
+            lastAction = m.group(5);
+            movements.add(actionString);
+        }
+
+        return movements;
     }
 
     /**
