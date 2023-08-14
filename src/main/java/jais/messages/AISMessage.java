@@ -25,9 +25,7 @@ import java.time.ZoneOffset;
 import org.locationtech.spatial4j.shape.Point;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
