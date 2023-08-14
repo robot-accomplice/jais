@@ -610,15 +610,6 @@ public final class AISSentence implements Sentence {
     }
 
     /**
-     * Returns the source of the AISsentence as a byte []
-     *
-     * @return a byte array representation of the name of the sentence source
-     */
-    public byte[] getSource() {
-        return this.source;
-    }
-
-    /**
      * Sets the source of the AISsentence to the provided byte [] value
      *
      * @param source sets the name of the source of this sentence as a byte array
@@ -636,7 +627,7 @@ public final class AISSentence implements Sentence {
      *         could be found
      */
     public static Optional<AISSentence[]> splitOrTruncate(String sentence) {
-        if (sentence != null && sentence.length() > 0) {
+        if (sentence != null && !sentence.isEmpty()) {
             int index = getSentenceTruncIndex(sentence);
             if (index > -1) {
                 String[] sentStrs = ByteArrayUtils.fastSplit(sentence, '!');
