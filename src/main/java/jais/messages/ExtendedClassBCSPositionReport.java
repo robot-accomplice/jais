@@ -50,7 +50,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
     private EPFDFixType epfd;
     private boolean raim;
     private boolean dte;
-    private int assigned;
+    private boolean assigned;
 
     /**
      *
@@ -162,7 +162,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
                 }
                 case SHIP_NAME -> {
                     if (bits.size() >= field.getStartBit())
-                        shipName = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
+                        shipName = AISMessageDecoder.decodeString(bits, field.getStartBit(), field.getEndBit());
                 }
                 case SHIP_TYPE -> {
                     if (bits.size() >= field.getStartBit()) {
@@ -205,7 +205,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
                 }
                 case ASSIGNED -> {
                     if (bits.size() >= field.getStartBit())
-                        assigned = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        assigned = bits.get(field.getStartBit());
                 }
                 default -> {
                 }
