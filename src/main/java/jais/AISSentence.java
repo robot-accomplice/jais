@@ -219,7 +219,7 @@ public final class AISSentence implements Sentence {
             unparsedSentence = ByteArrayUtils.bArray2Str(ByteArrayUtils.trimByteArray(this.unparsedSentence));
         }
 
-        Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher(unparsedSentence);
+        final Matcher m = TagBlock.TAGBLOCK_PATTERN.matcher(unparsedSentence);
         if (m.find()) {
             if (this.source == null || this.source.length == 0) {
                 this.tagBlock = TagBlock.parse(m.group(0));
