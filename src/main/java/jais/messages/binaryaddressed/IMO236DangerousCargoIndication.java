@@ -67,7 +67,7 @@ public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
         for (IMO236DangerousCargoIndicationFieldMap field : IMO236DangerousCargoIndicationFieldMap.values()) {
 
             switch (field) {
-                case LAST_PORT_OF_CALL -> this.lastPort = AISMessageDecoder.decodeToString(this.bits,
+                case LAST_PORT_OF_CALL -> this.lastPort = AISMessageDecoder.decodeString(this.bits,
                         field.getStartBit(), field.getEndBit());
                 case LAST_ETA_MONTH -> this.lastMonth = AISMessageDecoder.decodeUnsignedInt(this.bits,
                         field.getStartBit(), field.getEndBit());
@@ -77,7 +77,7 @@ public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
                         field.getStartBit(), field.getEndBit());
                 case LAST_ETA_MINUTE -> this.lastMinute = AISMessageDecoder.decodeUnsignedInt(this.bits,
                         field.getStartBit(), field.getEndBit());
-                case NEXT_PORT_OF_CALL -> this.nextPort = AISMessageDecoder.decodeToString(this.bits,
+                case NEXT_PORT_OF_CALL -> this.nextPort = AISMessageDecoder.decodeString(this.bits,
                         field.getStartBit(), field.getEndBit());
                 case NEXT_ETA_MONTH -> this.nextMonth = AISMessageDecoder.decodeUnsignedInt(this.bits,
                         field.getStartBit(), field.getEndBit());
@@ -87,9 +87,9 @@ public class IMO236DangerousCargoIndication extends BinaryAddressedMessageBase {
                         field.getStartBit(), field.getEndBit());
                 case NEXT_ETA_MINUTE -> this.nextMinute = AISMessageDecoder.decodeUnsignedInt(this.bits,
                         field.getStartBit(), field.getEndBit());
-                case DANGEROUS_GOOD -> this.dangerous = AISMessageDecoder.decodeToString(this.bits,
+                case DANGEROUS_GOOD -> this.dangerous = AISMessageDecoder.decodeString(this.bits,
                         field.getStartBit(), field.getEndBit());
-                case IMD_CATEGORY -> this.imdCat = AISMessageDecoder.decodeToString(this.bits,
+                case IMD_CATEGORY -> this.imdCat = AISMessageDecoder.decodeString(this.bits,
                         field.getStartBit(), field.getEndBit());
                 case UN_NUMBER -> this.unId = AISMessageDecoder.decodeUnsignedInt(this.bits,
                         field.getStartBit(), field.getEndBit());

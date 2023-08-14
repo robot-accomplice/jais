@@ -52,7 +52,7 @@ public class IMO289TextDescription extends BinaryAddressedMessageBase {
             switch (field) {
                 case LINKAGE_ID -> linkageId = AISMessageDecoder.decodeUnsignedInt(bits,
                         field.getStartBit(), field.getEndBit());
-                case DESCRIPTION -> description = AISMessageDecoder.decodeToString(bits,
+                case DESCRIPTION -> description = AISMessageDecoder.decodeString(bits,
                         field.getStartBit(), bits.size() - 1);
                 default -> {
                     // ignore field

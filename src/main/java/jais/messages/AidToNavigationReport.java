@@ -109,7 +109,7 @@ public class AidToNavigationReport extends AISMessageBase {
                 }
                 case NAME -> {
                     if (bits.size() >= field.getStartBit())
-                        name = AISMessageDecoder.decodeToString(bits, field.getStartBit(), field.getEndBit());
+                        name = AISMessageDecoder.decodeString(bits, field.getStartBit(), field.getEndBit());
                 }
                 case ACCURATE -> {
                     if (bits.size() >= field.getStartBit())
@@ -167,7 +167,7 @@ public class AidToNavigationReport extends AISMessageBase {
                 }
                 case NAME_EXTENSION -> {
                     if (bits.size() >= field.getStartBit())
-                        nameExtension = AISMessageDecoder.decodeToString(bits, field.getStartBit(), bits.size() - 1);
+                        nameExtension = AISMessageDecoder.decodeString(bits, field.getStartBit(), bits.size() - 1);
                 }
             }
         }

@@ -214,7 +214,7 @@ public class ConsoleController implements Initializable {
                     }
                     case EXTENDED_CLASS_B_CS_POSITION_REPORT -> {
                         ExtendedClassBCSPositionReport ecbpr = (ExtendedClassBCSPositionReport) msg;
-                        appendLineToOutput("Assigned    : " + ecbpr.getAssigned());
+                        appendLineToOutput("Assigned    : " + ecbpr.isAssigned());
                         appendLineToOutput("Course      : " + ecbpr.getCourseOverGround());
                         appendLineToOutput("Heading     : " + ecbpr.getHeading());
                         appendLineToOutput("Latitude    : " + ecbpr.getLat());

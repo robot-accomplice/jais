@@ -93,9 +93,9 @@ public class IMO289ClearanceTimeToEnterPort extends BinaryAddressedMessageBase {
                         field.getStartBit(), field.getEndBit());
                 case MINUTE -> minute = AISMessageDecoder.decodeUnsignedInt(bits,
                         field.getStartBit(), field.getEndBit());
-                case PORT_NAME_AND_BERTH -> this.portName = AISMessageDecoder.decodeToString(this.bits,
+                case PORT_NAME_AND_BERTH -> this.portName = AISMessageDecoder.decodeString(this.bits,
                         field.getStartBit(), field.getEndBit());
-                case DESTINATION -> this.destination = AISMessageDecoder.decodeToString(this.bits,
+                case DESTINATION -> this.destination = AISMessageDecoder.decodeString(this.bits,
                         field.getStartBit(), field.getEndBit());
                 case LON -> this.lon = AISMessageDecoder.decodeLongitude(this.bits,
                         field.getStartBit(), field.getEndBit());

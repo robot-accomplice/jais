@@ -69,7 +69,7 @@ public class AddressedSafetyRelatedMessage extends AISMessageBase {
                     retransmit = bits.get(field.getStartBit());
                     break;
                 case TEXT:
-                    text = AISMessageDecoder.decodeToString(bits, field.getStartBit(), bits.size() - 1);
+                    text = AISMessageDecoder.decodeString(bits, field.getStartBit(), bits.size() - 1);
                     break;
                 case SPARE:
                     break;
