@@ -16,9 +16,11 @@
 package jais.messages;
 
 import jais.AISSentence;
+import jais.DestinationPort;
 import jais.messages.enums.AISMessageType;
 import jais.messages.enums.FieldMap;
 import jais.messages.enums.MMSIType;
+import jais.messages.enums.PortAction;
 import lombok.Getter;
 
 import java.time.ZoneOffset;
@@ -131,8 +133,8 @@ public interface AISMessage {
         return rateOfTurn > -128;
     }
 
-    static List<String> decodeDestination(String destination) {
-        final List<String> movements = new ArrayList<>();
+    static List<DestinationPort> decodeDestination(String destination) {
+        final List<DestinationPort> movements = new ArrayList<>();
         final String regexStr = "(([A-Z]{2})*(\\^?)([A-Z0-9]{3,4})([<>]*))";
         final Pattern re = Pattern.compile(regexStr);
         final Matcher m = re.matcher(destination);
@@ -142,32 +144,8 @@ public interface AISMessage {
         // Group 4 is the Port code or GUID
         // Group 5 is the action
 
-        String firstPort = "";
-        String lastAction = "";
         while(m.find()) {
-            String actionString = "";
-            if (movements.isEmpty()) {
-                actionString = "From ";
-                firstPort = m.group(4);
-            }
-
-            if (m.group(2) != null) actionString += "UN/LOCODE " + m.group(2) + ", ";
-            actionString += "Port " + m.group(4);
-
-            switch (m.group(5)) {
-                case ">" -> actionString += ", travel to: ";
-                case "<>" -> actionString += ": operate within the area of ";
-                case "><" -> actionString += ": perform scheduled route to ";
-                case "<<" -> actionString += ": remain anchored/moored";
-                default -> {
-                    if (lastAction.equals(">") && m.group(4).equals(firstPort)) {
-                        actionString += ", to complete round trip";
-                    }
-                }
-            }
-
-            lastAction = m.group(5);
-            movements.add(actionString);
+            movements.add(new DestinationPort(m.group(2), m.group(4), PortAction.getForSymbol(m.group(5))));
         }
 
         return movements;

@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum PortAction {
-    NONE(null, "no action specified"),
+    NONE("", "no action specified"),
     TRAVEL_TO(">", "travel to"),
     OPERATE_WITHIN_AREA_OF("<>", "operate within the area of"),
     PERFORM_SCHEDULED_ROUTE("><", "perform scheduled route to"),
