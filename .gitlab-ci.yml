@@ -1,4 +1,4 @@
-image: maven
+image: maven:latest
 
 stages: # List of stages for jobs, and their order of execution
   - test
@@ -31,7 +31,13 @@ coverage:
   image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
   allow_failure: true
   script:
-    - python /opt/cover2cover.py target/site/jacoco/jacoco.xml $CI_PROJECT_DIR/src/main/java/ > target/site/cobertura.xml
+    # convert report from jacoco to cobertura, using relative project path IF it exists
+    - > 
+      if test -f "$FILE"; then
+        python /opt/cover2cover.py target/site/jacoco/jacoco.xml $CI_PROJECT_DIR/src/main/java/ > target/site/cobertura.xml 
+      else
+        echo "Skipping cover2cover.py"
+      fi
   needs: ["unit-test-job"]
   artifacts:
     when: always
