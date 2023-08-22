@@ -40,17 +40,17 @@ public interface AISMessage {
     /**
      *
      * @param mmsi the MMSI
-     * @return a boolean indicating whether or not the MMSI is valid
+     * @return a boolean indicating whether the MMSI is valid
      */
     static boolean isValidMmsi(long mmsi) {
         return ((mmsi < 800000000) && (mmsi > 199999999));
     }
 
     /**
-     * Determines whether or not this is a valid IMO according to NMEA standards
+     * Determines whether this is a valid IMO according to NMEA standards
      * 
      * @param imo the IMO (in String form) of the originating vessel
-     * @return a boolean indicating whether or not the provided IMO is valid
+     * @return a boolean indicating whether the provided IMO is valid
      */
     static boolean isValidImo(String imo) {
         if (imo.toLowerCase().startsWith("imo"))
@@ -59,10 +59,10 @@ public interface AISMessage {
     }
 
     /**
-     * Determines whether or not this is a valid IMO according to NMEA standards
+     * Determines whether this is a valid IMO according to NMEA standards
      * 
      * @param imo the IMO (in long form) of the originating vessel
-     * @return a boolean indicating whether or not the provided IMO is valid
+     * @return a boolean indicating whether the provided IMO is valid
      */
     static boolean isValidImo(long imo) {
 
@@ -95,7 +95,7 @@ public interface AISMessage {
 
     /**
      *
-     * @return a boolean indicating whether or not the position information is valid
+     * @return a boolean indicating whether the position information is valid
      */
     static boolean isValidPosition(double lat, double lon) {
         return ((lon >= -180 && lon <= 180) && (lat >= -90 && lat <= 90));
@@ -106,7 +106,7 @@ public interface AISMessage {
      * @return a boolean indicating whether the course information is valid or not
      */
     static boolean isValidCourse(float courseOverGround) {
-        return courseOverGround < 3600;
+        return courseOverGround < 360;
     }
 
     /**
@@ -114,7 +114,7 @@ public interface AISMessage {
      * @return a boolean indicating whether the speed information is valid or not
      */
     static boolean isValidSpeed(float speed) {
-        return speed >= 0 && speed < 1023;
+        return (speed >= 0 && speed <= 102.2f) || speed == 1023f;
     }
 
     /**
@@ -122,7 +122,7 @@ public interface AISMessage {
      * @return a boolean indicating whether the heading information is valid or not
      */
     static boolean isValidHeading(int heading) {
-        return heading >= 0 && heading < 360;
+        return (heading >= 0 && heading < 360) || heading == 3600;
     }
 
     /**
@@ -130,7 +130,7 @@ public interface AISMessage {
      * @return a boolean indicating whether the rate of turn information is valid or not
      */
     static boolean isValidTurn(float rateOfTurn) {
-        return rateOfTurn > -128;
+        return rateOfTurn >= -128;
     }
 
     static List<DestinationPort> decodeDestination(String destination) {
@@ -221,13 +221,13 @@ public interface AISMessage {
 
     /**
      *
-     * @return a boolean indicating whether or not the MMSI is valid
+     * @return a boolean indicating whether the MMSI is valid
      */
     boolean hasValidMmsi();
 
     /**
      *
-     * @return a boolean indicating whether or not this message contains positional
+     * @return a boolean indicating whether this message contains positional
      *         data
      */
     boolean hasPosition();
@@ -240,7 +240,7 @@ public interface AISMessage {
 
     /**
      *
-     * @return whether or not there is a sub type for the current message
+     * @return whether there is a subtype for the current message
      */
     boolean hasSubType();
 

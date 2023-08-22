@@ -143,7 +143,7 @@ public class AISMessageDecoder {
         else if (c <= CHAR_RANGE_B_MAX && c >= CHAR_RANGE_B_MIN)
             return c - CHAR_RANGE_B_MIN + (CHAR_RANGE_A_MAX - CHAR_RANGE_A_MIN + 1);
         else {
-            // character outside of acceptable range
+            // character outside acceptable range
             return '@';
         }
     }
@@ -186,7 +186,7 @@ public class AISMessageDecoder {
     /**
      * decode signed integers in twos-complement form.  If the number is negative
      * first bit must be set to on/true and the rest of the bits are inverted, meaning 
-     * that a off/false bit is counted and a true or on bit is not, the bits are
+     * that an off/false bit is counted and a true or on bit is not, the bits are
      *
      * @param bits     the BitSet containing our signed int
      * @param startBit the starting bit where our int is located
@@ -356,9 +356,9 @@ public class AISMessageDecoder {
             return -1f;
         }
         return switch (i) {
-            case 1023 -> 102.3f; // speed unavailable
+            case 1023 -> 1023f; // speed unavailable
             case 1022 -> 102.2f;
-            default -> i / 10.f;
+            default -> i / 10f;
         };
     }
 
@@ -374,8 +374,7 @@ public class AISMessageDecoder {
         int i = decodeUnsignedInt(bits, startBit, endBit);
 
         if ((i < 0) || (i >= 3600)) {
-            // invalid course
-            return 3600;
+            return 3600f; // invalid course
         } else {
             return i / 10f;
         }
