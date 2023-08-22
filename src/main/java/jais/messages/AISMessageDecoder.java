@@ -322,10 +322,10 @@ public class AISMessageDecoder {
      * @param endBit   the ending bit where the turn data is located
      * @return a float representing the turn value of the messsage
      */
-    public static float decodeTurn(BitSet bits, int startBit, int endBit) {
+    public static float decodeRateOfTurn(BitSet bits, int startBit, int endBit) {
         int i = decodeSignedInt(bits, startBit, endBit);
 
-        return (i / 4.733f) * (i / 4.733f);
+        return (i == -128) ? (float)i : (i / 4.733f) * (i / 4.733f);
     }
 
     /**

@@ -156,7 +156,7 @@ public abstract class PositionReportBase extends AISMessageBase {
                 }
                 case RATE_OF_TURN -> {
                     if (bits.size() >= field.getStartBit())
-                        rateOfTurn = AISMessageDecoder.decodeTurn(bits, field.getStartBit(), field.getEndBit());
+                        rateOfTurn = AISMessageDecoder.decodeRateOfTurn(bits, field.getStartBit(), field.getEndBit());
                 }
                 case SPEED -> {
                     if (bits.size() >= field.getStartBit())
