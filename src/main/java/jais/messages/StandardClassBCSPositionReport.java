@@ -68,7 +68,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     /**
      *
-     * @return a boolean indicating whether or not this message has position data
+     * @return a boolean indicating whether this message has position data
      */
     @Override
     public boolean hasPosition() {
@@ -90,7 +90,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     /**
      * @deprecated use the static method AISMessage.isValidPosition instead
-     * @return a boolean indicating whether or not the positional information is valid
+     * @return a boolean indicating whether the positional information is valid
      */
     @Deprecated
     public boolean isPositionValid() {
@@ -99,7 +99,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     /**
      * @deprecated use the static method AISMessage.isValidCourse instead
-     * @return a boolean indicating whether or not the course information is valid
+     * @return a boolean indicating whether the course information is valid
      */
     @Deprecated
     public boolean isCourseValid() {
