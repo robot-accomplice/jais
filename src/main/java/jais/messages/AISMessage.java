@@ -106,7 +106,7 @@ public interface AISMessage {
      * @return a boolean indicating whether the course information is valid or not
      */
     static boolean isValidCourse(float courseOverGround) {
-        return courseOverGround < 360;
+        return (courseOverGround >= 0 && courseOverGround < 360) || courseOverGround == 3600;
     }
 
     /**
@@ -122,7 +122,7 @@ public interface AISMessage {
      * @return a boolean indicating whether the heading information is valid or not
      */
     static boolean isValidHeading(int heading) {
-        return (heading >= 0 && heading < 360) || heading == 3600;
+        return (heading >= 0 && heading < 360) || heading == 511;
     }
 
     /**
