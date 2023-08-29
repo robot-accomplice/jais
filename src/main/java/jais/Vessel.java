@@ -219,8 +219,8 @@ public class Vessel implements Cloneable {
      * @param report an instance of a concrete class that extends PositionReportBase
      */
     public <T extends PositionReportBase> void addUpdatePositionReport(T report) {
-        this.currentMessageTimestamp = report.getTimeReceived();
         this.previousPositionTimestamp = this.currentMessageTimestamp;
+        this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
         this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
         this.courseOverGround = report.getCourseOverGround();
