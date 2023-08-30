@@ -64,6 +64,7 @@ public class Vessel implements Cloneable {
     private String eta;
     private long currentMessageTimestamp;
     private long currentStaticTimestamp;
+    private long previousStaticTimestamp;
     private long currentPositionTimestamp;
     private long previousPositionTimestamp;
     private long timeSent;
@@ -165,6 +166,7 @@ public class Vessel implements Cloneable {
     public Vessel(StaticAndVoyageRelatedData savrd) {
         this.id = new Identifier(savrd.getMmsi(), savrd.getSource());
         this.currentMessageTimestamp = savrd.getTimeReceived();
+        this.previousStaticTimestamp = this.currentStaticTimestamp;
         this.currentStaticTimestamp = savrd.getTimeReceived();
         this.currentStaticSource = (savrd.getSource() == null) ? null : savrd.getSource().getBytes();
         this.imo = savrd.getImo();
