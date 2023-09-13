@@ -317,15 +317,22 @@ public class AISMessageDecoder {
 
     /**
      *
-     * @param bits     the bitset from which we wish to decode the turn data
-     * @param startBit the starting bit where the turn data is located
-     * @param endBit   the ending bit where the turn data is located
-     * @return a float representing the turn value of the messsage
+     * @param rot the rate of turn in its AIS format
+     * @return a float representing the rate of turn in degrees per minute
      */
-    public static float decodeRateOfTurn(BitSet bits, int startBit, int endBit) {
-        int i = decodeSignedInt(bits, startBit, endBit);
+    public static float rateOfTurnToDegreesPerMinute(int rot) {
+        return (rot == -128) ? (float)rot : (rot / 4.733f) * (rot / 4.733f);
+    }
 
-        return (i == -128) ? (float)i : (i / 4.733f) * (i / 4.733f);
+    /**
+     *
+     * @param bits
+     * @param startBit
+     * @param endBit
+     * @return
+     */
+    public static int decodeRateOfTurn(BitSet bits, int startBit, int endBit) {
+        return decodeSignedInt(bits, startBit, endBit);
     }
 
     /**
