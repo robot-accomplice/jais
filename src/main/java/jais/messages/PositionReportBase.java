@@ -37,7 +37,7 @@ public abstract class PositionReportBase extends AISMessageBase {
     // bit positions are off spec by 1 because the BitSet counts from 0 rather than
     // 1
     private NavigationStatus status = NavigationStatus.NOT_DEFINED; // bits 38-41
-    private float rateOfTurn; // bits 42-49
+    private int rateOfTurn; // bits 42-49
     private float speed; // bits 50-59, represented in knots
     private boolean accuracy; // bit 60
     private double lon = -91; // bits 61-88
