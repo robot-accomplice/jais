@@ -129,10 +129,15 @@ public interface AISMessage {
      * @param rateOfTurn  the value to evaluate
      * @return a boolean indicating whether the rate of turn information is valid or not
      */
-    static boolean isValidTurn(float rateOfTurn) {
-        return rateOfTurn >= -128;
+    static boolean isValidTurn(int rateOfTurn) {
+        return rateOfTurn >= -128 && rateOfTurn < 127;
     }
 
+    /**
+     *
+     * @param destination decodes encoded destinations
+     * @return
+     */
     static List<DestinationPort> decodeDestination(String destination) {
         final List<DestinationPort> movements = new ArrayList<>();
         final String regexStr = "(([A-Z]{2})*(\\^?)([A-Z0-9]{3,4})([<>]*))";
