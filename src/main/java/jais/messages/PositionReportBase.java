@@ -37,13 +37,13 @@ public abstract class PositionReportBase extends AISMessageBase {
     // bit positions are off spec by 1 because the BitSet counts from 0 rather than
     // 1
     private NavigationStatus status = NavigationStatus.NOT_DEFINED; // bits 38-41
-    private int rateOfTurn; // bits 42-49
-    private float speed; // bits 50-59, represented in knots
+    private int rateOfTurn = AISMessage.DEFAULT_RATE_OF_TURN; // bits 42-49
+    private float speed = AISMessage.DEFAULT_SPEED_OVER_GROUND; // bits 50-59, represented in knots
     private boolean accuracy; // bit 60
-    private double lon = -91; // bits 61-88
-    private double lat = -181; // 89-115
-    private float courseOverGround; // bits 116-127, 0.1 degree precision, relative to true north
-    private int heading = 511; // bits 128-136, 0-359 degrees, 511 means not available
+    private double lon = AISMessage.DEFAULT_LONGITUDE; // bits 61-88
+    private double lat = AISMessage.DEFAULT_LATITUDE; // 89-115
+    private float courseOverGround = AISMessage.DEFAULT_COURSE_OVER_GROUND; // bits 116-127, 0.1 degree precision, relative to true north
+    private int heading = AISMessage.DEFAULT_HEADING; // bits 128-136, 0-359 degrees, 511 means not available
     private int second; // bits 137-142, timestamp in seconds since epoch
     private ManeuverType maneuver = ManeuverType.NOT_AVAILABLE; // bits 143-144, maneuver indicator
     // spare bits 145-147

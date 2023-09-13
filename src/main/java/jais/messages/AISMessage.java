@@ -37,6 +37,13 @@ import java.util.regex.Pattern;
  */
 public interface AISMessage {
 
+    int DEFAULT_RATE_OF_TURN = -128;
+    float DEFAULT_SPEED_OVER_GROUND = 1023f;
+    int DEFAULT_HEADING = 511;
+    int DEFAULT_COURSE_OVER_GROUND = 3600;
+    float DEFAULT_LONGITUDE = -91;
+    float DEFAULT_LATITUDE = -181;
+
     /**
      *
      * @param mmsi the MMSI
@@ -130,7 +137,7 @@ public interface AISMessage {
      * @return a boolean indicating whether the rate of turn information is valid or not
      */
     static boolean isValidTurn(int rateOfTurn) {
-        return rateOfTurn >= -128 && rateOfTurn < 127;
+        return rateOfTurn >= -128 && rateOfTurn <= 127;
     }
 
     /**
