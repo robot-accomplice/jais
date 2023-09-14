@@ -31,12 +31,12 @@ import lombok.Setter;
 @Setter
 public class StandardClassBCSPositionReport extends AISMessageBase {
 
-    private int speed;
+    private float speed = AISMessage.DEFAULT_SPEED_OVER_GROUND;
     private boolean accuracy;
-    private double lon;
-    private double lat;
-    private float courseOverGround;
-    private int heading;
+    private double lon = AISMessage.DEFAULT_LONGITUDE;
+    private double lat = AISMessage.DEFAULT_LATITUDE;
+    private float courseOverGround = AISMessage.DEFAULT_COURSE_OVER_GROUND;
+    private int heading = AISMessage.DEFAULT_HEADING;
     private int second;
     private boolean cs;
     private boolean display;
