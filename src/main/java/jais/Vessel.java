@@ -49,7 +49,7 @@ public class Vessel implements Cloneable {
     private byte[] destination;
     private boolean dte;
     private NavigationStatus navigationStatus = NavigationStatus.NOT_DEFINED;
-    private float rateOfTurn = AISMessage.DEFAULT_RATE_OF_TURN;
+    private int rateOfTurn = AISMessage.DEFAULT_RATE_OF_TURN;
     private float speed = AISMessage.DEFAULT_SPEED_OVER_GROUND;
     private boolean accuracy = false;
     private double lon = AISMessage.DEFAULT_LONGITUDE;
