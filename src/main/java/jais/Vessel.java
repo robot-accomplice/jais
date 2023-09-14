@@ -505,7 +505,7 @@ public class Vessel implements Cloneable {
                     "destination": "%s",
                     "dte": %b,
                     "navigationStatus": "%s",
-                    "turn": %f,
+                    "turn": %d,
                     "speed": %f,
                     "accuracy": %b,
                     "lon": %f,
