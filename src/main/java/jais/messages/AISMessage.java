@@ -41,8 +41,8 @@ public interface AISMessage {
     float DEFAULT_SPEED_OVER_GROUND = 1023f;
     int DEFAULT_HEADING = 511;
     int DEFAULT_COURSE_OVER_GROUND = 3600;
-    float DEFAULT_LONGITUDE = -91;
-    float DEFAULT_LATITUDE = -181;
+    float DEFAULT_LATITUDE = 91;
+    float DEFAULT_LONGITUDE = 181;
 
     /**
      *
@@ -105,7 +105,7 @@ public interface AISMessage {
      * @return a boolean indicating whether the position information is valid
      */
     static boolean isValidPosition(double lat, double lon) {
-        return ((lon >= -180 && lon <= 180) && (lat >= -90 && lat <= 90));
+        return ((lon >= -180 && lon < AISMessage.DEFAULT_LONGITUDE) && (lat >= -90 && lat < AISMessage.DEFAULT_LATITUDE));
     }
 
     /**
@@ -113,7 +113,7 @@ public interface AISMessage {
      * @return a boolean indicating whether the course information is valid or not
      */
     static boolean isValidCourse(float courseOverGround) {
-        return (courseOverGround >= 0 && courseOverGround < 360) || courseOverGround == 3600;
+        return (courseOverGround >= 0 && courseOverGround < 360) || courseOverGround == AISMessage.DEFAULT_COURSE_OVER_GROUND;
     }
 
     /**
@@ -121,7 +121,7 @@ public interface AISMessage {
      * @return a boolean indicating whether the speed information is valid or not
      */
     static boolean isValidSpeed(float speed) {
-        return (speed >= 0 && speed <= 102.2f) || speed == 1023f;
+        return (speed >= 0 && speed <= 102.2f) || speed == AISMessage.DEFAULT_SPEED_OVER_GROUND;
     }
 
     /**
@@ -129,7 +129,7 @@ public interface AISMessage {
      * @return a boolean indicating whether the heading information is valid or not
      */
     static boolean isValidHeading(int heading) {
-        return (heading >= 0 && heading < 360) || heading == 511;
+        return (heading >= 0 && heading < 360) || heading == AISMessage.DEFAULT_HEADING;
     }
 
     /**
@@ -137,13 +137,13 @@ public interface AISMessage {
      * @return a boolean indicating whether the rate of turn information is valid or not
      */
     static boolean isValidTurn(int rateOfTurn) {
-        return rateOfTurn >= -128 && rateOfTurn <= 127;
+        return rateOfTurn >= AISMessage.DEFAULT_RATE_OF_TURN && rateOfTurn <= 127;
     }
 
     /**
      *
      * @param destination decodes encoded destinations
-     * @return
+     * @return a List of DestinationPorts as decoded from the destination string
      */
     static List<DestinationPort> decodeDestination(String destination) {
         final List<DestinationPort> movements = new ArrayList<>();
