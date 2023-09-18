@@ -85,6 +85,7 @@ public class Vessel implements Cloneable {
      */
     public Vessel(StandardClassBCSPositionReport report) {
         this.id = new Identifier(report.getMmsi(), report.getSource());
+        this.previousPositionTimestamp = this.currentPositionTimestamp;
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
         this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
@@ -107,6 +108,7 @@ public class Vessel implements Cloneable {
      */
     public Vessel(ExtendedClassBCSPositionReport report) {
         this.id = new Identifier(report.getMmsi(), report.getSource());
+        this.previousPositionTimestamp = this.currentPositionTimestamp;
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
         this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
@@ -137,6 +139,7 @@ public class Vessel implements Cloneable {
      */
     public <T extends PositionReportBase> Vessel(T report) {
         this.id = new Identifier(report.getMmsi(), report.getSource());
+        this.previousPositionTimestamp = this.currentPositionTimestamp;
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
         this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
@@ -165,8 +168,8 @@ public class Vessel implements Cloneable {
      */
     public Vessel(StaticAndVoyageRelatedData savrd) {
         this.id = new Identifier(savrd.getMmsi(), savrd.getSource());
-        this.currentMessageTimestamp = savrd.getTimeReceived();
         this.previousStaticTimestamp = this.currentStaticTimestamp;
+        this.currentMessageTimestamp = savrd.getTimeReceived();
         this.currentStaticTimestamp = savrd.getTimeReceived();
         this.currentStaticSource = (savrd.getSource() == null) ? null : savrd.getSource().getBytes();
         this.imo = savrd.getImo();
@@ -199,8 +202,8 @@ public class Vessel implements Cloneable {
      */
     public Vessel(StaticDataReport sdr) {
         this.id = new Identifier(sdr.getMmsi(), sdr.getSource());
-        this.currentMessageTimestamp = sdr.getTimeReceived();
         this.previousStaticTimestamp = this.currentStaticTimestamp;
+        this.currentMessageTimestamp = sdr.getTimeReceived();
         this.currentStaticTimestamp = sdr.getTimeReceived();
         this.currentStaticSource = (sdr.getSource() == null) ? null : sdr.getSource().getBytes();
         this.timeSent = sdr.getTimeSent();
@@ -223,7 +226,7 @@ public class Vessel implements Cloneable {
      * @param report an instance of a concrete class that extends PositionReportBase
      */
     public <T extends PositionReportBase> void addUpdatePositionReport(T report) {
-        this.previousPositionTimestamp = this.currentMessageTimestamp;
+        this.previousPositionTimestamp = this.currentPositionTimestamp;
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
         this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
@@ -253,7 +256,7 @@ public class Vessel implements Cloneable {
      */
     public void addUpdatePositionReportClassB(StandardClassBCSPositionReport report) {
         this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
-        this.previousPositionTimestamp = this.currentMessageTimestamp;
+        this.previousPositionTimestamp = this.currentPositionTimestamp;
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
         this.timeSent = report.getTimeSent();
@@ -277,7 +280,7 @@ public class Vessel implements Cloneable {
      * @param report the ExtendedClassBCSPositionReport we want to use to update the Vessel object
      */
     public void addUpdatePositionReportClassB(ExtendedClassBCSPositionReport report) {
-        this.previousPositionTimestamp = this.currentMessageTimestamp;
+        this.previousPositionTimestamp = this.currentPositionTimestamp;
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
         this.timeSent = report.getTimeSent();
