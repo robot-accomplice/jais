@@ -200,8 +200,10 @@ public class Vessel implements Cloneable {
     public Vessel(StaticDataReport sdr) {
         this.id = new Identifier(sdr.getMmsi(), sdr.getSource());
         this.currentMessageTimestamp = sdr.getTimeReceived();
+        this.previousStaticTimestamp = this.currentStaticTimestamp;
         this.currentStaticTimestamp = sdr.getTimeReceived();
         this.currentStaticSource = (sdr.getSource() == null) ? null : sdr.getSource().getBytes();
+        this.timeSent = sdr.getTimeSent();
         this.shipName = (sdr.getShipName() == null) ? null : sdr.getShipName().getBytes();
         this.callSign = (sdr.getCallSign() == null) ? null : sdr.getCallSign().getBytes();
         this.shipType = sdr.getShipType();
@@ -254,6 +256,7 @@ public class Vessel implements Cloneable {
         this.previousPositionTimestamp = this.currentMessageTimestamp;
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
+        this.timeSent = report.getTimeSent();
         this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
         this.lat = report.getLat();
@@ -277,6 +280,7 @@ public class Vessel implements Cloneable {
         this.previousPositionTimestamp = this.currentMessageTimestamp;
         this.currentMessageTimestamp = report.getTimeReceived();
         this.currentPositionTimestamp = report.getTimeReceived();
+        this.timeSent = report.getTimeSent();
         this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
         this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
@@ -303,6 +307,7 @@ public class Vessel implements Cloneable {
      * @param savrd the StaticAndVoyageRelatedData we want to use to update the Vessel object
      */
     public void addUpdateStaticReport(StaticAndVoyageRelatedData savrd) {
+        this.previousStaticTimestamp = this.currentStaticTimestamp;
         this.currentMessageTimestamp = savrd.getTimeReceived();
         this.currentStaticTimestamp = savrd.getTimeReceived();
         this.currentStaticSource = (savrd.getSource() == null) ? null : savrd.getSource().getBytes();
@@ -336,8 +341,10 @@ public class Vessel implements Cloneable {
      * @param sdr the StaticDataReport with which we want to update the Vessel object
      */
     public void addUpdateStaticDataReport(StaticDataReport sdr) {
+        this.previousStaticTimestamp = this.currentStaticTimestamp;
         this.currentMessageTimestamp = sdr.getTimeReceived();
         this.currentStaticTimestamp = sdr.getTimeReceived();
+        this.timeSent = sdr.getTimeSent();
         this.currentStaticSource = (sdr.getSource() == null) ? null : sdr.getSource().getBytes();
         this.shipName = (sdr.getShipName() == null) ? null : sdr.getShipName().getBytes();
         this.callSign = (sdr.getCallSign() == null) ? null : sdr.getCallSign().getBytes();
