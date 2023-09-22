@@ -50,6 +50,7 @@ public final class TagBlock {
 
     public final static String TAGBLOCK_STRING = "\\\\(([cdgnrst]:([\\w\\-().])+,?)+)\\*([A-Za-z0-9]{2})\\\\";
     public final static Pattern TAGBLOCK_PATTERN = Pattern.compile(TAGBLOCK_STRING);
+    public final static String UNKNOWN_SOURCE = "UNKNOWN";
 
     boolean parsed;
 
@@ -67,7 +68,7 @@ public final class TagBlock {
     // r relative time, positive int
     long relativeTime;
     // s source id, alphanumeric (<= 15 chars)
-    byte[] source = ByteArrayUtils.str2bArray("UKNOWN");
+    byte[] source = ByteArrayUtils.str2bArray(TagBlock.UNKNOWN_SOURCE);
     // t text string (<= 15 chars)
     byte[] textStr;
 
