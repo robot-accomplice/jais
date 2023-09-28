@@ -416,6 +416,46 @@ public class Vessel implements Cloneable {
     }
 
     /**
+     *
+     * @param shipName
+     */
+    public void setShipName(String shipName) {
+        this.shipName = shipName.getBytes();
+    }
+
+    /**
+     *
+     * @param callSign
+     */
+    public void setCallSign(String callSign) {
+        this.callSign = callSign.getBytes();
+    }
+
+    /**
+     *
+     * @param destination
+     */
+    public void setDestination(String destination) {
+        this.destination = destination.getBytes();
+    }
+
+    /**
+     *
+     * @param staticSource
+     */
+    public void setStaticSource(String staticSource) {
+        this.currentStaticSource = staticSource.getBytes();
+    }
+
+    /**
+     *
+     * @param positionSource
+     */
+    public void setPositionSource(String positionSource) {
+        this.currentPositionSource = positionSource.getBytes();
+    }
+
+    /**
      * @return the callsign value of whatever StaticAndVoyageRelatedData message may
      *         have been used to populate this object
      */
