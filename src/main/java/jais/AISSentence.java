@@ -223,8 +223,8 @@ public final class AISSentence implements Sentence {
         if (m.find()) {
             if (this.source == null || this.source.length == 0) {
                 this.tagBlock = TagBlock.parse(m.group(0));
-                this.source = (this.tagBlock.getSource() != null) ?
-                        this.tagBlock.getSource() : AISSentence.DEFAULT_SOURCE.getBytes();
+                this.source = (this.tagBlock.getSourceBytes() != null) ?
+                        this.tagBlock.getSourceBytes() : AISSentence.DEFAULT_SOURCE.getBytes();
             } else
                 this.tagBlock = TagBlock.parse(m.group(0));
 
@@ -499,7 +499,7 @@ public final class AISSentence implements Sentence {
      */
     public String generateTagBlockSentenceString() {
         TagBlock tb = new TagBlock();
-        tb.setSource(this.source);
+        tb.setSourceBytes(this.source);
         tb.setTimestamp(this.timeReceived);
         return generateTagBlockSentenceString(this.unparsedSentence, tb);
     }
@@ -515,9 +515,9 @@ public final class AISSentence implements Sentence {
      */
     public String generateTagBlockSentenceString(byte[] text) {
         TagBlock tb = new TagBlock();
-        tb.setSource(this.source);
+        tb.setSourceBytes(this.source);
         tb.setTimestamp(this.timeReceived);
-        tb.setTextStr(text);
+        tb.setTextBytes(text);
         return generateTagBlockSentenceString(this.unparsedSentence, tb);
     }
 
@@ -607,15 +607,6 @@ public final class AISSentence implements Sentence {
         if (hasTagBlock())
             return this.tagBlock.getTimestamp();
         return 0;
-    }
-
-    /**
-     * Sets the source of the AISsentence to the provided byte [] value
-     *
-     * @param source sets the name of the source of this sentence as a byte array
-     */
-    public void setSource(byte[] source) {
-        this.source = source;
     }
 
     /**

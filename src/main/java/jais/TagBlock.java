@@ -29,16 +29,16 @@ import lombok.Data;
  * providing metadata about the AIS packet that travels with the packet.
  * Supported fields include:
  * c - timestamp : in c unix time and represented as a positive integer
- * d - destination : a string of 15 characters or less indicating a destination
+ * d - destination : a string of 15 characters or fewer indicating a destination
  * g - sentence grouping: a numeric string used to indicate when messages are
  * associated and their proper message order
  * n - line count : a positive integer indicating the number of lines for a
  * given message
  * r - relative time : a positive integer representing the relative time
  * differential
- * s - source id : a string of 15 characters or less representing the message
+ * s - source id : a string of 15 characters or fewer representing the message
  * source
- * t - text string : a text string of 15 characters or less containing any data
+ * t - text string : a text string of 15 characters or fewer containing any data
  * the sender cares to include
  * Example:
  * \g:1-2-73874,n:157036,s:r003669945,c:1241544035,t:*4A\!AIVDM,1,1,,B,15N4cJ`005Jrek0H@9n`DW5608EP,0*13
@@ -68,9 +68,9 @@ public final class TagBlock {
     // r relative time, positive int
     long relativeTime;
     // s source id, alphanumeric (<= 15 chars)
-    byte[] source = ByteArrayUtils.str2bArray(TagBlock.UNKNOWN_SOURCE);
+    byte[] sourceBytes = ByteArrayUtils.str2bArray(TagBlock.UNKNOWN_SOURCE);
     // t text string (<= 15 chars)
-    byte[] textStr;
+    byte[] textBytes;
 
     /**
      * No argument constructor
@@ -79,10 +79,10 @@ public final class TagBlock {
     }
 
     /**
-     * Returns a boolean indicating whether or not this Tagblock includes a
+     * Returns a boolean indicating whether this TagBlock includes a
      * timestamp
      * 
-     * @return a boolean indicating whether or not this TagBlock includes a
+     * @return a boolean indicating whether this TagBlock includes a
      *         timestamp
      */
     public boolean hasTimestamp() {
@@ -92,7 +92,7 @@ public final class TagBlock {
     /**
      * Returns true if there is destination data in this TagBlock
      * 
-     * @return a boolean indicating whether or not this TagBlock contains a
+     * @return a boolean indicating whether this TagBlock contains a
      *         destination
      */
     public boolean hasDestination() {
@@ -102,7 +102,7 @@ public final class TagBlock {
     /**
      * Returns true if we have a sentence grouping value
      * 
-     * @return a boolean indicating whether or not the TagBlock contains sentence
+     * @return a boolean indicating whether the TagBlock contains sentence
      *         grouping data
      */
     public boolean hasSentenceGrouping() {
@@ -112,7 +112,7 @@ public final class TagBlock {
     /**
      * Returns true if there is a line count value in this TagBlock
      * 
-     * @return a boolean indicating whether or not there is a line count value in
+     * @return a boolean indicating whether there is a line count value in
      *         this TagBlock
      */
     public boolean hasLineCount() {
@@ -122,7 +122,7 @@ public final class TagBlock {
     /**
      * Returns true if there is a relative time value for this TagBlock
      * 
-     * @return a boolean indicating whether or not this TagBlock contains a relative
+     * @return a boolean indicating whether this TagBlock contains a relative
      *         time value
      */
     public boolean hasRelativeTime() {
@@ -132,20 +132,52 @@ public final class TagBlock {
     /**
      * Returns true if there is source data in the TagBlock
      * 
-     * @return a boolean indicating whether or not the TagBlock contains source data
+     * @return a boolean indicating whether the TagBlock contains source data
      */
     public boolean hasSource() {
-        return (this.source != null);
+        return (this.sourceBytes != null);
+    }
+
+    /**
+     *
+     * @param source A string containing the source identifier for the AIS Sentence
+     */
+    public void setSource(String source) {
+        this.sourceBytes = ByteArrayUtils.str2bArray(source);
+    }
+
+    /**
+     *
+     * @return A string containing the source identifier for the AIS Sentence
+     */
+    public String getSource() {
+        return ByteArrayUtils.bArray2Str(this.sourceBytes);
     }
 
     /**
      * Returns true if there is text string data in the TagBlock
      * 
-     * @return a boolean indicating whether or not the TagBlock contains text string
+     * @return a boolean indicating whether the TagBlock contains text string
      *         data
      */
     public boolean hasTextStr() {
-        return (this.textStr != null);
+        return (this.textBytes != null);
+    }
+
+    /**
+     *
+     * @param textStr A string of arbitrary text to be included in the TagBlock
+     */
+    public void setText(String textStr) {
+        this.textBytes = ByteArrayUtils.str2bArray(textStr);
+    }
+
+    /**
+     *
+     * @return The String of arbitrary text defined within the TagBlock
+     */
+    public String getText() {
+        return ByteArrayUtils.bArray2Str(this.textBytes);
     }
 
     /**
@@ -162,7 +194,7 @@ public final class TagBlock {
         }
 
         TagBlock tb = new TagBlock();
-        tb.setSource(source);
+        tb.setSourceBytes(source);
         tb.setTimestamp(ZonedDateTime.now(ZoneOffset.UTC).toEpochSecond());
 
         return tb;
@@ -192,8 +224,8 @@ public final class TagBlock {
                 case "g" -> tb.setSentenceGrouping(ByteArrayUtils.str2bArray(tag[1]));
                 case "n" -> tb.setLineCount(Integer.parseInt(tag[1]));
                 case "r" -> tb.setRelativeTime(Long.parseLong(tag[1]));
-                case "s" -> tb.setSource(ByteArrayUtils.str2bArray(tag[1]));
-                case "t" -> tb.setTextStr(ByteArrayUtils.str2bArray(tag[1]));
+                case "s" -> tb.setSourceBytes(ByteArrayUtils.str2bArray(tag[1]));
+                case "t" -> tb.setTextBytes(ByteArrayUtils.str2bArray(tag[1]));
             }
         }
 
@@ -231,10 +263,10 @@ public final class TagBlock {
                 tbs.append(",");
             tbs.append("n:").append(this.lineCount);
         }
-        if (this.source != null && this.source.length != 0) {
+        if (this.sourceBytes != null && this.sourceBytes.length != 0) {
             if (tbs.length() > 1)
                 tbs.append(",");
-            tbs.append("s:").append(ByteArrayUtils.bArray2Str(this.source));
+            tbs.append("s:").append(this.getSource());
         }
         if (this.timestamp > 0) {
             if (tbs.length() > 1)
@@ -251,10 +283,10 @@ public final class TagBlock {
                 tbs.append(",");
             tbs.append("r:").append(this.relativeTime);
         }
-        if (this.textStr != null && this.textStr.length != 0) {
+        if (this.textBytes != null && this.textBytes.length != 0) {
             if (tbs.length() > 1)
                 tbs.append(",");
-            tbs.append("t").append(ByteArrayUtils.bArray2Str(this.textStr));
+            tbs.append("t").append(this.getText());
         }
 
         // checksum is only relevant to the content within the paired backslashes

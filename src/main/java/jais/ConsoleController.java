@@ -67,7 +67,7 @@ public class ConsoleController implements Initializable {
 
     /**
      *
-     * @param event
+     * @param event the UI event that has taken place
      */
     @FXML
     private void handleDecodeAction(ActionEvent event) {
@@ -93,7 +93,7 @@ public class ConsoleController implements Initializable {
                 if (tb != null) {
                     appendLineToOutput("TagBlock: " + ByteArrayUtils.bArray2Str(tb.rawTagBlock));
                     appendLineToOutput(BORDER_SINGLE);
-                    appendLineToOutput("\tsource           : " + ByteArrayUtils.bArray2Str(tb.getSource()));
+                    appendLineToOutput("\tsource           : " + tb.getSource());
                     appendLineToOutput("\tdestination      : " + ((tb.destination == null) ? "null"
                             : ByteArrayUtils.bArray2Str(tb.destination)));
                     appendLineToOutput("\ttimestamp        : " + tb.getTimestamp());
@@ -101,8 +101,8 @@ public class ConsoleController implements Initializable {
                     appendLineToOutput("\tsentence grouping: " + ((tb.sentenceGrouping == null) ? "null"
                             : ByteArrayUtils.bArray2Str(tb.sentenceGrouping)));
                     appendLineToOutput("\tline count       : " + tb.getLineCount());
-                    appendLineToOutput("\ttext string      : " + ((tb.textStr == null) ? "null"
-                            : ByteArrayUtils.bArray2Str(tb.textStr)));
+                    appendLineToOutput("\ttext string      : " + ((tb.textBytes == null) ? "null"
+                            : tb.getText()));
                 } else {
                     appendLineToOutput("TagBlock: ");
                     appendLineToOutput(BORDER_SINGLE);
@@ -247,7 +247,7 @@ public class ConsoleController implements Initializable {
 
     /**
      *
-     * @param s
+     * @param s The String to append
      */
     private void appendLineToOutput(String s) {
         outputArea.appendText(s + "\n");
