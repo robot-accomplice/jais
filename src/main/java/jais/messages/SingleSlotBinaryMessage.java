@@ -65,42 +65,35 @@ public class SingleSlotBinaryMessage extends AISMessageBase {
         super.decode();
 
         for (SingleSlotBinaryMessageFieldMap field : SingleSlotBinaryMessageFieldMap.values()) {
-            switch (field) {
-                case ADDRESSED -> {
-                    if (bits.size() >= field.getStartBit())
-                        addressed = bits.get(field.getStartBit());
-                }
-                case STRUCTURED -> structured = bits.get(field.getStartBit());
-                case DESTINATION_MMSI -> {
-                    if (this.addressed) {
-                        if (bits.size() >= field.getStartBit())
+            if (bits.size() > field.getEndBit() || field.getEndBit() == -1) {
+                switch (field) {
+                    case ADDRESSED -> addressed = bits.get(field.getStartBit());
+                    case STRUCTURED -> structured = bits.get(field.getStartBit());
+                    case DESTINATION_MMSI -> {
+                        if (this.addressed)
                             destMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                     field.getEndBit());
                     }
-                }
-                case DAC -> {
-                    if (this.structured) {
-                        if (bits.size() >= field.getStartBit())
+                    case DAC -> {
+                        if (this.structured)
                             dac = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     }
-                }
-                case FID -> {
-                    if (this.structured) {
-                        if (bits.size() >= field.getStartBit())
+                    case FID -> {
+                        if (this.structured)
                             fid = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     }
-                }
-                case DATA -> {
-                    data = new BitSet(bits.size());
-                    if (this.addressed && bits.size() >= 70) {
-                        if (bits.size() >= field.getStartBit())
-                            data = bits.get(70, 70);
-                    } else if (this.structured && bits.size() >= 56) {
-                        if (bits.size() >= field.getStartBit())
-                            data = bits.get(56, bits.size());
-                    } else if (bits.size() >= 40) {
-                        if (bits.size() >= field.getStartBit())
-                            data = bits.get(40, bits.size());
+                    case DATA -> {
+                        data = new BitSet(bits.size());
+                        if (this.addressed && bits.size() >= 70) {
+                            if (bits.size() >= field.getStartBit())
+                                data = bits.get(70, 70);
+                        } else if (this.structured && bits.size() >= 56) {
+                            if (bits.size() >= field.getStartBit())
+                                data = bits.get(56, bits.size());
+                        } else if (bits.size() >= 40) {
+                            if (bits.size() >= field.getStartBit())
+                                data = bits.get(40, bits.size());
+                        }
                     }
                 }
             }

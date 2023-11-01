@@ -71,46 +71,18 @@ public class ChannelManagement extends AISMessageBase {
         super.decode();
 
         for (ChannelManagementFieldMap field : ChannelManagementFieldMap.values()) {
-            switch (field) {
-                case NE_LON -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.neLon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                }
-                case NE_LAT -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.neLat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                }
-                case SW_LON -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.swLon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                }
-                case SW_LAT -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.swLat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                }
-                case DEST_MMSI1 -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.destMmsi1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                }
-                case DEST_MMSI2 -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.destMmsi2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                }
-                case ADDRESSED -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.addressed = bits.get(field.getStartBit());
-                }
-                case CHANNEL_A_BAND -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.bandA = bits.get(field.getStartBit());
-                }
-                case CHANNEL_B_BAND -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.bandB = bits.get(field.getEndBit());
-                }
-                case ZONE_SIZE -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.zoneSize = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+            if (bits.size() > field.getEndBit()) {
+                switch (field) {
+                    case NE_LON -> this.neLon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
+                    case NE_LAT -> this.neLat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
+                    case SW_LON -> this.swLon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
+                    case SW_LAT -> this.swLat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
+                    case DEST_MMSI1 -> this.destMmsi1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case DEST_MMSI2 -> this.destMmsi2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case ADDRESSED -> this.addressed = bits.get(field.getStartBit());
+                    case CHANNEL_A_BAND -> this.bandA = bits.get(field.getStartBit());
+                    case CHANNEL_B_BAND -> this.bandB = bits.get(field.getEndBit());
+                    case ZONE_SIZE -> this.zoneSize = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                 }
             }
         }

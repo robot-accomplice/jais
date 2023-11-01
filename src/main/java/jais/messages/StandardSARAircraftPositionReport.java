@@ -94,54 +94,22 @@ public class StandardSARAircraftPositionReport extends AISMessageBase {
         super.decode();
 
         for (SSARAircraftPositionReportFieldMap field : SSARAircraftPositionReportFieldMap.values()) {
-            switch (field) {
-                case ALT:
-                    if (bits.size() >= field.getStartBit())
-                        this.alt = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SPEED:
-                    if (bits.size() >= field.getStartBit())
-                        this.speed = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case ACCURACY:
-                    if (bits.size() >= field.getStartBit())
-                        this.accurate = bits.get(field.getStartBit());
-                    break;
-                case LON:
-                    if (bits.size() >= field.getStartBit())
-                        this.lon = AISMessageDecoder.decodeSignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case LAT:
-                    if (bits.size() >= field.getStartBit())
-                        this.lat = AISMessageDecoder.decodeSignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case COURSE:
-                    if (bits.size() >= field.getStartBit())
-                        this.course = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SECOND:
-                    if (bits.size() >= field.getStartBit())
-                        this.second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case DTE:
-                    if (bits.size() >= field.getStartBit())
-                        this.dte = bits.get(field.getStartBit());
-                    break;
-                case ASSIGNED:
-                    if (bits.size() >= field.getStartBit())
-                        this.assigned = bits.get(field.getStartBit());
-                    break;
-                case RAIM:
-                    if (bits.size() >= field.getStartBit())
-                        this.raim = bits.get(field.getStartBit());
-                    break;
-                case RADIO:
-                    if (bits.size() >= field.getStartBit())
-                        this.radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case REGIONAL:
-                case SPARE:
-                    break;
+            if (bits.size() > field.getEndBit()) {
+
+                switch (field) {
+                    case ALT -> this.alt = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case SPEED -> this.speed = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case ACCURACY -> this.accurate = bits.get(field.getStartBit());
+                    case LON -> this.lon = AISMessageDecoder.decodeSignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case LAT -> this.lat = AISMessageDecoder.decodeSignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case COURSE -> this.course = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case SECOND -> this.second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case DTE -> this.dte = bits.get(field.getStartBit());
+                    case ASSIGNED -> this.assigned = bits.get(field.getStartBit());
+                    case RAIM -> this.raim = bits.get(field.getStartBit());
+                    case RADIO -> this.radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case REGIONAL, SPARE -> {}
+                }
             }
         }
     }

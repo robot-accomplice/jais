@@ -70,33 +70,14 @@ public class SafetyRelatedAcknowledgement extends AISMessageBase {
         super.decode();
 
         for (SafetyRelatedAcknowledgeFieldMap field : SafetyRelatedAcknowledgeFieldMap.values()) {
-            switch (field) {
-                case MMSI1:
-                    if (bits.size() >= field.getStartBit())
-                        mmsi1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case MMSI2:
-                    if (bits.size() >= field.getStartBit())
-                        mmsi2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case MMSI3:
-                    if (bits.size() >= field.getStartBit())
-                        mmsi3 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case MMSI4:
-                    if (bits.size() >= field.getStartBit())
-                        mmsi4 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SPARE1:
-                    break;
-                case SPARE2:
-                    break;
-                case SPARE3:
-                    break;
-                case SPARE4:
-                    break;
-                case SPARE5:
-                    break;
+            if (bits.size() > field.getEndBit()) {
+                switch (field) {
+                    case MMSI1 -> mmsi1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case MMSI2 -> mmsi2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case MMSI3 -> mmsi3 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case MMSI4 -> mmsi4 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case SPARE1, SPARE2, SPARE3, SPARE4, SPARE5 -> {}
+                }
             }
         }
     }

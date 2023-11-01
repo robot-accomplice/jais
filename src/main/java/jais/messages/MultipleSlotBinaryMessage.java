@@ -66,45 +66,38 @@ public class MultipleSlotBinaryMessage extends AISMessageBase {
         super.decode();
 
         for (MultipleSlotBinaryMessageFieldMap field : MultipleSlotBinaryMessageFieldMap.values()) {
-            switch (field) {
-                case ADDRESSED -> {
-                    if (bits.size() >= field.getStartBit())
-                        addressed = bits.get(field.getStartBit());
-                }
-                case STRUCTURED -> {
-                    if (bits.size() >= field.getStartBit())
-                        structured = bits.get(field.getStartBit());
-                }
-                case DESTINATION_MMSI -> {
-                    if (addressed) {
-                        if (bits.size() >= field.getStartBit())
+            if (bits.size() > field.getEndBit() || field.getEndBit() == -1) {
+                switch (field) {
+                    case ADDRESSED -> addressed = bits.get(field.getStartBit());
+                    case STRUCTURED -> structured = bits.get(field.getStartBit());
+                    case DESTINATION_MMSI -> {
+                        if (addressed) {
                             destMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                     field.getEndBit());
+                        }
                     }
-                }
-                case DAC -> {
-                    if (structured) {
-                        if (bits.size() >= field.getStartBit())
+                    case DAC -> {
+                        if (structured) {
                             dac = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        }
                     }
-                }
-                case FID -> {
-                    if (structured) {
-                        if (bits.size() >= field.getStartBit())
+                    case FID -> {
+                        if (structured) {
                             fid = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                        }
                     }
-                }
-                case DATA -> {
-                    if (addressed && bits.length() >= 160) {
-                        data = bits.get(70, (bits.size() - 90));
-                    } else if (structured && bits.length() >= 166) {
-                        data = bits.get(56, (bits.size() - 76));
-                    } else if (bits.length() > 61) {
-                        data = bits.get(40, bits.size());
+                    case DATA -> {
+                        if (addressed && bits.length() >= 160) {
+                            data = bits.get(70, (bits.size() - 90));
+                        } else if (structured && bits.length() >= 166) {
+                            data = bits.get(56, (bits.size() - 76));
+                        } else if (bits.length() > 61) {
+                            data = bits.get(40, bits.size());
+                        }
                     }
+                    case RADIO -> radio = AISMessageDecoder.decodeUnsignedInt(bits,
+                            bits.size() - 21, bits.size() + 1);
                 }
-                case RADIO -> radio = AISMessageDecoder.decodeUnsignedInt(bits,
-                        bits.size() - 21, bits.size() + 1);
             }
         }
     }

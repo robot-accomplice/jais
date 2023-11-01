@@ -80,26 +80,17 @@ public class BinaryBroadcastMessage extends AISMessageBase {
         super.decode();
 
         for (BinaryBroadcastMessageBaseFieldMap field : BinaryBroadcastMessageBaseFieldMap.values()) {
-            switch (field) {
-                case DAC:
-                    if (bits.size() >= field.getStartBit())
-                        dac = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case FID:
-                    if (bits.size() >= field.getStartBit())
-                        fid = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case DATA:
-                    // store the undecoded portion of the BitSet in the data
-                    // field for later decoding by subtype
-                    if (bits.length() > field.getStartBit())
+            if (bits.size() > field.getEndBit() || field.getEndBit() == -1) {
+                switch (field) {
+                    case DAC -> dac = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case FID -> fid = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case DATA -> {
+                        // store the undecoded portion of the BitSet in the data
+                        // field for later decoding by subtype
                         data = bits.get(field.getStartBit(), bits.size() - 1);
-                    break;
-                case DESTINATION_MMSI:
-                case RETRANSMIT:
-                case SEQUENCE_NUMBER:
-                case SPARE:
-                    break;
+                    }
+                    case DESTINATION_MMSI, RETRANSMIT, SEQUENCE_NUMBER, SPARE -> {}
+                }
             }
         }
     }

@@ -403,14 +403,12 @@ public class AISMessageDecoder {
 
         CharBuffer cb = CharBuffer.allocate(capacity);
 
-        int stopBit = Math.min(endBit, bits.size());
-
         // we need to walk forward through every set of six bits without traveling past
         // the endBit
-        for (int sb = startBit; sb <= stopBit; sb += 6) {
+        for (int sb = startBit; sb <= endBit; sb += 6) {
             int binPosVal = 1; // binary position value
             int charVal = 0; // current binary position value
-            for (int s = (sb + 5); s >= sb && s <= stopBit; s--) {
+            for (int s = (sb + 5); s >= sb && s <= endBit; s--) {
                 if (bits.get(s))
                     charVal += binPosVal; // sum bits to arrive at int char value
                 binPosVal += binPosVal; // doubling consistent with binary math

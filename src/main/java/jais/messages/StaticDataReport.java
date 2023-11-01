@@ -69,52 +69,25 @@ public class StaticDataReport extends AISMessageBase {
         super.decode();
 
         for (StaticDataReportFieldMap field : StaticDataReportFieldMap.values()) {
-            switch (field) {
-                case PART_NUMBER -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.partNo = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                }
-                case SHIP_NAME -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.shipName = AISMessageDecoder.decodeString(bits, field.getStartBit(), field.getEndBit());
-                }
-                case SHIP_TYPE -> {
-                    if (bits.size() >= field.getStartBit()) {
+            if (bits.size() > field.getEndBit()) {
+                switch (field) {
+                    case PART_NUMBER -> this.partNo = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case SHIP_NAME -> this.shipName = AISMessageDecoder.decodeString(bits, field.getStartBit(), field.getEndBit());
+                    case SHIP_TYPE -> {
                         int stCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                         this.shipType = ShipType.getForCode(stCode);
                     }
-                }
-                case VENDOR_ID -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.vendorId = AISMessageDecoder.decodeString(bits, field.getStartBit(), field.getEndBit());
-                }
-                case CALL_SIGN -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.callSign = AISMessageDecoder.decodeString(bits, field.getStartBit(), field.getEndBit());
-                }
-                case TO_BOW -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                }
-                case TO_STERN -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                    case VENDOR_ID -> this.vendorId = AISMessageDecoder.decodeString(bits, field.getStartBit(), field.getEndBit());
+                    case CALL_SIGN -> this.callSign = AISMessageDecoder.decodeString(bits, field.getStartBit(), field.getEndBit());
+                    case TO_BOW -> this.toBow = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case TO_STERN -> this.toStern = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                            field.getEndBit());
+                    case TO_PORT -> this.toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case TO_STARBOARD -> this.toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                            field.getEndBit());
+                    case MOTHERSHIP_MMSI -> this.mothershipMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
                 }
-                case TO_PORT -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.toPort = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                }
-                case TO_STARBOARD -> this.toStarboard = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
-                        field.getEndBit());
-                case MOTHERSHIP_MMSI -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.mothershipMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
-                                field.getEndBit());
-                }
-                default -> {
-                }
-                // ignore field
             }
         }
     }

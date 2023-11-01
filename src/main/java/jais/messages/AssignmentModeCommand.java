@@ -63,32 +63,16 @@ public class AssignmentModeCommand extends AISMessageBase {
         super.decode();
 
         for (AssignmentModeCommandFieldMap field : AssignmentModeCommandFieldMap.values()) {
-            switch (field) {
-                case MMSI1 -> {
-                    if (bits.size() >= field.getStartBit())
-                        mmsi1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                }
-                case OFFSET1 -> {
-                    if (bits.size() >= field.getStartBit())
-                        offset1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                }
-                case INCREMENT1 -> {
-                    if (bits.size() >= field.getStartBit())
-                        increment1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
-                                field.getEndBit());
-                }
-                case MMSI2 -> {
-                    if (bits.size() >= field.getStartBit())
-                        mmsi2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                }
-                case OFFSET2 -> {
-                    if (bits.size() >= field.getStartBit())
-                        offset2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                }
-                case INCREMENT2 -> {
-                    if (bits.size() >= field.getStartBit())
-                        increment2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
-                                field.getEndBit());
+            if (bits.size() > field.getEndBit()) {
+                switch (field) {
+                    case MMSI1 -> mmsi1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case OFFSET1 -> offset1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case INCREMENT1 -> increment1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                                    field.getEndBit());
+                    case MMSI2 -> mmsi2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case OFFSET2 -> offset2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case INCREMENT2 -> increment2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                                    field.getEndBit());
                 }
             }
         }

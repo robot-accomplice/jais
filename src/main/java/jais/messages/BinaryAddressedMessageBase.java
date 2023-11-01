@@ -144,30 +144,15 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
         super.decode();
 
         for (BinaryAddressedMessageFieldMap field : BinaryAddressedMessageFieldMap.values()) {
-            switch (field) {
-                case SEQUENCE_NUMBER:
-                    if (bits.size() >= field.getStartBit())
-                        seqno = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case DESTINATION_MMSI:
-                    if (bits.size() >= field.getStartBit())
-                        destMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case RETRANSMIT:
-                    if (bits.size() >= field.getStartBit())
-                        retransmit = bits.get(field.getStartBit());
-                    break;
-                case DAC:
-                    if (bits.size() >= field.getStartBit())
-                        dac = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case FID:
-                    if (bits.size() >= field.getStartBit())
-                        fid = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case DATA:
-                case SPARE:
-                    break;
+            if (bits.size() > field.getEndBit()) {
+                switch (field) {
+                    case SEQUENCE_NUMBER -> seqno = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case DESTINATION_MMSI -> destMmsi = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case RETRANSMIT -> retransmit = bits.get(field.getStartBit());
+                    case DAC -> dac = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case FID -> fid = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case DATA, SPARE -> {}
+                }
             }
         }
     }

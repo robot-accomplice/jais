@@ -70,45 +70,26 @@ public class GroupAssignmentCommand extends AISMessageBase {
         super.decode();
 
         for (GroupAssignmentCommandFieldMap field : GroupAssignmentCommandFieldMap.values()) {
-            switch (field) {
-                case NE_LON -> {
-                    if (bits.size() >= field.getStartBit())
-                        neLon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                }
-                case NE_LAT -> {
-                    if (bits.size() >= field.getStartBit())
-                        neLat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                }
-                case SW_LON -> {
-                    if (bits.size() >= field.getStartBit())
-                        swLon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                }
-                case SW_LAT -> {
-                    if (bits.size() >= field.getStartBit())
-                        swLat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                }
-                case STATION_TYPE -> {
-                    if (bits.size() >= field.getStartBit()) {
+            if (bits.size() > field.getEndBit()) {
+                switch (field) {
+                    case NE_LON -> neLon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
+                    case NE_LAT -> neLat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
+                    case SW_LON -> swLon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
+                    case SW_LAT -> swLat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
+                    case STATION_TYPE -> {
                         int stCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                         stationType = StationType.getForCode(stCode);
                     }
-                }
-                case TXRX_MODE -> {
-                    if (bits.size() >= field.getStartBit()) {
+                    case TXRX_MODE -> {
                         int txrxCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
-                                field.getEndBit());
+                                    field.getEndBit());
                         txrx = TransmitMode.getForCode(txrxCode);
                     }
-                }
-                case REPORT_INTERVAL -> {
-                    if (bits.size() >= field.getStartBit()) {
+                    case REPORT_INTERVAL -> {
                         int iCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                         interval = StationInterval.getForCode(iCode);
                     }
-                }
-                case QUIET_TIME -> {
-                    if (bits.size() >= field.getStartBit())
-                        quietTime = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case QUIET_TIME -> quietTime = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                 }
             }
         }

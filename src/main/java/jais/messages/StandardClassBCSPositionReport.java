@@ -132,74 +132,30 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
         super.decode();
 
         for (StandardClassBCSPositionReportFieldMap field : StandardClassBCSPositionReportFieldMap.values()) {
-            switch (field) {
-                case SPEED -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.speed = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
-                                field.getEndBit());
-                }
-                case ACCURACY -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.accuracy = bits.get(field.getStartBit());
-                }
-                case LON -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                }
-                case LAT -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                }
-                case COURSE_OVER_GROUND -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.courseOverGround = AISMessageDecoder.decodeCourse(bits, field.getStartBit(),
-                                field.getEndBit());
-                }
-                case HEADING -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.heading = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
-                                field.getEndBit());
-                }
-                case SECOND -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
-                                field.getEndBit());
-                }
-                case CS -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.cs = bits.get(field.getStartBit());
-                }
-                case DISPLAY -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.display = bits.get(field.getStartBit());
-                }
-                case DSC -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.dsc = bits.get(field.getStartBit());
-                }
-                case MSG22 -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.msg22 = bits.get(field.getStartBit());
-                }
-                case ASSIGNED -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.assigned = bits.get(field.getStartBit());
-                }
-                case RAIM -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.raim = bits.get(field.getStartBit());
-                }
-                case BAND -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.band = bits.get(field.getStartBit());
-                }
-                case RADIO -> {
-                    if (bits.size() >= field.getStartBit())
-                        this.radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
-                                field.getEndBit());
+            if (bits.size() > field.getEndBit()) {
+                switch (field) {
+                    case SPEED -> this.speed = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                                    field.getEndBit());
+                    case ACCURACY -> this.accuracy = bits.get(field.getStartBit());
+                    case LON -> this.lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
+                    case LAT -> this.lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
+                    case COURSE_OVER_GROUND -> this.courseOverGround = AISMessageDecoder.decodeCourse(bits, field.getStartBit(),
+                                    field.getEndBit());
+                    case HEADING -> this.heading = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                                    field.getEndBit());
+                    case SECOND -> this.second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                                    field.getEndBit());
+                    case CS -> this.cs = bits.get(field.getStartBit());
+                    case DISPLAY -> this.display = bits.get(field.getStartBit());
+                    case DSC -> this.dsc = bits.get(field.getStartBit());
+                    case MSG22 -> this.msg22 = bits.get(field.getStartBit());
+                    case ASSIGNED -> this.assigned = bits.get(field.getStartBit());
+                    case RAIM -> this.raim = bits.get(field.getStartBit());
+                    case BAND -> this.band = bits.get(field.getStartBit());
+                    case RADIO -> this.radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                                    field.getEndBit());
                 }
             }
-
         }
     }
 

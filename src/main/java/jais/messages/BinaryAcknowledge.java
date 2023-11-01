@@ -70,22 +70,12 @@ public class BinaryAcknowledge extends AISMessageBase {
         super.decode();
 
         for (BinaryAcknowledgeFieldMap field : BinaryAcknowledgeFieldMap.values()) {
-            switch (field) {
-                case MMSI1 -> {
-                    if (bits.size() >= field.getStartBit())
-                        mmsi1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                }
-                case MMSI2 -> {
-                    if (bits.size() >= field.getStartBit())
-                        mmsi2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                }
-                case MMSI3 -> {
-                    if (bits.size() >= field.getStartBit())
-                        mmsi3 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                }
-                case MMSI4 -> {
-                    if (bits.size() >= field.getStartBit())
-                        mmsi4 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+            if (bits.size() > field.getEndBit()) {
+                switch (field) {
+                    case MMSI1 -> mmsi1 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case MMSI2 -> mmsi2 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case MMSI3 -> mmsi3 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case MMSI4 -> mmsi4 = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                 }
             }
         }

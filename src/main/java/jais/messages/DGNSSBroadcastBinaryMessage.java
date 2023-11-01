@@ -84,25 +84,19 @@ public class DGNSSBroadcastBinaryMessage extends AISMessageBase {
         super.decode();
 
         for (DGNSSBroadcastBinaryMessageFieldMap field : DGNSSBroadcastBinaryMessageFieldMap.values()) {
-            switch (field) {
-                case LON:
-                    if (bits.size() >= field.getStartBit())
-                        lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                case LAT:
-                    if (bits.size() >= field.getStartBit())
-                        lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                case DATA:
-                    // store the undecoded portion of the bitArray in the data
-                    // field for later decoding by subtype
-                    if (bits.size() > field.getStartBit()) {
+            if (bits.size() > field.getEndBit() || field.getEndBit() == -1) {
+                switch (field) {
+                    case LON -> lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
+                    case LAT -> lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
+                    case DATA -> {
+                        // store the undecoded portion of the bitArray in the data
+                        // field for later decoding by subtype
                         data = new BitSet(bits.size() - field.getStartBit());
                         for (int b = field.getStartBit(); b < bits.size() - 1; b++) {
                             data.set(b, bits.get(field.getStartBit() + b));
                         }
                     }
-                    break;
-                default:
-                    // ignore field
+                }
             }
         }
     }

@@ -146,62 +146,30 @@ public abstract class PositionReportBase extends AISMessageBase {
         super.decode();
 
         for (PositionFieldMap field : PositionFieldMap.values()) {
-            switch (field) {
-                case STATUS -> {
-                    if (bits.size() >= field.getStartBit()) {
+            if (bits.size() > field.getEndBit()) {
+                switch (field) {
+                    case STATUS -> {
                         int nsId = AISMessageDecoder.decodeUnsignedInt(super.bits, field.getStartBit(),
                                 field.getEndBit());
                         status = NavigationStatus.getForCode(nsId);
                     }
-                }
-                case RATE_OF_TURN -> {
-                    if (bits.size() >= field.getStartBit())
-                        rateOfTurn = AISMessageDecoder.decodeRateOfTurn(bits, field.getStartBit(), field.getEndBit());
-                }
-                case SPEED -> {
-                    if (bits.size() >= field.getStartBit())
-                        speed = AISMessageDecoder.decodeSpeed(bits, field.getStartBit(), field.getEndBit());
-                }
-                case ACCURACY -> {
-                    if (bits.size() >= field.getStartBit())
-                        accuracy = bits.get(field.getEndBit());
-                }
-                case LON -> {
-                    if (bits.size() >= field.getStartBit())
-                        lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                }
-                case LAT -> {
-                    if (bits.size() >= field.getStartBit())
-                        lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                }
-                case COURSE_OVER_GROUND -> {
-                    if (bits.size() >= field.getStartBit())
-                        courseOverGround = AISMessageDecoder.decodeCourse(bits, field.getStartBit(), field.getEndBit());
-                }
-                case HEADING -> {
-                    if (bits.size() >= field.getStartBit())
-                        heading = AISMessageDecoder.decodeHeading(bits, field.getStartBit(), field.getEndBit());
-                }
-                case SECOND -> {
-                    if (bits.size() >= field.getStartBit())
-                        second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                }
-                case MANEUVER -> {
-                    if (bits.size() >= field.getStartBit()) {
+                    case RATE_OF_TURN -> rateOfTurn = AISMessageDecoder.decodeRateOfTurn(bits, field.getStartBit(), field.getEndBit());
+                    case SPEED -> speed = AISMessageDecoder.decodeSpeed(bits, field.getStartBit(), field.getEndBit());
+                    case ACCURACY -> accuracy = bits.get(field.getEndBit());
+                    case LON -> lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
+                    case LAT -> lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
+                    case COURSE_OVER_GROUND -> courseOverGround = AISMessageDecoder.decodeCourse(bits, field.getStartBit(), field.getEndBit());
+                    case HEADING -> heading = AISMessageDecoder.decodeHeading(bits, field.getStartBit(), field.getEndBit());
+                    case SECOND -> second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case MANEUVER -> {
                         int mId = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                         maneuver = ManeuverType.getForCode(mId);
                         if (maneuver == null) {
                             maneuver = ManeuverType.NOT_AVAILABLE;
                         }
                     }
-                }
-                case RAIM -> {
-                    if (bits.size() >= field.getStartBit())
-                        raim = bits.get(field.getEndBit());
-                }
-                case RADIO -> {
-                    if (bits.size() >= field.getStartBit())
-                        radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case RAIM -> raim = bits.get(field.getEndBit());
+                    case RADIO -> radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                 }
             }
         }

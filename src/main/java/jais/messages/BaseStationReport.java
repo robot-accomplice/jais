@@ -93,59 +93,25 @@ public class BaseStationReport extends AISMessageBase {
         super.decode();
 
         for (BaseReportFieldMap field : BaseReportFieldMap.values()) {
-            switch (field) {
-                case YEAR:
-                    if (bits.size() >= field.getStartBit())
-                        year = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case MONTH:
-                    if (bits.size() >= field.getStartBit())
-                        month = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case DAY:
-                    if (bits.size() >= field.getStartBit())
-                        day = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case HOUR:
-                    if (bits.size() >= field.getStartBit())
-                        hour = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                case MINUTE:
-                    if (bits.size() >= field.getStartBit())
-                        minute = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case SECOND:
-                    if (bits.size() >= field.getStartBit())
-                        second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case ACCURACY:
-                    if (bits.size() >= field.getStartBit())
-                        accurate = bits.get(field.getStartBit());
-                    break;
-                case LON:
-                    if (bits.size() >= field.getStartBit())
-                        lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case LAT:
-                    if (bits.size() >= field.getStartBit())
-                        lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                case EPFD:
-                    if (bits.size() >= field.getStartBit()) {
+            if (bits.size() > field.getEndBit()) {
+                switch (field) {
+                    case YEAR -> year = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case MONTH -> month = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case DAY -> day = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case HOUR -> hour = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case MINUTE -> minute = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case SECOND -> second = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case ACCURACY -> accurate = bits.get(field.getStartBit());
+                    case LON -> lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
+                    case LAT -> lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());
+                    case EPFD -> {
                         int epfdCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
                                 field.getEndBit());
                         epfd = EPFDFixType.getForCode(epfdCode);
                     }
-                    break;
-                case RAIM:
-                    if (bits.size() >= field.getStartBit())
-                        raim = bits.get(field.getStartBit());
-                    break;
-                case RADIO:
-                    if (bits.size() >= field.getStartBit())
-                        radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    break;
-                default:
-                    // ignore field
+                    case RAIM -> raim = bits.get(field.getStartBit());
+                    case RADIO -> radio = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                }
             }
         }
     }
