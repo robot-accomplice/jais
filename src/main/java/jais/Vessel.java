@@ -20,6 +20,11 @@ import jais.messages.enums.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * An aggregate representation of a vessel based on PositionReport and
  * StaticAndVoyageRelatedData messages
@@ -29,6 +34,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Vessel implements Cloneable {
+
+    private final static String THRESHOLD_DATE = "1999-12-31 00:00";
+    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
 
     private Identifier id;
     private int version;
@@ -62,12 +70,11 @@ public class Vessel implements Cloneable {
     private int repeat;
     private int radio;
     private String eta;
-    private long currentMessageTimestamp;
-    private long currentStaticTimestamp;
-    private long previousStaticTimestamp;
-    private long currentPositionTimestamp;
-    private long previousPositionTimestamp;
-    private long timeSent;
+    private long mostRecentReceivedTimestampMs;
+    private long currentStaticSentTimestampMs;
+    private long previousStaticSentTimestampMs;
+    private long currentPositionSentTimestampMs;
+    private long previousPositionSentTimestampMs;
     private long messageCount = 1;
     private byte[] currentPositionSource;
     private byte[] currentStaticSource;
@@ -85,9 +92,9 @@ public class Vessel implements Cloneable {
      */
     public Vessel(StandardClassBCSPositionReport report) {
         this.id = new Identifier(report.getMmsi(), report.getSource());
-        this.previousPositionTimestamp = this.currentPositionTimestamp;
-        this.currentMessageTimestamp = report.getTimeReceived();
-        this.currentPositionTimestamp = report.getTimeReceived();
+        this.mostRecentReceivedTimestampMs = report.getTimeReceived();
+        this.previousPositionSentTimestampMs = this.currentPositionSentTimestampMs;
+        this.currentPositionSentTimestampMs = Vessel.secondsToMilliseconds(report.getTimeSent());
         this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
         this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
@@ -96,7 +103,6 @@ public class Vessel implements Cloneable {
         this.radio = report.getRadio();
         this.repeat = report.getRepeat();
         this.speed = report.getSpeed();
-        this.timeSent = report.getTimeSent();
         this.vesselClass = VesselClass.B;
         this.messageCount++;
     }
@@ -108,9 +114,9 @@ public class Vessel implements Cloneable {
      */
     public Vessel(ExtendedClassBCSPositionReport report) {
         this.id = new Identifier(report.getMmsi(), report.getSource());
-        this.previousPositionTimestamp = this.currentPositionTimestamp;
-        this.currentMessageTimestamp = report.getTimeReceived();
-        this.currentPositionTimestamp = report.getTimeReceived();
+        this.mostRecentReceivedTimestampMs = report.getTimeReceived();
+        this.previousPositionSentTimestampMs = this.currentPositionSentTimestampMs;
+        this.currentPositionSentTimestampMs = Vessel.secondsToMilliseconds(report.getTimeSent());
         this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
         this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
@@ -125,7 +131,6 @@ public class Vessel implements Cloneable {
         this.second = report.getSecond();
         this.shipName = ByteArrayUtils.str2bArray(report.getShipName());
         this.shipType = report.getShipType();
-        this.timeSent = report.getTimeSent();
         this.vesselClass = VesselClass.B;
         this.messageCount++;
     }
@@ -139,9 +144,9 @@ public class Vessel implements Cloneable {
      */
     public <T extends PositionReportBase> Vessel(T report) {
         this.id = new Identifier(report.getMmsi(), report.getSource());
-        this.previousPositionTimestamp = this.currentPositionTimestamp;
-        this.currentMessageTimestamp = report.getTimeReceived();
-        this.currentPositionTimestamp = report.getTimeReceived();
+        this.mostRecentReceivedTimestampMs = report.getTimeReceived();
+        this.previousPositionSentTimestampMs = this.currentPositionSentTimestampMs;
+        this.currentPositionSentTimestampMs = Vessel.secondsToMilliseconds(report.getTimeSent());
         this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
         this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
@@ -156,7 +161,6 @@ public class Vessel implements Cloneable {
         this.rateOfTurn = report.getRateOfTurn();
         this.accuracy = report.isAccuracy();
         this.raim = report.isRaim();
-        this.timeSent = report.getTimeSent();
         this.vesselClass = VesselClass.A;
         this.messageCount++;
     }
@@ -168,9 +172,9 @@ public class Vessel implements Cloneable {
      */
     public Vessel(StaticAndVoyageRelatedData savrd) {
         this.id = new Identifier(savrd.getMmsi(), savrd.getSource());
-        this.previousStaticTimestamp = this.currentStaticTimestamp;
-        this.currentMessageTimestamp = savrd.getTimeReceived();
-        this.currentStaticTimestamp = savrd.getTimeReceived();
+        this.mostRecentReceivedTimestampMs = savrd.getTimeReceived();
+        this.previousStaticSentTimestampMs = this.currentStaticSentTimestampMs;
+        this.currentStaticSentTimestampMs = Vessel.secondsToMilliseconds(savrd.getTimeSent());
         this.currentStaticSource = (savrd.getSource() == null) ? null : savrd.getSource().getBytes();
         this.imo = savrd.getImo();
         this.shipType = savrd.getShipType();
@@ -190,7 +194,6 @@ public class Vessel implements Cloneable {
         this.toStarboard = savrd.getToStarboard();
         this.toStern = savrd.getToStern();
         this.version = savrd.getVersion();
-        this.timeSent = savrd.getTimeSent();
         this.vesselClass = VesselClass.A;
         this.messageCount++;
     }
@@ -202,11 +205,10 @@ public class Vessel implements Cloneable {
      */
     public Vessel(StaticDataReport sdr) {
         this.id = new Identifier(sdr.getMmsi(), sdr.getSource());
-        this.previousStaticTimestamp = this.currentStaticTimestamp;
-        this.currentMessageTimestamp = sdr.getTimeReceived();
-        this.currentStaticTimestamp = sdr.getTimeReceived();
+        this.mostRecentReceivedTimestampMs = sdr.getTimeReceived();
+        this.previousStaticSentTimestampMs = this.currentStaticSentTimestampMs;
+        this.currentStaticSentTimestampMs = Vessel.secondsToMilliseconds(sdr.getTimeSent());
         this.currentStaticSource = (sdr.getSource() == null) ? null : sdr.getSource().getBytes();
-        this.timeSent = sdr.getTimeSent();
         this.shipName = (sdr.getShipName() == null) ? null : sdr.getShipName().getBytes();
         this.callSign = (sdr.getCallSign() == null) ? null : sdr.getCallSign().getBytes();
         this.shipType = sdr.getShipType();
@@ -226,9 +228,9 @@ public class Vessel implements Cloneable {
      * @param report an instance of a concrete class that extends PositionReportBase
      */
     public <T extends PositionReportBase> void addUpdatePositionReport(T report) {
-        this.previousPositionTimestamp = this.currentPositionTimestamp;
-        this.currentMessageTimestamp = report.getTimeReceived();
-        this.currentPositionTimestamp = report.getTimeReceived();
+        this.mostRecentReceivedTimestampMs = report.getTimeReceived();
+        this.previousPositionSentTimestampMs = this.currentPositionSentTimestampMs;
+        this.currentPositionSentTimestampMs = Vessel.secondsToMilliseconds(report.getTimeSent());
         this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
         this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
@@ -243,7 +245,6 @@ public class Vessel implements Cloneable {
         this.rateOfTurn = report.getRateOfTurn();
         this.accuracy = report.isAccuracy();
         this.raim = report.isRaim();
-        this.timeSent = report.getTimeSent();
         if (this.vesselClass == VesselClass.UNSPECIFIED) this.vesselClass = VesselClass.A;
         this.messageCount++;
     }
@@ -256,10 +257,9 @@ public class Vessel implements Cloneable {
      */
     public void addUpdatePositionReportClassB(StandardClassBCSPositionReport report) {
         this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
-        this.previousPositionTimestamp = this.currentPositionTimestamp;
-        this.currentMessageTimestamp = report.getTimeReceived();
-        this.currentPositionTimestamp = report.getTimeReceived();
-        this.timeSent = report.getTimeSent();
+        this.mostRecentReceivedTimestampMs = report.getTimeReceived();
+        this.previousPositionSentTimestampMs = this.currentPositionSentTimestampMs;
+        this.currentPositionSentTimestampMs = Vessel.secondsToMilliseconds(report.getTimeSent());
         this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
         this.lat = report.getLat();
@@ -280,10 +280,9 @@ public class Vessel implements Cloneable {
      * @param report the ExtendedClassBCSPositionReport we want to use to update the Vessel object
      */
     public void addUpdatePositionReportClassB(ExtendedClassBCSPositionReport report) {
-        this.previousPositionTimestamp = this.currentPositionTimestamp;
-        this.currentMessageTimestamp = report.getTimeReceived();
-        this.currentPositionTimestamp = report.getTimeReceived();
-        this.timeSent = report.getTimeSent();
+        this.mostRecentReceivedTimestampMs = report.getTimeReceived();
+        this.previousPositionSentTimestampMs = this.currentPositionSentTimestampMs;
+        this.currentPositionSentTimestampMs = Vessel.secondsToMilliseconds(report.getTimeSent());
         this.currentPositionSource = (report.getSource() == null) ? null : report.getSource().getBytes();
         this.courseOverGround = report.getCourseOverGround();
         this.heading = report.getHeading();
@@ -310,9 +309,9 @@ public class Vessel implements Cloneable {
      * @param savrd the StaticAndVoyageRelatedData we want to use to update the Vessel object
      */
     public void addUpdateStaticReport(StaticAndVoyageRelatedData savrd) {
-        this.previousStaticTimestamp = this.currentStaticTimestamp;
-        this.currentMessageTimestamp = savrd.getTimeReceived();
-        this.currentStaticTimestamp = savrd.getTimeReceived();
+        this.mostRecentReceivedTimestampMs = savrd.getTimeReceived();
+        this.previousStaticSentTimestampMs = this.currentStaticSentTimestampMs;
+        this.currentStaticSentTimestampMs = Vessel.secondsToMilliseconds(savrd.getTimeSent());
         this.currentStaticSource = (savrd.getSource() == null) ? null : savrd.getSource().getBytes();
         this.imo = savrd.getImo();
         this.shipType = savrd.getShipType();
@@ -332,7 +331,6 @@ public class Vessel implements Cloneable {
         this.toStarboard = savrd.getToStarboard();
         this.toStern = savrd.getToStern();
         this.version = savrd.getVersion();
-        this.timeSent = savrd.getTimeSent();
         if (this.vesselClass == VesselClass.UNSPECIFIED) this.vesselClass = VesselClass.A;
         this.messageCount++;
     }
@@ -344,10 +342,9 @@ public class Vessel implements Cloneable {
      * @param sdr the StaticDataReport with which we want to update the Vessel object
      */
     public void addUpdateStaticDataReport(StaticDataReport sdr) {
-        this.previousStaticTimestamp = this.currentStaticTimestamp;
-        this.currentMessageTimestamp = sdr.getTimeReceived();
-        this.currentStaticTimestamp = sdr.getTimeReceived();
-        this.timeSent = sdr.getTimeSent();
+        this.mostRecentReceivedTimestampMs = sdr.getTimeReceived();
+        this.previousStaticSentTimestampMs = this.currentStaticSentTimestampMs;
+        this.currentStaticSentTimestampMs = Vessel.secondsToMilliseconds(sdr.getTimeSent());
         this.currentStaticSource = (sdr.getSource() == null) ? null : sdr.getSource().getBytes();
         this.shipName = (sdr.getShipName() == null) ? null : sdr.getShipName().getBytes();
         this.callSign = (sdr.getCallSign() == null) ? null : sdr.getCallSign().getBytes();
@@ -396,19 +393,19 @@ public class Vessel implements Cloneable {
         clone.shipType = this.shipType;
         clone.speed = this.speed;
         clone.navigationStatus = this.navigationStatus;
-        clone.currentMessageTimestamp = this.currentMessageTimestamp;
-        clone.currentPositionTimestamp = this.currentPositionTimestamp;
-        clone.previousPositionTimestamp = this.previousPositionTimestamp;
+        clone.mostRecentReceivedTimestampMs = this.mostRecentReceivedTimestampMs;
+        clone.currentPositionSentTimestampMs = this.currentPositionSentTimestampMs;
+        clone.previousPositionSentTimestampMs = this.previousPositionSentTimestampMs;
+        clone.previousStaticSentTimestampMs = this.previousStaticSentTimestampMs;
+        clone.currentStaticSentTimestampMs = this.currentStaticSentTimestampMs;
         clone.toBow = this.toBow;
         clone.toPort = this.toPort;
         clone.toStarboard = this.toStarboard;
         clone.toStern = this.toStern;
         clone.rateOfTurn = this.rateOfTurn;
         clone.version = this.version;
-        clone.timeSent = this.timeSent;
         clone.currentStaticSource = this.currentStaticSource;
         clone.currentPositionSource = this.currentPositionSource;
-        clone.currentStaticTimestamp = this.currentStaticTimestamp;
         clone.vesselClass = this.vesselClass;
         clone.messageCount = this.messageCount;
 
@@ -567,11 +564,11 @@ public class Vessel implements Cloneable {
                     "repeat": %d,
                     "radio": %d,
                     "eta": "%s",
-                    "currentMessageTimestamp": %d,
-                    "currentPositionTimestamp": %d,
-                    "previousPositionTimestamp": %d,
-                    "currentStaticTimestamp": %d,
-                    "timeSent": %d,
+                    "mostRecentReceivedTimestampMs": %d,
+                    "currentPositionSentTimestampMs": %d,
+                    "previousPositionSentTimestampMs": %d,
+                    "currentStaticSentTimestampMs": %d,
+                    "previousStaticSentTimestampMs": %d,
                     "currentPositionSource": "%s",
                     "currentStaticSource": "%s"
                 }
@@ -583,11 +580,27 @@ public class Vessel implements Cloneable {
                 this.getDestination(), this.isDte(), this.getNavigationStatus().name(), this.getRateOfTurn(), this.getSpeed(),
                 this.isAccuracy(), this.getLon(), this.getLat(), this.getCourseOverGround(), this.getHeading(),
                 this.getManeuver().name(), this.isRaim(), this.getRepeat(), this.getRadio(), this.getEta(),
-                this.getCurrentMessageTimestamp(), this.getCurrentPositionTimestamp(),
-                this.getPreviousPositionTimestamp(), this.getCurrentStaticTimestamp(), this.getTimeSent(),
-                ByteArrayUtils.bArray2Str(this.getCurrentPositionSource()),
+                this.getMostRecentReceivedTimestampMs(), this.getCurrentPositionSentTimestampMs(),
+                this.getPreviousPositionSentTimestampMs(), this.getCurrentStaticSentTimestampMs(),
+                this.getPreviousStaticSentTimestampMs(), ByteArrayUtils.bArray2Str(this.getCurrentPositionSource()),
                 ByteArrayUtils.bArray2Str(this.getCurrentStaticSource())
         );
+    }
+
+    /**
+     * secondsToMilliseconds makes a best effort to determine whether the value provided is in seconds or ms and
+     * multiplies the value times 1000 if it appears to be in seconds
+     * @param timeValue
+     */
+    private static long secondsToMilliseconds(long timeValue) {
+        Date thresholdDate = null;
+        try {
+            thresholdDate = DATE_FORMAT.parse(THRESHOLD_DATE);
+        } catch (ParseException e) {
+            // we were unable to parse the date for some stupid reason, but there's little we can do about it
+        }
+
+        return (thresholdDate != null && new Date(timeValue).compareTo(thresholdDate) < 0) ? timeValue * 1000: timeValue;
     }
 
     /**
