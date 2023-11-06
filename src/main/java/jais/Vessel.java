@@ -592,7 +592,7 @@ public class Vessel implements Cloneable {
      * multiplies the value times 1000 if it appears to be in seconds
      * @param timeValue
      */
-    private static long secondsToMilliseconds(long timeValue) {
+    public static long secondsToMilliseconds(long timeValue) {
         Date thresholdDate = null;
         try {
             thresholdDate = DATE_FORMAT.parse(THRESHOLD_DATE);
