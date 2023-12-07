@@ -293,7 +293,7 @@ public class AISMessageDecoder {
 
         if (i == 0x3412140) {
             // latitude unavailable
-            return -91f;
+            return AISMessage.DEFAULT_LATITUDE;
         }
         return (float) (((double) i) / (60f * 10000f));
     }
@@ -310,7 +310,7 @@ public class AISMessageDecoder {
 
         if (i == 0x6791AC0) {
             // longitude unavailable
-            return -181f;
+            return AISMessage.DEFAULT_LONGITUDE;
         }
         return (float) (((double) i) / (60f * 10000f));
     }
@@ -382,9 +382,8 @@ public class AISMessageDecoder {
 
         if ((i < 0) || (i >= 3600)) {
             return 3600f; // invalid course
-        } else {
-            return i / 10f;
         }
+        return i / 10f;
     }
 
     /**
