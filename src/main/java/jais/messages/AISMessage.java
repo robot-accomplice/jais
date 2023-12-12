@@ -72,32 +72,29 @@ public interface AISMessage {
      * @return a boolean indicating whether the provided IMO is valid
      */
     static boolean isValidImo(long imo) {
+        String intString = Long.toString(imo);
 
-        boolean valid = (Long.toString(imo).length() == 7);
+        if (intString.length() != 7) return false;
 
-        if (valid) {
-            int d = 0;
-            Integer[] digits = new Integer[7];
-            for (char c : Long.toString(imo).toCharArray()) {
-                digits[d] = Integer.valueOf(String.valueOf(c));
-                d++;
-            }
-
-            digits[0] *= 7;
-            digits[1] *= 6;
-            digits[2] *= 5;
-            digits[3] *= 4;
-            digits[4] *= 3;
-            digits[5] *= 2;
-
-            int sum = 0;
-            for (int i = 0; i < 6; i++)
-                sum += digits[i];
-
-            valid = (sum % 10 == digits[6]);
+        int d = 0;
+        Integer[] digits = new Integer[7];
+        for (char c : intString.toCharArray()) {
+            digits[d] = Integer.valueOf(String.valueOf(c));
+            d++;
         }
 
-        return valid;
+        digits[0] *= 7;
+        digits[1] *= 6;
+        digits[2] *= 5;
+        digits[3] *= 4;
+        digits[4] *= 3;
+        digits[5] *= 2;
+
+        int sum = 0;
+        for (int i = 0; i < 6; i++)
+            sum += digits[i];
+
+        return (sum % 10 == digits[6]);
     }
 
     /**
