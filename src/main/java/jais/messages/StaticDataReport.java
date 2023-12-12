@@ -68,11 +68,17 @@ public class StaticDataReport extends AISMessageBase {
     public final void decode() {
         super.decode();
 
+        this.partNo = AISMessageDecoder.decodeUnsignedInt(bits, StaticDataReportFieldMap.PART_NUMBER.startBit,
+                StaticDataReportFieldMap.PART_NUMBER.endBit);
+        if (this.partNo == 0) {
+            this.shipName = AISMessageDecoder.decodeString(bits, StaticDataReportFieldMap.SHIP_NAME.startBit,
+                    StaticDataReportFieldMap.SHIP_NAME.endBit);
+            return;
+        }
+
         for (StaticDataReportFieldMap field : StaticDataReportFieldMap.values()) {
             if (bits.size() > field.getEndBit()) {
                 switch (field) {
-                    case PART_NUMBER -> this.partNo = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    case SHIP_NAME -> this.shipName = AISMessageDecoder.decodeString(bits, field.getStartBit(), field.getEndBit());
                     case SHIP_TYPE -> {
                         int stCode = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                         this.shipType = ShipType.getForCode(stCode);
@@ -99,8 +105,8 @@ public class StaticDataReport extends AISMessageBase {
     private enum StaticDataReportFieldMap implements FieldMap {
 
         PART_NUMBER(38, 39),
-        SHIP_NAME(40, 159),
-        SPARE1(160, 167),
+        SHIP_NAME(40, 159), // part number 0
+        // part number 1
         SHIP_TYPE(40, 47),
         VENDOR_ID(48, 89),
         CALL_SIGN(90, 131),
@@ -108,6 +114,7 @@ public class StaticDataReport extends AISMessageBase {
         TO_STERN(141, 149),
         TO_PORT(150, 155),
         TO_STARBOARD(156, 161),
+        SPARE1(160, 167),
         MOTHERSHIP_MMSI(132, 161),
         SPARE2(162, 167);
 
