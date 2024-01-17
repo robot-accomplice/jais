@@ -137,7 +137,7 @@ public class ExtendedClassBCSPositionReport extends AISMessageBase {
         for (ExtendedClassBCSPositionReportFieldMap field : ExtendedClassBCSPositionReportFieldMap.values()) {
             if (bits.size() > field.getEndBit()) {
                 switch (field) {
-                    case SPEED -> speed = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
+                    case SPEED -> speed = AISMessageDecoder.decodeSpeed(bits, field.getStartBit(), field.getEndBit());
                     case ACCURATE -> accurate = bits.get(field.getStartBit());
                     case LON -> lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
                     case LAT -> lat = AISMessageDecoder.decodeLatitude(bits, field.getStartBit(), field.getEndBit());

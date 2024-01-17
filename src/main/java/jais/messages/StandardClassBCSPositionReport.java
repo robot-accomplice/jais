@@ -108,7 +108,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     /**
      * @deprecated use the static method AISMessage.isValidSpeed instead
-     * @return a boolean indicating whether or not the speed information is valid
+     * @return a boolean indicating whether the speed information is valid
      */
     @Deprecated
     public boolean isSpeedValid() {
@@ -117,7 +117,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
 
     /**
      * @deprecated use the static method AISMessage.isValidHeading instead
-     * @return a boolean indicating whether or not the heading information is valid
+     * @return a boolean indicating whether the heading information is valid
      */
     @Deprecated
     public boolean isHeadingValid() {
@@ -134,7 +134,7 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
         for (StandardClassBCSPositionReportFieldMap field : StandardClassBCSPositionReportFieldMap.values()) {
             if (bits.size() > field.getEndBit()) {
                 switch (field) {
-                    case SPEED -> this.speed = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(),
+                    case SPEED -> this.speed = AISMessageDecoder.decodeSpeed(bits, field.getStartBit(),
                                     field.getEndBit());
                     case ACCURACY -> this.accuracy = bits.get(field.getStartBit());
                     case LON -> this.lon = AISMessageDecoder.decodeLongitude(bits, field.getStartBit(), field.getEndBit());
