@@ -102,7 +102,7 @@ public interface AISMessage {
      * @return a boolean indicating whether the position information is valid
      */
     static boolean isValidPosition(double lat, double lon) {
-        return ((lon >= -180 && lon < AISMessage.DEFAULT_LONGITUDE) && (lat >= -90 && lat < AISMessage.DEFAULT_LATITUDE));
+        return ((lon >= -180 && lon <= AISMessage.DEFAULT_LONGITUDE - 1) && (lat >= -90 && lat <= AISMessage.DEFAULT_LATITUDE - 1));
     }
 
     /**
