@@ -109,5 +109,5 @@ public class Example {
 
 # Contributors
 - [Jonathan Machen](https://gitlab/robot_accomplice)
-- Sririsha Tankash
-- [Tanvir Mobin Islam](https://www.linkedin.com/in/tanvirsyead/)
+- [Sririsha Tankash](https://gitlab.com/stankashala)
+- [Tanvir Mobin Islam](https://gitlab.com/mobintanvir) [LinkedIn](https://www.linkedin.com/in/tanvirsyead/)
