@@ -270,6 +270,9 @@ public class ConsoleController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        location = url;
+        resources = rb;
+
         /* nothing to do */
         Font fixedWidthFont = null;
         String osName = System.getProperty("os.name");
