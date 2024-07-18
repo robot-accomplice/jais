@@ -7,7 +7,7 @@ build:
 deploy:
     mvn clean package deploy
 
-run-jar:
+run-ui:
     #!/usr/bin/env -S bash
     if [ ! -f target/jais.jar ]; then
         mvn clean package -DskipTest
