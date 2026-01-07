@@ -126,7 +126,7 @@ public abstract class AISMessageBase implements AISMessage {
      */
     @Override
     public long getTimeReceived() {
-        return sentences[0].getTimeReceived();
+        return sentences[0].getTimeReceived(java.time.ZoneOffset.UTC).toInstant().toEpochMilli();
     }
 
     /**
@@ -307,6 +307,16 @@ public abstract class AISMessageBase implements AISMessage {
         AISFieldMap(int startBit, int endBit) {
             this.startBit = startBit;
             this.endBit = endBit;
+        }
+
+        @Override
+        public int getStartBit() {
+            return startBit;
+        }
+
+        @Override
+        public int getEndBit() {
+            return endBit;
         }
     }
 }

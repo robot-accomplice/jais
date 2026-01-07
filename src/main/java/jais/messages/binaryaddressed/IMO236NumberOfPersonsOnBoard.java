@@ -87,5 +87,15 @@ public class IMO236NumberOfPersonsOnBoard extends BinaryAddressedMessageBase {
             this.startBit = startBit;
             this.endBit = endBit;
         }
+
+        @Override
+        public int getStartBit() {
+            return startBit;
+        }
+
+        @Override
+        public int getEndBit() {
+            return endBit;
+        }
     }
 }

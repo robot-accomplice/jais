@@ -194,5 +194,15 @@ public class StandardClassBCSPositionReport extends AISMessageBase {
             this.startBit = startBit;
             this.endBit = endBit;
         }
+
+        @Override
+        public int getStartBit() {
+            return startBit;
+        }
+
+        @Override
+        public int getEndBit() {
+            return endBit;
+        }
     }
 }
