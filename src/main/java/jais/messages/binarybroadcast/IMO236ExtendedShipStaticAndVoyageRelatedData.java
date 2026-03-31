@@ -42,6 +42,6 @@ public class IMO236ExtendedShipStaticAndVoyageRelatedData
      */
     @Override
     public BinaryBroadcastMessageType getSubType() {
-        return BinaryBroadcastMessageType.IMO289_EXTENDED_SHIP_STATIC_AND_VOYAGE_RELATED_DATA;
+        return BinaryBroadcastMessageType.IMO236_EXTENDED_SHIP_STATIC_AND_VOYAGE_RELATED_DATA;
     }
 }

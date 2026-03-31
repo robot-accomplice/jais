@@ -17,16 +17,32 @@
 package jais.messages.binaryaddressed;
 
 import jais.AISSentence;
+import jais.messages.AISMessageDecoder;
 import jais.messages.BinaryAddressedMessageBase;
-import jais.messages.enums.FieldMap;
-import lombok.Getter;
 import jais.messages.enums.BinaryAddressedMessageType;
+import jais.messages.enums.CargoCode;
+import jais.messages.enums.CargoUnitCode;
+import jais.messages.enums.FieldMap;
+import jais.messages.enums.MarpolAnnexIIType;
+import jais.messages.enums.MarpolAnnexIType;
+import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public class IMO289DangerousCargoIndication extends BinaryAddressedMessageBase {
+
+    private static final int CARGO_ENTRY_SIZE_BITS = 17;
+
+    private CargoUnitCode cargoUnit;
+    private int amount;
+    private final List<DangerousCargoEntry> cargos = new ArrayList<>();
 
     /**
      *
@@ -42,6 +58,86 @@ public class IMO289DangerousCargoIndication extends BinaryAddressedMessageBase {
     @Override
     public final void decode() {
         super.decode();
+
+        cargoUnit = CargoUnitCode.getForCode(AISMessageDecoder.decodeUnsignedInt(bits,
+                IMO289DangerousCargoIndicationFieldMap.CARGO_UNIT.getStartBit(),
+                IMO289DangerousCargoIndicationFieldMap.CARGO_UNIT.getEndBit()));
+        amount = AISMessageDecoder.decodeUnsignedInt(bits,
+                IMO289DangerousCargoIndicationFieldMap.AMOUNT.getStartBit(),
+                IMO289DangerousCargoIndicationFieldMap.AMOUNT.getEndBit());
+
+        cargos.clear();
+        int entryCount = maxCargoEntriesAvailable();
+        for (int i = 0; i < entryCount; i++) {
+            int startBit = IMO289DangerousCargoIndicationFieldMap.CARGOS.getStartBit() + (i * CARGO_ENTRY_SIZE_BITS);
+            CargoCode code = CargoCode.getForCode(AISMessageDecoder.decodeUnsignedInt(bits, startBit, startBit + 3));
+            int value = AISMessageDecoder.decodeUnsignedInt(bits, startBit + 4, startBit + 16);
+
+            cargos.add(new DangerousCargoEntry(
+                    code,
+                    value,
+                    decodeCargoDescription(code, value)));
+        }
+    }
+
+    /**
+     *
+     * @return immutable view of the cargo entries carried in the message
+     */
+    public List<DangerousCargoEntry> getCargos() {
+        return Collections.unmodifiableList(cargos);
+    }
+
+    private int maxCargoEntriesAvailable() {
+        int availableBits = bits.length() - IMO289DangerousCargoIndicationFieldMap.CARGOS.getStartBit();
+        if (availableBits <= 0) {
+            return 0;
+        }
+        return availableBits / CARGO_ENTRY_SIZE_BITS;
+    }
+
+    private static String decodeCargoDescription(CargoCode code, int value) {
+        if (code == null) {
+            return null;
+        }
+
+        return switch (code) {
+            case NOT_AVAILABLE -> code.getDescription();
+            case IMDG_CODE -> "IMDG code " + value;
+            case IGC_CODE -> "UN number " + value;
+            case BC_CODE -> decodeBcCode(value);
+            case MARPOL_ANNEX_I -> {
+                MarpolAnnexIType type = MarpolAnnexIType.getForCode(value >> 9);
+                yield type != null ? type.getDescription() : null;
+            }
+            case MARPOL_ANNEX_II -> {
+                MarpolAnnexIIType type = MarpolAnnexIIType.getForCode(value >> 10);
+                yield type != null ? type.getDescription() : null;
+            }
+            case REGIONAL -> "Regional code " + value;
+        };
+    }
+
+    private static String decodeBcCode(int value) {
+        int bcClass = (value >> 10) & 0x7;
+        int imdgClass = (value >> 3) & 0x7F;
+        return "BC class " + bcClass + ", IMDG class " + imdgClass;
+    }
+
+    /**
+     *
+     */
+    @Getter
+    public static class DangerousCargoEntry {
+        private final CargoCode code;
+        private final int rawValue;
+        private final String description;
+
+        DangerousCargoEntry(CargoCode code, int rawValue, String description) {
+            this.code = code;
+            this.rawValue = rawValue;
+            this.description = description;
+        }
     }
 
     /**
@@ -50,16 +146,13 @@ public class IMO289DangerousCargoIndication extends BinaryAddressedMessageBase {
     @Getter
     private enum IMO289DangerousCargoIndicationFieldMap implements FieldMap {
 
-        DEFAULT(-1, -1);
+        CARGO_UNIT(88, 89),
+        AMOUNT(90, 99),
+        CARGOS(100, -1);
 
         private final int startBit;
         private final int endBit;
 
-        /**
-         *
-         * @param startBit the first bit of the target field
-         * @param endBit the last bit of the target field
-         */
         IMO289DangerousCargoIndicationFieldMap(int startBit, int endBit) {
             this.startBit = startBit;
             this.endBit = endBit;

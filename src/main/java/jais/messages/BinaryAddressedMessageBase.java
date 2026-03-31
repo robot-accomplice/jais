@@ -141,7 +141,9 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
      */
     @Override
     public void decode() {
-        super.decode();
+        if (bits == null) {
+            super.decode();
+        }
 
         for (BinaryAddressedMessageFieldMap field : BinaryAddressedMessageFieldMap.values()) {
             if (bits.size() > field.getEndBit()) {
@@ -151,10 +153,26 @@ public abstract class BinaryAddressedMessageBase extends AISMessageBase {
                     case RETRANSMIT -> retransmit = bits.get(field.getStartBit());
                     case DAC -> dac = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
                     case FID -> fid = AISMessageDecoder.decodeUnsignedInt(bits, field.getStartBit(), field.getEndBit());
-                    case DATA, SPARE -> {}
+                    case DATA -> {
+                        int endBit = Math.max(getBitLength(), bits.length());
+                        if (endBit > field.getStartBit()) {
+                            data = bits.get(field.getStartBit(), endBit);
+                        }
+                    }
+                    case SPARE -> {}
                 }
             }
         }
+    }
+
+    private int getBitLength() {
+        int bitLength = 0;
+        for (AISSentence sentence : this.sentences) {
+            if (sentence != null && sentence.getPayload() != null) {
+                bitLength += (sentence.getPayload().length * 6) - sentence.getFillBits();
+            }
+        }
+        return bitLength;
     }
 
     /**

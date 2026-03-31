@@ -17,14 +17,28 @@
 package jais.messages.binarybroadcast;
 
 import jais.AISSentence;
+import jais.messages.AISMessageDecoder;
 import jais.messages.BinaryBroadcastMessage;
+import jais.messages.binarybroadcast.environmental.EnvironmentalSensorReport;
+import jais.messages.enums.BinaryBroadcastMessageEnvironmentalType;
 import jais.messages.enums.BinaryBroadcastMessageType;
+import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public class IMO289Environmental extends BinaryBroadcastMessage {
+
+    private static final int REPORT_SIZE_BITS = 112;
+
+    private final List<EnvironmentalSensorReport> reports = new ArrayList<>();
 
     /**
      *
@@ -42,5 +56,48 @@ public class IMO289Environmental extends BinaryBroadcastMessage {
     @Override
     public BinaryBroadcastMessageType getSubType() {
         return BinaryBroadcastMessageType.IMO289_ENVIRONMENTAL;
+    }
+
+    /**
+     *
+     */
+    @Override
+    public void decode() {
+        reports.clear();
+        BitSet data = getData();
+        if (data == null) {
+            super.decode();
+            data = getData();
+        }
+        if (data == null) {
+            return;
+        }
+
+        final int reportCount = data.length() / REPORT_SIZE_BITS;
+        for (int offset = 0; offset < (reportCount * REPORT_SIZE_BITS); offset += REPORT_SIZE_BITS) {
+            BitSet reportBits = data.get(offset, offset + REPORT_SIZE_BITS);
+            int reportType = AISMessageDecoder.decodeUnsignedInt(reportBits, 0, 3);
+            int utcDay = AISMessageDecoder.decodeUnsignedInt(reportBits, 4, 8);
+            int utcHour = AISMessageDecoder.decodeUnsignedInt(reportBits, 9, 13);
+            int utcMinute = AISMessageDecoder.decodeUnsignedInt(reportBits, 14, 19);
+            int siteId = AISMessageDecoder.decodeUnsignedInt(reportBits, 20, 26);
+            BitSet sensorData = reportBits.get(27, REPORT_SIZE_BITS);
+
+            reports.add(new EnvironmentalSensorReport(
+                    BinaryBroadcastMessageEnvironmentalType.getForCode(reportType),
+                    utcDay,
+                    utcHour,
+                    utcMinute,
+                    siteId,
+                    sensorData));
+        }
+    }
+
+    /**
+     *
+     * @return an immutable view of the decoded environmental sensor reports
+     */
+    public List<EnvironmentalSensorReport> getReports() {
+        return Collections.unmodifiableList(reports);
     }
 }

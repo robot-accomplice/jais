@@ -17,16 +17,35 @@
 package jais.messages.binaryaddressed;
 
 import jais.AISSentence;
+import jais.messages.AISMessageDecoder;
 import jais.messages.BinaryAddressedMessageBase;
-import jais.messages.enums.FieldMap;
-import lombok.Getter;
+import jais.messages.enums.AreaNoticeType;
 import jais.messages.enums.BinaryAddressedMessageType;
+import jais.messages.enums.FieldMap;
+import jais.messages.enums.SubareaType;
+import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public class IMO289AreaNotice extends BinaryAddressedMessageBase {
+
+    private static final int SUBAREA_SIZE_BITS = 87;
+
+    private int linkageId;
+    private AreaNoticeType noticeType;
+    private int month;
+    private int day;
+    private int hour;
+    private int minute;
+    private int durationMinutes;
+    private final List<AreaSubarea> subareas = new ArrayList<>();
 
     /**
      *
@@ -43,11 +62,75 @@ public class IMO289AreaNotice extends BinaryAddressedMessageBase {
     public final void decode() {
         super.decode();
 
-        // here we need to figure out how many elements in an array of sub-
-        // areas there are (could be up to ten) based on the size of
-        // remaining data after we decode the duration -- may use a public
-        // static inner class to represent the sub-area information and just store
-        // the array
+        linkageId = AISMessageDecoder.decodeUnsignedInt(bits,
+                IMO289AreaNoticeFieldMap.LINKAGE_ID.getStartBit(),
+                IMO289AreaNoticeFieldMap.LINKAGE_ID.getEndBit());
+        noticeType = AreaNoticeType.getForCode(AISMessageDecoder.decodeUnsignedInt(bits,
+                IMO289AreaNoticeFieldMap.NOTICE_TYPE.getStartBit(),
+                IMO289AreaNoticeFieldMap.NOTICE_TYPE.getEndBit()));
+        month = AISMessageDecoder.decodeUnsignedInt(bits,
+                IMO289AreaNoticeFieldMap.MONTH.getStartBit(),
+                IMO289AreaNoticeFieldMap.MONTH.getEndBit());
+        day = AISMessageDecoder.decodeUnsignedInt(bits,
+                IMO289AreaNoticeFieldMap.DAY.getStartBit(),
+                IMO289AreaNoticeFieldMap.DAY.getEndBit());
+        hour = AISMessageDecoder.decodeUnsignedInt(bits,
+                IMO289AreaNoticeFieldMap.HOUR.getStartBit(),
+                IMO289AreaNoticeFieldMap.HOUR.getEndBit());
+        minute = AISMessageDecoder.decodeUnsignedInt(bits,
+                IMO289AreaNoticeFieldMap.MINUTE.getStartBit(),
+                IMO289AreaNoticeFieldMap.MINUTE.getEndBit());
+        durationMinutes = AISMessageDecoder.decodeUnsignedInt(bits,
+                IMO289AreaNoticeFieldMap.DURATION_MINUTES.getStartBit(),
+                IMO289AreaNoticeFieldMap.DURATION_MINUTES.getEndBit());
+
+        subareas.clear();
+        int subareaCount = maxSubareasAvailable();
+        for (int i = 0; i < subareaCount; i++) {
+            int startBit = IMO289AreaNoticeFieldMap.SUBAREAS.getStartBit() + (i * SUBAREA_SIZE_BITS);
+            int typeCode = AISMessageDecoder.decodeUnsignedInt(bits, startBit, startBit + 2);
+            SubareaType subareaType = SubareaType.getForCode(typeCode);
+            String text = (subareaType == SubareaType.ASSOCIATED_TEXT)
+                    ? AISMessageDecoder.decodeString(bits, startBit + 3, startBit + 86)
+                    : null;
+
+            subareas.add(new AreaSubarea(
+                    subareaType,
+                    bits.get(startBit, startBit + SUBAREA_SIZE_BITS),
+                    text));
+        }
+    }
+
+    /**
+     *
+     * @return immutable list of subareas contained in the notice
+     */
+    public List<AreaSubarea> getSubareas() {
+        return Collections.unmodifiableList(subareas);
+    }
+
+    private int maxSubareasAvailable() {
+        int availableBits = bits.length() - IMO289AreaNoticeFieldMap.SUBAREAS.getStartBit();
+        if (availableBits <= 0) {
+            return 0;
+        }
+        return availableBits / SUBAREA_SIZE_BITS;
+    }
+
+    /**
+     *
+     */
+    @Getter
+    public static class AreaSubarea {
+        private final SubareaType type;
+        private final java.util.BitSet rawBits;
+        private final String associatedText;
+
+        AreaSubarea(SubareaType type, java.util.BitSet rawBits, String associatedText) {
+            this.type = type;
+            this.rawBits = rawBits;
+            this.associatedText = associatedText;
+        }
     }
 
     /**
@@ -56,16 +139,18 @@ public class IMO289AreaNotice extends BinaryAddressedMessageBase {
     @Getter
     private enum IMO289AreaNoticeFieldMap implements FieldMap {
 
-        DEFAULT(-1, -1);
+        LINKAGE_ID(88, 97),
+        NOTICE_TYPE(98, 104),
+        MONTH(105, 108),
+        DAY(109, 113),
+        HOUR(114, 118),
+        MINUTE(119, 124),
+        DURATION_MINUTES(125, 142),
+        SUBAREAS(143, -1);
 
         private final int startBit;
         private final int endBit;
 
-        /**
-         *
-         * @param startBit the first bit of the target field
-         * @param endBit the last bit of the target field
-         */
         IMO289AreaNoticeFieldMap(int startBit, int endBit) {
             this.startBit = startBit;
             this.endBit = endBit;

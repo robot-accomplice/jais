@@ -23,6 +23,7 @@ import jais.messages.enums.FieldMap;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.lang.reflect.Constructor;
 import java.util.BitSet;
 
 /**
@@ -36,6 +37,7 @@ public class BinaryBroadcastMessage extends AISMessageBase {
     private int dac; // designated area code
     private int fid; // functional id
     private BitSet data;
+    private BinaryBroadcastMessageType subType;
 
     /**
      *
@@ -69,7 +71,45 @@ public class BinaryBroadcastMessage extends AISMessageBase {
      * @return BinaryBroadcastMessageType
      */
     public BinaryBroadcastMessageType getSubType() {
-        return BinaryBroadcastMessageType.UNKNOWN;
+        if (subType == null) {
+            subType = BinaryBroadcastMessageType.fetch(dac, fid, getBitLength());
+        }
+
+        return subType;
+    }
+
+    /**
+     *
+     * @return whether there is a meaningful subtype for this message
+     */
+    @Override
+    public boolean hasSubType() {
+        return true;
+    }
+
+    /**
+     *
+     * @return the concrete subtype instance when one is recognized
+     */
+    @Override
+    public AISMessage getSubTypeInstance() {
+        if (getSubType() == BinaryBroadcastMessageType.UNKNOWN) {
+            return this;
+        }
+
+        try {
+            Constructor<? extends BinaryBroadcastMessage> con = getSubType().getMsgClass()
+                    .getDeclaredConstructor(String.class, AISSentence[].class);
+            con.setAccessible(true);
+
+            BinaryBroadcastMessage message = con.newInstance(getSource(), this.sentences);
+            message.setType(super.getType());
+            message.setSubType(getSubType());
+            message.decode();
+            return message;
+        } catch (ReflectiveOperationException | SecurityException e) {
+            return this;
+        }
     }
 
     /**
@@ -87,12 +127,22 @@ public class BinaryBroadcastMessage extends AISMessageBase {
                     case DATA -> {
                         // store the undecoded portion of the BitSet in the data
                         // field for later decoding by subtype
-                        data = bits.get(field.getStartBit(), bits.size() - 1);
+                        data = bits.get(field.getStartBit(), getBitLength());
                     }
                     case DESTINATION_MMSI, RETRANSMIT, SEQUENCE_NUMBER, SPARE -> {}
                 }
             }
         }
+    }
+
+    private int getBitLength() {
+        int bitLength = 0;
+        for (AISSentence sentence : this.sentences) {
+            if (sentence != null && sentence.getPayload() != null) {
+                bitLength += (sentence.getPayload().length * 6) - sentence.getFillBits();
+            }
+        }
+        return bitLength;
     }
 
     /**

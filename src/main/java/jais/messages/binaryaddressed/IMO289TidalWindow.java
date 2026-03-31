@@ -17,16 +17,29 @@
 package jais.messages.binaryaddressed;
 
 import jais.AISSentence;
+import jais.messages.AISMessageDecoder;
 import jais.messages.BinaryAddressedMessageBase;
 import jais.messages.enums.BinaryAddressedMessageType;
 import jais.messages.enums.FieldMap;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  *
  * @author Jonathan Machen {@literal <jonathan.machen@robotaccomplice.com>}
  */
+@Getter
 public class IMO289TidalWindow extends BinaryAddressedMessageBase {
+
+    private static final int PREDICTION_SIZE_BITS = 88;
+    private static final int MAX_PREDICTIONS = 3;
+
+    private int month;
+    private int day;
+    private final List<TidalPrediction> predictions = new ArrayList<>();
 
     /**
      *
@@ -42,6 +55,82 @@ public class IMO289TidalWindow extends BinaryAddressedMessageBase {
     @Override
     public final void decode() {
         super.decode();
+
+        month = AISMessageDecoder.decodeUnsignedInt(bits,
+                IMO289TidalWindowFieldMap.MONTH.getStartBit(),
+                IMO289TidalWindowFieldMap.MONTH.getEndBit());
+        day = AISMessageDecoder.decodeUnsignedInt(bits,
+                IMO289TidalWindowFieldMap.DAY.getStartBit(),
+                IMO289TidalWindowFieldMap.DAY.getEndBit());
+
+        predictions.clear();
+        for (int i = 0; i < MAX_PREDICTIONS; i++) {
+            int startBit = IMO289TidalWindowFieldMap.PREDICTIONS.getStartBit() + (i * PREDICTION_SIZE_BITS);
+            if (bits.length() <= startBit + 1) {
+                break;
+            }
+
+            predictions.add(new TidalPrediction(
+                    decodeLowResolutionLongitude(bits, startBit, startBit + 24),
+                    decodeLowResolutionLatitude(bits, startBit + 25, startBit + 48),
+                    AISMessageDecoder.decodeUnsignedInt(bits, startBit + 49, startBit + 53),
+                    AISMessageDecoder.decodeUnsignedInt(bits, startBit + 54, startBit + 59),
+                    AISMessageDecoder.decodeUnsignedInt(bits, startBit + 60, startBit + 64),
+                    AISMessageDecoder.decodeUnsignedInt(bits, startBit + 65, startBit + 70),
+                    AISMessageDecoder.decodeUnsignedInt(bits, startBit + 71, startBit + 79),
+                    AISMessageDecoder.decodeUnsignedInt(bits, startBit + 80, startBit + 87) / 10f));
+        }
+    }
+
+    /**
+     *
+     * @return immutable list of tidal predictions
+     */
+    public List<TidalPrediction> getPredictions() {
+        return Collections.unmodifiableList(predictions);
+    }
+
+    private static double decodeLowResolutionLongitude(java.util.BitSet bits, int startBit, int endBit) {
+        int encoded = AISMessageDecoder.decodeSignedInt(bits, startBit, endBit);
+        if (encoded == 0x6791AC0) {
+            return 181d;
+        }
+        return encoded / 60000.0d;
+    }
+
+    private static double decodeLowResolutionLatitude(java.util.BitSet bits, int startBit, int endBit) {
+        int encoded = AISMessageDecoder.decodeSignedInt(bits, startBit, endBit);
+        if (encoded == 0x3412140) {
+            return 91d;
+        }
+        return encoded / 60000.0d;
+    }
+
+    /**
+     *
+     */
+    @Getter
+    public static class TidalPrediction {
+        private final double longitude;
+        private final double latitude;
+        private final int fromHour;
+        private final int fromMinute;
+        private final int toHour;
+        private final int toMinute;
+        private final int currentDirection;
+        private final float currentSpeed;
+
+        TidalPrediction(double longitude, double latitude, int fromHour, int fromMinute,
+                int toHour, int toMinute, int currentDirection, float currentSpeed) {
+            this.longitude = longitude;
+            this.latitude = latitude;
+            this.fromHour = fromHour;
+            this.fromMinute = fromMinute;
+            this.toHour = toHour;
+            this.toMinute = toMinute;
+            this.currentDirection = currentDirection;
+            this.currentSpeed = currentSpeed;
+        }
     }
 
     /**
@@ -50,16 +139,13 @@ public class IMO289TidalWindow extends BinaryAddressedMessageBase {
     @Getter
     private enum IMO289TidalWindowFieldMap implements FieldMap {
 
-        DEFAULT(-1, -1);
+        MONTH(88, 91),
+        DAY(92, 96),
+        PREDICTIONS(97, -1);
 
         private final int startBit;
         private final int endBit;
 
-        /**
-         *
-         * @param startBit the first bit of the target field
-         * @param endBit the last bit of the target field
-         */
         IMO289TidalWindowFieldMap(int startBit, int endBit) {
             this.startBit = startBit;
             this.endBit = endBit;
