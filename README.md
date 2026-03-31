@@ -1,6 +1,85 @@
 # JAIS
 
-A Java [AIS](https://en.wikipedia.org/wiki/Automatic_identification_system) decoding library
+A Java [AIS](https://en.wikipedia.org/wiki/Automatic_identification_system) decoding library.
+
+JAIS targets Java 17 and can be used either as a library or as a command-line decoder. The current codebase includes concrete decoders for the core AIS sentence types plus addressed and broadcast application-specific message subtypes such as route information, dangerous cargo indication, area notices, tidal windows, clearance-to-enter-port, text descriptions, and environmental reports.
+
+## Maven
+
+```xml
+<dependency>
+    <groupId>com.robotaccomplice</groupId>
+    <artifactId>jais</artifactId>
+    <version>3.1.0</version>
+</dependency>
+```
+
+## Build
+
+```shell
+mvn test
+```
+
+## Decoded Message Coverage
+
+JAIS currently instantiates and decodes these top-level AIS message types:
+
+- `1` Position Report Class A
+- `2` Position Report Class A (Assigned Schedule)
+- `3` Position Report Class A (Response to Interrogation)
+- `4` Base Station Report
+- `5` Static and Voyage Related Data
+- `6` Binary Addressed Message
+- `7` Binary Acknowledge
+- `8` Binary Broadcast Message
+- `9` Standard SAR Aircraft Position Report
+- `10` UTC and Date Inquiry
+- `11` UTC and Date Response
+- `12` Addressed Safety Related Message
+- `13` Safety Related Acknowledgement
+- `14` Safety Related Broadcast Message
+- `15` Interrogation
+- `16` Assignment Mode Command
+- `17` DGNSS Broadcast Binary Message
+- `18` Standard Class B CS Position Report
+- `19` Extended Class B CS Position Report
+- `20` Data Link Management Message
+- `21` Aid to Navigation Report
+- `22` Channel Management
+- `23` Group Assignment Command
+- `24` Static Data Report
+- `25` Single Slot Binary Message
+- `26` Multiple Slot Binary Message
+- `27` Position Report for Long Range Applications
+
+For binary addressed application-specific messages, JAIS currently decodes these DAC/FID subtypes:
+
+- `DAC 1 / FID 12` Dangerous Cargo Indication (IMO236, deprecated)
+- `DAC 1 / FID 14` Tidal Window (IMO236, deprecated)
+- `DAC 1 / FID 16` Number of Persons on Board, deprecated and current IMO289 forms
+- `DAC 1 / FID 18` Clearance Time to Enter Port
+- `DAC 1 / FID 23` Area Notice (addressed)
+- `DAC 1 / FID 25` Dangerous Cargo Indication
+- `DAC 1 / FID 28` Route Information
+- `DAC 1 / FID 30` Text Description
+- `DAC 1 / FID 32` Tidal Window
+
+For binary broadcast application-specific messages, JAIS currently decodes these DAC/FID subtypes:
+
+- `DAC 1 / FID 11` Meteorological and Hydrological Data (IMO236, deprecated)
+- `DAC 1 / FID 13` Fairway Closed
+- `DAC 1 / FID 15` Extended Ship Static and Voyage Related Data (IMO236, deprecated)
+- `DAC 1 / FID 17` VTS Generated Synthetic Targets
+- `DAC 1 / FID 19` Marine Traffic Signal
+- `DAC 1 / FID 22` Area Notice
+- `DAC 1 / FID 24` Extended Ship Static and Voyage Related Data
+- `DAC 1 / FID 26` Environmental
+- `DAC 1 / FID 27` Route Information
+- `DAC 1 / FID 29` Text Description
+- `DAC 1 / FID 31` Meteorological and Hydrological Data
+- `DAC 1 / FID 33` Weather Observation Report from Ship
+
+## CLI
 
 JAIS can also be executed like a binary enabling ad hoc decoding:
 
@@ -29,7 +108,7 @@ usage: java -jar <JAIS jar name> [options]
                       separated by commas).
 ```
 
-Code Usage Example:
+## Code Usage Example
 
 ```java
 import jais.AISSentence;

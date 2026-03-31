@@ -21,12 +21,12 @@
 
     <groupId>com.robotaccomplice</groupId>
     <artifactId>jais</artifactId>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
     <packaging>jar</packaging>
 
     <name>JAIS</name>
     <description>Java NMEA AIS decoding library</description>
-    <url>https://gitlab.com/robot_accomplice/jais</url>
+    <url>https://github.com/robot-accomplice/jais</url>
 
     <licenses>
         <license>
@@ -40,14 +40,14 @@
             <name>Jonathan Machen</name>
             <email>jonathan.machen@robotaccomplice.com</email>
             <organization>Robot Accomplice</organization>
-            <organizationUrl>https://gitlab.com/robot_accomplice/jais</organizationUrl>
+            <organizationUrl>https://github.com/robot-accomplice/jais</organizationUrl>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git://gitlab.com/robot_accomplice/jais.git</connection>
-        <developerConnection>scm:git:ssh://gitlab.com:robot_accomplice/jais.git</developerConnection>
-        <url>https://gitlab.com/robot_accomplice/jais</url>
+        <connection>scm:git:https://github.com/robot-accomplice/jais.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/robot-accomplice/jais.git</developerConnection>
+        <url>https://github.com/robot-accomplice/jais</url>
     </scm>
 
     <properties>
@@ -55,17 +55,6 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
-    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
@@ -101,6 +90,17 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.10.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <deploymentName>${project.artifactId}-${project.version}</deploymentName>
+                    <waitUntil>validated</waitUntil>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -147,12 +147,6 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.13</version>
                 <executions>
-                    <execution>
-                        <id>default-prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
                     <execution>
                         <id>default-report</id>
                         <phase>prepare-package</phase>
@@ -223,26 +217,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.13</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>default-deploy</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>deploy</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
             </plugin>
         </plugins>
     </build>
